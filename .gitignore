@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+fastapi-venv/
+ENV/
+env/
+
+# FastAPI / Uvicorn logs
+*.log
+
+# VS Code / PyCharm / IDEs
+.vscode/
+.idea/
+
+# dotenv
+.env
+.env.*
+
+# Migrations (si tu utilises Alembic)
+alembic/versions/
+
+# Byte-compiled files
+*.pyc
+*.pyo
+
+# Tests & coverage
+htmlcov/
+.coverage
+coverage.xml
+.cache
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Profiling
+.prof
+
+# Docker
+*.pid
+*.bak
+*.swp
+docker-compose.override.yml
+
+# Local database or dev files
+*.db
+*.sqlite3
+
+# Build
+build/
+dist/
+*.egg-info/
