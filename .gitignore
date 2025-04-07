@@ -1,9 +1,22 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
+# Fastapi
+fastapi/__pycache__/
+fastapi/**/__pycache__/
+fastapi/*.py[cod]
+fastapi/*$py.class
+fastapi/.pytest_cache/
+fastapi/.coverage
+fastapi/htmlcov/
+fastapi/.env
+fastapi/venv/
+fastapi/.venv/
+
+# DBT
+dbt/logs/
+dbt/target/
+dbt/dbt_packages/
+dbt/dbt_modules/
+dbt/.user.yml
+dbt/profiles.yml
 
 # Virtual environments
 .venv/
@@ -14,19 +27,19 @@ ENV/
 env/
 
 # FastAPI / Uvicorn logs
-*.log
+fastapi/*.log
 
 # VS Code / PyCharm / IDEs
 .vscode/
 .idea/
 
 # dotenv
-.env
-.env.*
-!.env.example
+**/.env
+**/.env.*
+**/!.env.example
 
-# Migrations (si tu utilises Alembic)
-alembic/versions/
+# Migrations
+**/alembic/versions/
 
 # Byte-compiled files
 *.pyc
@@ -56,8 +69,3 @@ docker-compose.override.yml
 # Local database or dev files
 *.db
 *.sqlite3
-
-# Build
-build/
-dist/
-*.egg-info/

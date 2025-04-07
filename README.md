@@ -32,13 +32,7 @@ This will start a PostgreSQL database with the PostGIS extension on port 5433.
 #### Create a Virtual Environment
 
 ```bash
-# Create virtual environment
 python -m venv fastapi-venv
-
-# Activate on Windows
-fastapi-venv\Scripts\activate
-
-# Activate on macOS/Linux
 source fastapi-venv/bin/activate
 ```
 
@@ -56,9 +50,7 @@ pip install -r requirements.txt
 
 #### Configure Environment Variables
 
-Create a `.env` file in the root directory:
-
-```
+```bash
 cp .env.example .env
 ```
 
@@ -72,17 +64,43 @@ The API will be available at http://127.0.0.1:8000
 
 #### API Documentation
 
-FastAPI automatically generates interactive API documentation:
-
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-#### API Endpoints
+### dbt
 
-| Method | URL | Description |
-|--------|-----|-------------|
-| GET | / | Root endpoint with welcome message |
-| GET | /health | Health check endpoint |
+#### Create a Virtual Environment
+
+```bash
+python -m venv dbt-venv
+source dbt-venv/bin/activate 
+```
+
+#### Install Dependencies
+
+```bash
+pip install -r dbt/requirements.txt
+```
+
+#### Configure dbt Profile
+
+```bash
+./setup-dbt.sh
+```
+
+Then edit `~/.dbt/profiles.yml` with your database credentials.
+
+#### Verify Configuration
+
+```bash
+cd dbt && dbt debug
+```
+
+#### Run Models
+
+```bash
+cd dbt && dbt run
+```
 
 ## Project Structure
 
@@ -91,30 +109,27 @@ diagbruit/
 │
 ├── fastapi/
 │   ├── app/
-│   │   ├── __init__.py
 │   │   ├── main.py
 │   │   ├── database.py
-│   │   ├── mocks/
-│   │   │   └── coordinates.json
 │   │   ├── models/
-│   │   │   ├── __init__.py
-│   │   │   └── noisemap.py
 │   │   ├── routes/
-│   │   │   ├── __init__.py
-│   │   │   └── diag.py
 │   │   ├── schemas/
-│   │   │   ├── __init__.py
-│   │   │   └── noisemap.py
 │   │   └── utils/
-│   │       ├── __init__.py
-│   │       ├── cadastre.py
-│   │       ├── db.py
-│   │       └── geometry.py
 │   │
 │   ├── .env.example
 │   ├── requirements.txt
 │
-└── docker-entrypoint-initdb.d
+├── dbt/
+│   ├── models/
+│   ├── macros/
+│   ├── tests/ 
+│   ├── dbt_project.yml 
+│   ├── profiles.yml.example  
+│   └── requirements.txt 
+│
+├── docker-entrypoint-initdb.d
 │   ├── 01-init.sql
+│
+├── setup-dbt.sh 
 └── docker-compose.yml
 ```

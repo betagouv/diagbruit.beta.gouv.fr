@@ -1,0 +1,12 @@
+diagbruit:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5433
+      user: user
+      pass: password
+      dbname: diagbruit
+      schema: public
+      threads: 1
