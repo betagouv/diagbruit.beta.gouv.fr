@@ -28,7 +28,7 @@ docker-compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
-### Ingetstion - seed data
+### Data ingestion
 
 #### Create a Virtual Environment
 
