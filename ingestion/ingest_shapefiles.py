@@ -66,7 +66,7 @@ def main():
     parser.add_argument('table_name', help='Name for the table in the database')
     parser.add_argument('--schema', default='public_workspace', help='Database schema (default: public_workspace)')
     parser.add_argument('--if-exists', choices=['fail', 'replace', 'append'], 
-                        default='replace', help='Action if table exists (default: replace)')
+                        default='append', help='Action if table exists (default: append)')
     parser.add_argument('--db-host', default=os.getenv('DB_HOST', 'localhost'), 
                         help='Database host')
     parser.add_argument('--db-port', default=os.getenv('DB_PORT', '5433'), 
