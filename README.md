@@ -148,8 +148,11 @@ diagbruit/
 │   ├── profiles.yml.example
 │   └── requirements.txt
 │
-├── docker-entrypoint-initdb.d
-│   ├── 01-init.sql
+├── ingestion/
+│   ├── inputs/
+│   ├── .env.example
+│   ├── ingest_shapefiles.py
+│   └── requirements.txt
 │
 ├── setup-dbt.sh
 └── docker-compose.yml
