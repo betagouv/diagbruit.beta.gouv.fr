@@ -1,4 +1,4 @@
-# DiagBruit - FastAPI
+# DiagBruit
 
 ## Prerequisites
 
