@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 fastapi-venv/
+dbt-venv/
 ENV/
 env/
 
@@ -22,6 +23,7 @@ env/
 # dotenv
 .env
 .env.*
+!.env.example
 
 # Migrations (si tu utilises Alembic)
 alembic/versions/
