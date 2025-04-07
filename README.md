@@ -28,6 +28,16 @@ docker-compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
+### Quick Setup (All Environments)
+
+For a quick setup of all virtual environments:
+
+```bash
+./setup-dev.sh
+```
+
+This will create and configure all virtual environments for the different components of the project. You can then activate the environment you need to work with.
+
 ### Data ingestion
 
 #### Create a Virtual Environment
