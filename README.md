@@ -27,26 +27,34 @@ docker-compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
-### Create a Virtual Environment
+### FastApi
+
+#### Create a Virtual Environment
 
 ```bash
 # Create virtual environment
-python -m venv venv
+python -m venv fastapi-venv
 
 # Activate on Windows
-venv\Scripts\activate
+fastapi-venv\Scripts\activate
 
 # Activate on macOS/Linux
-source venv/bin/activate
+source fastapi-venv/bin/activate
 ```
 
-### Install Dependencies
+#### From fastapi folder
+
+```bash
+cd fastapi
+```
+
+#### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Configure Environment Variables
+#### Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -54,7 +62,7 @@ Create a `.env` file in the root directory:
 cp .env.example .env
 ```
 
-### Run the Application
+#### Run the Application
 
 ```bash
 uvicorn app.main:app --reload
@@ -62,14 +70,14 @@ uvicorn app.main:app --reload
 
 The API will be available at http://127.0.0.1:8000
 
-## API Documentation
+#### API Documentation
 
 FastAPI automatically generates interactive API documentation:
 
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-## API Endpoints
+#### API Endpoints
 
 | Method | URL | Description |
 |--------|-----|-------------|
@@ -79,56 +87,34 @@ FastAPI automatically generates interactive API documentation:
 ## Project Structure
 
 ```
-fastapi-postgres-api/
+diagbruit/
 │
-├── app/
-│   ├── __init__.py
-│   ├── main.py             
-│   ├── database.py         
-│   ├── models/            
+├── fastapi/
+│   ├── app/
 │   │   ├── __init__.py
-│   │   └── noisemap.py     
-│   ├── schemas/            
-│   │   ├── __init__.py
-│   │   └── noisemap.py     
-│   └── routes/             
-│       ├── __init__.py
-│       └── noisemap.py     
+│   │   ├── main.py
+│   │   ├── database.py
+│   │   ├── mocks/
+│   │   │   └── coordinates.json
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   └── noisemap.py
+│   │   ├── routes/
+│   │   │   ├── __init__.py
+│   │   │   └── diag.py
+│   │   ├── schemas/
+│   │   │   ├── __init__.py
+│   │   │   └── noisemap.py
+│   │   └── utils/
+│   │       ├── __init__.py
+│   │       ├── cadastre.py
+│   │       ├── db.py
+│   │       └── geometry.py
+│   │
+│   ├── .env.example
+│   ├── requirements.txt
 │
-├── .env                   
-├── requirements.txt        
-├── Dockerfile              
-└── docker-compose.yml     
-```
-
-## Development
-
-### Adding New Models
-
-1. Define a new model in `app/models.py`
-2. Create corresponding schemas in `app/schemas.py`
-3. Add routes in `app/routes/` directory
-4. Register new routers in `app/main.py`
-
-### Database Migrations
-
-This project does not include database migrations by default. To add migration support:
-
-1. Install alembic: `pip install alembic`
-2. Initialize alembic: `alembic init alembic`
-3. Configure alembic to use your database connection
-
-## Deployment
-
-For production deployment:
-
-1. Use a production ASGI server like Uvicorn or Hypercorn
-2. Set up proper database credentials
-3. Configure CORS for your specific origins
-4. Consider adding authentication
-
-Example deployment command:
-
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+└── docker-entrypoint-initdb.d
+│   ├── 01-init.sql
+└── docker-compose.yml
 ```
