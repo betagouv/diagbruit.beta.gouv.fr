@@ -7,7 +7,7 @@ class NoiseMapItem(Base):
     __tablename__ = "noisemap"
     
     pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    geom = Column(Geometry('GEOMETRY', srid=4326))
+    geometry = Column(Geometry('GEOMETRY', srid=4326))
     idzonbruit = Column(String, index=True)
     idcbs = Column(String, index=True)
     uueid = Column(String)

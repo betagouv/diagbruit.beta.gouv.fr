@@ -1,0 +1,55 @@
+version: 2
+
+macros:
+  - name: validate_geometry
+    description: "Validates a geometry column and returns is_valid and validity_reason columns"
+    arguments:
+      - name: geometry_column
+        type: string
+        description: "Name of the geometry column to validate"
+
+  - name: repair_geometry
+    description: "Repairs invalid geometries using ST_MakeValid"
+    arguments:
+      - name: geometry_column
+        type: string
+        description: "Name of the geometry column to repair"
+      - name: is_valid_column
+        type: string
+        description: "Name of the boolean column that indicates if the geometry is valid"
+      - name: method
+        type: string
+        description: "Method to use for ST_MakeValid (structure or linework). Default: 'structure'"
+
+version: 2
+
+macros:
+  - name: validate_geometry
+    description: "Validates a geometry column and returns is_valid and validity_reason columns"
+    arguments:
+      - name: geometry_column
+        type: string
+        description: "Name of the geometry column to validate"
+    
+  - name: repair_geometry
+    description: "Repairs invalid geometries using ST_MakeValid"
+    arguments:
+      - name: geometry_column
+        type: string
+        description: "Name of the geometry column to repair"
+      - name: is_valid_column
+        type: string
+        description: "Name of the boolean column that indicates if the geometry is valid"
+      - name: method
+        type: string
+        description: "Method to use for ST_MakeValid (structure or linework). Default: 'structure'"
+        
+  - name: transform_to_epsg_4326
+    description: "Transforms geometry from source SRID to EPSG:4326 (WGS84)"
+    arguments:
+      - name: geometry_column
+        type: string
+        description: "Name of the geometry column to transform"
+      - name: source_srid
+        type: integer
+        description: "Source SRID of the geometry. Default: 2154 (RGF93 / Lambert-93)"

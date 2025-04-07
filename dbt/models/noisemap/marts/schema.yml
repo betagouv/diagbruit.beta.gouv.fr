@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: noisemap
+    description: "Clean noise map polygons with validated geometries"
+    columns:
+      - name: idzonbruit
+        description: "Noise zone ID"
+      - name: idcbs
+        description: "CBS ID"
+      - name: uueid
+        description: "UUID"
+      - name: annee
+        description: "Year"
+      - name: codedept
+        description: "Department code"
+      - name: typeterr
+        description: "Territory type"
+      - name: producteur
+        description: "Producer ID"
+      - name: codinfra
+        description: "Infrastructure code"
+      - name: typesource
+        description: "Source type"
+      - name: cbstype
+        description: "CBS type"
+      - name: zonedef
+        description: "Zone definition"
+      - name: legende
+        description: "Legend"
+      - name: indicetype
+        description: "Indicator type"
+      - name: validedeb
+        description: "Validity start date"
+      - name: validefin
+        description: "Validity end date"
+      - name: polygon_id
+        description: "Unique identifier for each polygon (IDZONBRUIT + geom_idx)"
+      - name: geometry
+        description: "Valid polygon geometry"
+      - name: area_m2
+        description: "Area of the polygon in square meters"
+      - name: original_is_valid
+        description: "Whether the original geometry was valid"
+      - name: original_validity_reason
+        description: "Reason for invalidity in the original geometry"

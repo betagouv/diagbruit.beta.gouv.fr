@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_noisemap
+        description: "Raw noise map data imported from shapefiles"
+        columns:
+          - name: idzonbruit
+            description: "Noise zone ID"
+          - name: idcbs
+            description: "CBS ID"
+          - name: uueid
+            description: "UUID"
+          - name: annee
+            description: "Year"
+          - name: codedept
+            description: "Department code"
+          - name: typeterr
+            description: "Territory type"
+          - name: producteur
+            description: "Producer ID"
+          - name: codinfra
+            description: "Infrastructure code"
+          - name: typesource
+            description: "Source type"
+          - name: cbstype
+            description: "CBS type"
+          - name: zonedef
+            description: "Zone definition"
+          - name: legende
+            description: "Legend"
+          - name: indicetype
+            description: "Indicator type"
+          - name: validedeb
+            description: "Validity start date"
+          - name: validefin
+            description: "Validity end date"
+          - name: geometry
+            description: "Geometry data in WKT format"

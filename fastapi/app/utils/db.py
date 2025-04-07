@@ -16,10 +16,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
     try:
         stmt = db.query(
             NoiseMapItem,
-            func.ST_AsText(NoiseMapItem.geom).label('geometry_wkt')
+            func.ST_AsText(NoiseMapItem.geometry).label('geometry_wkt')
         ).filter(
             func.ST_Intersects(
-                NoiseMapItem.geom,
+                NoiseMapItem.geometry,
                 func.ST_GeomFromText(wkt_geometry, 4326)
             )
         )
