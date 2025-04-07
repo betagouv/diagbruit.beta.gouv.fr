@@ -28,7 +28,7 @@ docker-compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
-### Quick Setup (All Environments)
+### Quick Setup
 
 For a quick setup of all virtual environments:
 
@@ -40,17 +40,10 @@ This will create and configure all virtual environments for the different compon
 
 ### Data ingestion
 
-#### Create a Virtual Environment
+#### Launch dedicated Virtual Environment
 
 ```bash
-python -m venv ingestion-venv
 source ingestion-venv/bin/activate
-```
-
-#### Install Dependencies
-
-```bash
-pip install -r ingestion/requirements.txt
 ```
 
 #### Launch seed raw data
@@ -62,17 +55,10 @@ python ingest_shapefiles.py inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LN_S_044/N_BRUIT
 
 ### DBT
 
-#### Create a Virtual Environment
+#### Launch dedicated Virtual Environment
 
 ```bash
-python -m venv dbt-venv
 source dbt-venv/bin/activate
-```
-
-#### Install Dependencies
-
-```bash
-pip install -r dbt/requirements.txt
 ```
 
 #### Configure dbt Profile
@@ -99,17 +85,10 @@ dbt run
 
 ### FastApi
 
-#### Create a Virtual Environment
+#### Launch dedicated Virtual Environment
 
 ```bash
-python -m venv fastapi-venv
 source fastapi-venv/bin/activate
-```
-
-#### Install Dependencies
-
-```bash
-pip install -r fastapi/requirements.txt
 ```
 
 #### Configure Environment Variables
