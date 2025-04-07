@@ -23,6 +23,7 @@ dbt/profiles.yml
 venv/
 fastapi-venv/
 dbt-venv/
+ingestion-venv/
 ENV/
 env/
 
@@ -36,7 +37,7 @@ fastapi/*.log
 # dotenv
 **/.env
 **/.env.*
-**/!.env.example
+!**/.env.example
 
 # Migrations
 **/alembic/versions/

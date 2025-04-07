@@ -28,6 +28,28 @@ docker-compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
+### Ingetstion - seed data
+
+#### Create a Virtual Environment
+
+```bash
+python -m venv ingestion-venv
+source ingestion-venv/bin/activate
+```
+
+#### Install Dependencies
+
+```bash
+pip install -r ingestion/requirements.txt
+```
+
+#### Launch seed raw data
+
+```bash
+cd ingestion
+python ingest_shapefiles.py inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LN_S_044/N_BRUIT_ZBRD_INFRA_R_C_LN_S_044.shp raw_noisemap
+```
+
 ### DBT
 
 #### Create a Virtual Environment
