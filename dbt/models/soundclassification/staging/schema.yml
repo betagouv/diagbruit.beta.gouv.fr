@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_soundclassification_tramway
+      - name: raw_soundclassification_sncf
+      - name: raw_soundclassification_routier
+      - name: raw_soundclassification_lgv
+
+models:
+  - name: stg_soundclassification
+    description: "Staging model combining all raw sound classification data from multiple infrastructures"
+    columns:
+      - name: geometry
+        description: "Geometry in WKT format"
+      - name: source
+        description: "Source of the data (tramway, sncf, routier, lgv)"
+      - name: typesource
+        description: "Type of infrastructure (T = Tramway, F = Ferroviaire, R = Routier)"
+      - name: codeinfra
+        description: "Infrastructure identifier (id, ligne, numero or toponyme depending on the source)"
+      - name: buffer
+        description: "Buffer distance or section width depending on the source"
+      - name: sound_category
+        description: "Sound classification category (categorie, rang, cat_bruit, or cat)"
+      - name: extra_fields
+        description: "JSON object containing all source-specific fields"

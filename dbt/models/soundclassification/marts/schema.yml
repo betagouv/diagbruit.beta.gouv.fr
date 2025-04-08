@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: soundclassification
+    description: "Clean sound classification polygons with merged geometries and simplified metadata"
+    columns:
+      - name: pk
+        description: "Primary key generated with generate_surrogate_key"
+      - name: source
+        description: "Original data source (tramway, sncf, routier, lgv)"
+      - name: typesource
+        description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
+      - name: codeinfra
+        description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
+      - name: buffer
+        description: "Buffer width applied (in meters)"
+      - name: sound_category
+        description: "Sound classification category"
+      - name: geometry
+        description: "Merged geometry in EPSG:4326, type POLYGON or MULTIPOLYGON"

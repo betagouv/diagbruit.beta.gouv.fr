@@ -14,3 +14,5 @@ python ingest_shapefiles.py inputs/soundclassification/ROUTIER/Class_sonore_DDTM
 echo '--------------------------------------------------------------------------'
 python ingest_shapefiles.py inputs/soundclassification/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace
 echo '--------------------------------------------------------------------------'
+python ingest_shapefiles.py inputs/soundclassification/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace
+echo '--------------------------------------------------------------------------'

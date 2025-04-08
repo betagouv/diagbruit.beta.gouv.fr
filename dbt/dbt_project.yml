@@ -26,10 +26,16 @@ models:
   diagbruit:
     noisemap:
       staging:
-        +materialized: view
-
+        +materialized: table
       intermediate:
+        +materialized: view
+      marts:
         +materialized: table
 
+    soundclassification:
+      staging:
+        +materialized: table
+      intermediate:
+        +materialized: view
       marts:
         +materialized: table
