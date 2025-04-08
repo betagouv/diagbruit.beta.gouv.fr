@@ -67,19 +67,23 @@ source dbt-venv/bin/activate
 ./setup-dbt.sh
 ```
 
-Then edit `~/.dbt/profiles.yml` with your database credentials.
+Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
+
+#### From dbt folder
+
+```bash
+cd dbt
+```
 
 #### Verify Configuration
 
 ```bash
-cd dbt
 dbt debug
 ```
 
 #### Run Models
 
 ```bash
-cd dbt
 dbt run
 ```
 
@@ -91,17 +95,21 @@ dbt run
 source fastapi-venv/bin/activate
 ```
 
-#### Configure Environment Variables
+#### From fastapi folder
 
 ```bash
 cd fastapi
+```
+
+#### Configure Environment Variables
+
+```bash
 cp .env.example .env
 ```
 
 #### Run the Application
 
 ```bash
-cd fastapi
 uvicorn app.main:app --reload
 ```
 
