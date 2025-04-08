@@ -23,7 +23,7 @@
 The project uses PostgreSQL with PostGIS extension for spatial data. Launch it using Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
@@ -49,7 +49,8 @@ source ingestion-venv/bin/activate
 #### Launch seed raw data
 
 ```bash
-./ingestion/launch-ingestion.sh
+cd ingestion
+./launch-ingestion.sh
 ```
 
 ### DBT
