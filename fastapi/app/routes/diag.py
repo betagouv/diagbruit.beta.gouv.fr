@@ -11,9 +11,9 @@ from app.utils import (
 )
 
 class ParcelleRequest(BaseModel):
-    code_insee: str = Field(..., example="33004")
-    section: str = Field(..., example="AA")
-    numero: str = Field(..., example="0012")
+    code_insee: str = Field(..., example="33063")
+    section: str = Field(..., example="CE")
+    numero: str = Field(..., example="0019")
 
 class MultiParcelleRequest(BaseModel):
     parcelles: List[ParcelleRequest]
