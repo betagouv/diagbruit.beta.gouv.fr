@@ -51,6 +51,7 @@ source ingestion-venv/bin/activate
 ```bash
 cd ingestion
 python ingest_shapefiles.py inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LN_S_044/N_BRUIT_ZBRD_INFRA_R_C_LN_S_044.shp raw_noisemap
+python ingest_shapefiles.py inputs/soundclassification/SNCF/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_sncf
 ```
 
 ### DBT
