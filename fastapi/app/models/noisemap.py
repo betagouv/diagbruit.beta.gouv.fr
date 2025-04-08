@@ -2,12 +2,13 @@ from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from ..database import Base
 
+
 class NoiseMapItem(Base):
     """Model representing noise map data items"""
     __tablename__ = "noisemap"
     
     pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    geometry = Column(Geometry('GEOMETRY', srid=4326))
+    geometry = Column(Geometry('POLYGON', srid=4326))
     idzonbruit = Column(String, index=True)
     idcbs = Column(String, index=True)
     uueid = Column(String)

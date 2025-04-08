@@ -1,1 +1,2 @@
-from .noisemap import NoiseMapItem, NoiseMapItemCreate, NoiseMapGeoJSON
+from .noisemap import NoiseMapItem, NoiseMapGeoJSON
+from .soundclassification import SoundClassificationItem, SoundClassificationGeoJSON

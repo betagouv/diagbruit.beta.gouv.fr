@@ -7,7 +7,9 @@ from app.database import get_db
 from app.utils import (
     create_multipolygon_from_coordinates,
     query_noisemap_intersecting_features,
+    query_soundclassification_intersecting_features,
     get_parcelle_coordinates,
+    get_parcelle_score
 )
 
 class ParcelleRequest(BaseModel):
@@ -42,7 +44,7 @@ async def generate_diag(
     request: MultiParcelleRequest,
     db: Session = Depends(get_db)
 ):
-    # Récupérer les géométries des parcelles en parallèle
+    # Async API calls to get coordinates for each parcel
     results = await asyncio.gather(
         *(process_parcelle(p) for p in request.parcelles)
     )
@@ -58,11 +60,15 @@ async def generate_diag(
 
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            intersections = query_noisemap_intersecting_features(db, polygone)
+            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
+            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+            score = get_parcelle_score(noisemap_intersections, soundclassification_intersections)
+
+            print(soundclassification_intersections)
 
             diagnostics.append({
                 "parcelle": result["parcelle"].dict(),
-                "intersections": len(intersections)
+                "score": score,
             })
         except Exception as e:
             diagnostics.append({
