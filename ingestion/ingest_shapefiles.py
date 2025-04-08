@@ -17,7 +17,6 @@ def create_schema_if_not_exists(engine, schema):
     with engine.connect() as connection:
         connection.execute(text(f"CREATE SCHEMA IF NOT EXISTS {schema}"))
         connection.commit()
-        print(f"Ensured schema {schema} exists")
 
 def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace"):
     """
@@ -39,9 +38,7 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         
         # Convert all column names to lowercase
         gdf.columns = [col.lower() for col in gdf.columns]
-        print(f"Standardized column names to lowercase: {list(gdf.columns)}")
         
-        print(f"Connecting to database")
         engine = create_engine(db_url)
         
         # Create schema if it doesn't exist
