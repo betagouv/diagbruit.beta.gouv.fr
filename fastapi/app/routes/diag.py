@@ -64,8 +64,6 @@ async def generate_diag(
             soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
             score = get_parcelle_score(noisemap_intersections, soundclassification_intersections)
 
-            print(soundclassification_intersections)
-
             diagnostics.append({
                 "parcelle": result["parcelle"].dict(),
                 "score": score,

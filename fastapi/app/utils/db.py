@@ -56,12 +56,6 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             )
         )
 
-        compiled = stmt.statement.compile(
-            dialect=postgresql.dialect(),
-            compile_kwargs={"literal_binds": True}
-        )
-        logger.debug(f"Compiled SQL: {compiled}")  # Active si besoin
-
         results = stmt.all()
 
         features = []
