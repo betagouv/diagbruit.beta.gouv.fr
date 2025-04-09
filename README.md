@@ -23,7 +23,7 @@
 The project uses PostgreSQL with PostGIS extension for spatial data. Launch it using Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
@@ -49,7 +49,8 @@ source ingestion-venv/bin/activate
 #### Launch seed raw data
 
 ```bash
-./ingestion/launch-ingestion.sh
+cd ingestion
+./launch-ingestion.sh
 ```
 
 ### DBT
@@ -66,19 +67,23 @@ source dbt-venv/bin/activate
 ./setup-dbt.sh
 ```
 
-Then edit `~/.dbt/profiles.yml` with your database credentials.
+Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
+
+#### From dbt folder
+
+```bash
+cd dbt
+```
 
 #### Verify Configuration
 
 ```bash
-cd dbt
 dbt debug
 ```
 
 #### Run Models
 
 ```bash
-cd dbt
 dbt run
 ```
 
@@ -90,17 +95,21 @@ dbt run
 source fastapi-venv/bin/activate
 ```
 
-#### Configure Environment Variables
+#### From fastapi folder
 
 ```bash
 cd fastapi
+```
+
+#### Configure Environment Variables
+
+```bash
 cp .env.example .env
 ```
 
 #### Run the Application
 
 ```bash
-cd fastapi
 uvicorn app.main:app --reload
 ```
 
@@ -110,6 +119,51 @@ The API will be available at http://127.0.0.1:8000
 
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
+
+## Macro architecture
+
+```mermaid
+graph TD
+    subgraph Ingestion["Ingestion"]
+        A[Script d'ingestion]
+    end
+    
+    subgraph PostgreSQL["PostgreSQL - Database diagbruit"]
+        PW[Données brutes : schema public_workspace]
+        B0[DBT: Traitements intermédiaires dans public_workspace]
+        C[Données finales : schema public]
+    end
+    
+    subgraph FastAPI["FastAPI"]
+        D[Endpoint /diag/generate]
+        D1[Calcul d'intersections]
+        D2[Algorithme de scoring et préconisations]
+    end
+    
+    subgraph Frontend["Frontend"]
+        E[OpenLayers Map]
+    end
+    
+    A --> PW
+    PW --> B0
+    B0 --> C
+    D --> D2
+    D --> D1
+    D1 --> C
+    E --> D
+    
+    classDef ingestion fill:#1a936f,stroke:#88d498,stroke-width:2px,color:#f3e9d2
+    classDef dbt fill:#114b5f,stroke:#456990,stroke-width:2px,color:#e4fde1
+    classDef postgres fill:#f45b69,stroke:#6b2737,stroke-width:2px,color:#f6e8ea
+    classDef fastapi fill:#540d6e,stroke:#9e0059,stroke-width:2px,color:#ffcbf2
+    classDef frontend fill:#3a506b,stroke:#1c2541,stroke-width:2px,color:#c2dfe3
+    
+    class A ingestion
+    class B0,B1,B2 dbt
+    class PW,C postgres
+    class D,D1,D2 fastapi
+    class E frontend
+```
 
 ## Project Structure
 
