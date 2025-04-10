@@ -39,3 +39,39 @@ sources:
             description: "Validity end date"
           - name: geometry
             description: "Geometry data in WKT format"
+      - name: raw_noisemap_agglo_c
+        description: "Raw noise map data agglo type C imported from shapefiles"
+        columns:
+          - name: category
+            description: "Sound category"
+          - name: id
+            description: "ID"
+          - name: geometry
+            description: "Geometry data in WKT format"
+          - name: typesource
+            description: "Source type"
+          - name: indicetype
+            description: "Indicator type"
+          - name: annee
+            description: "Year"
+          - name: codedept
+            description: "Department code"
+      - name: raw_noisemap_agglo_a
+        description: "Raw noise map data agglo type A imported from shapefiles"
+        columns:
+          - name: category
+            description: "Sound category"
+          - name: id
+            description: "ID"
+          - name: source
+            description: "Source"
+          - name: geometry
+            description: "Geometry data in WKT format"
+          - name: typesource
+            description: "Source type"
+          - name: indicetype
+            description: "Indicator type"
+          - name: annee
+            description: "Year"
+          - name: codedept
+            description: "Department code"
