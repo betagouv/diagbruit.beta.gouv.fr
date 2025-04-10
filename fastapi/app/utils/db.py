@@ -36,7 +36,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
         return features
 
     except Exception as e:
-        logger.error(f"Database error: {str(e)}")
+        logger.error(f"Database error in noisemap query : {str(e)}")
         raise
 
 

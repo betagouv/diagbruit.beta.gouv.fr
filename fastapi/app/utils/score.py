@@ -20,9 +20,11 @@ def get_parcelle_score(noisemap_intersections, soundclassification_intersections
         if not noisemap_typesources.issubset(classification_typesources):
             classification_warning = True
 
-        for i in noisemap_intersections:
-            i_without_geometry = {k: v for k, v in i.items() if k != 'geometry_wkt' and k != 'geometry'}
-            print(i_without_geometry['codinfra'] + ' / ' + i_without_geometry['cbstype'] + ' / ' + i_without_geometry['indicetype'] + ' / ' + str(i_without_geometry['legende']))
+        score += len(noisemap_intersections)
+
+        # for i in noisemap_intersections:
+        #     i_without_geometry = {k: v for k, v in i.items() if k != 'geometry_wkt' and k != 'geometry'}
+        #     print(i_without_geometry['codinfra'] + ' / ' + i_without_geometry['cbstype'] + ' / ' + i_without_geometry['indicetype'] + ' / ' + str(i_without_geometry['legende']))
 
     return {
         'score': score,
