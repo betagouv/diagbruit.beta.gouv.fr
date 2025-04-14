@@ -11,7 +11,7 @@ SELECT
     codedept,
     typeterr,
     producteur,
-    codinfra,
+    codeinfra,
     typesource,
     cbstype,
     zonedef,

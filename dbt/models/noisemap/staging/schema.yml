@@ -21,7 +21,7 @@ sources:
             description: "Territory type"
           - name: producteur
             description: "Producer ID"
-          - name: codinfra
+          - name: codeinfra
             description: "Infrastructure code"
           - name: typesource
             description: "Source type"
