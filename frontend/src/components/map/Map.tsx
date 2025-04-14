@@ -38,6 +38,13 @@ function MapComponent() {
 
   const prevHovered = usePrevious(hovered);
 
+  const getRiskFromScore = (score: number) => {
+    if (score > 8) return 3;
+    if (score > 6) return 2;
+    if (score > 3) return 1;
+    return 0;
+  };
+
   const mapRef = useCallback((ref: MapRef) => {
     if (ref) {
       setMap(ref.getMap());
@@ -121,8 +128,6 @@ function MapComponent() {
       const numero = tmpNumero.toString().padStart(4, "0");
       const section = tmpSection.toString().padStart(2, "0");
 
-      console.log(parcelleSiblings);
-
       const siblings = parcelleSiblings.map((sibling) => {
         const { commune, section, numero } = sibling.properties;
         return {
@@ -183,6 +188,20 @@ function MapComponent() {
       }
     }
   }, [hovered]);
+
+  useEffect(() => {
+    if (map && parcelle && response && response.diagnostics) {
+      const score = response.diagnostics[0].diagnostic.score;
+      map.setFeatureState(
+        {
+          source: "cadastre",
+          sourceLayer: "parcelles",
+          id: parcelle.id,
+        },
+        { risk: getRiskFromScore(score) }
+      );
+    }
+  }, [response]);
 
   return (
     <div style={{ display: "flex" }}>

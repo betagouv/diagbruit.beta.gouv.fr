@@ -152,6 +152,58 @@
       }
     },
     {
+      "id": "parcelle-risk-0",
+      "type": "fill",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(75, 159, 108, 1)",
+        "fill-opacity": ["case", ["==", ["feature-state", "risk"], 0], 0.6, 0]
+      }
+    },
+    {
+      "id": "parcelle-risk-1",
+      "type": "fill",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(203, 159, 45, 1)",
+        "fill-opacity": ["case", ["==", ["feature-state", "risk"], 1], 0.6, 0]
+      }
+    },
+    {
+      "id": "parcelle-risk-2",
+      "type": "fill",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(250, 118, 89, 1)",
+        "fill-opacity": ["case", ["==", ["feature-state", "risk"], 2], 0.6, 0]
+      }
+    },
+    {
+      "id": "parcelle-risk-3",
+      "type": "fill",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(249, 90, 92, 1)",
+        "fill-opacity": ["case", ["==", ["feature-state", "risk"], 3], 0.6, 0]
+      }
+    },
+    {
       "id": "sections",
       "type": "line",
       "source": "cadastre",
