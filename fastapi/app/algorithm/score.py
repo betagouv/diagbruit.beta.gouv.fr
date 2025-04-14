@@ -25,7 +25,7 @@ def get_filtered_land_intersections(noisemap_intersections):
     )
 
 
-def get_parcelle_score(noisemap_intersections, soundclassification_intersections):
+def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """

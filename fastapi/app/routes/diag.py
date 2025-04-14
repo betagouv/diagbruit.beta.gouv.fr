@@ -10,7 +10,7 @@ from app.utils import (
     query_soundclassification_intersecting_features,
     get_parcelle_coordinates
 )
-from app.algorithm import get_parcelle_score
+from app.algorithm import get_parcelle_diagnostic
 
 class ParcelleRequest(BaseModel):
     code_insee: str = Field(..., example="33063")
@@ -61,11 +61,11 @@ async def generate_diag(
         polygone = create_multipolygon_from_coordinates(result["coordinates"])
         noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
         soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-        score = get_parcelle_score(noisemap_intersections, soundclassification_intersections)
+        diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections)
 
         diagnostics.append({
             "parcelle": result["parcelle"].dict(),
-            "score": score,
+            "diagnostic": diagnostic,
         })
         # except Exception as e:
         #     diagnostics.append({

@@ -43,7 +43,7 @@ def get_tt_score_from_sources(intersections_agglo, intersections_infra, indicety
     codeinfras_with_max_legende = {
         item.get("codeinfra")
         for item in all_intersections
-        if item.get("legende") == max_value and item.get("codeinfra") is not None
+        if item.get("legende") >= max_value and item.get("codeinfra") is not None
     }
     count_max_legende = len(codeinfras_with_max_legende)
 
