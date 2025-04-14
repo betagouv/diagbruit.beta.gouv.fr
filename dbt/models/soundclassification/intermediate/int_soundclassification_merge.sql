@@ -12,6 +12,7 @@ SELECT
     sound_category,
     array_agg(pk ORDER BY pk) AS merged_pks,
     ST_Union(geometry) AS geometry,
+    ST_Union(multilinestring) AS multilinestring,
     ST_IsValid(ST_Union(geometry)) AS is_valid_now,
     ST_Area(ST_Union(geometry)) AS area_m2,
     ST_GeometryType(ST_Union(geometry)) AS geometry_type

@@ -16,6 +16,7 @@ buffered AS (
 )
 
 SELECT
+    multilinestring,
     polygon_geom,
     source,
     typesource,

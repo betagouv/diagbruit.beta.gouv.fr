@@ -5,6 +5,7 @@
 
 SELECT
     row_number() OVER () AS pk,
+    multilinestring,
     source,
     typesource,
     codeinfra,

@@ -5,6 +5,7 @@
 
 WITH fixed_geometries AS (
     SELECT
+        multilinestring,
         source,
         typesource,
         codeinfra,
@@ -18,6 +19,7 @@ WITH fixed_geometries AS (
 )
 
 SELECT
+    multilinestring,
     source,
     typesource,
     codeinfra,

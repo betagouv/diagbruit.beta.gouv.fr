@@ -5,6 +5,7 @@
 
 WITH exploded AS (
     SELECT
+        multilinestring,
         source,
         typesource,
         codeinfra,
@@ -22,6 +23,7 @@ WITH exploded AS (
 )
 
 SELECT
+    multilinestring,
     source,
     typesource,
     codeinfra,
