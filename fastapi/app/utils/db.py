@@ -16,8 +16,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
     """
     try:
         stmt = db.query(
-            NoiseMapItem,
-            func.ST_AsText(NoiseMapItem.geometry).label('geometry_wkt')
+            NoiseMapItem
         ).filter(
             func.ST_Intersects(
                 NoiseMapItem.geometry,
@@ -25,15 +24,18 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
             )
         )
 
-        results = stmt.all()
-
-        features = []
-        for item, geom_wkt in results:
-            feature = {c.name: getattr(item, c.name) for c in item.__table__.columns if c.name != 'geom'}
-            feature['geometry_wkt'] = geom_wkt
-            features.append(feature)
-
-        return features
+        return [
+            {
+                "pk": r.pk,
+                "typeterr": r.typeterr,
+                "typesource": r.typesource,
+                "indicetype": r.indicetype,
+                "codeinfra": r.codeinfra,
+                "legende": r.legende,
+                "cbstype": r.cbstype
+            }
+            for r in stmt.all()
+        ]
 
     except Exception as e:
         logger.error(f"Database error in noisemap query : {str(e)}")
@@ -47,8 +49,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
     """
     try:
         stmt = db.query(
-            SoundClassificationItem,
-            func.ST_AsText(SoundClassificationItem.geometry).label('geometry_wkt')
+            SoundClassificationItem
         ).filter(
             func.ST_Intersects(
                 SoundClassificationItem.geometry,
@@ -56,15 +57,17 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             )
         )
 
-        results = stmt.all()
-
-        features = []
-        for item, geom_wkt in results:
-            feature = {c.name: getattr(item, c.name) for c in item.__table__.columns if c.name != 'geom'}
-            feature['geometry_wkt'] = geom_wkt
-            features.append(feature)
-
-        return features
+        return [
+            {
+                "pk": r.pk,
+                "source": r.source,
+                "typesource": r.typesource,
+                "codeinfra": r.codeinfra,
+                "sound_category": r.sound_category,
+                "source_geometry": r.source_geometry
+            }
+            for r in stmt.all()
+        ]
 
     except Exception as e:
         logger.error(f"Database error in sound classification query: {str(e)}")

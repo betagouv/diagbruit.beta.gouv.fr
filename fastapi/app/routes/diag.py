@@ -8,9 +8,9 @@ from app.utils import (
     create_multipolygon_from_coordinates,
     query_noisemap_intersecting_features,
     query_soundclassification_intersecting_features,
-    get_parcelle_coordinates,
-    get_parcelle_score
+    get_parcelle_coordinates
 )
+from app.algorithm import get_parcelle_score
 
 class ParcelleRequest(BaseModel):
     code_insee: str = Field(..., example="33063")
@@ -58,23 +58,22 @@ async def generate_diag(
             })
             continue
 
-        try:
-            polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
-            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-            score = get_parcelle_score(noisemap_intersections, soundclassification_intersections)
+        polygone = create_multipolygon_from_coordinates(result["coordinates"])
+        noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
+        soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+        score = get_parcelle_score(noisemap_intersections, soundclassification_intersections)
 
-            diagnostics.append({
-                "parcelle": result["parcelle"].dict(),
-                "score": score,
-            })
-        except Exception as e:
-            diagnostics.append({
-                "parcelle": result["parcelle"].dict(),
-                "error": {
-                    "status_code": 500,
-                    "detail": str(e)
-                }
-            })
+        diagnostics.append({
+            "parcelle": result["parcelle"].dict(),
+            "score": score,
+        })
+        # except Exception as e:
+        #     diagnostics.append({
+        #         "parcelle": result["parcelle"].dict(),
+        #         "error": {
+        #             "status_code": 500,
+        #             "detail": str(e)
+        #         }
+        #     })
 
     return {"diagnostics": diagnostics}

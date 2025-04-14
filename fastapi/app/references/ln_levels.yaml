@@ -1,0 +1,10 @@
+- value_gte: 0
+  score: 0
+- value_gte: 50
+  score: 3
+- value_gte: 55
+  score: 5
+- value_gte: 60
+  score: 7
+- value_gte: 65
+  score: 9

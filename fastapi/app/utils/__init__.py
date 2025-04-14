@@ -6,4 +6,3 @@ from .db import query_soundclassification_intersecting_features
 
 from .cadastre import get_parcelle_coordinates
 
-from .score import get_parcelle_score

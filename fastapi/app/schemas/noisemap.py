@@ -11,7 +11,7 @@ class NoiseMapItem(BaseModel):
     codedept: Optional[str] = None
     typeterr: Optional[str] = None
     producteur: Optional[str] = None
-    codinfra: Optional[str] = None
+    codeinfra: Optional[str] = None
     typesource: Optional[str] = None
     cbstype: Optional[str] = None
     zonedef: Optional[str] = None

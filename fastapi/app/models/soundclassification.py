@@ -9,6 +9,7 @@ class SoundClassificationItem(Base):
     
     pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
     geometry = Column(Geometry('POLYGON', srid=4326))
+    source_geometry = Column(Geometry('MULTILINESTRINGZ', srid=2154))
     source = Column(String)
     typesource = Column(String(1), index=True)
     codeinfra = Column(String)

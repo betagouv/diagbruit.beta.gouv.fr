@@ -16,7 +16,7 @@ class NoiseMapItem(Base):
     codedept = Column(String(3))
     typeterr = Column(String)
     producteur = Column(String(9))
-    codinfra = Column(String)
+    codeinfra = Column(String)
     typesource = Column(String)
     cbstype = Column(String)
     zonedef = Column(String(2))
