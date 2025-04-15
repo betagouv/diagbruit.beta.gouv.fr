@@ -17,7 +17,7 @@ SELECT
   typesource,
   cbstype,
   zonedef,
-  CAST(legende as int) AS legende,
+  CAST(legende as float) AS legende,
   indicetype,
   validedeb,
   validefin,

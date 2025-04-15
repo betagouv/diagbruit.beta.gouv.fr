@@ -7,7 +7,10 @@
 
 SELECT
   zone,
-  legende,
+  CASE 
+    WHEN legende ~ '^[0-9]+(\.[0-9]+)?$' THEN CAST(legende AS float)
+    ELSE NULL
+  END AS legende,
   indldenext,
   indldenint,
   code_oaci,
