@@ -1,18 +1,20 @@
 import yaml
 from pathlib import Path
 
+
 def load_levels(indicetype):
     """
     Load YAML files with levels depending on indicetype needed.
     """
     base_path = Path(__file__).resolve().parent.parent.parent / "references"
-    filename = f"{indicetype.lower()}_levels.yaml"
+    filename = f"land_{indicetype.lower()}_levels.yaml"
     filepath = base_path / filename
 
     with open(filepath, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
-def get_tt_score_from_sources(intersections_agglo, intersections_infra, indicetype):
+
+def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype):
     """
     Returns the score based on the intersection with the highest 'legende' value,
     using the appropriate scale loaded from YAML depending on 'indicetype'.

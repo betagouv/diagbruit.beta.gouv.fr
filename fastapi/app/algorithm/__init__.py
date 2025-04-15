@@ -1,2 +1,2 @@
 
-from .score import get_parcelle_diagnostic
+from .diagnostic import get_parcelle_diagnostic

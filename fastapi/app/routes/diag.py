@@ -64,9 +64,7 @@ async def generate_diag(
         soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
         peb_intersections = query_peb_intersecting_features(db, polygone)
 
-        print(peb_intersections)
-
-        diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections)
+        diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections)
 
         diagnostics.append({
             "parcelle": result["parcelle"].dict(),
