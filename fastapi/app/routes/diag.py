@@ -8,6 +8,7 @@ from app.utils import (
     create_multipolygon_from_coordinates,
     query_noisemap_intersecting_features,
     query_soundclassification_intersecting_features,
+    query_peb_intersecting_features,
     get_parcelle_coordinates
 )
 from app.algorithm import get_parcelle_diagnostic
@@ -61,6 +62,10 @@ async def generate_diag(
         polygone = create_multipolygon_from_coordinates(result["coordinates"])
         noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
         soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+        peb_intersections = query_peb_intersecting_features(db, polygone)
+
+        print(peb_intersections)
+
         diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections)
 
         diagnostics.append({

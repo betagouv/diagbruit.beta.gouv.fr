@@ -1,9 +1,7 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from ..models.noisemap import NoiseMapItem
-from ..models.soundclassification import SoundClassificationItem
-from sqlalchemy.dialects import postgresql
+from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
 import logging
 
 logger = logging.getLogger('uvicorn.error')
@@ -71,4 +69,34 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
     except Exception as e:
         logger.error(f"Database error in sound classification query: {str(e)}")
+        raise
+
+def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
+    """
+    Query the database for sound classification features that intersect with the given WKT geometry.
+    Uses the SoundClassificationItem model to query the database.
+    """
+    try:
+        stmt = db.query(
+            PebItem
+        ).filter(
+            func.ST_Intersects(
+                PebItem.geometry,
+                func.ST_GeomFromText(wkt_geometry, 4326)
+            )
+        )
+
+        return [
+            {
+                "pk": r.pk,
+                "zone": r.zone,
+                "legende": r.legende,
+                "nom": r.nom,
+                "ref_doc": r.ref_doc
+            }
+            for r in stmt.all()
+        ]
+
+    except Exception as e:
+        logger.error(f"Database error in peb query: {str(e)}")
         raise

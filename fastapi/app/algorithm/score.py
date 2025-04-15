@@ -52,8 +52,6 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     score_tt_ln = get_tt_score_from_sources(intersections_AGGLO_ln, intersections_INFRA_ln, 'LN')
 
     # Apply a penalty if there is a constant noise on almost the same noise
-    print(score_tt_ld)
-    print(score_tt_ln)
     diff_score_ld_ln = abs(score_tt_ld - score_tt_ln)
     if diff_score_ld_ln == 0:
         output['score'] = max(score_tt_ld, score_tt_ln) + 2
