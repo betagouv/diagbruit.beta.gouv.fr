@@ -47,7 +47,13 @@ FILES_SOUNDCLASS=(
   "inputs/soundclassification/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace"
 )
 
+# --- PEB ---
+FILES_PEB=(
+  "inputs/PEB/peb.shp raw_peb --if-exists replace"
+)
+
 # --- Execution ---
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_ZBRD[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done

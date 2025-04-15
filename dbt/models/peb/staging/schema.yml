@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_peb
+        description: "Raw PEB data imported from shapefiles"
+        columns:
+          - name: zone
+            description: "Noise exposure zone"
+          - name: indldenext
+            description: "Lden noise index - external level"
+          - name: indldenint
+            description: "Lden noise index - initial level"
+          - name: code_oaci
+            description: "ICAO code of the aerodrome"
+          - name: nom
+            description: "Name of the aerodrome or zone"
+          - name: date_arret
+            description: "Date of the decree or validity"
+          - name: producteur
+            description: "Data producer organization"
+          - name: date_maj
+            description: "Date of last update"
+          - name: ref_doc
+            description: "Reference document"
+          - name: id_map
+            description: "Unique map identifier"
+          - name: geometry
+            description: "Geometry of the zone (SRID: 3857)"

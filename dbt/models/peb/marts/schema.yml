@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: peb
+    description: "Clean and validated PEB polygons projected to EPSG:4326 with geometry quality checks"
+    columns:
+      - name: zone
+        description: "Noise exposure zone"
+      - name: legende
+        description: "Legend code indicating noise level classification"
+      - name: indldenext
+        description: "Lden noise index - external level"
+      - name: indldenint
+        description: "Lden noise index - initial level"
+      - name: code_oaci
+        description: "ICAO code of the aerodrome"
+      - name: nom
+        description: "Name of the aerodrome or area"
+      - name: date_arret
+        description: "Decree or regulation date"
+      - name: producteur
+        description: "Data producer organization"
+      - name: date_maj
+        description: "Last update date of the dataset"
+      - name: ref_doc
+        description: "Reference document related to the noise zone"
+      - name: id_map
+        description: "Map identifier from the original data"
+      - name: polygon_id
+        description: "Unique identifier for each polygon (concatenation of id_map and zone)"
+      - name: geometry
+        description: "Validated polygon geometry projected to EPSG:4326"
+      - name: area_m2
+        description: "Area of the polygon in square meters"
+      - name: srid
+        description: "Spatial reference system identifier (expected to be 4326)"
+      - name: original_is_valid
+        description: "Indicates whether the original geometry was valid"
+      - name: original_validity_reason
+        description: "Explanation of why the original geometry was invalid, if applicable"
+      - name: is_valid_now
+        description: "Indicates whether the geometry is valid after repair"
+      - name: geometry_type
+        description: "Geometry type of the polygon (e.g., POLYGON, MULTIPOLYGON)"
