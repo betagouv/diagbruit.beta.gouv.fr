@@ -58,24 +58,21 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     """
     diagnostic = {
         'score': 0,
-        'classification_warning': False,
+        'flags': {
+            'hasClassificationWarning': False,
+            'isMultiExposedSources': False,
+            'isMultiExposedLdenLn': False,
+            'isPriorityZone': False
+        },
         'land_intersections_ld': [],
         'land_intersections_ln': [],
         'air_intersections': [],
         'soundclassification_intersections': [],
-        'flags': {
-            'multiExposedSources': False,
-            'multiExposedLdenLn': False,
-            'isPriorityZone': False
-        }
     }
 
     # If no intersection with noisemap return default output
     if len(noisemap_intersections) == 0 and len(peb_intersections) == 0:
         return diagnostic
-
-    # Get the sound classification warning
-    diagnostic['classification_warning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
 
     # Calculate scores on LAND (for LN & LD)
     (
@@ -120,8 +117,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['soundclassification_intersections'] = soundclassification_intersections
 
     # Flags : multiExposed
-    diagnostic['flags']['multiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1
-    diagnostic['flags']['multiExposedLdenLn'] = len(diagnostic['land_intersections_ld'] + diagnostic['land_intersections_ln']) > 1
+    diagnostic['flags']['isMultiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1
+    diagnostic['flags']['isMultiExposedLdenLn'] = len(diagnostic['land_intersections_ld'] + diagnostic['land_intersections_ln']) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
+    diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
 
     return diagnostic
