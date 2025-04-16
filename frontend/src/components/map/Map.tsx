@@ -81,8 +81,8 @@ function MapComponent() {
           ],
         });
 
-        const nearbySiblings = getNearbySiblings(feature, siblings, 200);
-        setParcelleSiblings(nearbySiblings.slice(0, 7));
+        const nearbySiblings = getNearbySiblings(feature, siblings, 1500);
+        setParcelleSiblings(nearbySiblings.slice(0, 10));
       }
 
       setParcelle(clickedParcelle);

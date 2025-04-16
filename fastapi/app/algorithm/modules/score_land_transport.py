@@ -57,7 +57,7 @@ def get_land_score_from_sources(intersections_agglo, intersections_infra, indice
     if count_max_legende > 1:
         print('---------------')
         print('MULTI LAND EXPO PENALTY ON ' + indicetype)
-        [print(intersection["codeinfra"]) for intersection in codeinfras_with_max_legende]
+        [print(intersection) for intersection in codeinfras_with_max_legende]
         score += 1
         print('---------------')
 

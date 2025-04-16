@@ -113,30 +113,30 @@ async def generate_diag_from_geometry(
     diagnostics = []
 
     for item in request.items:
-        try:
-            polygone = create_multipolygon_from_coordinates(item.geometry)
+        # try:
+        polygone = create_multipolygon_from_coordinates(item.geometry)
 
-            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
-            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-            peb_intersections = query_peb_intersecting_features(db, polygone)
+        noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
+        soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+        peb_intersections = query_peb_intersecting_features(db, polygone)
 
-            diagnostic = get_parcelle_diagnostic(
-                noisemap_intersections,
-                soundclassification_intersections,
-                peb_intersections
-            )
-            diagnostics.append({
-                "parcelle": item.parcelle,
-                "diagnostic": diagnostic,
-            })
-
-        except Exception as e:
-            diagnostics.append({
-               "parcelle": item.parcelle,
-                "error": {
-                    "status_code": 500,
-                    "detail": str(e)
-                }
-            })
+        diagnostic = get_parcelle_diagnostic(
+            noisemap_intersections,
+            soundclassification_intersections,
+            peb_intersections
+        )
+        diagnostics.append({
+            "parcelle": item.parcelle,
+            "diagnostic": diagnostic,
+        })
+        #
+        # except Exception as e:
+        #     diagnostics.append({
+        #        "parcelle": item.parcelle,
+        #         "error": {
+        #             "status_code": 500,
+        #             "detail": str(e)
+        #         }
+        #     })
 
     return {"diagnostics": diagnostics}
