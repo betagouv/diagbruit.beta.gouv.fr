@@ -45,51 +45,54 @@ function MapComponent() {
     }
   }, []);
 
-  const onClick = useCallback((event: MapLayerMouseEvent) => {
-    event.originalEvent.stopPropagation();
-    const feature = event.features && event.features[0];
+  const onClick = useCallback(
+    (event: MapLayerMouseEvent) => {
+      event.originalEvent.stopPropagation();
+      const feature = event.features && event.features[0];
 
-    if (feature && feature.layer.id === "parcelles-fill") {
-      const clickedParcelle = feature as MapGeoJSONFeature;
+      if (feature && feature.layer.id === "parcelles-fill") {
+        const clickedParcelle = feature as MapGeoJSONFeature;
 
-      if (map) {
-        if (parcelle) {
+        if (map) {
+          if (parcelle) {
+            map.setFeatureState(
+              {
+                source: "cadastre",
+                sourceLayer: "parcelles",
+                id: parcelle.id,
+              },
+              { selected: false }
+            );
+          }
           map.setFeatureState(
             {
               source: "cadastre",
               sourceLayer: "parcelles",
-              id: parcelle.id,
+              id: clickedParcelle.id,
             },
-            { selected: false }
+            { selected: true }
           );
+
+          const siblings = map.queryRenderedFeatures({
+            layers: ["parcelles"],
+            filter: [
+              "all",
+              ["==", ["get", "commune"], feature.properties.commune],
+              ["==", ["get", "section"], feature.properties.section],
+            ],
+          });
+
+          const nearbySiblings = getNearbySiblings(feature, siblings, 200);
+          setParcelleSiblings(nearbySiblings.slice(0, 10));
         }
-        map.setFeatureState(
-          {
-            source: "cadastre",
-            sourceLayer: "parcelles",
-            id: clickedParcelle.id,
-          },
-          { selected: true }
-        );
 
-        const siblings = map.queryRenderedFeatures({
-          layers: ["parcelles"],
-          filter: [
-            "all",
-            ["==", ["get", "commune"], feature.properties.commune],
-            ["==", ["get", "section"], feature.properties.section],
-          ],
-        });
-
-        const nearbySiblings = getNearbySiblings(feature, siblings, 1500);
-        setParcelleSiblings(nearbySiblings.slice(0, 10));
+        setParcelle(clickedParcelle);
+      } else {
+        setParcelle(null);
       }
-
-      setParcelle(clickedParcelle);
-    } else {
-      setParcelle(null);
-    }
-  }, []);
+    },
+    [map]
+  );
 
   const onHover = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();

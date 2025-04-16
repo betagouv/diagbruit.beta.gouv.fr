@@ -58,7 +58,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diff_score_land_air = abs(score_land_ld - score_air)
     score_ld = max(score_land_ld, score_air) if diff_score_land_air >= 3 else max(score_land_ld, score_air) + 1
 
-    # Calculate gloabl ND score
+    # Calculate gloabl LN score
     score_ln = score_land_ln
 
     # Apply a penalty if there is a constant noise on almost the same noise level

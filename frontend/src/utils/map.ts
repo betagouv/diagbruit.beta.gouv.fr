@@ -1,5 +1,18 @@
-import { distance as turfDistance, centroid } from "@turf/turf";
+import {
+  buffer,
+  booleanIntersects,
+  centroid,
+  distance as turfDistance,
+} from "@turf/turf";
+import type {
+  Feature,
+  Polygon,
+  MultiPolygon,
+  GeoJsonProperties,
+} from "geojson";
 import { MapGeoJSONFeature } from "react-map-gl/maplibre";
+
+type ParcelleFeature = Feature<Polygon | MultiPolygon, GeoJsonProperties>;
 
 export const getRiskFromScore = (score: number) => {
   if (score > 8) return 3;
@@ -13,19 +26,29 @@ export const getNearbySiblings = (
   siblings: MapGeoJSONFeature[],
   maxDistanceMeters: number
 ): MapGeoJSONFeature[] => {
-  const center = centroid(centerFeature);
+  if (!centerFeature) return [];
 
-  const nearby = siblings.filter((sibling) => {
-    const siblingCenter = centroid(sibling);
-    const dist = turfDistance(center, siblingCenter, { units: "meters" });
-    return dist <= maxDistanceMeters;
+  const buffered = buffer(centerFeature as ParcelleFeature, maxDistanceMeters, {
+    units: "meters",
   });
 
-  nearby.sort((a, b) => {
-    const da = turfDistance(center, centroid(a), { units: "meters" });
-    const db = turfDistance(center, centroid(b), { units: "meters" });
-    return da - db;
-  });
+  const center = centroid(centerFeature as ParcelleFeature);
+
+  const nearby = siblings
+    .filter((sibling): sibling is MapGeoJSONFeature => {
+      if (!sibling) return false;
+      return booleanIntersects(
+        buffered as ParcelleFeature,
+        sibling as ParcelleFeature
+      );
+    })
+    .sort((a, b) => {
+      const ca = centroid(a as ParcelleFeature);
+      const cb = centroid(b as ParcelleFeature);
+      const da = turfDistance(center, ca, { units: "meters" });
+      const db = turfDistance(center, cb, { units: "meters" });
+      return da - db;
+    });
 
   return nearby;
 };
