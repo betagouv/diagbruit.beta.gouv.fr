@@ -140,7 +140,7 @@ function MapComponent() {
       });
 
       setIsLoading(true);
-      fetch(`${process.env.API_URL}/diag/generate/from-geometries`, {
+      fetch(`${process.env.REACT_APP_API_URL}/diag/generate/from-geometries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -216,7 +216,7 @@
         "line-width": [
           "case",
           ["boolean", ["feature-state", "outlineSecondary"], false],
-          4,
+          2,
           0
         ]
       }
@@ -234,7 +234,7 @@
         "line-width": [
           "case",
           ["boolean", ["feature-state", "outlinePrimary"], false],
-          4,
+          3,
           0
         ]
       }
