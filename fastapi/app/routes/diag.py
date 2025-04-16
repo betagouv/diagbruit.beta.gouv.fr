@@ -62,12 +62,23 @@ async def process_parcelle(parcelle: ParcelleRequest):
     except Exception as e:
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
+
+def generate_diagnostic_from_polygon(db: Session, polygon_wkt: str):
+    noisemap_intersections = query_noisemap_intersecting_features(db, polygon_wkt)
+    soundclassification_intersections = query_soundclassification_intersecting_features(db, polygon_wkt)
+    peb_intersections = query_peb_intersecting_features(db, polygon_wkt)
+
+    return get_parcelle_diagnostic(
+        noisemap_intersections,
+        soundclassification_intersections,
+        peb_intersections
+    )
+
 @router.post("/generate/from-parcelles")
 async def generate_diag_from_parcelles(
     request: MultiParcelleRequest,
     db: Session = Depends(get_db)
 ):
-    # Async API calls to get coordinates for each parcel
     results = await asyncio.gather(
         *(process_parcelle(p) for p in request.parcelles)
     )
@@ -83,11 +94,7 @@ async def generate_diag_from_parcelles(
 
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
-            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-            peb_intersections = query_peb_intersecting_features(db, polygone)
-
-            diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections)
+            diagnostic = generate_diagnostic_from_polygon(db, polygone)
 
             diagnostics.append({
                 "parcelle": result["parcelle"].dict(),
@@ -113,30 +120,21 @@ async def generate_diag_from_geometry(
     diagnostics = []
 
     for item in request.items:
-        # try:
-        polygone = create_multipolygon_from_coordinates(item.geometry)
+        try:
+            polygone = create_multipolygon_from_coordinates(item.geometry)
+            diagnostic = generate_diagnostic_from_polygon(db, polygone)
 
-        noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
-        soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-        peb_intersections = query_peb_intersecting_features(db, polygone)
-
-        diagnostic = get_parcelle_diagnostic(
-            noisemap_intersections,
-            soundclassification_intersections,
-            peb_intersections
-        )
-        diagnostics.append({
-            "parcelle": item.parcelle,
-            "diagnostic": diagnostic,
-        })
-        #
-        # except Exception as e:
-        #     diagnostics.append({
-        #        "parcelle": item.parcelle,
-        #         "error": {
-        #             "status_code": 500,
-        #             "detail": str(e)
-        #         }
-        #     })
+            diagnostics.append({
+                "parcelle": item.parcelle,
+                "diagnostic": diagnostic,
+            })
+        except Exception as e:
+            diagnostics.append({
+               "parcelle": item.parcelle,
+                "error": {
+                    "status_code": 500,
+                    "detail": str(e)
+                }
+            })
 
     return {"diagnostics": diagnostics}
