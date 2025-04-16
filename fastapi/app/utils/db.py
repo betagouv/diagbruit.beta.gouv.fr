@@ -14,7 +14,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
     """
     try:
         stmt = db.query(
-            NoiseMapItem
+            NoiseMapItem.typeterr,
+            NoiseMapItem.typesource,
+            NoiseMapItem.indicetype,
+            NoiseMapItem.codeinfra,
+            NoiseMapItem.legende,
+            NoiseMapItem.cbstype
         ).filter(
             func.ST_Intersects(
                 NoiseMapItem.geometry,
@@ -24,7 +29,6 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
 
         return [
             {
-                "pk": r.pk,
                 "typeterr": r.typeterr,
                 "typesource": r.typesource,
                 "indicetype": r.indicetype,
@@ -50,7 +54,6 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
         geom_2154 = func.ST_Transform(geom_4326, 2154)
 
         stmt = db.query(
-            SoundClassificationItem.pk,
             SoundClassificationItem.source,
             SoundClassificationItem.typesource,
             SoundClassificationItem.codeinfra,
@@ -70,7 +73,6 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
         return [
             {
-                "pk": r.pk,
                 "source": r.source,
                 "typesource": r.typesource,
                 "codeinfra": r.codeinfra,
@@ -91,7 +93,10 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
     """
     try:
         stmt = db.query(
-            PebItem
+            PebItem.zone,
+            PebItem.legende,
+            PebItem.nom,
+            PebItem.ref_doc
         ).filter(
             func.ST_Intersects(
                 PebItem.geometry,
@@ -101,7 +106,6 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
 
         return [
             {
-                "pk": r.pk,
                 "zone": r.zone,
                 "legende": r.legende,
                 "nom": r.nom,

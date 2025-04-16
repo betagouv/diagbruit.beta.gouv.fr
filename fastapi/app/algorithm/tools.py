@@ -1,6 +1,21 @@
 import yaml
 from pathlib import Path
 
+default_diagnostic = {
+    'score': 0,
+    'max_db_lden': 0,
+    'flags': {
+        'hasClassificationWarning': False,
+        'isMultiExposedSources': False,
+        'isMultiExposedLdenLn': False,
+        'isPriorityZone': False
+    },
+    'equivalent_ambiences': [],
+    'land_intersections_ld': [],
+    'land_intersections_ln': [],
+    'air_intersections': [],
+    'soundclassification_intersections': [],
+}
 
 def get_filtered_land_intersections(noisemap_intersections):
     """

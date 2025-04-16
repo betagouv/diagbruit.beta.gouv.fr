@@ -1,25 +1,11 @@
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning)
-from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, get_filtered_land_intersections, get_sound_equivalents)
+from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
-    diagnostic = {
-        'score': 0,
-        'max_db_lden': 0,
-        'flags': {
-            'hasClassificationWarning': False,
-            'isMultiExposedSources': False,
-            'isMultiExposedLdenLn': False,
-            'isPriorityZone': False
-        },
-        'equivalent_ambiences': [],
-        'land_intersections_ld': [],
-        'land_intersections_ln': [],
-        'air_intersections': [],
-        'soundclassification_intersections': [],
-    }
+    diagnostic = default_diagnostic
 
     # If no intersection with noisemap return default output
     if len(noisemap_intersections) == 0 and len(peb_intersections) == 0:
@@ -61,17 +47,17 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['land_intersections_ld'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ld + intersections_INFRA_ld)
     diagnostic['land_intersections_ln'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ln + intersections_INFRA_ln)
 
+    # Return air intersection with the highest risk zone
+    diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
+
     # Return max db lden
     diagnostic['max_db_lden'] = max(
-        diagnostic['land_intersections_ld'],
+        diagnostic['land_intersections_ld'] + diagnostic['air_intersections'],
         key=lambda x: x['legende']
     )['legende']
 
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
-
-    # Return air intersection with the highest risk zone
-    diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
 
     # Return noisemap intersections
     diagnostic['soundclassification_intersections'] = soundclassification_intersections
