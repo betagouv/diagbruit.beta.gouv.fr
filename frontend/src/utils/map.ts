@@ -12,7 +12,7 @@ import type {
   MultiPolygon,
   GeoJsonProperties,
 } from "geojson";
-import { MapGeoJSONFeature } from "react-map-gl/maplibre";
+import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 
 type ParcelleFeature = Feature<Polygon | MultiPolygon, GeoJsonProperties>;
 
@@ -80,4 +80,19 @@ export const getNearbySiblings = (
     });
 
   return nearby;
+};
+
+export const updateFeatureState = (
+  map: MapInstance,
+  id: string | number,
+  state: Record<string, any>
+) => {
+  map.setFeatureState(
+    {
+      source: "cadastre",
+      sourceLayer: "parcelles",
+      id,
+    },
+    state
+  );
 };
