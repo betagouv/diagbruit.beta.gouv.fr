@@ -1,0 +1,18 @@
+- label: "Tondeuse / souffleur"
+  value: 70
+- label: "Salle de classe bruyante"
+  value: 70
+- label: "Grand magasin"
+  value: 50
+- label: "Restaurant paisible"
+  value: 50
+- label: "Marché animé"
+  value: 60
+- label: "Télévision"
+  value: 65
+- label: "Aboiement"
+  value: 70
+- label: "Machine à laver"
+  value: 65
+- label: "Chantier"
+  value: 65

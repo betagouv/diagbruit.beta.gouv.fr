@@ -1,56 +1,5 @@
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning)
-
-def get_filtered_land_intersections(noisemap_intersections):
-    """
-    Get all the filtered arrays needed to calculate score in modules.
-    """
-    def filter_items(indicetype, typeterr):
-        return [
-            item for item in noisemap_intersections
-            if item.get('typesource') in ['F', 'R']
-            and item.get('indicetype') == indicetype
-            and item.get('typeterr') == typeterr
-        ]
-
-    land_intersections_agglo_ld = filter_items('LD', 'AGGLO')
-    land_intersections_infra_ld = filter_items('LD', 'INFRA')
-    land_intersections_agglo_ln = filter_items('LN', 'AGGLO')
-    land_intersections_infra_ln = filter_items('LN', 'INFRA')
-
-    return (
-        land_intersections_agglo_ld,
-        land_intersections_agglo_ln,
-        land_intersections_infra_ld,
-        land_intersections_infra_ln
-    )
-
-
-def filter_land_intersections_by_codeinfra(intersections):
-    filtered = {}
-
-    for item in intersections:
-        codeinfra = item.get('codeinfra')
-        legende = item.get('legende')
-
-        if codeinfra not in filtered or legende > filtered[codeinfra]['legende']:
-            filtered[codeinfra] = item
-
-    results = list(filtered.values())
-    codeinfra_not_null = [item for item in results if item.get('codeinfra') is not None]
-
-    if codeinfra_not_null:
-        return codeinfra_not_null
-    elif results:
-        return [results[0]]
-    else:
-        return []
-
-def filter_air_intersections_by_zone(intersections):
-    if not intersections:
-        return []
-
-    return [min(intersections, key=lambda x: x.get("zone", "Z"))]
-
+from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, get_filtered_land_intersections, get_sound_equivalents)
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
     """
@@ -65,6 +14,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
             'isMultiExposedLdenLn': False,
             'isPriorityZone': False
         },
+        'equivalent_ambiences': [],
         'land_intersections_ld': [],
         'land_intersections_ln': [],
         'air_intersections': [],
@@ -116,6 +66,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         diagnostic['land_intersections_ld'],
         key=lambda x: x['legende']
     )['legende']
+
+    # Return equivalent sound environments
+    diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
 
     # Return air intersection with the highest risk zone
     diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
