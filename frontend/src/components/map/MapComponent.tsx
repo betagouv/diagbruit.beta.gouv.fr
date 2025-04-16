@@ -19,6 +19,7 @@ import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
+import { DiagnosticItem } from "../../utils/types";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -35,7 +36,11 @@ export type HoverInfo = {
   feature: MapGeoJSONFeature;
 };
 
-function MapComponent() {
+type MapComponentProps = {
+  onDiagnosticsChange: (newDiagnostics: DiagnosticItem[]) => void;
+};
+
+function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
   const [map, setMap] = useState<MapInstance>();
   const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
   const [parcelleSiblings, setParcelleSiblings] = useState<MapGeoJSONFeature[]>(
@@ -109,6 +114,8 @@ function MapComponent() {
   const handleDiagnostics = useCallback(() => {
     if (!map || !parcelle || !response?.diagnostics) return;
 
+    onDiagnosticsChange(response.diagnostics);
+
     const allParcelles = [...parcelleSiblings, parcelle];
 
     response.diagnostics.forEach((item: any) => {
@@ -157,25 +164,11 @@ function MapComponent() {
         onMouseEnter={onHover}
         onMouseLeave={onHover}
         onMouseMove={onHover}
-        style={{ width: "80%", height: "100vh" }}
+        style={{ width: "50vw", height: "50vh" }}
         mapStyle={orthoStyle as StyleSpecification}
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}
       />
-      <div
-        style={{
-          width: "20%",
-          maxHeight: "95vh",
-          overflowY: "auto",
-          padding: "1rem",
-        }}
-      >
-        {isLoading ? (
-          "Chargement..."
-        ) : (
-          <pre>{JSON.stringify(response, null, 2)}</pre>
-        )}
-      </div>
     </div>
   );
 }

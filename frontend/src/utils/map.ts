@@ -1,20 +1,12 @@
 import {
+  booleanIntersects,
   buffer,
   centroid,
-  distance as turfDistance,
   nearestPointOnLine,
   point,
-  booleanIntersects,
+  distance as turfDistance,
 } from "@turf/turf";
-import type {
-  Feature,
-  Polygon,
-  MultiPolygon,
-  GeoJsonProperties,
-} from "geojson";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
-
-type ParcelleFeature = Feature<Polygon | MultiPolygon, GeoJsonProperties>;
 
 export const getRiskFromScore = (score: number) => {
   if (score > 8) return 3;

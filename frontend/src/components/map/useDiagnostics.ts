@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DiagnosticResponse } from "../../utils/types";
 
 export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
   const [response, setResponse] = useState<any>();
@@ -48,5 +49,5 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
       .finally(() => setIsLoading(false));
   }, [parcelle]);
 
-  return { response, isLoading };
+  return { response: response as DiagnosticResponse, isLoading };
 }
