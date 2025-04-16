@@ -21,10 +21,12 @@ import {
 } from "./useMapFeatureState";
 
 const interactiveLayerIds = ["parcelles-fill"];
+
+// Bordeaux center
 const defaultViewState = {
-  longitude: 2.2137,
-  latitude: 46.2276,
-  zoom: 5,
+  longitude: -0.57918,
+  latitude: 44.837789,
+  zoom: 12,
 };
 
 export type HoverInfo = {
