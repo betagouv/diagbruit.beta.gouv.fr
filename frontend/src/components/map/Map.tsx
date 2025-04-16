@@ -83,7 +83,7 @@ function MapComponent() {
           });
 
           const nearbySiblings = getNearbySiblings(feature, siblings, 200);
-          setParcelleSiblings(nearbySiblings.slice(0, 10));
+          setParcelleSiblings(nearbySiblings.slice(0, 12));
         }
 
         setParcelle(clickedParcelle);

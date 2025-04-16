@@ -1,8 +1,10 @@
 import {
   buffer,
-  booleanIntersects,
   centroid,
   distance as turfDistance,
+  nearestPointOnLine,
+  point,
+  booleanIntersects,
 } from "@turf/turf";
 import type {
   Feature,
@@ -21,6 +23,34 @@ export const getRiskFromScore = (score: number) => {
   return 0;
 };
 
+const turfDistanceToBorder = (
+  centerPoint: GeoJSON.Feature<GeoJSON.Point>,
+  polygonFeature: GeoJSON.Feature
+): number => {
+  const coords =
+    polygonFeature.geometry.type === "Polygon"
+      ? polygonFeature.geometry.coordinates
+      : polygonFeature.geometry.type === "MultiPolygon"
+      ? polygonFeature.geometry.coordinates.flat()
+      : [];
+
+  const allLineStrings = coords.map((ring) => ({
+    type: "Feature" as const,
+    geometry: {
+      type: "LineString" as const,
+      coordinates: ring,
+    },
+    properties: {},
+  }));
+
+  const distances = allLineStrings.map((line) => {
+    const nearest = nearestPointOnLine(line, centerPoint);
+    return turfDistance(centerPoint, nearest, { units: "meters" });
+  });
+
+  return Math.min(...distances);
+};
+
 export const getNearbySiblings = (
   centerFeature: MapGeoJSONFeature,
   siblings: MapGeoJSONFeature[],
@@ -28,25 +58,24 @@ export const getNearbySiblings = (
 ): MapGeoJSONFeature[] => {
   if (!centerFeature) return [];
 
-  const buffered = buffer(centerFeature as ParcelleFeature, maxDistanceMeters, {
+  const buffered = buffer(centerFeature, maxDistanceMeters, {
     units: "meters",
   });
 
-  const center = centroid(centerFeature as ParcelleFeature);
+  if (!buffered) return [];
+
+  const center = centroid(centerFeature);
+
+  const centerPoint = point(center.geometry.coordinates);
 
   const nearby = siblings
     .filter((sibling): sibling is MapGeoJSONFeature => {
       if (!sibling) return false;
-      return booleanIntersects(
-        buffered as ParcelleFeature,
-        sibling as ParcelleFeature
-      );
+      return booleanIntersects(buffered, sibling);
     })
     .sort((a, b) => {
-      const ca = centroid(a as ParcelleFeature);
-      const cb = centroid(b as ParcelleFeature);
-      const da = turfDistance(center, ca, { units: "meters" });
-      const db = turfDistance(center, cb, { units: "meters" });
+      const da = turfDistanceToBorder(centerPoint, a);
+      const db = turfDistanceToBorder(centerPoint, b);
       return da - db;
     });
 

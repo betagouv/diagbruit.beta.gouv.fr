@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import List
-from app.database import get_db
+from app.database import SessionLocal
 from app.utils import (
     create_multipolygon_from_coordinates,
     query_noisemap_intersecting_features,
@@ -12,14 +12,20 @@ from app.utils import (
     get_parcelle_coordinates
 )
 from app.algorithm import get_parcelle_diagnostic
+from concurrent.futures import ThreadPoolExecutor
+
+executor = ThreadPoolExecutor()
+
 
 class ParcelleRequest(BaseModel):
     code_insee: str = Field(..., example="33063")
     section: str = Field(..., example="CE")
     numero: str = Field(..., example="0019")
 
+
 class MultiParcelleRequest(BaseModel):
     parcelles: List[ParcelleRequest]
+
 
 class GeometryItem(BaseModel):
     parcelle: ParcelleRequest
@@ -63,78 +69,73 @@ async def process_parcelle(parcelle: ParcelleRequest):
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
 
-def generate_diagnostic_from_polygon(db: Session, polygon_wkt: str):
-    noisemap_intersections = query_noisemap_intersecting_features(db, polygon_wkt)
-    soundclassification_intersections = query_soundclassification_intersecting_features(db, polygon_wkt)
-    peb_intersections = query_peb_intersecting_features(db, polygon_wkt)
+def _generate_diagnostic_threaded(polygon_wkt: str):
+    db = SessionLocal()
+    try:
+        noisemap = query_noisemap_intersecting_features(db, polygon_wkt)
+        sound = query_soundclassification_intersecting_features(db, polygon_wkt)
+        peb = query_peb_intersecting_features(db, polygon_wkt)
+        return get_parcelle_diagnostic(noisemap, sound, peb)
+    finally:
+        db.close()
 
-    return get_parcelle_diagnostic(
-        noisemap_intersections,
-        soundclassification_intersections,
-        peb_intersections
-    )
+
+async def generate_diagnostic_async(polygon_wkt: str):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt)
+
 
 @router.post("/generate/from-parcelles")
 async def generate_diag_from_parcelles(
-    request: MultiParcelleRequest,
-    db: Session = Depends(get_db)
+    request: MultiParcelleRequest
 ):
-    results = await asyncio.gather(
-        *(process_parcelle(p) for p in request.parcelles)
-    )
+    results = await asyncio.gather(*(process_parcelle(p) for p in request.parcelles))
 
-    diagnostics = []
-    for result in results:
+    async def process_result(result):
         if "error" in result:
-            diagnostics.append({
+            return {
                 "parcelle": result["parcelle"].dict(),
                 "error": result["error"]
-            })
-            continue
+            }
 
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            diagnostic = generate_diagnostic_from_polygon(db, polygone)
+            diagnostic = await generate_diagnostic_async(polygone)
 
-            diagnostics.append({
+            return {
                 "parcelle": result["parcelle"].dict(),
-                "diagnostic": diagnostic,
-            })
+                "diagnostic": diagnostic
+            }
         except Exception as e:
-            diagnostics.append({
-                "parcelle": result["parcelle"].dict(),
-                "error": {
-                    "status_code": 500,
-                    "detail": str(e)
-                }
-            })
+            raise HTTPException(
+                status_code=500,
+                detail=f"Erreur diagnostic pour parcelle {result["parcelle"].dict()}: {str(e)}"
+            )
 
-    return {"diagnostics": diagnostics}
+    try:
+        diagnostics = await asyncio.gather(*(process_result(r) for r in results))
+        return {"diagnostics": diagnostics}
+    except HTTPException as e:
+        raise e
 
 
 @router.post("/generate/from-geometries")
 async def generate_diag_from_geometry(
-    request: GeometryRequest,
-    db: Session = Depends(get_db)
+    request: GeometryRequest
 ):
-    diagnostics = []
-
-    for item in request.items:
+    async def process_item(item: GeometryItem):
         try:
             polygone = create_multipolygon_from_coordinates(item.geometry)
-            diagnostic = generate_diagnostic_from_polygon(db, polygone)
-
-            diagnostics.append({
-                "parcelle": item.parcelle,
-                "diagnostic": diagnostic,
-            })
+            diagnostic = await generate_diagnostic_async(polygone)
+            return {"parcelle": item.parcelle, "diagnostic": diagnostic}
         except Exception as e:
-            diagnostics.append({
-               "parcelle": item.parcelle,
-                "error": {
-                    "status_code": 500,
-                    "detail": str(e)
-                }
-            })
+            raise HTTPException(
+                status_code=500,
+                detail=f"Erreur diagnostic pour parcelle {item.parcelle.dict()}: {str(e)}"
+            )
 
-    return {"diagnostics": diagnostics}
+    try:
+        diagnostics = await asyncio.gather(*(process_item(item) for item in request.items))
+        return {"diagnostics": diagnostics}
+    except HTTPException as e:
+        raise e
