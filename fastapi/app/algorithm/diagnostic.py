@@ -25,13 +25,48 @@ def get_filtered_land_intersections(noisemap_intersections):
     )
 
 
+def filter_land_intersections_by_codeinfra(intersections):
+    filtered = {}
+
+    for item in intersections:
+        codeinfra = item.get('codeinfra')
+        legende = item.get('legende')
+
+        if codeinfra not in filtered or legende > filtered[codeinfra]['legende']:
+            filtered[codeinfra] = item
+
+    results = list(filtered.values())
+    codeinfra_not_null = [item for item in results if item.get('codeinfra') is not None]
+
+    if codeinfra_not_null:
+        return codeinfra_not_null
+    elif results:
+        return [results[0]]
+    else:
+        return []
+
+def filter_air_intersections_by_zone(intersections):
+    if not intersections:
+        return []
+
+    return [min(intersections, key=lambda x: x.get("zone", "Z"))]
+
+
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
     diagnostic = {
         'score': 0,
-        'classification_warning': False
+        'classification_warning': False,
+        'land_intersections_ld': [],
+        'land_intersections_ln': [],
+        'air_intersections': [],
+        'flags': {
+            'multiExposedSources': False,
+            'multiExposedLdenLn': False,
+            'isPriorityZone': False
+        }
     }
 
     # If no intersection with noisemap return default output
@@ -70,19 +105,19 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         1: 1
     }.get(score_diff, 0)
 
-    print('---- LDEN -----')
-    print('land score : ', score_land_ld)
-    print('air score : ', score_air)
-    print('global score : ', score_ld)
-    print('---------------')
-    print('---- LN -----')
-    print('land score : ', score_land_ln)
-    print('gloabl score : ', score_ln)
-    print('---------------')
-    print('penalty : ', penalty)
-    print('final score : ', base_score + penalty)
-    print('---------------')
-
+    # Return the final score
     diagnostic['score'] = base_score + penalty
+
+    # Return land intersections with distinct codeinfra, take the max legende on several codeinfra matching
+    diagnostic['land_intersections_ld'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ld + intersections_INFRA_ld)
+    diagnostic['land_intersections_ln'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ln + intersections_INFRA_ln)
+
+    # Return air intersection with the highest risk zone
+    diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
+
+    # Flags : multiExposed
+    diagnostic['flags']['multiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1
+    diagnostic['flags']['multiExposedLdenLn'] = len(diagnostic['land_intersections_ld'] + diagnostic['land_intersections_ln']) > 1
+    diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
 
     return diagnostic

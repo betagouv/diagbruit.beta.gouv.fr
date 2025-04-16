@@ -2,7 +2,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Union
 from app.database import SessionLocal
 from app.utils import (
     create_multipolygon_from_coordinates,
@@ -29,7 +29,10 @@ class MultiParcelleRequest(BaseModel):
 
 class GeometryItem(BaseModel):
     parcelle: ParcelleRequest
-    geometry: List[List[List[float]]] = Field(
+    geometry: Union[
+        List[List[List[float]]],
+        List[List[List[List[float]]]]
+    ] = Field(
         ...,
         example=[
             [

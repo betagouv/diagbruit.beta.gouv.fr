@@ -124,12 +124,12 @@
         "visibility": "visible"
       },
       "paint": {
-        "fill-color": "rgba(129, 123, 0, 1)",
+        "fill-color": "rgba(255, 255, 255, 1)",
         "fill-opacity": [
           "case",
           ["boolean", ["feature-state", "hover"], false],
-          0.7,
-          0.1
+          0.4,
+          0
         ]
       }
     },
@@ -142,12 +142,12 @@
         "visibility": "visible"
       },
       "paint": {
-        "fill-color": "rgba(0, 0, 0, 1)",
+        "fill-color": "rgba(245, 245, 245, 1)",
         "fill-opacity": [
           "case",
           ["boolean", ["feature-state", "selected"], false],
-          0.7,
-          0.1
+          0.4,
+          0
         ]
       }
     },

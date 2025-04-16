@@ -82,7 +82,7 @@ function MapComponent() {
             ],
           });
 
-          const nearbySiblings = getNearbySiblings(feature, siblings, 200);
+          const nearbySiblings = getNearbySiblings(feature, siblings, 500);
           setParcelleSiblings(nearbySiblings.slice(0, 12));
         }
 
@@ -91,7 +91,7 @@ function MapComponent() {
         setParcelle(null);
       }
     },
-    [map]
+    [map, parcelle]
   );
 
   const onHover = (event: MapLayerMouseEvent) => {

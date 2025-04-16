@@ -1,19 +1,28 @@
 def create_multipolygon_from_coordinates(coordinates) -> str:
     """
-    Convert either a Polygon or MultiPolygon GeoJSON coordinates to WKT MULTIPOLYGON.
+    Convert coordinates to WKT MULTIPOLYGON.
+    Handles both Polygon and MultiPolygon GeoJSON coordinate formats.
     """
     def format_ring(ring):
         return ', '.join([f"{point[0]} {point[1]}" for point in ring])
 
-    if all(isinstance(ring[0], float) for ring in coordinates[0]):
-        poly_parts = [f"({format_ring(ring)})" for ring in coordinates]
-        return f"MULTIPOLYGON(({', '.join(poly_parts)}))"
-    else:
-        wkt_parts = []
-        for polygon in coordinates:
-            poly_parts = [f"({format_ring(ring)})" for ring in polygon]
-            wkt_parts.append(f"({', '.join(poly_parts)})")
-        return f"MULTIPOLYGON({', '.join(wkt_parts)})"
+    if (
+        isinstance(coordinates, list)
+        and coordinates
+        and isinstance(coordinates[0], list)
+        and coordinates[0]
+        and isinstance(coordinates[0][0], list)
+        and isinstance(coordinates[0][0][0], float)
+    ):
+        # It's a Polygon -> wrap in a list to treat as single MultiPolygon
+        coordinates = [coordinates]
+
+    wkt_parts = []
+    for polygon in coordinates:
+        poly_parts = [f"({format_ring(ring)})" for ring in polygon]
+        wkt_parts.append(f"({', '.join(poly_parts)})")
+
+    return f"MULTIPOLYGON({', '.join(wkt_parts)})"
 
 
 def create_polygon_from_bbox(bbox):
