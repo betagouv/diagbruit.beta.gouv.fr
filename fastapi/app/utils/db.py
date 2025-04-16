@@ -46,14 +46,27 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
     Uses the SoundClassificationItem model to query the database.
     """
     try:
+        geom_4326 = func.ST_GeomFromText(wkt_geometry, 4326)
+        geom_2154 = func.ST_Transform(geom_4326, 2154)
+
         stmt = db.query(
-            SoundClassificationItem
+            SoundClassificationItem.pk,
+            SoundClassificationItem.source,
+            SoundClassificationItem.typesource,
+            SoundClassificationItem.codeinfra,
+            SoundClassificationItem.sound_category,
+            func.round(
+                func.ST_Distance(
+                    SoundClassificationItem.source_geometry,
+                    geom_2154
+                )
+            ).label("distance")
         ).filter(
             func.ST_Intersects(
                 SoundClassificationItem.geometry,
-                func.ST_GeomFromText(wkt_geometry, 4326)
+                geom_4326
             )
-        )
+        ).order_by("distance")
 
         return [
             {
@@ -62,7 +75,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "typesource": r.typesource,
                 "codeinfra": r.codeinfra,
                 "sound_category": r.sound_category,
-                "source_geometry": r.source_geometry
+                "distance": r.distance
             }
             for r in stmt.all()
         ]

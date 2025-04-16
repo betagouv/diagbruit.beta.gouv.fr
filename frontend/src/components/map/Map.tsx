@@ -38,6 +38,7 @@ function MapComponent() {
   const [response, setResponse] = useState<any>();
 
   const prevHovered = usePrevious(hovered);
+  const prevSelected = usePrevious(parcelle);
 
   const mapRef = useCallback((ref: MapRef) => {
     if (ref) {
@@ -83,7 +84,7 @@ function MapComponent() {
           });
 
           const nearbySiblings = getNearbySiblings(feature, siblings, 500);
-          setParcelleSiblings(nearbySiblings.slice(0, 12));
+          setParcelleSiblings(nearbySiblings.slice(0, 16));
         }
 
         setParcelle(clickedParcelle);
@@ -195,6 +196,19 @@ function MapComponent() {
   }, [hovered]);
 
   useEffect(() => {
+    if (map && parcelle && prevSelected) {
+      map.setFeatureState(
+        {
+          source: "cadastre",
+          sourceLayer: "parcelles",
+          id: prevSelected.id,
+        },
+        { outlinePrimary: false, outlineSecondary: true }
+      );
+    }
+  }, [parcelle]);
+
+  useEffect(() => {
     if (isMapLoaded && map && parcelle && response && response.diagnostics) {
       const allParcelles = [...parcelleSiblings, parcelle];
       response.diagnostics.forEach((item: any) => {
@@ -214,15 +228,35 @@ function MapComponent() {
           );
         });
 
-        if (!!targetParcelle)
-          map.setFeatureState(
-            {
-              source: "cadastre",
-              sourceLayer: "parcelles",
-              id: targetParcelle.id,
-            },
-            { risk: getRiskFromScore(item.diagnostic.score) }
-          );
+        if (!!targetParcelle) {
+          if (targetParcelle.id === parcelle.id) {
+            console.log("set : ", targetParcelle.id);
+            map.setFeatureState(
+              {
+                source: "cadastre",
+                sourceLayer: "parcelles",
+                id: targetParcelle.id,
+              },
+              {
+                risk: getRiskFromScore(item.diagnostic.score),
+                selected: false,
+                outlinePrimary: true,
+              }
+            );
+          } else {
+            map.setFeatureState(
+              {
+                source: "cadastre",
+                sourceLayer: "parcelles",
+                id: targetParcelle.id,
+              },
+              {
+                risk: getRiskFromScore(item.diagnostic.score),
+                outlineSecondary: true,
+              }
+            );
+          }
+        }
       });
     }
   }, [response]);

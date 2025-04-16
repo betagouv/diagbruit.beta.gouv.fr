@@ -62,6 +62,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         'land_intersections_ld': [],
         'land_intersections_ln': [],
         'air_intersections': [],
+        'soundclassification_intersections': [],
         'flags': {
             'multiExposedSources': False,
             'multiExposedLdenLn': False,
@@ -114,6 +115,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Return air intersection with the highest risk zone
     diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
+
+    # Return noisemap intersections
+    diagnostic['soundclassification_intersections'] = soundclassification_intersections
 
     # Flags : multiExposed
     diagnostic['flags']['multiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1
