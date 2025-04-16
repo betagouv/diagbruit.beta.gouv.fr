@@ -9,6 +9,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import orthoStyle from "./styles/ortho.json";
 import { useCallback, useEffect, useState } from "react";
 import usePrevious from "../hooks/previous";
+import { getNearbySiblings, getRiskFromScore } from "../../utils/map";
 
 const interactiveLayerIds = ["parcelles-fill"];
 const defaultViewState = {
@@ -37,13 +38,6 @@ function MapComponent() {
   const [response, setResponse] = useState<any>();
 
   const prevHovered = usePrevious(hovered);
-
-  const getRiskFromScore = (score: number) => {
-    if (score > 8) return 3;
-    if (score > 6) return 2;
-    if (score > 3) return 1;
-    return 0;
-  };
 
   const mapRef = useCallback((ref: MapRef) => {
     if (ref) {
@@ -87,7 +81,8 @@ function MapComponent() {
           ],
         });
 
-        setParcelleSiblings(siblings);
+        const nearbySiblings = getNearbySiblings(feature, siblings, 200);
+        setParcelleSiblings(nearbySiblings.slice(0, 7));
       }
 
       setParcelle(clickedParcelle);
@@ -131,25 +126,32 @@ function MapComponent() {
       const siblings = parcelleSiblings.map((sibling) => {
         const { commune, section, numero } = sibling.properties;
         return {
-          code_insee: commune,
-          section: section.toString().padStart(2, "0"),
-          numero: numero.toString().padStart(4, "0"),
+          parcelle: {
+            code_insee: commune,
+            section: section.toString().padStart(2, "0"),
+            numero: numero.toString().padStart(4, "0"),
+          },
+          geometry: (sibling.geometry as any).coordinates,
         };
       });
 
       setIsLoading(true);
-      fetch("http://localhost:8000/diag/generate", {
+      fetch("http://localhost:8000/diag/generate/from-geometries", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          parcelles: [
+          items: [
             {
-              code_insee,
-              section,
-              numero,
+              parcelle: {
+                code_insee,
+                section,
+                numero,
+              },
+              geometry: (parcelle.geometry as any).coordinates,
             },
+            ...siblings,
           ],
         }),
       })
@@ -190,16 +192,35 @@ function MapComponent() {
   }, [hovered]);
 
   useEffect(() => {
-    if (map && parcelle && response && response.diagnostics) {
-      const score = response.diagnostics[0].diagnostic.score;
-      map.setFeatureState(
-        {
-          source: "cadastre",
-          sourceLayer: "parcelles",
-          id: parcelle.id,
-        },
-        { risk: getRiskFromScore(score) }
-      );
+    if (isMapLoaded && map && parcelle && response && response.diagnostics) {
+      const allParcelles = [...parcelleSiblings, parcelle];
+      response.diagnostics.forEach((item: any) => {
+        const targetParcelle = allParcelles.find((p) => {
+          const {
+            commune: code_insee,
+            section: tmpSection,
+            numero: tmpNumero,
+          } = p.properties;
+          const numero = tmpNumero.toString().padStart(4, "0");
+          const section = tmpSection.toString().padStart(2, "0");
+
+          return (
+            code_insee === item.parcelle.code_insee &&
+            section === item.parcelle.section &&
+            numero === item.parcelle.numero
+          );
+        });
+
+        if (!!targetParcelle)
+          map.setFeatureState(
+            {
+              source: "cadastre",
+              sourceLayer: "parcelles",
+              id: targetParcelle.id,
+            },
+            { risk: getRiskFromScore(item.diagnostic.score) }
+          );
+      });
     }
   }, [response]);
 

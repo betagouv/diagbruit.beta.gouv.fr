@@ -40,7 +40,10 @@ def get_land_score_from_sources(intersections_agglo, intersections_infra, indice
             score = level["score"]
 
             if score == 7 and any(intersection.get("cbstype") == "C" for intersection in intersections_infra):
+                print('---------------')
+                print('TYPE C PENALTY ON ' + indicetype)
                 score += 1
+                print('---------------')
 
     codeinfras_with_max_legende = {
         item.get("codeinfra")
@@ -48,8 +51,14 @@ def get_land_score_from_sources(intersections_agglo, intersections_infra, indice
         if item.get("legende") >= max_value and item.get("codeinfra") is not None
     }
     count_max_legende = len(codeinfras_with_max_legende)
+    print(all_intersections)
+    print(max_value)
 
     if count_max_legende > 1:
+        print('---------------')
+        print('MULTI LAND EXPO PENALTY ON ' + indicetype)
+        [print(intersection["codeinfra"]) for intersection in codeinfras_with_max_legende]
         score += 1
+        print('---------------')
 
     return score

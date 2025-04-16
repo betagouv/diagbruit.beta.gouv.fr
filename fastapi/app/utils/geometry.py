@@ -1,17 +1,19 @@
-def create_multipolygon_from_coordinates(coordinates):
+def create_multipolygon_from_coordinates(coordinates) -> str:
     """
-    Extract coordinates from the first feature in a GeoJSON object.
-    Returns a WKT representation of the geometry.
+    Convert either a Polygon or MultiPolygon GeoJSON coordinates to WKT MULTIPOLYGON.
     """
-    wkt_parts = []
-    for polygon in coordinates:
-        poly_parts = []
-        for ring in polygon:
-            ring_str = ', '.join([f"{point[0]} {point[1]}" for point in ring])
-            poly_parts.append(f"({ring_str})")
-        wkt_parts.append(f"({', '.join(poly_parts)})")
-    wkt = f"MULTIPOLYGON({', '.join(wkt_parts)})"
-    return wkt
+    def format_ring(ring):
+        return ', '.join([f"{point[0]} {point[1]}" for point in ring])
+
+    if all(isinstance(ring[0], float) for ring in coordinates[0]):
+        poly_parts = [f"({format_ring(ring)})" for ring in coordinates]
+        return f"MULTIPOLYGON(({', '.join(poly_parts)}))"
+    else:
+        wkt_parts = []
+        for polygon in coordinates:
+            poly_parts = [f"({format_ring(ring)})" for ring in polygon]
+            wkt_parts.append(f"({', '.join(poly_parts)})")
+        return f"MULTIPOLYGON({', '.join(wkt_parts)})"
 
 
 def create_polygon_from_bbox(bbox):

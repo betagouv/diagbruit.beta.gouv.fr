@@ -21,6 +21,28 @@ class ParcelleRequest(BaseModel):
 class MultiParcelleRequest(BaseModel):
     parcelles: List[ParcelleRequest]
 
+class GeometryItem(BaseModel):
+    parcelle: ParcelleRequest
+    geometry: List[List[List[float]]] = Field(
+        ...,
+        example=[
+            [
+                [-0.5698205530643463, 44.83324087407553],
+                [-0.5696944892406464, 44.833234216654404],
+                [-0.5697052180767059, 44.83312294250169],
+                [-0.5697119235992432, 44.83311913825338],
+                [-0.5698326230049133, 44.83312769781176],
+                [-0.5698259174823761, 44.83318856574596],
+                [-0.5698232352733612, 44.83321519544694],
+                [-0.5698205530643463, 44.83324087407553]
+            ]
+        ]
+    )
+
+
+class GeometryRequest(BaseModel):
+    items: List[GeometryItem]
+
 router = APIRouter(
     prefix="/diag",
     tags=["diag"],
@@ -40,8 +62,8 @@ async def process_parcelle(parcelle: ParcelleRequest):
     except Exception as e:
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
-@router.post("/generate")
-async def generate_diag(
+@router.post("/generate/from-parcelles")
+async def generate_diag_from_parcelles(
     request: MultiParcelleRequest,
     db: Session = Depends(get_db)
 ):
@@ -59,24 +81,62 @@ async def generate_diag(
             })
             continue
 
-        polygone = create_multipolygon_from_coordinates(result["coordinates"])
-        noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
-        soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
-        peb_intersections = query_peb_intersecting_features(db, polygone)
+        try:
+            polygone = create_multipolygon_from_coordinates(result["coordinates"])
+            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
+            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+            peb_intersections = query_peb_intersecting_features(db, polygone)
 
-        diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections)
+            diagnostic = get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections)
 
-        diagnostics.append({
-            "parcelle": result["parcelle"].dict(),
-            "diagnostic": diagnostic,
-        })
-        # except Exception as e:
-        #     diagnostics.append({
-        #         "parcelle": result["parcelle"].dict(),
-        #         "error": {
-        #             "status_code": 500,
-        #             "detail": str(e)
-        #         }
-        #     })
+            diagnostics.append({
+                "parcelle": result["parcelle"].dict(),
+                "diagnostic": diagnostic,
+            })
+        except Exception as e:
+            diagnostics.append({
+                "parcelle": result["parcelle"].dict(),
+                "error": {
+                    "status_code": 500,
+                    "detail": str(e)
+                }
+            })
+
+    return {"diagnostics": diagnostics}
+
+
+@router.post("/generate/from-geometries")
+async def generate_diag_from_geometry(
+    request: GeometryRequest,
+    db: Session = Depends(get_db)
+):
+    diagnostics = []
+
+    for item in request.items:
+        try:
+            polygone = create_multipolygon_from_coordinates(item.geometry)
+
+            noisemap_intersections = query_noisemap_intersecting_features(db, polygone)
+            soundclassification_intersections = query_soundclassification_intersecting_features(db, polygone)
+            peb_intersections = query_peb_intersecting_features(db, polygone)
+
+            diagnostic = get_parcelle_diagnostic(
+                noisemap_intersections,
+                soundclassification_intersections,
+                peb_intersections
+            )
+            diagnostics.append({
+                "parcelle": item.parcelle,
+                "diagnostic": diagnostic,
+            })
+
+        except Exception as e:
+            diagnostics.append({
+               "parcelle": item.parcelle,
+                "error": {
+                    "status_code": 500,
+                    "detail": str(e)
+                }
+            })
 
     return {"diagnostics": diagnostics}
