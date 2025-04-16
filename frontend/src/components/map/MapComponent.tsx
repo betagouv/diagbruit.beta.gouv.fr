@@ -165,7 +165,7 @@ function MapComponent() {
       <div
         style={{
           width: "20%",
-          maxHeight: "100%",
+          maxHeight: "95vh",
           overflowY: "auto",
           padding: "1rem",
         }}

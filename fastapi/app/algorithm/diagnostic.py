@@ -58,6 +58,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     """
     diagnostic = {
         'score': 0,
+        'max_db_lden': 0,
         'flags': {
             'hasClassificationWarning': False,
             'isMultiExposedSources': False,
@@ -109,6 +110,12 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     # Return land intersections with distinct codeinfra, take the max legende on several codeinfra matching
     diagnostic['land_intersections_ld'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ld + intersections_INFRA_ld)
     diagnostic['land_intersections_ln'] = filter_land_intersections_by_codeinfra(intersections_AGGLO_ln + intersections_INFRA_ln)
+
+    # Return max db lden
+    diagnostic['max_db_lden'] = max(
+        diagnostic['land_intersections_ld'],
+        key=lambda x: x['legende']
+    )['legende']
 
     # Return air intersection with the highest risk zone
     diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
