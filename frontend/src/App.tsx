@@ -3,8 +3,12 @@ import MapComponent from "./components/map/MapComponent";
 import { DiagnosticItem } from "./utils/types";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import Diagnostic from "./components/diagnostic/Diagnostic";
+import { Loader } from "./components/ui/Loader";
+import { tss } from "tss-react/dsfr";
 
 function App() {
+  const { cx, classes } = useStyles();
+
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
     DiagnosticItem[]
@@ -20,6 +24,11 @@ function App() {
 
   return (
     <div>
+      {isLoading && (
+        <div className={cx(classes.loaderContainer)}>
+          <Loader text="Nous générons votre diagnostique..." />
+        </div>
+      )}
       <Header
         brandTop={<>DiagBruit</>}
         homeLinkProps={{
@@ -44,5 +53,20 @@ function App() {
     </div>
   );
 }
+
+const useStyles = tss.withName(App.name).create(() => ({
+  loaderContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    display: "flex",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    width: "100vw",
+    zIndex: 9999,
+  },
+}));
 
 export default App;
