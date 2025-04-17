@@ -81,7 +81,7 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
         }
 
         const sameTiles = map.queryRenderedFeatures({
-          layers: ["parcelles"],
+          layers: ["parcelles-fill"],
           filter: [
             "all",
             ["==", ["get", "commune"], feature.properties.commune],
@@ -92,7 +92,7 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
         clickedParcelle = mergeCoordinatesByParcelle(sameTiles)[0];
 
         const siblings = map.queryRenderedFeatures({
-          layers: ["parcelles"],
+          layers: ["parcelles-fill"],
           filter: [
             "all",
             ["==", ["get", "commune"], feature.properties.commune],
