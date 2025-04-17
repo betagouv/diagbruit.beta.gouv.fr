@@ -51,10 +51,11 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
 
     # Return max db lden
+    all_sources = diagnostic['land_intersections_ld'] + diagnostic['air_intersections']
     diagnostic['max_db_lden'] = max(
-        diagnostic['land_intersections_ld'] + diagnostic['air_intersections'],
+        all_sources,
         key=lambda x: x['legende']
-    )['legende']
+    )['legende'] if len(all_sources) else 0
 
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])

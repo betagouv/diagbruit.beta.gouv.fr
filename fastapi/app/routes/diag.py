@@ -1,4 +1,5 @@
 import asyncio
+import copy
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
@@ -14,7 +15,7 @@ from app.utils import (
 from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
 
-executor = ThreadPoolExecutor()
+executor = ThreadPoolExecutor(max_workers=4)
 
 
 class ParcelleRequest(BaseModel):
@@ -85,7 +86,8 @@ def _generate_diagnostic_threaded(polygon_wkt: str):
 
 async def generate_diagnostic_async(polygon_wkt: str):
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt)
+    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt)
+    return copy.deepcopy(diagnostic)
 
 
 @router.post("/generate/from-parcelles")
