@@ -13,6 +13,8 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
     Uses the NoiseMapItem model to query the database.
     """
     try:
+        safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
+
         stmt = db.query(
             NoiseMapItem.typeterr,
             NoiseMapItem.typesource,
@@ -23,7 +25,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
         ).filter(
             func.ST_Intersects(
                 NoiseMapItem.geometry,
-                func.ST_GeomFromText(wkt_geometry, 4326)
+                safe_geom
             )
         )
 
@@ -50,7 +52,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
     Uses the SoundClassificationItem model to query the database.
     """
     try:
-        geom_4326 = func.ST_GeomFromText(wkt_geometry, 4326)
+        geom_4326 = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
         geom_2154 = func.ST_Transform(geom_4326, 2154)
 
         stmt = db.query(
@@ -92,6 +94,8 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
     Uses the SoundClassificationItem model to query the database.
     """
     try:
+        safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
+
         stmt = db.query(
             PebItem.zone,
             PebItem.legende,
@@ -100,7 +104,7 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
         ).filter(
             func.ST_Intersects(
                 PebItem.geometry,
-                func.ST_GeomFromText(wkt_geometry, 4326)
+                safe_geom
             )
         )
 

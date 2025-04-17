@@ -6,6 +6,8 @@ import {
   point,
   distance as turfDistance,
 } from "@turf/turf";
+import union from "@turf/union";
+import { Feature, GeoJsonProperties, MultiPolygon, Polygon } from "geojson";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 
 export const getRiskFromScore = (score: number) => {
@@ -88,3 +90,57 @@ export const updateFeatureState = (
     state
   );
 };
+
+export function mergeCoordinatesByParcelle(
+  siblings: MapGeoJSONFeature[]
+): MapGeoJSONFeature[] {
+  const grouped: Record<string, MapGeoJSONFeature[]> = {};
+
+  for (const feature of siblings) {
+    const { commune, section, numero } = feature.properties;
+    const key = `${commune}-${section}-${numero}`;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(feature);
+  }
+
+  const result: MapGeoJSONFeature[] = [];
+
+  for (const group of Object.values(grouped)) {
+    if (group.length === 1) {
+      result.push(group[0]);
+      continue;
+    }
+
+    const base = group[0];
+    const allCoords = group.flatMap((f) => {
+      if (f.geometry.type === "Polygon") {
+        return [f.geometry.coordinates];
+      } else if (f.geometry.type === "MultiPolygon") {
+        return f.geometry.coordinates;
+      } else {
+        console.warn("Unsupported geometry type:", f.geometry.type);
+        return [];
+      }
+    });
+
+    const mergedGeometry: MultiPolygon = {
+      type: "MultiPolygon",
+      coordinates: allCoords,
+    };
+
+    const mergedFeature: MapGeoJSONFeature = {
+      ...base,
+      geometry: mergedGeometry,
+      id: `${base.id}`,
+      properties: {
+        ...base.properties,
+        merged: true,
+      },
+      toJSON: base.toJSON,
+    };
+
+    result.push(mergedFeature);
+  }
+
+  return result;
+}

@@ -7,10 +7,11 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import orthoStyle from "./styles/ortho.json";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getNearbySiblings,
   getRiskFromScore,
+  mergeCoordinatesByParcelle,
   updateFeatureState,
 } from "../../utils/map";
 import usePrevious from "../hooks/previous";
@@ -38,9 +39,10 @@ export type HoverInfo = {
 
 type MapComponentProps = {
   onDiagnosticsChange: (newDiagnostics: DiagnosticItem[]) => void;
+  onLoading: (loading: boolean) => void;
 };
 
-function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
+function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
   const [map, setMap] = useState<MapInstance>();
   const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
   const [parcelleSiblings, setParcelleSiblings] = useState<MapGeoJSONFeature[]>(
@@ -68,7 +70,7 @@ function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
       const feature = event.features?.[0];
 
       if (feature?.layer.id === "parcelles-fill" && map) {
-        const clickedParcelle = feature as MapGeoJSONFeature;
+        let clickedParcelle = feature as MapGeoJSONFeature;
 
         if (parcelle && parcelle.id) {
           updateFeatureState(map, parcelle.id, { selected: false });
@@ -78,16 +80,32 @@ function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
           updateFeatureState(map, clickedParcelle.id, { selected: true });
         }
 
+        const sameTiles = map.queryRenderedFeatures({
+          layers: ["parcelles"],
+          filter: [
+            "all",
+            ["==", ["get", "commune"], feature.properties.commune],
+            ["==", ["get", "section"], feature.properties.section],
+            ["==", ["get", "numero"], feature.properties.numero],
+          ],
+        });
+        clickedParcelle = mergeCoordinatesByParcelle(sameTiles)[0];
+
         const siblings = map.queryRenderedFeatures({
           layers: ["parcelles"],
           filter: [
             "all",
             ["==", ["get", "commune"], feature.properties.commune],
             ["==", ["get", "section"], feature.properties.section],
+            ["!=", ["get", "numero"], feature.properties.numero],
           ],
         });
 
-        const nearbySiblings = getNearbySiblings(feature, siblings, 500);
+        const nearbySiblings = getNearbySiblings(
+          clickedParcelle,
+          mergeCoordinatesByParcelle(siblings),
+          500
+        );
         setParcelleSiblings(nearbySiblings.slice(0, 16));
         setParcelle(clickedParcelle);
       } else {
@@ -150,9 +168,15 @@ function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
     });
   }, [map, parcelle, parcelleSiblings, response]);
 
-  if (isMapLoaded && response?.diagnostics) {
-    handleDiagnostics();
-  }
+  useEffect(() => {
+    onLoading(isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (isMapLoaded && response?.diagnostics) {
+      handleDiagnostics();
+    }
+  }, [isMapLoaded, response]);
 
   return (
     <div style={{ display: "flex" }}>
@@ -164,7 +188,7 @@ function MapComponent({ onDiagnosticsChange }: MapComponentProps) {
         onMouseEnter={onHover}
         onMouseLeave={onHover}
         onMouseMove={onHover}
-        style={{ width: "50vw", height: "50vh" }}
+        style={{ width: "100%", height: "50vh" }}
         mapStyle={orthoStyle as StyleSpecification}
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}

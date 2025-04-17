@@ -1,11 +1,14 @@
+import copy
+
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning)
 from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
+
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
-    diagnostic = default_diagnostic
+    diagnostic = copy.deepcopy(default_diagnostic)
 
     # If no intersection with noisemap return default output
     if len(noisemap_intersections) == 0 and len(peb_intersections) == 0:

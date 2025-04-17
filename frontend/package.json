@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@codegouvfr/react-dsfr": "^1.22.5",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -24,7 +25,15 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "react-dsfr copy-static-assets",
+    "predev": "react-dsfr update-icons",
+    "prebuild": "react-dsfr update-icons"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!@codegouvfr/react-dsfr)"
+    ]
   },
   "eslintConfig": {
     "extends": [
