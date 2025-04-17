@@ -107,7 +107,7 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
           mergeCoordinatesByParcelle(siblings),
           1000
         );
-        setParcelleSiblings(nearbySiblings.slice(0, 32));
+        setParcelleSiblings(nearbySiblings.slice(0, 16));
         setParcelle(clickedParcelle);
       } else {
         setParcelle(null);
