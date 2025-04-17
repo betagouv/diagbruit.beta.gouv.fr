@@ -39,7 +39,7 @@ const DiagnosticLegalInfos = ({
         <div>
           <img src="/images/document.svg" width={80} height={80} />
         </div>
-        <div className={fr.cx("fr-pt-11v")}>
+        <div className={classes.content}>
           <h2 className={cx("fr-h5")}>1. Informations réglementaires</h2>
           <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
             {getSoundClassificationHeaderLine()}
@@ -86,7 +86,7 @@ const DiagnosticLegalInfos = ({
             >
               Arrêté du 30 mai 1996
             </a>{" "}
-            |
+            |{" "}
             <a
               className={fr.cx("fr-link")}
               href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
@@ -124,12 +124,21 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
         },
       },
     },
+    "@media screen and (max-width: 768px)": {
+      flexDirection: "column",
+    },
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(
       "2v"
     )} ${fr.spacing("10v")}`,
     borderLeft: `4px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
+  },
+  content: {
+    paddingTop: fr.spacing("11v"),
+    "@media screen and (max-width: 768px)": {
+      paddingTop: fr.spacing("2v"),
+    },
   },
   accordion: {
     fontStyle: "italic",
