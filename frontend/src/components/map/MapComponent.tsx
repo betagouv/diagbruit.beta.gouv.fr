@@ -21,6 +21,7 @@ import {
 } from "./useMapFeatureState";
 import { DiagnosticItem } from "../../utils/types";
 import { getRiskFromScore } from "../../utils/tools";
+import { centroid } from "@turf/turf";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -104,7 +105,7 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
         const nearbySiblings = getNearbySiblings(
           clickedParcelle,
           mergeCoordinatesByParcelle(siblings),
-          500
+          1000
         );
         setParcelleSiblings(nearbySiblings.slice(0, 32));
         setParcelle(clickedParcelle);
@@ -178,6 +179,22 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
     }
   }, [isMapLoaded, response]);
 
+  useEffect(() => {
+    const geometry = parcelle?.geometry as any;
+    if (!map || !parcelle || !geometry?.coordinates) return;
+
+    const centerPoint = centroid(parcelle);
+    const [lng, lat] = centerPoint.geometry.coordinates;
+
+    const offsetLng = lng - 0;
+
+    map.flyTo({
+      center: [offsetLng, lat],
+      zoom: 18,
+      essential: true,
+    });
+  }, [map, parcelle]);
+
   return (
     <div style={{ display: "flex" }}>
       <Map
@@ -188,7 +205,7 @@ function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
         onMouseEnter={onHover}
         onMouseLeave={onHover}
         onMouseMove={onHover}
-        style={{ width: "100%", height: "50vh" }}
+        style={{ width: "100%", height: "600px" }}
         mapStyle={orthoStyle as StyleSpecification}
         interactiveLayerIds={interactiveLayerIds}
         cursor={cursor}

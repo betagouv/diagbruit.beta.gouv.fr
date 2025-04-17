@@ -5,6 +5,7 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import Diagnostic from "./components/diagnostic/Diagnostic";
 import { Loader } from "./components/ui/Loader";
 import { tss } from "tss-react/dsfr";
+import { fr } from "@codegouvfr/react-dsfr";
 
 function App() {
   const { cx, classes } = useStyles();
@@ -38,7 +39,8 @@ function App() {
         }}
         id="fr-header-simple-header"
       />
-      <div className="fr-container">
+      <div className={fr.cx("fr-container", "fr-py-10v")}>
+        <h1>Votre diagnostic</h1>
         <MapComponent
           onDiagnosticsChange={onDiagnosticsChange}
           onLoading={onLoading}
