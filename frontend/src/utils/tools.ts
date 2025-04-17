@@ -29,3 +29,20 @@ export const getIconeFromScore = (
   if (score > 3) return "ri-information-fill";
   return "ri-checkbox-circle-fill";
 };
+
+export const getReadableSource = (source: string): string => {
+  switch (source) {
+    case "A":
+      return "aérien";
+    case "T":
+      return "tramway";
+    case "R":
+      return "route";
+    case "F":
+      return "féroviaire";
+    case "I":
+      return "industrie";
+    default:
+      return source;
+  }
+};

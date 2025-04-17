@@ -1,7 +1,7 @@
 import copy
 
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning)
-from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
+from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
@@ -64,7 +64,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
 
     # Return noisemap intersections
-    diagnostic['soundclassification_intersections'] = soundclassification_intersections
+    diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
 
     # Flags : multiExposed
     diagnostic['flags']['isMultiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1

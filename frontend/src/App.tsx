@@ -27,7 +27,7 @@ function App() {
     <div>
       {isLoading && (
         <div className={cx(classes.loaderContainer)}>
-          <Loader text="Nous générons votre diagnostique..." />
+          <Loader text="Nous générons votre diagnostic..." />
         </div>
       )}
       <Header

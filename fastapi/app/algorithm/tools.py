@@ -68,6 +68,17 @@ def filter_air_intersections_by_zone(intersections):
 
     return [min(intersections, key=lambda x: x.get("zone", "Z"))]
 
+
+def filter_soundclassification_by_codeinfra(intersections):
+    filtered = {}
+
+    for item in intersections:
+        codeinfra = item.get("codeinfra")
+        if codeinfra and codeinfra not in filtered:
+            filtered[codeinfra] = item
+
+    return list(filtered.values())
+
 def get_sound_equivalents(value):
     base_path_references = Path(__file__).resolve().parent.parent / "references"
 
