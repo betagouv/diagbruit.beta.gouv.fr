@@ -6,16 +6,8 @@ import {
   point,
   distance as turfDistance,
 } from "@turf/turf";
-import union from "@turf/union";
-import { Feature, GeoJsonProperties, MultiPolygon, Polygon } from "geojson";
+import { MultiPolygon } from "geojson";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
-
-export const getRiskFromScore = (score: number) => {
-  if (score > 8) return 3;
-  if (score > 6) return 2;
-  if (score > 3) return 1;
-  return 0;
-};
 
 const turfDistanceToBorder = (
   centerPoint: GeoJSON.Feature<GeoJSON.Point>,

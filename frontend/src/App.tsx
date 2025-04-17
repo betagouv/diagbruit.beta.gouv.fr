@@ -35,7 +35,10 @@ function App() {
           onLoading={onLoading}
         />
         {diagnosticsResponses && diagnosticsResponses[0] && (
-          <Diagnostic diagnostic={diagnosticsResponses[0]} isLoading={false} />
+          <Diagnostic
+            diagnosticItem={diagnosticsResponses[0]}
+            isLoading={false}
+          />
         )}
       </div>
     </div>

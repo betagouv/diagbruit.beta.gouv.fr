@@ -21,6 +21,7 @@ export type Diagnostic = {
   land_intersections_ln: LandIntersection[];
   air_intersections: any[]; // Si le contenu est connu, remplacez `any`
   soundclassification_intersections: SoundClassificationIntersection[];
+  equivalent_ambiences: string[];
 };
 
 export type DiagnosticFlags = {

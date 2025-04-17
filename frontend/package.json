@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.22.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -18,6 +21,7 @@
     "react-dom": "^19.1.0",
     "react-map-gl": "^8.0.2",
     "react-scripts": "5.0.1",
+    "tss-react": "^4.9.16",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -27,7 +31,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postinstall": "react-dsfr copy-static-assets",
-    "predev": "react-dsfr update-icons",
+    "prestart": "react-dsfr update-icons",
     "prebuild": "react-dsfr update-icons"
   },
   "jest": {

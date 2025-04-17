@@ -10,7 +10,6 @@ import orthoStyle from "./styles/ortho.json";
 import { useCallback, useEffect, useState } from "react";
 import {
   getNearbySiblings,
-  getRiskFromScore,
   mergeCoordinatesByParcelle,
   updateFeatureState,
 } from "../../utils/map";
@@ -21,6 +20,7 @@ import {
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
 import { DiagnosticItem } from "../../utils/types";
+import { getRiskFromScore } from "../../utils/tools";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
