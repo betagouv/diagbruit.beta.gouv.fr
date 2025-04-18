@@ -114,7 +114,7 @@ async def generate_diag_from_parcelles(
         except Exception as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"Erreur diagnostic pour parcelle {result["parcelle"].dict()}: {str(e)}"
+                detail=f"Erreur diagnostic pour parcelle {result['parcelle'].dict()}: {str(e)}"
             )
 
     try:
