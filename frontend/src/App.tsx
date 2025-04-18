@@ -31,7 +31,14 @@ function App() {
         </div>
       )}
       <Header
-        brandTop={<>DiagBruit</>}
+        brandTop={
+          <>
+            République
+            <br />
+            Française
+          </>
+        }
+        serviceTitle="DiagBruit"
         homeLinkProps={{
           href: "/",
           title:
