@@ -1,7 +1,7 @@
-import { AirIntersection, IntRange } from "./types";
+import { AirIntersection, IntRange } from "../types";
 
 const generateAerialContent = (
-  context: typeof TEXTS.CONTENT.AERIAL,
+  context: typeof SUMMARY_TEXTS.CONTENT.AERIAL,
   zone: AirIntersection["zone"] | "UNKNOWN"
 ) => {
   switch (zone) {
@@ -29,7 +29,7 @@ const generateAerialContent = (
 };
 
 const generateLandContent = (
-  context: typeof TEXTS.CONTENT.LAND,
+  context: typeof SUMMARY_TEXTS.CONTENT.LAND,
   risk: IntRange<0, 4>,
   isMultiExposed: boolean
 ) => {
@@ -47,7 +47,7 @@ const generateLandContent = (
 };
 
 const generateMultiAirLandContent = (
-  context: typeof TEXTS.CONTENT.MULTI,
+  context: typeof SUMMARY_TEXTS.CONTENT.MULTI,
   risk: IntRange<0, 4>
 ) => {
   return `
@@ -56,7 +56,7 @@ const generateMultiAirLandContent = (
     `;
 };
 
-export const TEXTS = {
+export const SUMMARY_TEXTS = {
   INTRODUCTION: {
     RISK_0: `<p>Tout ou partie de cette parcelle est soumise à des niveaux de bruit potentiellement désagréables. Pour atteindre des ressentis acceptables, <b>plusieurs solutions sont envisageables (sans besoin de cumul)</b> : action sur l'aménagement / la position du bâti, action sur l'environnement sonore global (présence de bruit "positifs").</p>`,
     RISK_1: `<p>Sur tout ou partie de cette parcelle, dans des situations où <b>l'isolation acoustique obligatoire</b> n'entre pas en compte (fenêtre ouverte, terrasse, jardin), une partie de la population pourrait être significativement gênée.</p>`,

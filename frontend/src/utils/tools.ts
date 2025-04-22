@@ -1,7 +1,6 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
+import { SUMMARY_TEXTS } from "./texts/summary";
 import { Diagnostic, IntRange } from "./types";
-import { ReactNode } from "react";
-import { TEXTS } from "./texts";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -81,16 +80,16 @@ export const extractDiagnosticInfo = (diagnostic: Diagnostic) => {
 };
 
 const getSummaryIntroduction = (risk: IntRange<0, 4>): string => {
-  return TEXTS.INTRODUCTION[`RISK_${risk}`];
+  return SUMMARY_TEXTS.INTRODUCTION[`RISK_${risk}`];
 };
 
 const getSummaryConclusion = (risk: number): string => {
   if (risk === 0) {
-    return TEXTS.CONCLUSIONS.RISK_0;
+    return SUMMARY_TEXTS.CONCLUSIONS.RISK_0;
   } else if (risk === 1) {
-    return TEXTS.CONCLUSIONS.RISK_1;
+    return SUMMARY_TEXTS.CONCLUSIONS.RISK_1;
   } else {
-    return TEXTS.CONCLUSIONS.RISK_HIGH;
+    return SUMMARY_TEXTS.CONCLUSIONS.RISK_HIGH;
   }
 };
 
@@ -107,7 +106,7 @@ export const getSummaryTextFromDiagnostic = (
   } = extractDiagnosticInfo(diagnostic);
 
   if (flags.hasClassificationWarning) {
-    return TEXTS.CLASSIFICATION_WARNING;
+    return SUMMARY_TEXTS.CLASSIFICATION_WARNING;
   }
 
   if (risk === 0) {
@@ -116,9 +115,9 @@ export const getSummaryTextFromDiagnostic = (
       !hasLandIntersections &&
       !hasAirIntersections
     ) {
-      return TEXTS.NO_ISSUE_WITH_ISOLATION;
+      return SUMMARY_TEXTS.NO_ISSUE_WITH_ISOLATION;
     } else {
-      return TEXTS.NO_ISSUE;
+      return SUMMARY_TEXTS.NO_ISSUE;
     }
   }
 
@@ -126,14 +125,14 @@ export const getSummaryTextFromDiagnostic = (
 
   if (hasAirIntersections && !hasLandIntersections) {
     const zone = air_intersections[0].zone || "UNKNOWN";
-    content += TEXTS.CONTENT.AERIAL.generateContent(zone);
+    content += SUMMARY_TEXTS.CONTENT.AERIAL.generateContent(zone);
   } else if (hasLandIntersections && !hasAirIntersections) {
-    content += TEXTS.CONTENT.LAND.generateContent(
+    content += SUMMARY_TEXTS.CONTENT.LAND.generateContent(
       risk,
       flags.isMultiExposedSources
     );
   } else if (hasLandIntersections && hasAirIntersections) {
-    content += TEXTS.CONTENT.MULTI.generateContent(risk);
+    content += SUMMARY_TEXTS.CONTENT.MULTI.generateContent(risk);
   }
 
   return getSummaryIntroduction(risk) + content + getSummaryConclusion(risk);
