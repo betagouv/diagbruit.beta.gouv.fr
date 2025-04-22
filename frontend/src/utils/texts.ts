@@ -50,22 +50,10 @@ const generateMultiAirLandContent = (
   context: typeof TEXTS.CONTENT.MULTI,
   risk: IntRange<0, 4>
 ) => {
-  switch (risk) {
-    case 0:
-      return `
-              ${context.COMMON.INTRO_LIGHT}
-              ${context.COMMON.CONCLUSION}
-            `;
-    case 1:
-    case 2:
-    case 3:
-      return `
-              ${context.COMMON.INTRO_STRONG}
-              ${context.COMMON.CONCLUSION}
-            `;
-    default:
-      return "";
-  }
+  return `
+        ${risk === 0 ? context.COMMON.INTRO_LIGHT : context.COMMON.INTRO_STRONG}
+        ${context.COMMON.CONCLUSION}
+    `;
 };
 
 export const TEXTS = {
