@@ -43,9 +43,11 @@ def get_filtered_land_intersections(noisemap_intersections):
 
 
 def filter_land_intersections_by_codeinfra(intersections):
+    intersections_with_cbstype_a = [item for item in intersections if item.get('cbstype') == 'A']
+
     filtered = {}
 
-    for item in intersections:
+    for item in intersections_with_cbstype_a:
         codeinfra = item.get('codeinfra')
         legende = item.get('legende')
 
