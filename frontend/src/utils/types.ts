@@ -19,7 +19,7 @@ export type Diagnostic = {
   flags: DiagnosticFlags;
   land_intersections_ld: LandIntersection[];
   land_intersections_ln: LandIntersection[];
-  air_intersections: any[]; // Si le contenu est connu, remplacez `any`
+  air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
   equivalent_ambiences: string[];
 };
@@ -40,6 +40,13 @@ export type LandIntersection = {
   cbstype: string;
 };
 
+export type AirIntersection = {
+  zone: ("A" | "B" | "C" | "D") | null;
+  legende: number;
+  nom: string;
+  ref_doc: string;
+};
+
 export type SoundClassificationIntersection = {
   source: string;
   typesource: string;
@@ -47,3 +54,15 @@ export type SoundClassificationIntersection = {
   sound_category: number;
   distance: number;
 };
+
+type Enumerate<
+  N extends number,
+  Acc extends number[] = []
+> = Acc["length"] extends N
+  ? Acc[number]
+  : Enumerate<N, [...Acc, Acc["length"]]>;
+
+export type IntRange<F extends number, T extends number> = Exclude<
+  Enumerate<T>,
+  Enumerate<F>
+>;

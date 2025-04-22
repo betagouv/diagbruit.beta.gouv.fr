@@ -3,7 +3,10 @@ import { DiagnosticItem } from "../../utils/types";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
-import { getColorFromScore } from "../../utils/tools";
+import {
+  getColorFromScore,
+  getSummaryTextFromDiagnostic,
+} from "../../utils/tools";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
@@ -64,14 +67,12 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
             />{" "}
             Résumé du diagnostic
           </h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-            tincidunt, nunc at bibendum facilisis, nunc nisi aliquet nunc, nec
-            tincidunt nunc nisi euismod nunc. Sed tincidunt, nunc at bibendum
-            facilisis, nunc nisi aliquet nunc, nec tincidunt nunc nisi euismod
-            nunc. Sed tincidunt, nunc at bibendum facilisis, nunc nisi aliquet
-            nunc, nec tincidunt nunc nisi euismod nunc. Sed tincidunt, nunc at
-          </p>
+          <p
+            className={classes.summary}
+            dangerouslySetInnerHTML={{
+              __html: getSummaryTextFromDiagnostic(diagnostic),
+            }}
+          />
           <h2 className={fr.cx("fr-h6", "fr-mb-4v")}>
             <i className={cx(classes.titleIcon, fr.cx("ri-question-fill"))} />{" "}
             Comment agir ?
@@ -101,6 +102,11 @@ const useStyles = tss
     },
     ambienceTag: {
       backgroundColor: getColorFromScore(score),
+    },
+    summary: {
+      p: {
+        marginBottom: fr.spacing("4v"),
+      },
     },
   }));
 
