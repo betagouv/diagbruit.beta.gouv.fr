@@ -108,7 +108,7 @@ const useStyles = tss
     },
     summary: {
       p: {
-        marginBottom: fr.spacing("4v"),
+        marginBottom: fr.spacing("2v"),
       },
     },
   }));
