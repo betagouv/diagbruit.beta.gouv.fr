@@ -159,7 +159,6 @@ Deploy Frontend last commit
 
 ```
 git subtree push --prefix frontend scalingo-frontend main
-
 ```
 
 ## 🧬 Macro architecture
