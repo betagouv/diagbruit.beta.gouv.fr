@@ -87,18 +87,18 @@ export const TEXTS = {
     LAND: {
       COMMON: {
         CONCLUSION: `
-              <p>La parcelle est soumise à une obligation règlementaire d'isolation.</p>
-              <p>Le gestionnaire de la source de bruit n'a aucune obligation légale de résorption.</p>
+              <p><b>La parcelle est soumise à une obligation règlementaire d'isolation.</b></p>
+              <p><b>Le gestionnaire de la source de bruit n'a aucune obligation légale de résorption.</b></p>
             `,
         RISK_0: ``,
-        RISK_1: `<p>Pour atteindre des niveaux acceptables, plusieurs solutions sont envisageables (sans besoin de cumul) : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
-        RISK_2: `<p>Pour atteindre des niveaux acceptables, plusieurs solutions devront être étudiées : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
-        RISK_3: `<p>Pour atteindre des niveaux acceptables, plusieurs solutions devront être étudiées : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
+        RISK_1: `<p>Pour atteindre des niveaux acceptables, <b>plusieurs solutions sont envisageables (sans besoin de cumul)</b> : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
+        RISK_2: `<p>Pour atteindre des niveaux acceptables, <b>plusieurs solutions devront être étudiées</b> : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
+        RISK_3: `<p>Pour atteindre des niveaux acceptables, <b>plusieurs solutions devront être étudiées</b> : action sur l'aménagement / la position du bâti, action sur la propagation (mur, obstacle, …), actions à la source (vitesse, revêtement, …).</p>`,
       },
 
       MULTI: {
-        INTRO_LIGHT: `<p>La parcelle est multi-exposée à des bruits de sources terrestres.</p>`,
-        INTRO_STRONG: `<p>La parcelle est multi-exposée à des bruits de sources terrestres. La nature et l'efficacité des solutions envisageable dépend de l'importance de la nuisance de chacune des sources.</p>`,
+        INTRO_LIGHT: `<p><b>La parcelle est multi-exposée à des bruits de sources terrestres.</b></p>`,
+        INTRO_STRONG: `<p><b>La parcelle est multi-exposée à des bruits de sources terrestres.</b> La nature et l'efficacité des solutions envisageable dépend de l'importance de la nuisance de chacune des sources.</p>`,
       },
 
       generateContent: function (
@@ -110,11 +110,11 @@ export const TEXTS = {
     },
     MULTI: {
       COMMON: {
-        INTRO_LIGHT: `<p>La parcelle est multi-exposée à des bruits de sources terrestres et aérienne.</p>`,
-        INTRO_STRONG: `<p>La parcelle est multi-exposée à des bruits de sources terrestres et aérienne. La nature et l'efficacité des solutions envisageable dépend de l'importance de la nuisance de chacune des sources.</p>`,
+        INTRO_LIGHT: `<p><b>La parcelle est multi-exposée à des bruits de sources terrestres et aérienne.</b></p>`,
+        INTRO_STRONG: `<p><b>La parcelle est multi-exposée à des bruits de sources terrestres et aérienne.</b> La nature et l'efficacité des solutions envisageable dépend de l'importance de la nuisance de chacune des sources.</p>`,
         CONCLUSION: `
-            <p>La parcelle est soumise à une obligation règlementaire d'isolation.</p>
-            <p>Les gestionnaire des sources de bruit n'ont aucune obligation légale de résorption, mais des aides à l'isolation existent sous conditions pour le bruit aérien.</p>
+            <p><b>La parcelle est soumise à une obligation règlementaire d'isolation.</b></p>
+            <p><b>Les gestionnaire des sources de bruit n'ont aucune obligation légale de résorption, mais des aides à l'isolation existent sous conditions pour le bruit aérien.</b></p>
           `,
       },
 
