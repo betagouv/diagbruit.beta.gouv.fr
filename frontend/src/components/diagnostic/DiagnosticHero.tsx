@@ -51,7 +51,10 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
                 {diagnostic.equivalent_ambiences.map((ambience, index) => (
                   <Tag
                     key={index}
-                    className={cx(classes.ambienceTag, fr.cx("fr-mr-2v"))}
+                    className={cx(
+                      classes.ambienceTag,
+                      fr.cx("fr-mr-2v", "fr-mb-2v")
+                    )}
                   >
                     {ambience}
                   </Tag>
