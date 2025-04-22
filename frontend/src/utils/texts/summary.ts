@@ -66,8 +66,8 @@ export const SUMMARY_TEXTS = {
 
   CONCLUSIONS: {
     RISK_0: ``,
-    RISK_HIGH: `<p><b>Il est vivement conseillé de visiter les lieux avant toute prise de décision.</b></p>`,
     RISK_1: `<p><b> Une visite des lieux peut aider à déterminer la sensibilité de chacun.</b></p>`,
+    RISK_HIGH: `<p><b>Il est vivement conseillé de visiter les lieux avant toute prise de décision.</b></p>`,
   },
 
   CONTENT: {
