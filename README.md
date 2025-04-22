@@ -241,6 +241,7 @@ diagbruit/
 │   ├── src/
 │   └── tsconfig.json
 │
+├── setup-dev.sh
 ├── setup-dbt.sh
 └── docker-compose.yml
 ```
