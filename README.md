@@ -1,6 +1,6 @@
-# DiagBruit
+# 🙉 DiagBruit 🙉
 
-## Prerequisites
+## 🧰 Prerequisites
 
 - Python 3.8+
 - GEOS library for spatial data processing:
@@ -16,9 +16,7 @@
   sudo yum install geos-devel
   ```
 
-## Getting Started
-
-### Start the PostgreSQL Database with PostGIS
+## 🐘 Start the PostgreSQL Database with PostGIS
 
 The project uses PostgreSQL with PostGIS extension for spatial data. Launch it using Docker Compose:
 
@@ -28,7 +26,7 @@ docker compose up -d
 
 This will start a PostgreSQL database with the PostGIS extension on port 5433.
 
-### Quick Setup
+## ⚡ Quick Setup
 
 For a quick setup of all virtual environments:
 
@@ -38,30 +36,30 @@ For a quick setup of all virtual environments:
 
 This will create and configure all virtual environments for the different components of the project. You can then activate the environment you need to work with.
 
-### Data ingestion
+## 🥣 Data ingestion
 
-#### Launch dedicated Virtual Environment
+### Launch dedicated Virtual Environment
 
 ```bash
 source ingestion-venv/bin/activate
 ```
 
-#### Launch seed raw data
+### Launch seed raw data
 
 ```bash
 cd ingestion
 ./launch-ingestion.sh
 ```
 
-### DBT
+## 🧪 DBT
 
-#### Launch dedicated Virtual Environment
+### Launch dedicated Virtual Environment
 
 ```bash
 source dbt-venv/bin/activate
 ```
 
-#### Configure dbt Profile
+### Configure dbt Profile
 
 ```bash
 ./setup-dbt.sh
@@ -69,45 +67,45 @@ source dbt-venv/bin/activate
 
 Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
 
-#### From dbt folder
+### From dbt folder
 
 ```bash
 cd dbt
 ```
 
-#### Verify Configuration
+### Verify Configuration
 
 ```bash
 dbt debug
 ```
 
-#### Run Models
+### Run Models
 
 ```bash
 dbt run
 ```
 
-### FastApi
+## 🚀 FastApi
 
-#### Launch dedicated Virtual Environment
+### Launch dedicated Virtual Environment
 
 ```bash
 source fastapi-venv/bin/activate
 ```
 
-#### From fastapi folder
+### From fastapi folder
 
 ```bash
 cd fastapi
 ```
 
-#### Configure Environment Variables
+### Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-#### Run the Application
+### Run the Application
 
 ```bash
 uvicorn app.main:app --reload
@@ -115,14 +113,14 @@ uvicorn app.main:app --reload
 
 The API will be available at http://127.0.0.1:8000
 
-#### API Documentation
+### API Documentation
 
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-### Frontend
+## 🖼️ Frontend
 
-#### Install Dependencies
+### Install Dependencies
 
 ```
 cd frontend
@@ -130,7 +128,7 @@ cp .env.example .env
 yarn
 ```
 
-#### Start the Application
+### Start the Application
 
 ```
 yarn start
@@ -138,7 +136,7 @@ yarn start
 
 The frontend will be available at http://localhost:3000
 
-## 🚀 Deploying on Scalingo
+## ☁️ Deploying on Scalingo
 
 Add scalingo remotes
 
@@ -160,7 +158,7 @@ git subtree push --prefix frontend scalingo-frontend main
 
 ```
 
-## Macro architecture
+## 🧬 Macro architecture
 
 ```mermaid
 graph TD
@@ -205,7 +203,7 @@ graph TD
     class E frontend
 ```
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
 diagbruit/
