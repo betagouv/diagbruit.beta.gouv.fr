@@ -120,6 +120,46 @@ The API will be available at http://127.0.0.1:8000
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
+### Frontend
+
+#### Install Dependencies
+
+```
+cd frontend
+cp .env.example .env
+yarn
+```
+
+#### Start the Application
+
+```
+yarn start
+```
+
+The frontend will be available at http://localhost:3000
+
+## 🚀 Deploying on Scalingo
+
+Add scalingo remotes
+
+```
+git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-mvp.git
+git remote add scalingo-frontend git@ssh.osc-fr1.scalingo.com:diag-bruit-front.git
+```
+
+Deploy FastAPI last commit
+
+```
+git subtree push --prefix fastapi scalingo-fastapi main
+```
+
+Deploy Frontend last commit
+
+```
+git subtree push --prefix frontend scalingo-frontend main
+
+```
+
 ## Macro architecture
 
 ```mermaid
@@ -127,23 +167,23 @@ graph TD
     subgraph Ingestion["Ingestion"]
         A[Script d'ingestion]
     end
-    
+
     subgraph PostgreSQL["PostgreSQL - Database diagbruit"]
         PW[Données brutes : schema public_workspace]
         B0[DBT: Traitements intermédiaires dans public_workspace]
         C[Données finales : schema public]
     end
-    
+
     subgraph FastAPI["FastAPI"]
         D[Endpoint /diag/generate]
         D1[Calcul d'intersections]
         D2[Algorithme de scoring et préconisations]
     end
-    
+
     subgraph Frontend["Frontend"]
         E[OpenLayers Map]
     end
-    
+
     A --> PW
     PW --> B0
     B0 --> C
@@ -151,13 +191,13 @@ graph TD
     D --> D1
     D1 --> C
     E --> D
-    
+
     classDef ingestion fill:#1a936f,stroke:#88d498,stroke-width:2px,color:#f3e9d2
     classDef dbt fill:#114b5f,stroke:#456990,stroke-width:2px,color:#e4fde1
     classDef postgres fill:#f45b69,stroke:#6b2737,stroke-width:2px,color:#f6e8ea
     classDef fastapi fill:#540d6e,stroke:#9e0059,stroke-width:2px,color:#ffcbf2
     classDef frontend fill:#3a506b,stroke:#1c2541,stroke-width:2px,color:#c2dfe3
-    
+
     class A ingestion
     class B0,B1,B2 dbt
     class PW,C postgres
@@ -195,6 +235,13 @@ diagbruit/
 │   ├── .env.example
 │   ├── ingest_shapefiles.py
 │   └── requirements.txt
+|
+├── frontend/
+│   ├── .env.example
+│   ├── package.json
+│   ├── public/
+│   ├── src/
+│   └── tsconfig.json
 │
 ├── setup-dbt.sh
 └── docker-compose.yml
