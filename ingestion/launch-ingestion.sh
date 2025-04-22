@@ -9,7 +9,6 @@ run_ingest() {
   echo '--------------------------------------------------------------------------'
 }
 
-# --- Type C AGGLO 033 ---
 FILES_AGGLO_033=(
   "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lden.shp raw_noisemap_agglo_c --if-exists replace --add-column typesource=F --add-column indicetype=LD --add-column annee=2022 --add-column codedept=033"
   "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lden.shp raw_noisemap_agglo_c --add-column typesource=I --add-column indicetype=LD --add-column annee=2022 --add-column codedept=033"
@@ -27,7 +26,6 @@ FILES_AGGLO_033=(
   "inputs/noise/AGGLO_033/NoiseContours_roadsInAgglomeration_Lnight.shp raw_noisemap_agglo_a --add-column typesource=R --add-column indicetype=LN --add-column annee=2022 --add-column codedept=033"
 )
 
-# --- ZBRD ---
 FILES_ZBRD=(
   "inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033.shp raw_noisemap --if-exists replace"
   "inputs/noise/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033.shp raw_noisemap"
@@ -39,7 +37,6 @@ FILES_ZBRD=(
   "inputs/noise/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033.shp raw_noisemap"
 )
 
-# --- Sound classification ---
 FILES_SOUNDCLASS=(
   "inputs/soundclassification/SNCF/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_sncf --if-exists replace"
   "inputs/soundclassification/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace"
@@ -47,12 +44,10 @@ FILES_SOUNDCLASS=(
   "inputs/soundclassification/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace"
 )
 
-# --- PEB ---
 FILES_PEB=(
   "inputs/PEB/peb.shp raw_peb --if-exists replace"
 )
 
-# --- Execution ---
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_ZBRD[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
