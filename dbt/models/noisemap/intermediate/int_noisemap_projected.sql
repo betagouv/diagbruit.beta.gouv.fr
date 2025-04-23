@@ -4,7 +4,7 @@
 ) }}
 
 SELECT
-    idzonbruit,
+    id,
     idcbs,
     uueid,
     annee,

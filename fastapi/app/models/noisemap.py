@@ -9,7 +9,7 @@ class NoiseMapItem(Base):
     
     pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
     geometry = Column(Geometry('POLYGON', srid=4326))
-    idzonbruit = Column(String, index=True)
+    id = Column(String, index=True)
     idcbs = Column(String, index=True)
     uueid = Column(String)
     annee = Column(String(4)) 

@@ -5,7 +5,7 @@
 
 WITH fixed_geometries AS (
     SELECT
-        idzonbruit,
+        id,
         idcbs,
         uueid,
         annee,
@@ -28,7 +28,7 @@ WITH fixed_geometries AS (
 )
 
 SELECT
-    idzonbruit,
+    id,
     idcbs,
     uueid,
     annee,

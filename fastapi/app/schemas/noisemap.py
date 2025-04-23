@@ -4,7 +4,7 @@ from typing import Optional, Any, Dict
 # Schema for displaying a noise map item
 class NoiseMapItem(BaseModel):
     pk: int
-    idzonbruit: str
+    id: str
     idcbs: str
     uueid: Optional[str] = None
     annee: Optional[str] = None

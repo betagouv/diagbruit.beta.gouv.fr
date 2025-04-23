@@ -5,7 +5,7 @@
 
 WITH exploded AS (
     SELECT
-        idzonbruit,
+        id,
         idcbs,
         uueid,
         annee,
@@ -31,7 +31,7 @@ WITH exploded AS (
 )
 
 SELECT
-    idzonbruit,
+    id,
     idcbs,
     uueid,
     annee,

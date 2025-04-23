@@ -4,7 +4,7 @@ models:
   - name: noisemap
     description: "Clean noise map polygons with validated geometries"
     columns:
-      - name: idzonbruit
+      - name: id
         description: "Noise zone ID"
       - name: idcbs
         description: "CBS ID"
@@ -35,7 +35,7 @@ models:
       - name: validefin
         description: "Validity end date"
       - name: polygon_id
-        description: "Unique identifier for each polygon (IDZONBRUIT + geom_idx)"
+        description: "Unique identifier for each polygon (id + geom_idx)"
       - name: geometry
         description: "Valid polygon geometry"
       - name: area_m2

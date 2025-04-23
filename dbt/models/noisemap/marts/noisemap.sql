@@ -6,7 +6,7 @@
 ) }}
 
 SELECT
-  idzonbruit,
+  id,
   idcbs,
   uueid,
   annee,
@@ -22,7 +22,7 @@ SELECT
   validedeb,
   validefin,
   -- Generate a unique ID by concatenating existing ID with geometry index
-  idzonbruit || '_' || geom_idx AS polygon_id,
+  id || '_' || geom_idx AS polygon_id,
   geometry,
   area_m2,
   srid,

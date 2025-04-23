@@ -18,6 +18,10 @@ dbt/dbt_modules/
 dbt/.user.yml
 dbt/profiles.yml
 
+# Ingestion
+ingestion/launch-ingestion-prod.sh
+ingestion/inputs/noise/AGGLO_044
+
 # Virtual environments
 .venv/
 venv/

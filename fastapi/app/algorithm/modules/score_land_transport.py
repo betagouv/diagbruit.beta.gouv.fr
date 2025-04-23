@@ -13,6 +13,7 @@ def load_levels(indicetype):
     with open(filepath, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+
 def compute_intersection_score(intersection, levels, intersections_infra):
     """
     Computes the score of a single intersection based on its 'legende' value
