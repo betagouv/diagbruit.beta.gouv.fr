@@ -75,7 +75,6 @@ function DiagnosticPage() {
   useEffect(() => {
     if (mapMethodsRef.current?.parcelle) {
       const { parcelle } = mapMethodsRef.current;
-      console.log(parcelle.properties);
       const {
         commune,
         section: tmpSection,
