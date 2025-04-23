@@ -76,11 +76,6 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
               __html: getSummaryTextFromDiagnostic(diagnostic),
             }}
           />
-          <h2 className={fr.cx("fr-h6", "fr-mb-4v")}>
-            <i className={cx(classes.titleIcon, fr.cx("ri-question-fill"))} />{" "}
-            Comment agir ?
-          </h2>
-          <p>Consultez les rubriques à propose de votre diagnostic</p>
         </div>
       </div>
     </div>
