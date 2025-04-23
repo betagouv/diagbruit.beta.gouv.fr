@@ -14,7 +14,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
 
   return (
-    <div className={cx(classes.container, fr.cx("fr-py-10v"))}>
+    <div className={cx(classes.container)}>
       <DiagnosticHero diagnosticItem={diagnosticItem} />
       <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
       {/* TO REMOVE */}
