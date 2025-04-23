@@ -54,6 +54,7 @@ type MapComponentProps = {
 
 export interface ExposedMapMethods {
   map: MapInstance | undefined;
+  parcelle: MapGeoJSONFeature | null;
   setParcelle: Dispatch<React.SetStateAction<MapGeoJSONFeature | null>> | null;
   setParcelleSiblings: Dispatch<
     React.SetStateAction<MapGeoJSONFeature[]>
@@ -77,10 +78,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       ref,
       () => ({
         map,
+        parcelle,
         setParcelle,
         setParcelleSiblings,
       }),
-      [map, setParcelle, setParcelleSiblings]
+      [map, parcelle, setParcelle, setParcelleSiblings]
     );
 
     const prevHovered = usePrevious(hovered);

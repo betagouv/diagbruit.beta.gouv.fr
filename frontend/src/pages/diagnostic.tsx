@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Dispatch, useRef, useState } from "react";
+import { Dispatch, useEffect, useRef, useState } from "react";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
@@ -21,6 +21,12 @@ function DiagnosticPage() {
     DiagnosticItem[]
   >([]);
 
+  const [searchValues, setSearchValues] = useState({
+    codeInsee: "",
+    section: "",
+    numero: "",
+  });
+
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
       const map = mapMethodsRef.current.map;
@@ -34,7 +40,7 @@ function DiagnosticPage() {
           center: [centerLng, centerLat],
           zoom: 17,
           essential: true,
-          speed: 5,
+          speed: 10,
         });
 
         map.once("moveend", () => {
@@ -66,6 +72,26 @@ function DiagnosticPage() {
     setDiagnosticsResponses(newDiagnostics);
   };
 
+  useEffect(() => {
+    if (mapMethodsRef.current?.parcelle) {
+      const { parcelle } = mapMethodsRef.current;
+      console.log(parcelle.properties);
+      const {
+        commune,
+        section: tmpSection,
+        numero: tmpNumero,
+      } = parcelle.properties;
+      const numero = tmpNumero.toString().padStart(4, "0");
+      const section = tmpSection.toString().padStart(2, "0");
+
+      setSearchValues({
+        codeInsee: commune,
+        section: section,
+        numero: numero,
+      });
+    }
+  }, [mapMethodsRef.current?.parcelle]);
+
   return (
     <div>
       {isLoading && (
@@ -76,6 +102,7 @@ function DiagnosticPage() {
       <div className={cx(classes.container, fr.cx("fr-container"))}>
         <h1>⚡ Le diagnostic flash DiagBruit</h1>
         <ParcelleSearch
+          formValues={searchValues}
           onParcelleRequested={(response) => {
             if (response.data?.features[0]) {
               const parcelleFeature = response.data?.features[0];
