@@ -19,9 +19,9 @@ const ParcelleSearch = ({
 }: ParcelleSearchProps) => {
   const { cx, classes } = useStyles();
 
-  const [codeInsee, setCodeInsee] = useState("33063");
-  const [section, setSection] = useState("CE");
-  const [numero, setNumero] = useState("0019");
+  const [codeInsee, setCodeInsee] = useState("");
+  const [section, setSection] = useState("");
+  const [numero, setNumero] = useState("");
 
   const canSearch = !!codeInsee && !!section && !!numero;
 
