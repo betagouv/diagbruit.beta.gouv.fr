@@ -14,13 +14,16 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
 
   return (
-    <div className={cx(classes.container)}>
-      <DiagnosticHero diagnosticItem={diagnosticItem} />
-      <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
-      {/* TO REMOVE */}
-      <Accordion label="Voir le retour de l'API">
-        <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
-      </Accordion>
+    <div>
+      <h2>Votre diagnostic</h2>
+      <div className={cx(classes.container)}>
+        <DiagnosticHero diagnosticItem={diagnosticItem} />
+        <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
+        {/* TO REMOVE */}
+        <Accordion label="Voir le retour de l'API">
+          <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
+        </Accordion>
+      </div>
     </div>
   );
 };

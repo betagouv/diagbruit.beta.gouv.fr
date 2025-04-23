@@ -1,19 +1,62 @@
-import { useState } from "react";
-import MapComponent from "../components/map/MapComponent";
-import { DiagnosticItem } from "../utils/types";
-import { Header } from "@codegouvfr/react-dsfr/Header";
-import Diagnostic from "../components/diagnostic/Diagnostic";
-import { Loader } from "../components/ui/Loader";
-import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Dispatch, useRef, useState } from "react";
+import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
+import { tss } from "tss-react/dsfr";
+import Diagnostic from "../components/diagnostic/Diagnostic";
+import MapComponent, {
+  ExposedMapMethods,
+} from "../components/map/MapComponent";
+import ParcelleSearch from "../components/search/ParcelleSearch";
+import { Loader } from "../components/ui/Loader";
+import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
+import { DiagnosticItem } from "../utils/types";
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
+
+  const mapMethodsRef = useRef<ExposedMapMethods>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
     DiagnosticItem[]
   >([]);
+
+  const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
+    if (mapMethodsRef.current?.map) {
+      const map = mapMethodsRef.current.map;
+      if ((parcelleFeature as any).bbox) {
+        const [minLng, minLat, maxLng, maxLat] = (parcelleFeature as any).bbox;
+
+        const centerLng = (minLng + maxLng) / 2;
+        const centerLat = (minLat + maxLat) / 2;
+
+        map.flyTo({
+          center: [centerLng, centerLat],
+          zoom: 17,
+          essential: true,
+          speed: 5,
+        });
+
+        map.once("moveend", () => {
+          const idu = parcelleFeature.properties.idu;
+          findFeatureAsync(map, idu).then((feature) => {
+            if (mapMethodsRef.current?.setParcelle) {
+              mapMethodsRef.current.setParcelle(feature);
+
+              if (mapMethodsRef.current?.setParcelleSiblings) {
+                const { nearbySiblings } = computeParcelleSiblings(
+                  map,
+                  feature as MapGeoJSONFeature,
+                  1000
+                );
+                mapMethodsRef.current.setParcelleSiblings(nearbySiblings);
+              }
+            }
+          });
+        });
+      }
+    }
+  };
 
   const onLoading = (loading: boolean) => {
     setIsLoading(loading);
@@ -30,9 +73,18 @@ function DiagnosticPage() {
           <Loader text="Nous générons votre diagnostic..." />
         </div>
       )}
-      <div className={fr.cx("fr-container")}>
-        <h1>Votre diagnostic</h1>
+      <div className={cx(classes.container, fr.cx("fr-container"))}>
+        <h1>⚡ Le diagnostic flash DiagBruit</h1>
+        <ParcelleSearch
+          onParcelleRequested={(response) => {
+            if (response.data?.features[0]) {
+              const parcelleFeature = response.data?.features[0];
+              onParcelleSelected(parcelleFeature);
+            }
+          }}
+        />
         <MapComponent
+          ref={mapMethodsRef}
           onDiagnosticsChange={onDiagnosticsChange}
           onLoading={onLoading}
         />
@@ -48,6 +100,11 @@ function DiagnosticPage() {
 }
 
 const useStyles = tss.withName(DiagnosticPage.name).create(() => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: fr.spacing("6v"),
+  },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     display: "flex",

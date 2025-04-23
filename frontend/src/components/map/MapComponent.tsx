@@ -7,8 +7,17 @@ import Map, {
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import orthoStyle from "./styles/ortho.json";
-import { useCallback, useEffect, useState } from "react";
 import {
+  Dispatch,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import {
+  computeParcelleSiblings,
   getNearbySiblings,
   mergeCoordinatesByParcelle,
   updateFeatureState,
@@ -43,175 +52,178 @@ type MapComponentProps = {
   onLoading: (loading: boolean) => void;
 };
 
-function MapComponent({ onDiagnosticsChange, onLoading }: MapComponentProps) {
-  const [map, setMap] = useState<MapInstance>();
-  const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
-  const [parcelleSiblings, setParcelleSiblings] = useState<MapGeoJSONFeature[]>(
-    []
-  );
-  const [hovered, setHovered] = useState<HoverInfo | null>(null);
-  const [cursor, setCursor] = useState("default");
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
+export interface ExposedMapMethods {
+  map: MapInstance | undefined;
+  setParcelle: Dispatch<React.SetStateAction<MapGeoJSONFeature | null>> | null;
+  setParcelleSiblings: Dispatch<
+    React.SetStateAction<MapGeoJSONFeature[]>
+  > | null;
+}
 
-  const prevHovered = usePrevious(hovered);
-  const prevSelected = usePrevious(parcelle);
+const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
+  ({ onDiagnosticsChange, onLoading }, ref) => {
+    const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
+    const [parcelleSiblings, setParcelleSiblings] = useState<
+      MapGeoJSONFeature[]
+    >([]);
+    const [hovered, setHovered] = useState<HoverInfo | null>(null);
+    const [cursor, setCursor] = useState("default");
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  const { response, isLoading } = useDiagnostics(parcelle, parcelleSiblings);
+    const internalMapRef = useRef<MapRef>(null);
+    const [map, setMap] = useState<MapInstance>();
 
-  useHoverFeatureState(map, hovered, prevHovered);
-  useOutlinePreviousSelection(map, parcelle, prevSelected);
+    useImperativeHandle(
+      ref,
+      () => ({
+        map,
+        setParcelle,
+        setParcelleSiblings,
+      }),
+      [map, setParcelle, setParcelleSiblings]
+    );
 
-  const mapRef = useCallback((ref: MapRef) => {
-    if (ref) setMap(ref.getMap());
-  }, []);
+    const prevHovered = usePrevious(hovered);
+    const prevSelected = usePrevious(parcelle);
 
-  const onClick = useCallback(
-    (event: MapLayerMouseEvent) => {
+    const { response, isLoading } = useDiagnostics(parcelle, parcelleSiblings);
+
+    useHoverFeatureState(map, hovered, prevHovered);
+    useOutlinePreviousSelection(map, parcelle, prevSelected);
+
+    const mapRef = useCallback((ref: MapRef) => {
+      if (ref) {
+        internalMapRef.current = ref;
+        setMap(ref.getMap());
+      }
+    }, []);
+
+    const onClick = useCallback(
+      (event: MapLayerMouseEvent) => {
+        event.originalEvent.stopPropagation();
+        const feature = event.features?.[0];
+
+        if (feature?.layer.id === "parcelles-fill" && map) {
+          if (parcelle?.id) {
+            updateFeatureState(map, parcelle.id, { selected: false });
+          }
+
+          const { clickedParcelle, nearbySiblings } = computeParcelleSiblings(
+            map,
+            feature as MapGeoJSONFeature,
+            1000
+          );
+
+          if (clickedParcelle?.id) {
+            updateFeatureState(map, clickedParcelle.id, { selected: true });
+          }
+
+          setParcelleSiblings(nearbySiblings);
+          setParcelle(clickedParcelle);
+        } else {
+          setParcelle(null);
+        }
+      },
+      [map, parcelle]
+    );
+
+    const onHover = (event: MapLayerMouseEvent) => {
       event.originalEvent.stopPropagation();
       const feature = event.features?.[0];
+      const { lng, lat } = event.lngLat;
 
-      if (feature?.layer.id === "parcelles-fill" && map) {
-        let clickedParcelle = feature as MapGeoJSONFeature;
+      setHovered(feature ? { longitude: lng, latitude: lat, feature } : null);
 
-        if (parcelle && parcelle.id) {
-          updateFeatureState(map, parcelle.id, { selected: false });
-        }
-
-        if (clickedParcelle.id) {
-          updateFeatureState(map, clickedParcelle.id, { selected: true });
-        }
-
-        const sameTiles = map.queryRenderedFeatures({
-          layers: ["parcelles-fill"],
-          filter: [
-            "all",
-            ["==", ["get", "commune"], feature.properties.commune],
-            ["==", ["get", "section"], feature.properties.section],
-            ["==", ["get", "numero"], feature.properties.numero],
-          ],
-        });
-        clickedParcelle = mergeCoordinatesByParcelle(sameTiles)[0];
-
-        const siblings = map.queryRenderedFeatures({
-          layers: ["parcelles-fill"],
-          filter: [
-            "all",
-            ["==", ["get", "commune"], feature.properties.commune],
-            ["==", ["get", "section"], feature.properties.section],
-            ["!=", ["get", "numero"], feature.properties.numero],
-          ],
-        });
-
-        const nearbySiblings = getNearbySiblings(
-          clickedParcelle,
-          mergeCoordinatesByParcelle(siblings),
-          1000
-        );
-        setParcelleSiblings(nearbySiblings.slice(0, 16));
-        setParcelle(clickedParcelle);
-      } else {
-        setParcelle(null);
+      if (event.type === "mouseenter") {
+        setCursor("pointer");
+      } else if (event.type === "mouseleave") {
+        setCursor("default");
       }
-    },
-    [map, parcelle]
-  );
+    };
 
-  const onHover = (event: MapLayerMouseEvent) => {
-    event.originalEvent.stopPropagation();
-    const feature = event.features?.[0];
-    const { lng, lat } = event.lngLat;
+    const handleDiagnostics = useCallback(() => {
+      if (!map || !parcelle || !response?.diagnostics) return;
 
-    setHovered(feature ? { longitude: lng, latitude: lat, feature } : null);
+      onDiagnosticsChange(response.diagnostics);
 
-    if (event.type === "mouseenter") {
-      setCursor("pointer");
-    } else if (event.type === "mouseleave") {
-      setCursor("default");
-    }
-  };
+      const allParcelles = [...parcelleSiblings, parcelle];
 
-  const handleDiagnostics = useCallback(() => {
-    if (!map || !parcelle || !response?.diagnostics) return;
+      response.diagnostics.forEach((item: any) => {
+        const targetParcelle = allParcelles.find((p) => {
+          const {
+            commune: code_insee,
+            section: tmpSection,
+            numero: tmpNumero,
+          } = p.properties;
+          const numero = tmpNumero.toString().padStart(4, "0");
+          const section = tmpSection.toString().padStart(2, "0");
 
-    onDiagnosticsChange(response.diagnostics);
+          return (
+            code_insee === item.parcelle.code_insee &&
+            section === item.parcelle.section &&
+            numero === item.parcelle.numero
+          );
+        });
 
-    const allParcelles = [...parcelleSiblings, parcelle];
+        if (targetParcelle) {
+          const featureState = {
+            risk: getRiskFromScore(item.diagnostic.score),
+            ...(targetParcelle.id === parcelle.id
+              ? { selected: false, outlinePrimary: true }
+              : { outlineSecondary: true }),
+          };
 
-    response.diagnostics.forEach((item: any) => {
-      const targetParcelle = allParcelles.find((p) => {
-        const {
-          commune: code_insee,
-          section: tmpSection,
-          numero: tmpNumero,
-        } = p.properties;
-        const numero = tmpNumero.toString().padStart(4, "0");
-        const section = tmpSection.toString().padStart(2, "0");
-
-        return (
-          code_insee === item.parcelle.code_insee &&
-          section === item.parcelle.section &&
-          numero === item.parcelle.numero
-        );
+          if (targetParcelle.id) {
+            updateFeatureState(map, targetParcelle.id, featureState);
+          }
+        }
       });
+    }, [map, parcelle, parcelleSiblings, response]);
 
-      if (targetParcelle) {
-        const featureState = {
-          risk: getRiskFromScore(item.diagnostic.score),
-          ...(targetParcelle.id === parcelle.id
-            ? { selected: false, outlinePrimary: true }
-            : { outlineSecondary: true }),
-        };
+    useEffect(() => {
+      onLoading(isLoading);
+    }, [isLoading]);
 
-        if (targetParcelle.id) {
-          updateFeatureState(map, targetParcelle.id, featureState);
-        }
+    useEffect(() => {
+      if (isMapLoaded && response?.diagnostics) {
+        handleDiagnostics();
       }
-    });
-  }, [map, parcelle, parcelleSiblings, response]);
+    }, [isMapLoaded, response]);
 
-  useEffect(() => {
-    onLoading(isLoading);
-  }, [isLoading]);
+    useEffect(() => {
+      const geometry = parcelle?.geometry as any;
+      if (!map || !parcelle || !geometry?.coordinates) return;
 
-  useEffect(() => {
-    if (isMapLoaded && response?.diagnostics) {
-      handleDiagnostics();
-    }
-  }, [isMapLoaded, response]);
+      const centerPoint = centroid(parcelle);
+      const [lng, lat] = centerPoint.geometry.coordinates;
 
-  useEffect(() => {
-    const geometry = parcelle?.geometry as any;
-    if (!map || !parcelle || !geometry?.coordinates) return;
+      const offsetLng = lng - 0;
 
-    const centerPoint = centroid(parcelle);
-    const [lng, lat] = centerPoint.geometry.coordinates;
+      map.flyTo({
+        center: [offsetLng, lat],
+        zoom: 18,
+        essential: true,
+      });
+    }, [map, parcelle]);
 
-    const offsetLng = lng - 0;
-
-    map.flyTo({
-      center: [offsetLng, lat],
-      zoom: 18,
-      essential: true,
-    });
-  }, [map, parcelle]);
-
-  return (
-    <div style={{ display: "flex" }}>
-      <Map
-        ref={mapRef}
-        initialViewState={defaultViewState}
-        onLoad={() => setIsMapLoaded(true)}
-        onClick={onClick}
-        onMouseEnter={onHover}
-        onMouseLeave={onHover}
-        onMouseMove={onHover}
-        style={{ width: "100%", height: "600px" }}
-        mapStyle={orthoStyle as StyleSpecification}
-        interactiveLayerIds={interactiveLayerIds}
-        cursor={cursor}
-      />
-    </div>
-  );
-}
+    return (
+      <div style={{ display: "flex" }}>
+        <Map
+          ref={mapRef}
+          initialViewState={defaultViewState}
+          onLoad={() => setIsMapLoaded(true)}
+          onClick={onClick}
+          onMouseEnter={onHover}
+          onMouseLeave={onHover}
+          onMouseMove={onHover}
+          style={{ width: "100%", height: "600px" }}
+          mapStyle={orthoStyle as StyleSpecification}
+          interactiveLayerIds={interactiveLayerIds}
+          cursor={cursor}
+        />
+      </div>
+    );
+  }
+);
 
 export default MapComponent;

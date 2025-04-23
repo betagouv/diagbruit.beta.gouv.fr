@@ -83,6 +83,44 @@ export const updateFeatureState = (
   );
 };
 
+export function computeParcelleSiblings(
+  map: MapInstance,
+  feature: MapGeoJSONFeature,
+  distanceMeters: number = 1000
+): { clickedParcelle: MapGeoJSONFeature; nearbySiblings: MapGeoJSONFeature[] } {
+  const sameTiles = map.queryRenderedFeatures({
+    layers: ["parcelles-fill"],
+    filter: [
+      "all",
+      ["==", ["get", "commune"], feature.properties.commune],
+      ["==", ["get", "section"], feature.properties.section],
+      ["==", ["get", "numero"], feature.properties.numero],
+    ],
+  });
+  const clickedParcelle = mergeCoordinatesByParcelle(sameTiles)[0];
+
+  const siblings = map.queryRenderedFeatures({
+    layers: ["parcelles-fill"],
+    filter: [
+      "all",
+      ["==", ["get", "commune"], feature.properties.commune],
+      ["==", ["get", "section"], feature.properties.section],
+      ["!=", ["get", "numero"], feature.properties.numero],
+    ],
+  });
+
+  const nearbySiblings = getNearbySiblings(
+    clickedParcelle,
+    mergeCoordinatesByParcelle(siblings),
+    distanceMeters
+  ).slice(0, 16);
+
+  return {
+    clickedParcelle,
+    nearbySiblings,
+  };
+}
+
 export function mergeCoordinatesByParcelle(
   siblings: MapGeoJSONFeature[]
 ): MapGeoJSONFeature[] {
@@ -136,3 +174,32 @@ export function mergeCoordinatesByParcelle(
 
   return result;
 }
+
+export const findFeatureAsync = (
+  map: maplibregl.Map,
+  idu: string
+): Promise<maplibregl.MapGeoJSONFeature | null> => {
+  const maxAttempts = 150;
+  let attempts = 0;
+
+  return new Promise((resolve) => {
+    const checkForFeature = () => {
+      const features = map.queryRenderedFeatures({
+        layers: ["parcelles-fill"],
+        filter: ["==", ["get", "id"], idu],
+      });
+
+      if (features.length > 0) {
+        resolve(features[0]);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        requestAnimationFrame(checkForFeature);
+      } else {
+        console.warn("Timeout: parcelles-fill feature not found");
+        resolve(null);
+      }
+    };
+
+    requestAnimationFrame(checkForFeature);
+  });
+};
