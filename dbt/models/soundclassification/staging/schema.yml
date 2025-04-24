@@ -5,7 +5,7 @@ sources:
     schema: public_workspace
     tables:
       - name: raw_soundclassification_tramway
-      - name: raw_soundclassification_sncf
+      - name: raw_soundclassification_fer
       - name: raw_soundclassification_routier
       - name: raw_soundclassification_lgv
 
@@ -16,7 +16,7 @@ models:
       - name: geometry
         description: "Geometry in WKT format"
       - name: source
-        description: "Source of the data (tramway, sncf, routier, lgv)"
+        description: "Source of the data (tramway, fer, routier, lgv)"
       - name: typesource
         description: "Type of infrastructure (T = Tramway, F = Ferroviaire, R = Routier)"
       - name: codeinfra

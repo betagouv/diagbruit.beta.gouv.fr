@@ -86,7 +86,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
           })
           .filter(Boolean) as DiagnosticItem[];
 
-        setArchives(updatedArchives);
+        // setArchives(updatedArchives);
         setResponse({ diagnostics });
       })
       .catch((err) => console.error("Erreur:", err))

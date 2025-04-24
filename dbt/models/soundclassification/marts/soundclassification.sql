@@ -9,6 +9,7 @@ SELECT
     codeinfra,
     buffer,
     sound_category,
+    codedept,
     geometry,
     multilinestring as source_geometry
 FROM {{ ref('int_soundclassification_merge') }}

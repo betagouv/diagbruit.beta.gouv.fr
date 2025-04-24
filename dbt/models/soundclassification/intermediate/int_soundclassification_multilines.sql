@@ -21,5 +21,6 @@ SELECT
     codeinfra,
     buffer,
     sound_category,
+    codedept,
     extra_fields
 FROM unified

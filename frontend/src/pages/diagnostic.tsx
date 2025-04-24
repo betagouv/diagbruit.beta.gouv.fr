@@ -47,15 +47,15 @@ function DiagnosticPage() {
           const idu = parcelleFeature.properties.idu;
           findFeatureAsync(map, idu).then((feature) => {
             if (mapMethodsRef.current?.setParcelle) {
-              mapMethodsRef.current.setParcelle(feature);
-
               if (mapMethodsRef.current?.setParcelleSiblings) {
-                const { nearbySiblings } = computeParcelleSiblings(
-                  map,
-                  feature as MapGeoJSONFeature,
-                  1000
-                );
+                const { clickedParcelle, nearbySiblings } =
+                  computeParcelleSiblings(
+                    map,
+                    feature as MapGeoJSONFeature,
+                    1000
+                  );
                 mapMethodsRef.current.setParcelleSiblings(nearbySiblings);
+                mapMethodsRef.current.setParcelle(clickedParcelle);
               }
             }
           });

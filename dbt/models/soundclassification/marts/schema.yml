@@ -7,7 +7,7 @@ models:
       - name: pk
         description: "Primary key generated with generate_surrogate_key"
       - name: source
-        description: "Original data source (tramway, sncf, routier, lgv)"
+        description: "Original data source (tramway, fer, routier, lgv)"
       - name: typesource
         description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
       - name: codeinfra

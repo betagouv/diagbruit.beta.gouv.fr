@@ -21,6 +21,8 @@ dbt/profiles.yml
 # Ingestion
 ingestion/launch-ingestion-prod.sh
 ingestion/inputs/noise/AGGLO_044
+ingestion/inputs/noise/INFRA_044
+ingestion/inputs/soundclassification/AGGLO_044
 
 # Virtual environments
 .venv/

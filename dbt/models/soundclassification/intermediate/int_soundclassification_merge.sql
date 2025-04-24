@@ -10,6 +10,7 @@ SELECT
     codeinfra,
     buffer,
     sound_category,
+    codedept,
     array_agg(pk ORDER BY pk) AS merged_pks,
     ST_Union(geometry) AS geometry,
     ST_Union(multilinestring) AS multilinestring,
@@ -22,4 +23,5 @@ GROUP BY
     typesource,
     codeinfra,
     sound_category,
+    codedept,
     buffer

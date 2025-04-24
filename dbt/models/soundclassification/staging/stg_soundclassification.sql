@@ -10,6 +10,7 @@ SELECT
     id AS codeinfra,
     larg_secte AS buffer,
     categorie as sound_category,
+    codedept,
     to_jsonb(ROW(
         categorie,
         electrifie,
@@ -26,14 +27,14 @@ UNION ALL
 
 SELECT
     geometry,
-    'sncf' AS source,
+    'fer' AS source,
     'F' AS typesource,
     ligne AS codeinfra,
     CAST(sect_affec AS bigint) AS buffer,
     CAST(rang AS int) as sound_category,
+    codedept,
     to_jsonb(ROW(
         base_class,
-        code_dept,
         communes,
         dept,
         evol_class,
@@ -50,7 +51,7 @@ SELECT
         sect_affec,
         segment
     )) AS extra_fields
-FROM {{ source('public_workspace', 'raw_soundclassification_sncf') }}
+FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
 
 UNION ALL
 
@@ -61,6 +62,7 @@ SELECT
     numero AS codeinfra,
     larg_secte AS buffer,
     cat_bruit as sound_category,
+    codedept,
     to_jsonb(ROW(
         cat_bruit,
         cls_commen,
@@ -71,7 +73,6 @@ SELECT
         gestion,
         horizon,
         larg_secte,
-        nom_tronc,
         numero,
         projet
     )) AS extra_fields
@@ -86,6 +87,7 @@ SELECT
     toponyme AS codeinfra,
     larg_secte AS buffer,
     cat as sound_category,
+    codedept,
     to_jsonb(ROW(
         cat,
         date_conf,

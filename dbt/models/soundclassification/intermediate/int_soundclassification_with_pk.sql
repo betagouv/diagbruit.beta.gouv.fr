@@ -11,6 +11,7 @@ SELECT
     codeinfra,
     buffer,
     sound_category,
+    codedept,
     extra_fields,
     original_is_valid,
     original_validity_reason,

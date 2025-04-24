@@ -23,15 +23,16 @@ ADD_LNIGHT="--add-column indicetype=LN"
 RENAME_AGGLO_033="--rename-column category=legende --ignore-column gid"
 RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
 
+
 FILES_INFRA=(
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033.shp raw_noisemap --if-exists replace $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_F_C_LN_S_033/N_BRUIT_ZBRD_INFRA_F_C_LN_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_R_C_LD_S_033/N_BRUIT_ZBRD_INFRA_R_C_LD_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_R_A_LN_S_033/N_BRUIT_ZBRD_INFRA_R_A_LN_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_F_A_LD_S_033/N_BRUIT_ZBRD_INFRA_F_A_LD_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_F_A_LN_S_033/N_BRUIT_ZBRD_INFRA_F_A_LN_S_033.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033.shp raw_noisemap --if-exists replace $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_F_C_LN_S_033/N_BRUIT_ZBRD_INFRA_F_C_LN_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_C_LD_S_033/N_BRUIT_ZBRD_INFRA_R_C_LD_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_A_LN_S_033/N_BRUIT_ZBRD_INFRA_R_A_LN_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_F_A_LD_S_033/N_BRUIT_ZBRD_INFRA_F_A_LD_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_F_A_LN_S_033/N_BRUIT_ZBRD_INFRA_F_A_LN_S_033.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033.shp raw_noisemap $RENAME_INFRA"
 )
 
 FILES_AGGLO_033=(
@@ -53,10 +54,10 @@ FILES_AGGLO_033=(
 )
 
 FILES_SOUNDCLASS=(
-  "inputs/soundclassification/SNCF/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_sncf --if-exists replace"
-  "inputs/soundclassification/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace"
-  "inputs/soundclassification/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace"
-  "inputs/soundclassification/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace"
+  "inputs/soundclassification/AGGLO_033/FER/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_fer --if-exists replace"
+  "inputs/soundclassification/AGGLO_033/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace"
+  "inputs/soundclassification/AGGLO_033/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace"
+  "inputs/soundclassification/AGGLO_033/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace"
 )
 
 FILES_PEB=(
