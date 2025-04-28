@@ -4,6 +4,7 @@ import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import { tss } from "tss-react/dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import DiagnosticEvaluation from "./DiagnosticEvaluation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -19,6 +20,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       <div className={cx(classes.container)}>
         <DiagnosticHero diagnosticItem={diagnosticItem} />
         <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
+        <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
         {/* TO REMOVE */}
         <Accordion label="Voir le retour de l'API">
           <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
