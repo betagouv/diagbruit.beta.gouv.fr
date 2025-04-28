@@ -1,5 +1,3 @@
-// src/constants/legal.ts
-
 export const LEGAL_TEXTS = {
   NO_IMPACT:
     "La parcelle n’est concernée par aucune obligation réglementaire acoustique liée au bruit des transports (classement sonore ; Plan d’Exposition au Bruit).",
