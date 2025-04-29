@@ -1,96 +1,148 @@
-import { useEffect, useState } from "react";
-import { fr } from "@codegouvfr/react-dsfr";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { tss } from "tss-react/dsfr";
+import { fr } from "@codegouvfr/react-dsfr";
 
-type ParcelleSearchProps = {
+const parcelleSchema = z.object({
+  codeInsee: z.string().regex(/^\d{5}$/, "Code INSEE (5 chiffres)"),
+  prefix: z.string().regex(/^\d{3}$/, "Préfixe (3 chiffres)"),
+  section: z.string().regex(/^[A-Z]{2}$/, "Section (2 lettres majuscules)"),
+  numero: z.string().regex(/^\d{4}$/, "Numéro (4 chiffres)"),
+});
+
+type ParcelleFormData = z.infer<typeof parcelleSchema>;
+
+interface ParcelleSearchProps {
   onParcelleRequested: (response: { data?: any; error?: any }) => void;
-  formValues: {
-    codeInsee: string;
-    section: string;
-    numero: string;
-  };
-};
+  onChange: () => void;
+  formValues: ParcelleFormData;
+}
 
 const ParcelleSearch = ({
   onParcelleRequested,
+  onChange,
   formValues,
 }: ParcelleSearchProps) => {
   const { cx, classes } = useStyles();
 
-  const [codeInsee, setCodeInsee] = useState("");
-  const [section, setSection] = useState("");
-  const [numero, setNumero] = useState("");
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    trigger,
+    formState: { errors, isValid },
+  } = useForm<ParcelleFormData>({
+    resolver: zodResolver(parcelleSchema),
+    mode: "all",
+    defaultValues: formValues,
+  });
 
-  const canSearch = !!codeInsee && !!section && !!numero;
-
-  const handleSearch = async () => {
+  const onSubmit = async (data: ParcelleFormData) => {
+    const { codeInsee, section, numero } = data;
     const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${section}&numero=${numero}`;
 
     try {
       const response = await fetch(url);
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      onParcelleRequested({ data });
+      const responseData = await response.json();
+      onParcelleRequested({ data: responseData });
     } catch (error) {
       onParcelleRequested({ error });
     }
   };
 
   useEffect(() => {
-    setCodeInsee(formValues.codeInsee);
-    setSection(formValues.section);
-    setNumero(formValues.numero);
-  }, [formValues]);
+    Object.entries(formValues).forEach(([key, value]) => {
+      setValue(key as keyof ParcelleFormData, value);
+    });
+    trigger();
+  }, [formValues, setValue, trigger]);
 
   return (
     <div className={cx(classes.container)}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSearch();
-        }}
-      >
-        <Input
-          label="Code insee commune"
-          state="default"
-          stateRelatedMessage="Texte d’erreur obligatoire"
-          nativeInputProps={{
-            inputMode: "numeric",
-            pattern: "[0-9]{5}",
-            type: "number",
-            value: codeInsee,
-            onChange: (e) => setCodeInsee(e.target.value),
-          }}
-        />
-        <Input
-          label="Section"
-          state="default"
-          nativeInputProps={{
-            pattern: "[A-Z]{2}",
-            value: section,
-            onChange: (e) => setSection(e.target.value.toUpperCase()),
-          }}
-        />
-        <Input
-          label="Numéro de parcelle"
-          state="default"
-          nativeInputProps={{
-            inputMode: "numeric",
-            pattern: "[0-9]{4}",
-            type: "number",
-            value: numero,
-            onChange: (e) => setNumero(e.target.value),
-          }}
-        />
-        <Button type={"submit"} disabled={!canSearch}>
+      <form onSubmit={handleSubmit(onSubmit)} onChange={onChange}>
+        {Object.entries(fieldsConfig).map(([name, config]) => (
+          <Controller
+            key={name}
+            name={name as keyof ParcelleFormData}
+            control={control}
+            render={({ field }) => (
+              <Input
+                label={config.label}
+                state={
+                  errors[name as keyof ParcelleFormData] ? "info" : "success"
+                }
+                hintText={config.hintText}
+                stateRelatedMessage={config.patternText}
+                nativeInputProps={{
+                  ...field,
+                  ...config.nativeInputProps,
+                }}
+              />
+            )}
+          />
+        ))}
+
+        <Button type="submit" disabled={!isValid}>
           Rechercher
         </Button>
       </form>
     </div>
   );
+};
+
+const fieldsConfig: Record<
+  string,
+  {
+    label: string;
+    hintText: string;
+    patternText: string;
+    nativeInputProps: Partial<React.InputHTMLAttributes<HTMLInputElement>>;
+  }
+> = {
+  codeInsee: {
+    label: "Code INSEE",
+    hintText: "Saisissez le code INSEE de la commune",
+    patternText: "Exemple : 44000, 75001",
+    nativeInputProps: {
+      inputMode: "numeric",
+      pattern: "\\d{5}",
+      type: "text",
+    },
+  },
+  prefix: {
+    label: "Préfixe",
+    patternText: "Exemple : 000, 001",
+    hintText: "Saisissez les références de préfixe",
+    nativeInputProps: {
+      pattern: "\\d{3}",
+      type: "text",
+    },
+  },
+  section: {
+    label: "Numéro de section",
+    patternText: "Saisir une référence : AO, AA...",
+    hintText: "Saisissez les références de section",
+    nativeInputProps: {
+      pattern: "[A-Z]{2}",
+      type: "text",
+    },
+  },
+  numero: {
+    label: "Numéro de parcelle",
+    hintText: "Saisissez les références de parcelle",
+    patternText: "Exemple : 0545, 01",
+    nativeInputProps: {
+      inputMode: "numeric",
+      pattern: "\\d{4}",
+      type: "text",
+    },
+  },
 };
 
 const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
@@ -99,9 +151,30 @@ const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
       display: "flex",
       flexDirection: "row",
       gap: fr.spacing("6v"),
+      alignItems: "center",
       button: {
-        alignSelf: "flex-end",
-        marginBottom: fr.spacing("6v"),
+        marginBottom: fr.spacing("1v"),
+      },
+      ".fr-input-group": {
+        "&::before": {
+          backgroundImage: "none",
+        },
+        ".fr-label": {
+          color: `${fr.colors.decisions.text.actionHigh.grey.default} !important`,
+        },
+      },
+      "@media screen and (max-width: 768px)": {
+        flexDirection: "column",
+        alignItems: "start",
+        gap: 0,
+        button: {
+          width: "100%",
+          justifyContent: "center",
+          marginBottom: fr.spacing("6v"),
+        },
+        ".fr-input-group": {
+          width: "100%",
+        },
       },
     },
   },

@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Dispatch, useEffect, useRef, useState } from "react";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
@@ -16,6 +17,7 @@ function DiagnosticPage() {
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
 
+  const [parcelleError, setParcelleError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
     DiagnosticItem[]
@@ -23,6 +25,7 @@ function DiagnosticPage() {
 
   const [searchValues, setSearchValues] = useState({
     codeInsee: "",
+    prefix: "000",
     section: "",
     numero: "",
   });
@@ -79,6 +82,7 @@ function DiagnosticPage() {
         commune,
         section: tmpSection,
         numero: tmpNumero,
+        prefixe,
       } = parcelle.properties;
       const numero = tmpNumero.toString().padStart(4, "0");
       const section = tmpSection.toString().padStart(2, "0");
@@ -86,6 +90,7 @@ function DiagnosticPage() {
       setSearchValues({
         codeInsee: commune,
         section: section,
+        prefix: prefixe,
         numero: numero,
       });
     }
@@ -99,26 +104,44 @@ function DiagnosticPage() {
         </div>
       )}
       <div className={cx(classes.container, fr.cx("fr-container"))}>
-        <h1>⚡ Le diagnostic flash DiagBruit</h1>
-        <ParcelleSearch
-          formValues={searchValues}
-          onParcelleRequested={(response) => {
-            if (response.data?.features[0]) {
-              const parcelleFeature = response.data?.features[0];
-              onParcelleSelected(parcelleFeature);
-            }
-          }}
-        />
+        <h1 className={fr.cx("fr-mb-4v")}>Votre recherche de parcelle</h1>
+        {parcelleError && (
+          <Alert
+            className={fr.cx("fr-my-4v")}
+            description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
+            onClose={function noRefCheck() {}}
+            severity="error"
+            title="Votre recherche n’est pas référencée dans diagBruit"
+          />
+        )}
+        <div className={fr.cx("fr-mt-4v")}>
+          <ParcelleSearch
+            formValues={searchValues}
+            onChange={() => {
+              setParcelleError(false);
+            }}
+            onParcelleRequested={(response) => {
+              if (response.data?.features[0]) {
+                const parcelleFeature = response.data?.features[0];
+                onParcelleSelected(parcelleFeature);
+              } else {
+                setParcelleError(true);
+              }
+            }}
+          />
+        </div>
         <MapComponent
           ref={mapMethodsRef}
           onDiagnosticsChange={onDiagnosticsChange}
           onLoading={onLoading}
         />
         {diagnosticsResponses && diagnosticsResponses[0] && (
-          <Diagnostic
-            diagnosticItem={diagnosticsResponses[0]}
-            isLoading={false}
-          />
+          <div className={fr.cx("fr-mt-6v")}>
+            <Diagnostic
+              diagnosticItem={diagnosticsResponses[0]}
+              isLoading={false}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -129,7 +152,6 @@ const useStyles = tss.withName(DiagnosticPage.name).create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
-    gap: fr.spacing("6v"),
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",

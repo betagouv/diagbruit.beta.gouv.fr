@@ -16,7 +16,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   return (
     <div>
-      <h2>Votre diagnostic</h2>
+      <h2>Votre diagnostic diagBruit</h2>
       <div className={cx(classes.container)}>
         <DiagnosticHero diagnosticItem={diagnosticItem} />
         <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
