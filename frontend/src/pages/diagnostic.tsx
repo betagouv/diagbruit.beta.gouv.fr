@@ -145,7 +145,7 @@ function DiagnosticPage() {
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
             onClose={function noRefCheck() {}}
             severity="error"
-            title="Votre recherche n’est pas référencée dans diagBruit"
+            title="Votre recherche n’est pas référencée dans DiagBruit"
           />
         )}
         <div className={fr.cx("fr-mt-4v")}>

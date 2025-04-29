@@ -15,7 +15,7 @@ function HomePage() {
       </div>
       <div className={cx(classes.subtitle, fr.cx("fr-mt-6v"))}>
         <img src="/images/search.svg" />
-        <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
+        <h2>Rechercher une parcelle et obtenir son diagnostic DiagBruit</h2>
       </div>
       <p className={cx(classes.searchText)}>
         Effectuez une <b>recherche avancée de parcelle</b>

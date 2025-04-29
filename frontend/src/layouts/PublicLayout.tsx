@@ -21,10 +21,20 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </>
         }
         serviceTitle="DiagBruit"
+        serviceTagline={
+          <>
+            Intégrer le bruit dans les risques impactant les projets
+            d'aménagement
+          </>
+        }
+        operatorLogo={{
+          alt: "Cerema, climat et territoires de demain",
+          imgUrl: "images/cerema.svg",
+          orientation: "horizontal",
+        }}
         homeLinkProps={{
           href: "/",
-          title:
-            "Accueil - DiagBruit (ministère, secrétariat d‘état, gouvernement)",
+          title: "Accueil - DiagBruit",
         }}
         id="fr-header-simple-header"
       />
