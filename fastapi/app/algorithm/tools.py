@@ -4,9 +4,11 @@ from pathlib import Path
 default_diagnostic = {
     'score': 0,
     'max_db_lden': 0,
+    'min_db_lden': 0,
     'flags': {
         'hasClassificationWarning': False,
         'isMultiExposedSources': False,
+        'isMultiExposedDistinctTypeSources': False,
         'isMultiExposedLdenLn': False,
         'isPriorityZone': False
     },
@@ -43,7 +45,8 @@ def get_filtered_land_intersections(noisemap_intersections):
 
 
 def filter_land_intersections_by_codeinfra(intersections):
-    intersections_with_cbstype_a = [item for item in intersections if item.get('cbstype') == 'A']
+    # Ask martin : "Pourquoi j'avais mis que cbstype A de base ?"
+    intersections_with_cbstype_a = [item for item in intersections if item.get('cbstype') == 'A' or item.get('cbstype') == 'C']
 
     filtered = {}
 
@@ -57,12 +60,14 @@ def filter_land_intersections_by_codeinfra(intersections):
     results = list(filtered.values())
     codeinfra_not_null = [item for item in results if item.get('codeinfra') is not None]
 
-    if codeinfra_not_null:
-        return codeinfra_not_null
-    elif results:
-        return [results[0]]
-    else:
-        return []
+    sorted_results = sorted(
+        codeinfra_not_null if codeinfra_not_null else ([results[0]] if results else []),
+        key=lambda x: x.get('legende', ''),
+        reverse=True
+    )
+
+    return sorted_results
+
 
 def filter_air_intersections_by_zone(intersections):
     if not intersections:

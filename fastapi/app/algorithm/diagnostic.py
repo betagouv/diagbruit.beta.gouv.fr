@@ -59,6 +59,10 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         all_sources,
         key=lambda x: x['legende']
     )['legende'] if len(all_sources) else 0
+    diagnostic['min_db_lden'] = min(
+        all_sources,
+        key=lambda x: x['legende']
+    )['legende'] if len(all_sources) else 0
 
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
@@ -68,6 +72,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Flags : multiExposed
     diagnostic['flags']['isMultiExposedSources'] = len(diagnostic['land_intersections_ld'] + diagnostic['air_intersections']) > 1
+    diagnostic['flags']['isMultiExposedDistinctTypeSources'] = len({i.get('typesource') for i in diagnostic['land_intersections_ld'] if i.get('typesource')}) > 1
     diagnostic['flags']['isMultiExposedLdenLn'] = len(diagnostic['land_intersections_ld'] + diagnostic['land_intersections_ln']) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
     diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)

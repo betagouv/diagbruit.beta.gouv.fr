@@ -142,6 +142,7 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
     display: "flex",
     ul: {
       marginTop: fr.spacing("4v"),
+      marginLeft: fr.spacing("4v"),
       li: {
         lineHeight: "1.75rem",
         "&:not(:last-child)": {

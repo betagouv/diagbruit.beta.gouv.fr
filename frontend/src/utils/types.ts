@@ -16,6 +16,7 @@ export type Parcelle = {
 export type Diagnostic = {
   score: number;
   max_db_lden: number;
+  min_db_lden: number;
   flags: DiagnosticFlags;
   land_intersections_ld: LandIntersection[];
   land_intersections_ln: LandIntersection[];
@@ -27,6 +28,7 @@ export type Diagnostic = {
 export type DiagnosticFlags = {
   hasClassificationWarning: boolean;
   isMultiExposedSources: boolean;
+  isMultiExposedDistinctTypeSources: boolean;
   isMultiExposedLdenLn: boolean;
   isPriorityZone: boolean;
 };

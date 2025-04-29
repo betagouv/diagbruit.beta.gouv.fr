@@ -1,8 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
-import { LEGAL_TEXTS } from "../../utils/texts/legal";
-import { getReadableSource } from "../../utils/tools";
+import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
+import { getReadableSource, replacePlaceholders } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
+import { Table } from "@codegouvfr/react-dsfr/Table";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -14,14 +15,42 @@ const DiagnosticEvaluation = ({
   const { cx, classes } = useStyles();
 
   const {
-    diagnostic: { soundclassification_intersections, air_intersections },
+    diagnostic: {
+      max_db_lden,
+      min_db_lden,
+      land_intersections_ld,
+      land_intersections_ln,
+      air_intersections,
+      flags,
+    },
   } = diagnosticItem;
 
-  const getSoundClassificationHeaderLine = () => {
-    const hasMany = soundclassification_intersections.length > 1;
-    return hasMany
-      ? LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION.MULTIPLE_IMPACTS
-      : LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION.SINGLE_IMPACT;
+  const getDbLevelsSpecification = () => {
+    const dbBuffer = 10;
+    return (
+      " " +
+      (max_db_lden > min_db_lden + dbBuffer
+        ? EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_VARIATION_HIGH
+        : EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_VARIATION_LOW)
+    );
+  };
+
+  const getMultiExposedLdenLnSpecification = () => {
+    const dbBuffer = 10;
+
+    const ldenDb = land_intersections_ld[0].legende;
+    const lnDb = land_intersections_ln[0].legende + dbBuffer;
+
+    if (ldenDb === lnDb) {
+      return ".";
+    }
+
+    return (
+      " " +
+      (ldenDb > lnDb
+        ? EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT.NIGHT_LOWER
+        : EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT.DAY_LOWER)
+    );
   };
 
   return (
@@ -39,68 +68,115 @@ const DiagnosticEvaluation = ({
           <h2 className={fr.cx("fr-h5")}>
             2. Évaluation du risque selon DiagBruit
           </h2>
-          {soundclassification_intersections.length > 0 && (
-            <>
-              <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
-                Classement sonore
-              </h3>
-              <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
-                {getSoundClassificationHeaderLine()}
-                {soundclassification_intersections.length > 0 && (
-                  <>
-                    <ul>
-                      {soundclassification_intersections.map(
-                        (soundClassification, index) => {
-                          const { codeinfra, typesource, distance } =
-                            soundClassification;
-                          return (
-                            <li key={index}>
-                              La parcelle se situe à <b>{distance}</b> mètre
-                              {distance > 1 ? "s" : ""} de la source{" "}
-                              <b>"{codeinfra}"</b> de catégorie{" "}
-                              <b>"{getReadableSource(typesource)}"</b>.
-                            </li>
-                          );
+          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Informations sur le risque
+          </h3>
+          <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
+            {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}
+            <ul>
+              <li
+                dangerouslySetInnerHTML={{
+                  __html: flags.isMultiExposedDistinctTypeSources
+                    ? replacePlaceholders(
+                        EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                          .MULTI_EXPOSURE,
+                        {
+                          sources: Array.from(
+                            new Set(
+                              land_intersections_ld.map(
+                                (intersection) =>
+                                  `<b>${getReadableSource(
+                                    intersection.typesource
+                                  )}</b>`
+                              )
+                            )
+                          ).join(" et "),
                         }
-                      )}
-                    </ul>
-                    <p className={fr.cx("fr-mb-0")}>
-                      {LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}
-                    </p>
-                  </>
-                )}
-              </p>
-            </>
-          )}
-          {air_intersections.length > 0 && (
-            <>
-              <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Plan d'exposition au bruit aérien
-              </h3>
-              <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
-                La parcelle est situé dans un secteur du Plan d’Exposition au
-                Bruit de "<b>{air_intersections[0].nom}</b>" :
-                <ul className={fr.cx("fr-mb-0")}>
-                  <li>zone : {air_intersections[0].zone}</li>
-                  <li>
-                    Code de l’urbanisme dédié au PEB :{" "}
-                    <a
-                      href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210273"
-                      target="_blank"
-                    >
-                      article L112-10 du code de l’urbanisme
-                    </a>
-                  </li>
-                </ul>
-              </p>
-            </>
-          )}
-          {air_intersections.length === 0 &&
-            soundclassification_intersections.length === 0 && (
-              <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
-                {LEGAL_TEXTS.NO_IMPACT}
-              </p>
+                      )
+                    : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                        .NO_MULTI_EXPOSURE,
+                }}
+              />
+              {!!land_intersections_ld[0] && (
+                <li
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      land_intersections_ld[0].typeterr === "INFRA"
+                        ? replacePlaceholders(
+                            EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                              .MAIN_SOURCE_INFRA,
+                            {
+                              typesource: getReadableSource(
+                                land_intersections_ld[0].typesource
+                              ),
+                              codinfra:
+                                land_intersections_ld[0].codeinfra || "",
+                            }
+                          )
+                        : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                            .MAIN_SOURCE_AGGLO,
+                  }}
+                />
+              )}
+              {flags.isMultiExposedLdenLn && (
+                <li
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT
+                        .INFO + getMultiExposedLdenLnSpecification(),
+                  }}
+                />
+              )}
+              <li
+                dangerouslySetInnerHTML={{
+                  __html:
+                    replacePlaceholders(
+                      EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_INFO,
+                      {
+                        levelMax: max_db_lden,
+                        levelMin: min_db_lden,
+                      }
+                    ) + getDbLevelsSpecification(),
+                }}
+              />
+              <li
+                dangerouslySetInnerHTML={{
+                  __html: flags.isPriorityZone
+                    ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
+                        .IN_PRIORITY_ZONE
+                    : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
+                        .NOT_IN_PRIORITY_ZONE,
+                }}
+              />
+            </ul>
+          </p>
+          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Cartes de bruit
+          </h3>
+          <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
+            mollitia voluptate consequatur placeat obcaecati. Doloribus,
+            obcaecati provident, facere perspiciatis labore commodi eum,
+            suscipit itaque blanditiis odio beatae. Vero, itaque nemo!
+          </p>
+          <div className={cx(classes.sourcesTable)}>
+            {flags.isMultiExposedSources && (
+              <Table
+                caption="Tableau de synthèse des niveaux de bruit par source"
+                noCaption
+                data={land_intersections_ld.map((intersection) => [
+                  getReadableSource(intersection.typesource, true),
+                  intersection.codeinfra || "Non connu",
+                  intersection.legende,
+                ])}
+                headers={[
+                  "Type de source",
+                  "Nom de la source",
+                  "Niveau de bruit (dB)",
+                ]}
+              />
             )}
+          </div>
         </div>
       </div>
     </div>
@@ -112,6 +188,7 @@ const useStyles = tss.withName(DiagnosticEvaluation.name).create(() => ({
     display: "flex",
     ul: {
       marginTop: fr.spacing("4v"),
+      marginLeft: fr.spacing("4v"),
       li: {
         lineHeight: "1.75rem",
         "&:not(:last-child)": {
@@ -137,6 +214,11 @@ const useStyles = tss.withName(DiagnosticEvaluation.name).create(() => ({
     "@media screen and (max-width: 768px)": {
       paddingTop: fr.spacing("2v"),
     },
+  },
+  sourcesTable: {
+    marginTop: fr.spacing("8v"),
+    display: "flex",
+    justifyContent: "center",
   },
 }));
 

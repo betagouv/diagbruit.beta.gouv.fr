@@ -32,18 +32,21 @@ export const getIconeFromScore = (
   return "ri-checkbox-circle-fill";
 };
 
-export const getReadableSource = (source: string): string => {
+export const getReadableSource = (
+  source: string,
+  capitalize?: boolean
+): string => {
   switch (source) {
     case "A":
-      return "aérien";
+      return capitalize ? "Aérien" : "aérien";
     case "T":
-      return "tramway";
+      return capitalize ? "Tramway" : "tramway";
     case "R":
-      return "route";
+      return capitalize ? "Route" : "route";
     case "F":
-      return "féroviaire";
+      return capitalize ? "Fer" : "fer";
     case "I":
-      return "industrie";
+      return capitalize ? "Industrie" : "industrie";
     default:
       return source;
   }
@@ -137,3 +140,13 @@ export const getSummaryTextFromDiagnostic = (
 
   return getSummaryIntroduction(risk) + content + getSummaryConclusion(risk);
 };
+
+export function replacePlaceholders(
+  text: string,
+  values: Record<string, string | number>
+): string {
+  return text.replace(/{{(.*?)}}/g, (_, key) => {
+    const cleanKey = key.trim();
+    return values[cleanKey]?.toString() ?? "";
+  });
+}
