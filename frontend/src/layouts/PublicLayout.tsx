@@ -1,11 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Header from "@codegouvfr/react-dsfr/Header";
+import Footer from "@codegouvfr/react-dsfr/Footer";
+import { tss } from "tss-react/dsfr";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
 };
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
+  const { cx, classes } = useStyles();
+
   return (
     <main>
       <Header
@@ -24,9 +28,23 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         id="fr-header-simple-header"
       />
-      <div className={fr.cx("fr-container", "fr-py-10v")}>{children}</div>
+      <div
+        className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
+      >
+        {children}
+      </div>
+      <Footer
+        accessibility="non compliant"
+        contentDescription="DiagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
+      />
     </main>
   );
 };
+
+const useStyles = tss.withName(PublicLayout.name).create(() => ({
+  container: {
+    minHeight: "85vh",
+  },
+}));
 
 export default PublicLayout;
