@@ -124,8 +124,8 @@ export const SUMMARY_TEXTS = {
     },
   },
 
-  NO_ISSUE: `<p>Le bruit des transport n'est pas un enjeu sur cette parcelle.</p>`,
-  NO_ISSUE_WITH_ISOLATION: `<p>Le bruit des transport n'est pas un enjeu sur cette parcelle, bien qu'elle soit <b>soumise à une obligation règlementaire d'isolation.</b></p>`,
+  NO_ISSUE: `<p>Le bruit des transports n'est pas un enjeu sur cette parcelle.</p>`,
+  NO_ISSUE_WITH_ISOLATION: `<p>Le bruit des transports n'est pas un enjeu sur cette parcelle, bien qu'elle soit <b>soumise à une obligation règlementaire d'isolation.</b></p>`,
 
   CLASSIFICATION_WARNING: `
       <p>Cette parcelle est soumise à une carte de bruit des grandes infrastructure de transport terrestres (route de plus de 8200 veh/j ou voie ferrée de plus de 82 trains par jours) mais n'est pas soumise au classement sonore.</p>
