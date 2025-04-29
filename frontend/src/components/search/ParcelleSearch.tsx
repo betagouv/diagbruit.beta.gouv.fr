@@ -17,9 +17,12 @@ const parcelleSchema = z.object({
 type ParcelleFormData = z.infer<typeof parcelleSchema>;
 
 interface ParcelleSearchProps {
-  onParcelleRequested: (response: { data?: any; error?: any }) => void;
-  onChange: () => void;
-  formValues: ParcelleFormData;
+  onParcelleRequested: (
+    response: { data?: any; error?: any },
+    values: ParcelleFormData
+  ) => void;
+  onChange?: () => void;
+  formValues?: ParcelleFormData;
 }
 
 const ParcelleSearch = ({
@@ -53,19 +56,19 @@ const ParcelleSearch = ({
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const responseData = await response.json();
-      onParcelleRequested({ data: responseData });
+      onParcelleRequested({ data: responseData }, data);
     } catch (error) {
-      onParcelleRequested({ error });
+      onParcelleRequested({ error }, data);
     }
     setIsLoading(false);
   };
 
-  console.log(isLoading);
-
   useEffect(() => {
-    Object.entries(formValues).forEach(([key, value]) => {
-      setValue(key as keyof ParcelleFormData, value);
-    });
+    if (formValues) {
+      Object.entries(formValues).forEach(([key, value]) => {
+        setValue(key as keyof ParcelleFormData, value);
+      });
+    }
     trigger();
   }, [formValues, setValue, trigger]);
 

@@ -1,12 +1,5 @@
-import Map, {
-  MapGeoJSONFeature,
-  MapInstance,
-  MapLayerMouseEvent,
-  MapRef,
-  StyleSpecification,
-} from "react-map-gl/maplibre";
+import { centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
-import orthoStyle from "./styles/ortho.json";
 import {
   Dispatch,
   forwardRef,
@@ -16,21 +9,23 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  computeParcelleSiblings,
-  getNearbySiblings,
-  mergeCoordinatesByParcelle,
-  updateFeatureState,
-} from "../../utils/map";
+import Map, {
+  MapGeoJSONFeature,
+  MapInstance,
+  MapLayerMouseEvent,
+  MapRef,
+  StyleSpecification,
+} from "react-map-gl/maplibre";
+import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
+import { getRiskFromScore } from "../../utils/tools";
+import { DiagnosticItem } from "../../utils/types";
 import usePrevious from "../hooks/previous";
+import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
 import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
-import { DiagnosticItem } from "../../utils/types";
-import { getRiskFromScore } from "../../utils/tools";
-import { centroid } from "@turf/turf";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -50,6 +45,7 @@ export type HoverInfo = {
 type MapComponentProps = {
   onDiagnosticsChange: (newDiagnostics: DiagnosticItem[]) => void;
   onLoading: (loading: boolean) => void;
+  onReady: () => void;
 };
 
 export interface ExposedMapMethods {
@@ -62,7 +58,7 @@ export interface ExposedMapMethods {
 }
 
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
-  ({ onDiagnosticsChange, onLoading }, ref) => {
+  ({ onDiagnosticsChange, onLoading, onReady }, ref) => {
     const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
     const [parcelleSiblings, setParcelleSiblings] = useState<
       MapGeoJSONFeature[]
@@ -191,6 +187,12 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         handleDiagnostics();
       }
     }, [isMapLoaded, response]);
+
+    useEffect(() => {
+      if (isMapLoaded) {
+        onReady();
+      }
+    }, [isMapLoaded]);
 
     useEffect(() => {
       const geometry = parcelle?.geometry as any;

@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Dispatch, useEffect, useRef, useState } from "react";
-import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
+import { useEffect, useRef, useState } from "react";
+import { MapGeoJSONFeature } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
@@ -11,12 +11,15 @@ import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { DiagnosticItem } from "../utils/types";
+import { useLocation } from "react-router-dom";
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
+  const location = useLocation();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
 
+  const [isMapReady, setIsMapReady] = useState(false);
   const [parcelleError, setParcelleError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
@@ -96,6 +99,37 @@ function DiagnosticPage() {
     }
   }, [mapMethodsRef.current?.parcelle]);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const parcelleParam = searchParams.get("parcelle");
+
+    if (!isMapReady) return;
+
+    try {
+      const parcelleFeature = parcelleParam && JSON.parse(parcelleParam);
+      if (
+        parcelleFeature &&
+        typeof parcelleFeature === "object" &&
+        "geometry" in parcelleFeature
+      ) {
+        setIsLoading(true);
+        onParcelleSelected(parcelleFeature);
+      } else {
+        if (parcelleFeature.errorFrom) {
+          setSearchValues({
+            codeInsee: parcelleFeature.errorFrom.codeInsee,
+            prefix: parcelleFeature.errorFrom.prefix,
+            section: parcelleFeature.errorFrom.section,
+            numero: parcelleFeature.errorFrom.numero,
+          });
+        }
+        setParcelleError(true);
+      }
+    } catch {
+      setParcelleError(true);
+    }
+  }, [location.search, isMapReady]);
+
   return (
     <div>
       {isLoading && (
@@ -121,7 +155,6 @@ function DiagnosticPage() {
               setParcelleError(false);
             }}
             onParcelleRequested={(response) => {
-              console.log("there");
               setDiagnosticsResponses([]);
               if (response.data?.features[0]) {
                 const parcelleFeature = response.data?.features[0];
@@ -136,6 +169,9 @@ function DiagnosticPage() {
           ref={mapMethodsRef}
           onDiagnosticsChange={onDiagnosticsChange}
           onLoading={onLoading}
+          onReady={() => {
+            setIsMapReady(true);
+          }}
         />
         {diagnosticsResponses && diagnosticsResponses[0] && (
           <div className={fr.cx("fr-mt-6v")}>
@@ -163,6 +199,7 @@ const useStyles = tss.withName(DiagnosticPage.name).create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
+    marginTop: fr.spacing("8v"),
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
