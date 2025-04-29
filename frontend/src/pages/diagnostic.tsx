@@ -103,7 +103,7 @@ function DiagnosticPage() {
           <Loader text="Nous générons votre diagnostic..." />
         </div>
       )}
-      <div className={cx(classes.container, fr.cx("fr-container"))}>
+      <div className={cx(classes.container)}>
         <h1 className={fr.cx("fr-mb-4v")}>Votre recherche de parcelle</h1>
         {parcelleError && (
           <Alert
@@ -121,6 +121,8 @@ function DiagnosticPage() {
               setParcelleError(false);
             }}
             onParcelleRequested={(response) => {
+              console.log("there");
+              setDiagnosticsResponses([]);
               if (response.data?.features[0]) {
                 const parcelleFeature = response.data?.features[0];
                 onParcelleSelected(parcelleFeature);
@@ -142,6 +144,15 @@ function DiagnosticPage() {
               isLoading={false}
             />
           </div>
+        )}
+        {!diagnosticsResponses.length && parcelleError && (
+          <Alert
+            className={fr.cx("fr-mt-6v")}
+            description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
+            onClose={function noRefCheck() {}}
+            severity="info"
+            title="Vous ne trouvez pas votre parcelle ?"
+          />
         )}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,8 @@ const ParcelleSearch = ({
 }: ParcelleSearchProps) => {
   const { cx, classes } = useStyles();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     handleSubmit,
     control,
@@ -45,6 +47,7 @@ const ParcelleSearch = ({
     const { codeInsee, section, numero } = data;
     const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${section}&numero=${numero}`;
 
+    setIsLoading(true);
     try {
       const response = await fetch(url);
       if (!response.ok)
@@ -54,7 +57,10 @@ const ParcelleSearch = ({
     } catch (error) {
       onParcelleRequested({ error });
     }
+    setIsLoading(false);
   };
+
+  console.log(isLoading);
 
   useEffect(() => {
     Object.entries(formValues).forEach(([key, value]) => {
@@ -88,8 +94,12 @@ const ParcelleSearch = ({
           />
         ))}
 
-        <Button type="submit" disabled={!isValid}>
-          Rechercher
+        <Button type="submit" disabled={!isValid || isLoading}>
+          {isLoading ? (
+            <i className={fr.cx("ri-loader-4-line")} />
+          ) : (
+            "Rechercher"
+          )}
         </Button>
       </form>
     </div>
@@ -154,6 +164,12 @@ const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
       alignItems: "center",
       button: {
         marginBottom: fr.spacing("1v"),
+        flexGrow: 1,
+        justifyContent: "center",
+        i: {
+          display: "inline-block",
+          animation: "spin 1s linear infinite",
+        },
       },
       ".fr-input-group": {
         "&::before": {
@@ -169,7 +185,6 @@ const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
         gap: 0,
         button: {
           width: "100%",
-          justifyContent: "center",
           marginBottom: fr.spacing("6v"),
         },
         ".fr-input-group": {
