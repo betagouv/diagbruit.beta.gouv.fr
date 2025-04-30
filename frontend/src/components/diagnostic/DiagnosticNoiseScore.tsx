@@ -8,7 +8,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 
 type DiagnosticNoiseScoreProps = {
   score: number;
-  db: number;
+  db?: number;
 };
 
 const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
@@ -17,7 +17,8 @@ const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
   return (
     <div className={cx(classes.container)}>
       <i className={fr.cx(getIconeFromScore(score))} /> RISQUE{" "}
-      {getTextFromScore(score)} - {db} dB Lden
+      {getTextFromScore(score)}
+      {!!db && ` - ${db} dB Lden`}
     </div>
   );
 };

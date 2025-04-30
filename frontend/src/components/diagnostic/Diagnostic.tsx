@@ -5,6 +5,7 @@ import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import { tss } from "tss-react/dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
+import DiagnosticLegend from "./DiagnosticLegend";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -19,6 +20,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       <h2>Votre diagnostic DiagBruit</h2>
       <div className={cx(classes.container)}>
         <DiagnosticHero diagnosticItem={diagnosticItem} />
+        <DiagnosticLegend diagnosticItem={diagnosticItem} />
         <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
         {/* TO REMOVE */}

@@ -8,6 +8,17 @@ function HomePage() {
   const { cx, classes } = useStyles();
   const navigate = useNavigate();
 
+  let formValues;
+
+  if (process.env.NODE_ENV === "development") {
+    formValues = {
+      codeInsee: "44020",
+      prefix: "000",
+      section: "BI",
+      numero: "0148",
+    };
+  }
+
   return (
     <div>
       <div className={fr.cx("fr-mt-10v")}>
@@ -30,6 +41,7 @@ function HomePage() {
             search: `?parcelle=${JSON.stringify(feature)}`,
           });
         }}
+        formValues={formValues}
       />
     </div>
   );
