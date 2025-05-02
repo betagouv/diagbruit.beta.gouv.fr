@@ -150,3 +150,29 @@ export function replacePlaceholders(
     return values[cleanKey]?.toString() ?? "";
   });
 }
+
+export const getReadbleGeoGouvType = (type: string) => {
+  switch (type) {
+    case "street":
+      return "rue";
+    case "municipality":
+      return "ville";
+    case "housenumber":
+      return "numéro";
+    default:
+      return type;
+  }
+};
+
+export const getZoomFromGouvType = (type: string) => {
+  switch (type) {
+    case "street":
+      return 17;
+    case "municipality":
+      return 12;
+    case "housenumber":
+      return 19;
+    default:
+      return 18;
+  }
+};

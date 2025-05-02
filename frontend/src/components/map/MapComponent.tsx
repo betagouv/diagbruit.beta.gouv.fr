@@ -17,7 +17,7 @@ import Map, {
   StyleSpecification,
 } from "react-map-gl/maplibre";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
-import { getRiskFromScore } from "../../utils/tools";
+import { getRiskFromScore, getZoomFromGouvType } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import usePrevious from "../hooks/previous";
 import orthoStyle from "./styles/ortho.json";
@@ -26,6 +26,9 @@ import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
+import AddressSearch, { AddressFeature } from "../search/AddressSearch";
+import { tss } from "tss-react/dsfr";
+import { fr } from "@codegouvfr/react-dsfr";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -59,6 +62,8 @@ export interface ExposedMapMethods {
 
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
   ({ onDiagnosticsChange, onLoading, onReady }, ref) => {
+    const { cx, classes } = useStyles();
+
     const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
     const [parcelleSiblings, setParcelleSiblings] = useState<
       MapGeoJSONFeature[]
@@ -211,7 +216,30 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     }, [map, parcelle]);
 
     return (
-      <div style={{ display: "flex" }}>
+      <div className={classes.container}>
+        <div className={cx(classes.search)}>
+          <label htmlFor="mapSearch">Adresse ou zone géographique</label>
+          <p className={fr.cx("fr-hint-text", "fr-mb-2v")}>
+            Saisissez quelques caractères pour voir des suggestions
+          </p>
+          <AddressSearch
+            placeholder="Cherchez une ville, adresse..."
+            id="mapSearch"
+            onValueSelected={(feature: AddressFeature) => {
+              if (map) {
+                map.flyTo({
+                  center: [
+                    feature.geometry.coordinates[0],
+                    feature.geometry.coordinates[1],
+                  ],
+                  zoom: getZoomFromGouvType(feature.properties.type),
+                  essential: true,
+                  speed: 10,
+                });
+              }
+            }}
+          />
+        </div>
         <Map
           ref={mapRef}
           initialViewState={defaultViewState}
@@ -229,5 +257,20 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     );
   }
 );
+
+const useStyles = tss.withName(MapComponent.name).create(() => ({
+  container: {
+    position: "relative",
+  },
+  search: {
+    position: "absolute",
+    left: fr.spacing("4v"),
+    top: fr.spacing("4v"),
+    width: "40%",
+    zIndex: 99,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    padding: fr.spacing("4v"),
+  },
+}));
 
 export default MapComponent;
