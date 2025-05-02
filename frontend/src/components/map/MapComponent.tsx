@@ -49,6 +49,8 @@ type MapComponentProps = {
   onDiagnosticsChange: (newDiagnostics: DiagnosticItem[]) => void;
   onLoading: (loading: boolean) => void;
   onReady: () => void;
+  onReset: () => void;
+  addressDefaultValue?: AddressFeature;
 };
 
 export interface ExposedMapMethods {
@@ -58,11 +60,17 @@ export interface ExposedMapMethods {
   setParcelleSiblings: Dispatch<
     React.SetStateAction<MapGeoJSONFeature[]>
   > | null;
+  resetAddress?: () => void;
 }
 
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
-  ({ onDiagnosticsChange, onLoading, onReady }, ref) => {
+  (
+    { onDiagnosticsChange, onLoading, onReady, onReset, addressDefaultValue },
+    ref
+  ) => {
     const { cx, classes } = useStyles();
+
+    const addressSearchRef = useRef<{ reset: () => void }>(null);
 
     const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
     const [parcelleSiblings, setParcelleSiblings] = useState<
@@ -82,6 +90,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         parcelle,
         setParcelle,
         setParcelleSiblings,
+        resetAddress: addressSearchRef.current?.reset,
       }),
       [map, parcelle, setParcelle, setParcelleSiblings]
     );
@@ -183,6 +192,25 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       });
     }, [map, parcelle, parcelleSiblings, response]);
 
+    const onAddressSelected = useCallback(
+      (feature: AddressFeature) => {
+        if (map) {
+          map.flyTo({
+            center: [
+              feature.geometry.coordinates[0],
+              feature.geometry.coordinates[1],
+            ],
+            zoom: getZoomFromGouvType(feature.properties.type),
+            essential: true,
+            speed: 10,
+          });
+        }
+
+        onReset();
+      },
+      [map]
+    );
+
     useEffect(() => {
       onLoading(isLoading);
     }, [isLoading]);
@@ -223,21 +251,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
             Saisissez quelques caractères pour voir des suggestions
           </p>
           <AddressSearch
+            ref={addressSearchRef}
             placeholder="Cherchez une ville, adresse..."
             id="mapSearch"
-            onValueSelected={(feature: AddressFeature) => {
-              if (map) {
-                map.flyTo({
-                  center: [
-                    feature.geometry.coordinates[0],
-                    feature.geometry.coordinates[1],
-                  ],
-                  zoom: getZoomFromGouvType(feature.properties.type),
-                  essential: true,
-                  speed: 10,
-                });
-              }
-            }}
+            onValueSelected={onAddressSelected}
+            defaultValue={addressDefaultValue}
           />
         </div>
         <Map

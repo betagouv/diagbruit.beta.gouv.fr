@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, {
+  forwardRef,
+  memo,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import CircularProgress from "@mui/material/CircularProgress";
 import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
 import { getReadbleGeoGouvType } from "../../utils/tools";
@@ -23,9 +29,11 @@ type AddressSearchProps = {
   id: string;
   placeholder: string;
   onValueSelected?: (feature: AddressFeature) => void;
+  limit?: number;
+  defaultValue?: AddressFeature;
 };
 
-const useAddressSearch = () => {
+const useAddressSearch = (limit: number) => {
   const [options, setOptions] = useState<AddressFeature[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +48,7 @@ const useAddressSearch = () => {
       const response = await fetch(
         `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
           query
-        )}&limit=5`
+        )}&limit=${limit}`
       );
       const data = await response.json();
       setOptions(data.features || []);
@@ -73,69 +81,113 @@ const renderAddressOption = (
   );
 };
 
-const AddressSearch: React.FC<AddressSearchProps> = ({
-  className,
-  id,
-  placeholder,
-  onValueSelected,
-}) => {
-  const { cx, classes } = useStyles();
-  const [inputValue, setInputValue] = useState("");
-  const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
-    null
-  );
-  const { options, loading, fetchAddresses } = useAddressSearch();
+const AddressSearch = forwardRef(
+  (
+    {
+      className,
+      id,
+      placeholder,
+      onValueSelected,
+      limit = 5,
+      defaultValue,
+    }: AddressSearchProps,
+    ref: React.Ref<{ reset: () => void }>
+  ) => {
+    const { cx, classes } = useStyles();
+    const [inputValue, setInputValue] = useState("");
+    const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
+      null
+    );
+    const { options, loading, fetchAddresses } = useAddressSearch(limit);
 
-  return (
-    <div className={cx(classes.container, className)}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (onValueSelected && valueSelected) {
-            onValueSelected(valueSelected);
-          }
-        }}
-      >
-        <Autocomplete
-          className={cx(classes.autocomplete)}
-          id={id}
-          options={options}
-          getOptionLabel={(option) => option.properties?.label || ""}
-          filterOptions={(x) => x}
-          noOptionsText="Aucun résultat"
-          onInputChange={(_, value) => {
-            setValueSelected(null);
-            setInputValue(value);
-            fetchAddresses(value);
+    const ignoreInputChange = useRef(false);
+
+    useImperativeHandle(ref, () => ({
+      reset() {
+        setValueSelected(null);
+        setInputValue("");
+        ignoreInputChange.current = true;
+      },
+    }));
+
+    useEffect(() => {
+      if (defaultValue) {
+        setInputValue(defaultValue.properties.label);
+        setValueSelected(defaultValue);
+        ignoreInputChange.current = true;
+      }
+    }, [defaultValue]);
+
+    return (
+      <div className={cx(classes.container, className)}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (onValueSelected && valueSelected) {
+              onValueSelected(valueSelected);
+            }
           }}
-          onChange={(_, value) => {
-            setValueSelected(value);
-          }}
-          renderOption={(props, option) =>
-            renderAddressOption(
-              { ...props, className: cx(classes.autocompleteOption) },
-              option
-            )
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder={placeholder}
-              variant="outlined"
-            />
-          )}
-        />
-        <Button
-          className={fr.cx("fr-px-8v")}
-          type="submit"
-          disabled={!valueSelected}
         >
-          Rechercher
-        </Button>
-      </form>
-    </div>
-  );
-};
+          <Autocomplete
+            className={cx(classes.autocomplete)}
+            id={id}
+            inputValue={inputValue}
+            options={options}
+            getOptionLabel={(option) => option.properties?.label || ""}
+            filterOptions={(x) => x}
+            noOptionsText="Aucun résultat"
+            slotProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: "flip",
+                    enabled: false,
+                  },
+                  {
+                    name: "preventOverflow",
+                    enabled: false,
+                  },
+                ],
+              },
+            }}
+            onInputChange={(_, value) => {
+              if (ignoreInputChange.current) {
+                ignoreInputChange.current = false;
+                return;
+              }
+              setValueSelected(null);
+              setInputValue(value);
+              fetchAddresses(value);
+            }}
+            onChange={(_, value) => {
+              setValueSelected(value);
+            }}
+            renderOption={(props, option) =>
+              renderAddressOption(
+                { ...props, className: cx(classes.autocompleteOption) },
+                option
+              )
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={placeholder}
+                variant="outlined"
+              />
+            )}
+          />
+          <Button
+            className={fr.cx("fr-px-8v")}
+            type="submit"
+            disabled={!valueSelected}
+          >
+            Rechercher
+          </Button>
+        </form>
+      </div>
+    );
+  }
+);
 
 const useStyles = tss.withName(AddressSearch.name).create(() => ({
   container: {
@@ -179,4 +231,4 @@ const useStyles = tss.withName(AddressSearch.name).create(() => ({
   },
 }));
 
-export default AddressSearch;
+export default memo(AddressSearch);

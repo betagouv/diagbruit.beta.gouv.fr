@@ -12,6 +12,15 @@ import { Loader } from "../components/ui/Loader";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { DiagnosticItem } from "../utils/types";
 import { useLocation } from "react-router-dom";
+import { getZoomFromGouvType } from "../utils/tools";
+import { AddressFeature } from "../components/search/AddressSearch";
+
+const defaultSearchValues = {
+  codeInsee: "",
+  prefix: "",
+  section: "",
+  numero: "",
+};
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
@@ -26,12 +35,10 @@ function DiagnosticPage() {
     DiagnosticItem[]
   >([]);
 
-  const [searchValues, setSearchValues] = useState({
-    codeInsee: "",
-    prefix: "000",
-    section: "",
-    numero: "",
-  });
+  const [searchValues, setSearchValues] = useState(defaultSearchValues);
+
+  const [addressDefaultValue, setAddressDefaultValue] =
+    useState<AddressFeature>();
 
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
@@ -78,6 +85,18 @@ function DiagnosticPage() {
     setDiagnosticsResponses(newDiagnostics);
   };
 
+  const reset = () => {
+    if (mapMethodsRef.current?.setParcelle) {
+      mapMethodsRef.current?.setParcelle(null);
+    }
+    if (mapMethodsRef.current?.setParcelleSiblings) {
+      mapMethodsRef.current?.setParcelleSiblings([]);
+    }
+
+    setDiagnosticsResponses([]);
+    setSearchValues(defaultSearchValues);
+  };
+
   useEffect(() => {
     if (mapMethodsRef.current?.parcelle) {
       const { parcelle } = mapMethodsRef.current;
@@ -87,8 +106,11 @@ function DiagnosticPage() {
         numero: tmpNumero,
         prefixe,
       } = parcelle.properties;
+      console.log(parcelle.properties);
       const numero = tmpNumero.toString().padStart(4, "0");
       const section = tmpSection.toString().padStart(2, "0");
+
+      setParcelleError(false);
 
       setSearchValues({
         codeInsee: commune,
@@ -102,31 +124,58 @@ function DiagnosticPage() {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const parcelleParam = searchParams.get("parcelle");
+    const addressParam = searchParams.get("address");
 
-    if (!isMapReady) return;
+    if (!isMapReady || !(parcelleParam || addressParam)) return;
 
-    try {
-      const parcelleFeature = parcelleParam && JSON.parse(parcelleParam);
-      if (
-        parcelleFeature &&
-        typeof parcelleFeature === "object" &&
-        "geometry" in parcelleFeature
-      ) {
-        setIsLoading(true);
-        onParcelleSelected(parcelleFeature);
-      } else {
-        if (parcelleFeature.errorFrom) {
-          setSearchValues({
-            codeInsee: parcelleFeature.errorFrom.codeInsee,
-            prefix: parcelleFeature.errorFrom.prefix,
-            section: parcelleFeature.errorFrom.section,
-            numero: parcelleFeature.errorFrom.numero,
-          });
+    if (parcelleParam) {
+      try {
+        const parcelleFeature = JSON.parse(parcelleParam);
+        if (
+          parcelleFeature &&
+          typeof parcelleFeature === "object" &&
+          "geometry" in parcelleFeature
+        ) {
+          setIsLoading(true);
+          onParcelleSelected(parcelleFeature);
+        } else {
+          if (parcelleFeature.errorFrom) {
+            setSearchValues({
+              codeInsee: parcelleFeature.errorFrom.codeInsee,
+              prefix: parcelleFeature.errorFrom.prefix,
+              section: parcelleFeature.errorFrom.section,
+              numero: parcelleFeature.errorFrom.numero,
+            });
+          }
+          setParcelleError(true);
         }
+      } catch {
         setParcelleError(true);
       }
-    } catch {
-      setParcelleError(true);
+    } else if (addressParam) {
+      try {
+        const addressFeature = JSON.parse(addressParam) as AddressFeature;
+        if (
+          addressFeature &&
+          typeof addressFeature === "object" &&
+          "geometry" in addressFeature
+        ) {
+          if (mapMethodsRef.current?.map) {
+            setAddressDefaultValue(addressFeature);
+            mapMethodsRef.current.map.flyTo({
+              center: [
+                addressFeature.geometry.coordinates[0],
+                addressFeature.geometry.coordinates[1],
+              ],
+              zoom: getZoomFromGouvType(addressFeature.properties.type),
+              essential: true,
+              speed: 10,
+            });
+          }
+        }
+      } catch {
+        console.error("Error parsing address data");
+      }
     }
   }, [location.search, isMapReady]);
 
@@ -155,6 +204,10 @@ function DiagnosticPage() {
               setParcelleError(false);
             }}
             onParcelleRequested={(response) => {
+              if (mapMethodsRef.current?.resetAddress) {
+                mapMethodsRef.current.resetAddress();
+              }
+
               setDiagnosticsResponses([]);
               if (response.data?.features[0]) {
                 const parcelleFeature = response.data?.features[0];
@@ -172,6 +225,8 @@ function DiagnosticPage() {
           onReady={() => {
             setIsMapReady(true);
           }}
+          onReset={reset}
+          addressDefaultValue={addressDefaultValue}
         />
         {diagnosticsResponses && diagnosticsResponses[0] && (
           <div className={fr.cx("fr-mt-6v")}>
@@ -181,15 +236,20 @@ function DiagnosticPage() {
             />
           </div>
         )}
-        {!diagnosticsResponses.length && parcelleError && (
-          <Alert
-            className={fr.cx("fr-mt-6v")}
-            description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-            onClose={function noRefCheck() {}}
-            severity="info"
-            title="Vous ne trouvez pas votre parcelle ?"
-          />
-        )}
+        {!diagnosticsResponses.length &&
+          (parcelleError || addressDefaultValue) && (
+            <Alert
+              className={fr.cx("fr-mt-6v")}
+              description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
+              onClose={function noRefCheck() {}}
+              severity="info"
+              title={
+                parcelleError
+                  ? "Vous ne trouvez pas votre parcelle ?"
+                  : "Vous y êtes presque !"
+              }
+            />
+          )}
       </div>
     </div>
   );
