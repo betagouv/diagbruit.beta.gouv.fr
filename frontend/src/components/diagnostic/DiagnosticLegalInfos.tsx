@@ -150,7 +150,7 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
         },
       },
     },
-    "@media screen and (max-width: 768px)": {
+    [fr.breakpoints.down("md")]: {
       flexDirection: "column",
     },
   },
@@ -162,7 +162,7 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
   },
   content: {
     paddingTop: fr.spacing("11v"),
-    "@media screen and (max-width: 768px)": {
+    [fr.breakpoints.down("md")]: {
       paddingTop: fr.spacing("2v"),
     },
   },

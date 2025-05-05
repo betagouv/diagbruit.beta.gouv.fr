@@ -53,7 +53,7 @@ const useStyles = tss.withName(HomeHero.name).create(() => ({
         display: "none",
       },
     },
-    "@media screen and (max-width: 768px)": {
+    [fr.breakpoints.down("md")]: {
       ".fr-grid-row": {
         flexDirection: "column-reverse",
       },

@@ -288,7 +288,7 @@ const useStyles = tss.withName(MapComponent.name).create(() => ({
     zIndex: 99,
     backgroundColor: "rgba(255,255,255,0.9)",
     padding: fr.spacing("4v"),
-    "@media screen and (max-width: 768px)": {
+    [fr.breakpoints.down("md")]: {
       top: 0,
       left: 0,
       width: "100%",

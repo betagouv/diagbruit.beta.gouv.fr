@@ -86,7 +86,7 @@ const useStyles = tss.withName(HomePage.name).create(() => ({
   },
   searchAddress: {
     width: "56%",
-    "@media screen and (max-width: 768px)": {
+    [fr.breakpoints.down("md")]: {
       width: "100%",
     },
   },

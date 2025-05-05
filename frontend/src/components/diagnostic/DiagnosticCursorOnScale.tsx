@@ -53,6 +53,9 @@ const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
   header: {
     display: "grid",
     gridTemplateColumns: "30% 30% 20% 20%",
+    [fr.breakpoints.down("md")]: {
+      fontSize: "0",
+    },
   },
   headerItem: {
     display: "flex",

@@ -182,7 +182,7 @@ const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
           color: `${fr.colors.decisions.text.actionHigh.grey.default} !important`,
         },
       },
-      "@media screen and (max-width: 768px)": {
+      [fr.breakpoints.down("md")]: {
         flexDirection: "column",
         alignItems: "start",
         gap: 0,
