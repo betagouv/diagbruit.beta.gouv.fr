@@ -224,7 +224,7 @@ const useStyles = tss.withName(AddressSearch.name).create(() => ({
     "& > div:first-of-type": {
       flexGrow: 1,
     },
-    "&:hover": {
+    "&:hover, &.Mui-focusVisible": {
       backgroundColor: fr.colors.decisions.background.flat.info.default,
       color: fr.colors.decisions.background.default.grey.default,
     },
