@@ -14,7 +14,7 @@ const HomeHero = () => {
             cadastrale
           </h1>
           <p>
-            <b>DiagBruit</b> est un service public qui facilite la compréhension
+            <b>diagBruit</b> est un service public qui facilite la compréhension
             des risques liés au <b>bruit des transports</b>.
           </p>
           <Notice
@@ -29,7 +29,7 @@ const HomeHero = () => {
         <div className={fr.cx("fr-col-12", "fr-col-md-4")}>
           <img
             src="/images/homehero.svg"
-            alt="Illustration d'un diagnostic DiagBruit"
+            alt="Illustration d'un diagnostic diagBruit"
           />
         </div>
       </div>

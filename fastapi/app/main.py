@@ -8,8 +8,8 @@ from . import models
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="DiagBruit FastAPI",
-    description="An simple api to get DiagBruit diagnostics. Powered by DiagBruit 🚀",
+    title="diagBruit FastAPI",
+    description="An simple api to get diagBruit diagnostics. Powered by diagBruit 🚀",
     version="0.1.0",
 )
 

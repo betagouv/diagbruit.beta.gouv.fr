@@ -20,7 +20,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             Française
           </>
         }
-        serviceTitle="DiagBruit"
+        serviceTitle="diagBruit"
         serviceTagline={
           <>
             Intégrer le bruit dans les risques impactant les projets
@@ -34,7 +34,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         homeLinkProps={{
           href: "/",
-          title: "Accueil - DiagBruit",
+          title: "Accueil - diagBruit",
         }}
         id="fr-header-simple-header"
       />
@@ -45,7 +45,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       </div>
       <Footer
         accessibility="non compliant"
-        contentDescription="DiagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
+        contentDescription="diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
       />
     </main>
   );

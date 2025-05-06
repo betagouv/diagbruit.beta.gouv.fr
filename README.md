@@ -1,4 +1,4 @@
-# 🙉 DiagBruit 🙉
+# 🙉 diagBruit 🙉
 
 Remettre le bruit comme un critère important dans la construction des projets d’aménagement (particulier, promoteur, Opération d’intérêt Métropolitain ou National) pour que les gens bénéficient de cadres de vie apaisés, en intégrant les impacts sonores comme facteur clé dans les décisions d’aménagement. Actuellement ce n’est pas une priorité.
 

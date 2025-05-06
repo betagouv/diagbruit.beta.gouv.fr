@@ -66,7 +66,7 @@ const DiagnosticEvaluation = ({
         </div>
         <div className={classes.content}>
           <h2 className={fr.cx("fr-h5")}>
-            2. Évaluation du risque selon DiagBruit
+            2. Évaluation du risque selon diagBruit
           </h2>
           <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
             Informations sur le risque
