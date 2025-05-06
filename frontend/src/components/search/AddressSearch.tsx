@@ -189,7 +189,7 @@ const AddressSearch = forwardRef(
   }
 );
 
-const useStyles = tss.withName(AddressSearch.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     form: {
       display: "flex",

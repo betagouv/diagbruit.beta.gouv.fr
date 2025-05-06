@@ -1,6 +1,6 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { DiagnosticItem } from "../../utils/types";
-import DiagnosticCursorOnScale from "./DiagnosticCursorOnScale";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
 
@@ -23,7 +23,7 @@ const DiagnosticLegend = ({ diagnosticItem }: DiagnosticLegendProps) => {
         <li>exposition en journée et / ou de nuit</li>
       </ul>
       <div className={fr.cx("fr-mt-8v")}>
-        <DiagnosticCursorOnScale
+        <DiagnosticScoreOnScale
           score={diagnosticItem.diagnostic.score}
           db={diagnosticItem.diagnostic.max_db_lden}
         />
@@ -32,7 +32,7 @@ const DiagnosticLegend = ({ diagnosticItem }: DiagnosticLegendProps) => {
   );
 };
 
-const useStyles = tss.withName(DiagnosticLegend.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     p: {
       marginBottom: 0,

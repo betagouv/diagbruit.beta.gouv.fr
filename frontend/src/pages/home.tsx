@@ -70,7 +70,7 @@ function HomePage() {
   );
 }
 
-const useStyles = tss.withName(HomePage.name).create(() => ({
+const useStyles = tss.create(() => ({
   subtitle: {
     display: "flex",
     alignItems: "center",

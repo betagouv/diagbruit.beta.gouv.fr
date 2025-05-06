@@ -37,7 +37,7 @@ const HomeHero = () => {
   );
 };
 
-const useStyles = tss.withName(HomeHero.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     h1: {
       ...fr.typography[4].style,

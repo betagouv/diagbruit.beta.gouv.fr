@@ -21,24 +21,21 @@ export const Loader = (props: LoaderProps) => {
   );
 };
 
-const useStyles = tss
-  .withName(Loader.name)
-  .withParams<LoaderProps>()
-  .create(({ size, white }) => ({
-    loaderContainer: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      textAlign: "center",
-      i: {
-        display: "inline-block",
-        animation: "spin 1s linear infinite",
-        color: white
-          ? fr.colors.decisions.background.default.grey.default
-          : fr.colors.decisions.background.actionHigh.blueFrance.default,
-        ["&::before"]: {
-          "--icon-size": size === "sm" ? "1.5rem" : "3rem",
-        },
+const useStyles = tss.withParams<LoaderProps>().create(({ size, white }) => ({
+  loaderContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    i: {
+      display: "inline-block",
+      animation: "spin 1s linear infinite",
+      color: white
+        ? fr.colors.decisions.background.default.grey.default
+        : fr.colors.decisions.background.actionHigh.blueFrance.default,
+      ["&::before"]: {
+        "--icon-size": size === "sm" ? "1.5rem" : "3rem",
       },
     },
-  }));
+  },
+}));

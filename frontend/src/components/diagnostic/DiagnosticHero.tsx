@@ -83,7 +83,6 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
 };
 
 const useStyles = tss
-  .withName(DiagnosticHero.name)
   .withParams<{
     score: number;
   }>()

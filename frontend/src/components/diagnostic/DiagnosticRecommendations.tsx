@@ -14,6 +14,8 @@ const DiagnosticRecommendations = ({
 }: DiagnosticRecommendationsProps) => {
   const { cx, classes } = useStyles();
 
+  console.log(DiagnosticRecommendations.name);
+
   const {
     diagnostic: { recommendations },
   } = diagnosticItem;
@@ -88,7 +90,7 @@ const DiagnosticRecommendations = ({
   );
 };
 
-const useStyles = tss.withName(DiagnosticRecommendations.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     [fr.breakpoints.down("md")]: {

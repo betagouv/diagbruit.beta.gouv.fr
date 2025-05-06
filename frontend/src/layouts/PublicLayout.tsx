@@ -51,7 +51,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   );
 };
 
-const useStyles = tss.withName(PublicLayout.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     minHeight: "85vh",
   },

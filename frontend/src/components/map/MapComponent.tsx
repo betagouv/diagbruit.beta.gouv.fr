@@ -276,7 +276,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
   }
 );
 
-const useStyles = tss.withName(MapComponent.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     position: "relative",
   },

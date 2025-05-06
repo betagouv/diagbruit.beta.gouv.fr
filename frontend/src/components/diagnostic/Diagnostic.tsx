@@ -32,7 +32,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   );
 };
 
-const useStyles = tss.withName(Diagnostic.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

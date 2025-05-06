@@ -124,7 +124,7 @@ const DiagnosticLegalInfos = ({
   );
 };
 
-const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     ul: {

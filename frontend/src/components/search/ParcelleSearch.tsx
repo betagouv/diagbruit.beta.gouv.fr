@@ -158,7 +158,7 @@ const fieldsConfig: Record<
   },
 };
 
-const useStyles = tss.withName(ParcelleSearch.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     form: {
       display: "flex",

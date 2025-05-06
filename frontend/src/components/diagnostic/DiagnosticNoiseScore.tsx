@@ -24,7 +24,6 @@ const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
 };
 
 const useStyles = tss
-  .withName(DiagnosticNoiseScore.name)
   .withParams<{
     score: number;
   }>()

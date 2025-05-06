@@ -254,7 +254,7 @@ function DiagnosticPage() {
   );
 }
 
-const useStyles = tss.withName(DiagnosticPage.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

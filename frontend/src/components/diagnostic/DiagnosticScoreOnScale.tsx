@@ -3,7 +3,7 @@ import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 import { fr } from "@codegouvfr/react-dsfr";
 import { getColorFromScore } from "../../utils/tools";
 
-type DiagnosticCursorOnScaleProps = {
+type DiagnosticScoreOnScaleProps = {
   score: number;
   db: number;
   light?: boolean;
@@ -11,13 +11,14 @@ type DiagnosticCursorOnScaleProps = {
 
 const SCORES = [1, 4, 7, 9];
 
-const DiagnosticCursorOnScale = ({
+const DiagnosticScoreOnScale = ({
   score,
   db,
   light,
-}: DiagnosticCursorOnScaleProps) => {
+}: DiagnosticScoreOnScaleProps) => {
   const { cx, classes } = useStyles();
 
+  console.log(DiagnosticScoreOnScale.name);
   return (
     <div className={cx(classes.container)}>
       {!light && (
@@ -33,8 +34,10 @@ const DiagnosticCursorOnScale = ({
         {Array.from({ length: 10 }, (_, index) => (
           <div
             key={index}
-            className={cx(classes.scaleSegment)}
-            style={{ backgroundColor: getColorFromScore(index + 1) }}
+            className={cx(classes.segment)}
+            style={{
+              backgroundColor: getColorFromScore(index + 1),
+            }}
           >
             {index + 1 === score && <span className={classes.cursor} />}
           </div>
@@ -44,7 +47,7 @@ const DiagnosticCursorOnScale = ({
   );
 };
 
-const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
@@ -66,9 +69,8 @@ const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
     display: "grid",
     gridTemplateColumns: "repeat(10, 10%)",
   },
-  scaleSegment: {
+  segment: {
     position: "relative",
-    height: fr.spacing("4v"),
     borderRight: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
     borderLeft: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
   },
@@ -96,4 +98,4 @@ const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
   },
 }));
 
-export default DiagnosticCursorOnScale;
+export default DiagnosticScoreOnScale;

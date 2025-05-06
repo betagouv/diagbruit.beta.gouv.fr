@@ -4,7 +4,7 @@ import { tss } from "tss-react/dsfr";
 import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
 import { getReadableSource, replacePlaceholders } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
-import DiagnosticCursorOnScale from "./DiagnosticCursorOnScale";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -85,7 +85,7 @@ const DiagnosticEvaluation = ({
               db={diagnosticItem.diagnostic.max_db_lden}
             />
           </div> */}
-          <DiagnosticCursorOnScale
+          <DiagnosticScoreOnScale
             score={diagnosticItem.diagnostic.score}
             db={diagnosticItem.diagnostic.max_db_lden}
             light
@@ -198,7 +198,7 @@ const DiagnosticEvaluation = ({
   );
 };
 
-const useStyles = tss.withName(DiagnosticEvaluation.name).create(() => ({
+const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     ul: {
