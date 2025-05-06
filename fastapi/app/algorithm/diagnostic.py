@@ -54,7 +54,8 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
 
     # Return max db lden
-    all_sources = diagnostic['land_intersections_ld'] + diagnostic['air_intersections']
+    land_intersections_ld_cbs_A = [x for x in diagnostic['land_intersections_ld'] if x.get('cbstype') == 'A']
+    all_sources = land_intersections_ld_cbs_A + diagnostic['air_intersections']
     diagnostic['max_db_lden'] = max(
         all_sources,
         key=lambda x: x['legende']

@@ -1,5 +1,7 @@
 import yaml
 from pathlib import Path
+import unicodedata
+import re
 
 default_diagnostic = {
     'score': 0,
@@ -43,19 +45,26 @@ def get_filtered_land_intersections(noisemap_intersections):
         land_intersections_infra_ln
     )
 
+def normalize_codeinfra(value):
+    if not value:
+        return ""
+    # Lowercase, remove accents, replace dashes with space, remove extra spaces
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
+    value = value.lower()
+    value = value.replace('-', ' ')
+    value = re.sub(r'\s+', ' ', value).strip()
+    return value
 
 def filter_land_intersections_by_codeinfra(intersections):
-    # Ask martin : "Pourquoi j'avais mis que cbstype A de base ?"
-    intersections_with_cbstype_a = [item for item in intersections if item.get('cbstype') == 'A' or item.get('cbstype') == 'C']
-
     filtered = {}
 
-    for item in intersections_with_cbstype_a:
-        codeinfra = item.get('codeinfra')
+    for item in intersections:
+        codeinfra_raw = item.get('codeinfra')
+        norm_codeinfra = normalize_codeinfra(codeinfra_raw)
         legende = item.get('legende')
 
-        if codeinfra not in filtered or legende > filtered[codeinfra]['legende']:
-            filtered[codeinfra] = item
+        if norm_codeinfra not in filtered or legende > filtered[norm_codeinfra]['legende']:
+            filtered[norm_codeinfra] = item
 
     results = list(filtered.values())
     codeinfra_not_null = [item for item in results if item.get('codeinfra') is not None]
