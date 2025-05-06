@@ -106,7 +106,6 @@ function DiagnosticPage() {
         numero: tmpNumero,
         prefixe,
       } = parcelle.properties;
-      console.log(parcelle.properties);
       const numero = tmpNumero.toString().padStart(4, "0");
       const section = tmpSection.toString().padStart(2, "0");
 
