@@ -145,7 +145,7 @@ The frontend will be available at http://localhost:3000
 Add scalingo remotes
 
 ```
-git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-mvp.git
+git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-back.git
 git remote add scalingo-frontend git@ssh.osc-fr1.scalingo.com:diag-bruit-front.git
 ```
 
