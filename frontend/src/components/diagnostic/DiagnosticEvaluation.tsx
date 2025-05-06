@@ -54,6 +54,16 @@ const DiagnosticEvaluation = ({
     );
   };
 
+  const getLnCodeInfraLegende = (codeinfra: string | null) => {
+    if (!codeinfra) return "";
+
+    const ln_intersection = land_intersections_ln.find(
+      (intersection) => intersection.codeinfra === codeinfra
+    );
+
+    return ln_intersection ? ln_intersection.legende : "";
+  };
+
   return (
     <div>
       <div className={cx(classes.container)}>
@@ -164,12 +174,14 @@ const DiagnosticEvaluation = ({
                 data={land_intersections_ld.map((intersection) => [
                   getReadableSource(intersection.typesource, true),
                   intersection.codeinfra || "Non connu",
-                  intersection.legende,
+                  intersection.legende + " dB",
+                  getLnCodeInfraLegende(intersection.codeinfra) + " dB",
                 ])}
                 headers={[
                   "Type de source",
                   "Nom de la source",
-                  "Niveau de bruit (dB)",
+                  "Niveau de bruit (jour)",
+                  "Niveau de bruit (nuit)",
                 ]}
               />
             )}
