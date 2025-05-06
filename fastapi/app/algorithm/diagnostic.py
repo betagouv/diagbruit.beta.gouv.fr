@@ -1,6 +1,6 @@
 import copy
 
-from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning)
+from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning, get_recommendations_by_score)
 from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 
@@ -67,6 +67,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
+
+    # Return the recommendations based on the score
+    diagnostic['recommendations'] = get_recommendations_by_score(diagnostic['score'])
 
     # Return noisemap intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)

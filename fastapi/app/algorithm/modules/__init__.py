@@ -2,3 +2,4 @@
 from .score_land_transport import get_land_score_from_sources
 from .score_air import get_air_score_from_sources
 from .classification_warning import get_classification_warning
+from .recommendations import get_recommendations_by_score
