@@ -1,9 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Table } from "@codegouvfr/react-dsfr/Table";
 import { tss } from "tss-react/dsfr";
 import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
 import { getReadableSource, replacePlaceholders } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
-import { Table } from "@codegouvfr/react-dsfr/Table";
+import DiagnosticCursorOnScale from "./DiagnosticCursorOnScale";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -66,10 +67,15 @@ const DiagnosticEvaluation = ({
         </div>
         <div className={classes.content}>
           <h2 className={fr.cx("fr-h5")}>
-            2. Évaluation du risque selon diagBruit
+            2. Évaluation du risque selon DiagBruit
           </h2>
+          <DiagnosticCursorOnScale
+            score={diagnosticItem.diagnostic.score}
+            db={diagnosticItem.diagnostic.max_db_lden}
+            light
+          />
           <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Informations sur le risque
+            Cartes de bruit
           </h3>
           <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
             {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}
@@ -149,15 +155,6 @@ const DiagnosticEvaluation = ({
                 }}
               />
             </ul>
-          </p>
-          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Cartes de bruit
-          </h3>
-          <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
-            mollitia voluptate consequatur placeat obcaecati. Doloribus,
-            obcaecati provident, facere perspiciatis labore commodi eum,
-            suscipit itaque blanditiis odio beatae. Vero, itaque nemo!
           </p>
           <div className={cx(classes.sourcesTable)}>
             {flags.isMultiExposedSources && (

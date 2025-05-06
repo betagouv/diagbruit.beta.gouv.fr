@@ -58,8 +58,29 @@ const DiagnosticLegalInfos = ({
                         }
                       )}
                     </ul>
+                    <p>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</p>
                     <p className={fr.cx("fr-mb-0")}>
-                      {LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}
+                      Références :{" "}
+                      <a
+                        href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837"
+                        target="_blank"
+                      >
+                        Arrêté du 30 mai 1996
+                      </a>{" "}
+                      |{" "}
+                      <a
+                        href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
+                        target="_blank"
+                      >
+                        Arrêté du 23 juillet 2013
+                      </a>{" "}
+                      |{" "}
+                      <a
+                        href="https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533"
+                        target="_blank"
+                      >
+                        Arrêté du 3 septembre 2013
+                      </a>
                     </p>
                   </>
                 )}
@@ -71,22 +92,24 @@ const DiagnosticLegalInfos = ({
               <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
                 Plan d'exposition au bruit aérien
               </h3>
-              <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
-                La parcelle est situé dans un secteur du Plan d’Exposition au
-                Bruit de "<b>{air_intersections[0].nom}</b>" :
-                <ul className={fr.cx("fr-mb-0")}>
+              <div className={cx(classes.section)}>
+                <p className={fr.cx("fr-mb-0")}>
+                  La parcelle est situé dans un secteur du Plan d’Exposition au
+                  Bruit de "<b>{air_intersections[0].nom}</b>" :
+                </p>
+                <ul>
                   <li>zone : {air_intersections[0].zone}</li>
-                  <li>
-                    Code de l’urbanisme dédié au PEB :{" "}
-                    <a
-                      href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210273"
-                      target="_blank"
-                    >
-                      article L112-10 du code de l’urbanisme
-                    </a>
-                  </li>
                 </ul>
-              </p>
+                <p className={fr.cx("fr-mb-0")}>
+                  Code de l’urbanisme dédié au PEB :{" "}
+                  <a
+                    href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210273"
+                    target="_blank"
+                  >
+                    article L112-10 du code de l’urbanisme
+                  </a>
+                </p>
+              </div>
             </>
           )}
           {air_intersections.length === 0 &&
@@ -97,42 +120,6 @@ const DiagnosticLegalInfos = ({
             )}
         </div>
       </div>
-      <Accordion
-        className={cx(classes.accordion, fr.cx("fr-mt-10v"))}
-        label="Voir plus d’informations sur la réglementation du classement sonore"
-        onExpandedChange={function noRefCheck() {}}
-      >
-        <ul>
-          <li>
-            <a
-              className={fr.cx("fr-link")}
-              href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837"
-              target="_blank"
-            >
-              Arrêté du 30 mai 1996
-            </a>{" "}
-            |{" "}
-            <a
-              className={fr.cx("fr-link")}
-              href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
-              target="_blank"
-            >
-              Arrêté du 23 juillet 2013
-            </a>{" "}
-            |{" "}
-            <a
-              className={fr.cx("fr-link")}
-              href="https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533"
-              target="_blank"
-            >
-              Arrêté du 3 septembre 2013
-            </a>
-          </li>
-          <li>
-            Exemples de calculs : cette information n’est pas encore disponible.
-          </li>
-        </ul>
-      </Accordion>
     </div>
   );
 };
@@ -141,7 +128,6 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
   container: {
     display: "flex",
     ul: {
-      marginTop: fr.spacing("4v"),
       marginLeft: fr.spacing("4v"),
       li: {
         lineHeight: "1.75rem",
@@ -165,9 +151,6 @@ const useStyles = tss.withName(DiagnosticLegalInfos.name).create(() => ({
     [fr.breakpoints.down("md")]: {
       paddingTop: fr.spacing("2v"),
     },
-  },
-  accordion: {
-    fontStyle: "italic",
   },
 }));
 

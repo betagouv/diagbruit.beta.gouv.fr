@@ -6,6 +6,7 @@ import { getColorFromScore } from "../../utils/tools";
 type DiagnosticCursorOnScaleProps = {
   score: number;
   db: number;
+  light?: boolean;
 };
 
 const SCORES = [1, 4, 7, 9];
@@ -13,18 +14,21 @@ const SCORES = [1, 4, 7, 9];
 const DiagnosticCursorOnScale = ({
   score,
   db,
+  light,
 }: DiagnosticCursorOnScaleProps) => {
   const { cx, classes } = useStyles();
 
   return (
     <div className={cx(classes.container)}>
-      <div className={cx(classes.header)}>
-        {SCORES.map((score) => (
-          <div key={score} className={classes.headerItem}>
-            <DiagnosticNoiseScore score={score} />
-          </div>
-        ))}
-      </div>
+      {!light && (
+        <div className={cx(classes.header)}>
+          {SCORES.map((score) => (
+            <div key={score} className={classes.headerItem}>
+              <DiagnosticNoiseScore score={score} />
+            </div>
+          ))}
+        </div>
+      )}
       <div className={cx(classes.scale)}>
         {Array.from({ length: 10 }, (_, index) => (
           <div
@@ -32,11 +36,7 @@ const DiagnosticCursorOnScale = ({
             className={classes.scaleSegment}
             style={{ backgroundColor: getColorFromScore(index + 1) }}
           >
-            {index + 1 === score && (
-              <span className={classes.cursor}>
-                <div className={classes.cursorText}>{db} dB - Lden</div>
-              </span>
-            )}
+            {index + 1 === score && <span className={classes.cursor} />}
           </div>
         ))}
       </div>
@@ -62,13 +62,14 @@ const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
     justifyContent: "center",
   },
   scale: {
-    marginTop: fr.spacing("8v"),
     height: fr.spacing("4v"),
     display: "grid",
     gridTemplateColumns: "repeat(10, 10%)",
   },
   scaleSegment: {
     position: "relative",
+    borderRight: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
+    borderLeft: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
   },
   cursor: {
     display: "block",
