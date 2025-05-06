@@ -3,6 +3,7 @@ import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -42,6 +43,17 @@ const DiagnosticRecommendations = ({
               fr.cx("fr-accordions-group", "fr-mt-6v")
             )}
           >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "end",
+                marginTop: "-2rem",
+              }}
+            >
+              <Badge className={fr.cx("fr-mb-2v")} severity="info">
+                Work in progress
+              </Badge>
+            </div>
             {recommendations.map((recommendation, index) => (
               <Accordion
                 key={index}
