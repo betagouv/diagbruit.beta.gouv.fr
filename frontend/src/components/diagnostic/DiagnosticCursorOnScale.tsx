@@ -33,7 +33,7 @@ const DiagnosticCursorOnScale = ({
         {Array.from({ length: 10 }, (_, index) => (
           <div
             key={index}
-            className={classes.scaleSegment}
+            className={cx(classes.scaleSegment)}
             style={{ backgroundColor: getColorFromScore(index + 1) }}
           >
             {index + 1 === score && <span className={classes.cursor} />}
@@ -68,6 +68,7 @@ const useStyles = tss.withName(DiagnosticCursorOnScale.name).create(() => ({
   },
   scaleSegment: {
     position: "relative",
+    height: fr.spacing("4v"),
     borderRight: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
     borderLeft: `1px solid ${fr.colors.decisions.background.default.grey.active}`,
   },
