@@ -1,0 +1,43 @@
+- score:
+    value_gte: 4
+  title: Impact acoustique d'une haie
+  category: Limiter la propagation
+  links:
+    - https://doc.cerema.fr/Default/doc/SYRACUSE/17382/protections-acoustiques-enjeux-et-modalites-d-insertion-dans-le-paysage
+    - https://prod-sofia-public.svc.edge.scw.cloud/corpus/CEREMA/LQWevwabQRKWVMog2ytNX4/raw_document.pdf
+
+- score:
+    value_gte: 4
+  title: Les matériaux bio-sourcés
+  category: Isoler un bâtiment
+  links:
+    - https://www.cerema.fr/fr/system/files?file=documents/2019/05/2018_12_21_dhup_2017_rapport_final_action_28.pdf
+
+- score:
+    value_gte: 7
+  title: Construire un mur anti Bruit (Particulier)
+  category: Limiter la propagation
+  links:
+    - https://www.bruit.fr/images/stories/pdf/guide_particuliers_realiser_mur_antibruit.pdf
+
+- score:
+    value_gte: 7
+  title: S’isoler du bruit aérien
+  category: Isoler un bâtiment
+  links:
+    - https://librairie.ademe.fr/index.php?controller=attachment&id_attachment=1512&preview=1
+
+- score:
+    value_gte: 4
+    value_lte: 8
+  title: Réfléchir les positions et hauteur
+  category: Aménager en fonction du contexte
+  links:
+    - https://sante.gouv.fr/IMG/pdf/plu06.pdf
+
+- score:
+    value_lte: 6
+  title: Le bruit dans les opérations d’aménagement
+  category: Aménager en fonction du contexte
+  links:
+    - https://www.ecoquartiers.logement.gouv.fr/assets/articles/documents/bruit-et-operations-d-amenagement-urbain.pdf

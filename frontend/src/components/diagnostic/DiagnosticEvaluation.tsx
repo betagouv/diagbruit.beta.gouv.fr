@@ -5,6 +5,7 @@ import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
 import { getReadableSource, replacePlaceholders } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticCursorOnScale from "./DiagnosticCursorOnScale";
+import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -55,13 +56,13 @@ const DiagnosticEvaluation = ({
   };
 
   const getLnCodeInfraLegende = (codeinfra: string | null) => {
-    if (!codeinfra) return "";
+    if (!codeinfra) return "-";
 
     const ln_intersection = land_intersections_ln.find(
       (intersection) => intersection.codeinfra === codeinfra
     );
 
-    return ln_intersection ? ln_intersection.legende : "";
+    return ln_intersection ? ln_intersection.legende + " dB" : "-";
   };
 
   return (
@@ -79,6 +80,12 @@ const DiagnosticEvaluation = ({
           <h2 className={fr.cx("fr-h5")}>
             2. Évaluation du risque selon DiagBruit
           </h2>
+          {/* <div className={fr.cx("fr-mb-4v")}>
+            <DiagnosticNoiseScore
+              score={diagnosticItem.diagnostic.score}
+              db={diagnosticItem.diagnostic.max_db_lden}
+            />
+          </div> */}
           <DiagnosticCursorOnScale
             score={diagnosticItem.diagnostic.score}
             db={diagnosticItem.diagnostic.max_db_lden}
@@ -175,7 +182,7 @@ const DiagnosticEvaluation = ({
                   getReadableSource(intersection.typesource, true),
                   intersection.codeinfra || "Non connu",
                   intersection.legende + " dB",
-                  getLnCodeInfraLegende(intersection.codeinfra) + " dB",
+                  getLnCodeInfraLegende(intersection.codeinfra),
                 ])}
                 headers={[
                   "Type de source",
