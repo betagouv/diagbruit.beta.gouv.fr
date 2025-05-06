@@ -32,6 +32,7 @@ def get_recommendations_by_score(score: float) -> List[dict]:
             {
                 "title": r["title"],
                 "category": r["category"],
+                "content": r["content"],
                 "links": r["links"]
             }
             for r in recommendations if is_valid(r)

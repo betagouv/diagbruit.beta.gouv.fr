@@ -23,6 +23,7 @@ export type Diagnostic = {
   air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
   equivalent_ambiences: string[];
+  recommendations: Recommendations[];
 };
 
 export type DiagnosticFlags = {
@@ -55,6 +56,16 @@ export type SoundClassificationIntersection = {
   codeinfra: string;
   sound_category: number;
   distance: number;
+};
+
+export type Recommendations = {
+  title: string;
+  category: string;
+  content: string;
+  links: {
+    href: string;
+    title: string;
+  }[];
 };
 
 type Enumerate<

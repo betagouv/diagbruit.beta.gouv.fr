@@ -5,6 +5,7 @@ import { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
+import DiagnosticRecommendations from "./DiagnosticRecommendations";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -20,6 +21,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       <div className={cx(classes.container)}>
         <DiagnosticHero diagnosticItem={diagnosticItem} />
         <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
+        <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
         <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
         {/* TO REMOVE */}
         <Accordion label="Voir le retour de l'API">

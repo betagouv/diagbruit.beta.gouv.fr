@@ -5,7 +5,6 @@ import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
 import { getReadableSource, replacePlaceholders } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticCursorOnScale from "./DiagnosticCursorOnScale";
-import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -78,7 +77,7 @@ const DiagnosticEvaluation = ({
         </div>
         <div className={classes.content}>
           <h2 className={fr.cx("fr-h5")}>
-            2. Évaluation du risque selon DiagBruit
+            3. Évaluation du risque selon DiagBruit
           </h2>
           {/* <div className={fr.cx("fr-mb-4v")}>
             <DiagnosticNoiseScore
