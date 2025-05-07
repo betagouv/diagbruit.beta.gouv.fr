@@ -7,6 +7,7 @@ import Diagnostic from "./pages/diagnostic";
 import reportWebVitals from "./reportWebVitals";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import PublicLayout from "./layouts/PublicLayout";
+import ScrollToTop from "./components/utils/ScrollToTop";
 
 startReactDsfr({ defaultColorScheme: "light" });
 
@@ -17,6 +18,7 @@ root.render(
   <React.StrictMode>
     <Router>
       <PublicLayout>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/diagnostic" element={<Diagnostic />} />
