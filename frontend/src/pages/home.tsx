@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import AddressSearch, {
   AddressFeature,
 } from "../components/search/AddressSearch";
+import { encode } from "../utils/compression";
 
 function HomePage() {
   const { cx, classes } = useStyles();
@@ -39,7 +40,7 @@ function HomePage() {
           };
           navigate({
             pathname: "/diagnostic",
-            search: `?parcelle=${JSON.stringify(feature)}`,
+            search: `?parcelle=${encode(feature)}`,
           });
         }}
         formValues={formValues}
@@ -60,7 +61,7 @@ function HomePage() {
           onValueSelected={(feature: AddressFeature) => {
             navigate({
               pathname: "/diagnostic",
-              search: `?address=${JSON.stringify(feature)}`,
+              search: `?address=${encode(feature)}`,
             });
           }}
           limit={3}

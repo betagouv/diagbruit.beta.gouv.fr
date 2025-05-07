@@ -14,6 +14,7 @@ import { DiagnosticItem } from "../utils/types";
 import { useLocation } from "react-router-dom";
 import { getZoomFromGouvType } from "../utils/tools";
 import { AddressFeature } from "../components/search/AddressSearch";
+import { decode } from "../utils/compression";
 
 const defaultSearchValues = {
   codeInsee: "",
@@ -129,7 +130,7 @@ function DiagnosticPage() {
 
     if (parcelleParam) {
       try {
-        const parcelleFeature = JSON.parse(parcelleParam);
+        const parcelleFeature = decode(parcelleParam);
         if (
           parcelleFeature &&
           typeof parcelleFeature === "object" &&
@@ -153,7 +154,7 @@ function DiagnosticPage() {
       }
     } else if (addressParam) {
       try {
-        const addressFeature = JSON.parse(addressParam) as AddressFeature;
+        const addressFeature = decode(addressParam) as AddressFeature;
         if (
           addressFeature &&
           typeof addressFeature === "object" &&
