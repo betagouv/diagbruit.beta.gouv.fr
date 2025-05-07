@@ -14,8 +14,6 @@ const DiagnosticRecommendations = ({
 }: DiagnosticRecommendationsProps) => {
   const { cx, classes } = useStyles();
 
-  console.log(DiagnosticRecommendations.name);
-
   const {
     diagnostic: { recommendations },
   } = diagnosticItem;
@@ -57,30 +55,29 @@ const DiagnosticRecommendations = ({
               </Badge>
             </div>
             {recommendations.map((recommendation, index) => (
-              <Accordion
-                key={index}
-                label={
-                  <>
-                    <Tag className={fr.cx("fr-mr-2v")}>
-                      {recommendation.category}
-                    </Tag>{" "}
-                    {recommendation.title}
-                  </>
-                }
-              >
+              <Accordion key={index} label={recommendation.title}>
+                <Tag className={fr.cx("fr-mb-4v")}>
+                  {recommendation.category}
+                </Tag>
                 <div
                   dangerouslySetInnerHTML={{ __html: recommendation.content }}
                 />
                 {recommendation.links.length && (
-                  <p className={fr.cx("fr-mb-2v")}>Liens utiles :</p>
-                )}
-                {recommendation.links.map((link, index) => (
-                  <div key={index}>
-                    <a href={link.href} target="_blank">
-                      {link.title}
-                    </a>
+                  <div className={cx(classes.links)}>
+                    <p className={fr.cx("fr-mb-2v")}>
+                      <b>Liens utiles :</b>
+                    </p>
+                    <ul className={fr.cx("fr-mb-0")}>
+                      {recommendation.links.map((link, index) => (
+                        <li key={index}>
+                          <a href={link.href} target="_blank">
+                            {link.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
+                )}
               </Accordion>
             ))}
           </div>
@@ -115,6 +112,14 @@ const useStyles = tss.create(() => ({
   },
   accordions: {
     width: "100%",
+  },
+  links: {
+    backgroundColor: fr.colors.decisions.background.default.grey.active,
+    padding: fr.spacing("4v"),
+    marginTop: fr.spacing("8v"),
+    ul: {
+      marginLeft: fr.spacing("4v"),
+    },
   },
 }));
 

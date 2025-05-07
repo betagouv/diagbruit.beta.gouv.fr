@@ -17,6 +17,7 @@
     <p>
       La végétalisation améliore la perception de l’ambiance sonore, surtout si le niveau sonore ambiant est plutôt faible ; une rangée d’arbres peut minimiser la gêne.
     </p>
+    <img src="https://strapi.ricobot.numericite.eu/uploads/image_6e029e5166.webp" style="display: block; margin: auto;" />
   links:
     - href: https://doc.cerema.fr/Default/doc/SYRACUSE/17382/protections-acoustiques-enjeux-et-modalites-d-insertion-dans-le-paysage
       title: "Protection acoustique : enjeu et modalité d'insertion dans le paysage"
@@ -27,24 +28,7 @@
     value_gte: 4
   title: Les matériaux bio-sourcés
   category: Isoler un bâtiment
-  content: |
-    <p>
-      Des tests en laboratoires ont démontré que les matériaux bio-sourcés se comportent aussi bien que les matériaux de construction classiques d’un point de vue acoustique dans les cas suivants :
-    </p>
-    <ul>
-      <li>
-        la performance d’une cloison sur ossature ou d’une paroi séparative légère sur ossature à base de plaques de plâtre est similaire pour un isolant en laine minérale et un isolant de type biosourcé
-      </li>
-      <li>
-        la performance d’un doublage sur ossature à base de plaques de plâtre est similaire pour un isolant en laine minérale et un isolant de type biosourcé.
-      </li>
-      <li>
-        la performance d’un plafond suspendu sur ossature à base de plaques de plâtre, placé sous un plancher béton de 140 mm d’épaisseur, est similaire pour un isolant en laine minérale et un isolant de type biosourcé
-      </li>
-      <li>
-        Dans des systèmes de combles perdus, pour les matériaux biosourcés qui ne sont pas mis en œuvre en vrac, les performances acoustiques évaluées sont similaires à celles calculées pour un isolant standard en laine minérale.
-      </li>
-    </ul>
+  content: "<p>🚧 En construction 🚧</p>"
   links:
     - href: https://www.cerema.fr/fr/system/files?file=documents/2019/05/2018_12_21_dhup_2017_rapport_final_action_28.pdf
       title: "Propriété acoustique des matériaux bio-sourcés"
@@ -53,7 +37,7 @@
     value_gte: 7
   title: Construire un mur anti Bruit (Particulier)
   category: Limiter la propagation
-  content: ""
+  content: "<p>🚧 En construction 🚧</p>"
   links:
     - href: https://www.bruit.fr/images/stories/pdf/guide_particuliers_realiser_mur_antibruit.pdf
       title: Particulier - Construire son mur Anti-Bruit
@@ -62,77 +46,7 @@
     value_gte: 7
   title: S’isoler du bruit aérien
   category: Isoler un bâtiment
-  content: |
-    <p>Une bonne isolation aux bruits aériens est fortement liée aux :</p>
-    <ul>
-      <li>fenêtres</li>
-      <li>volets roulants</li>
-      <li>toiture</li>
-    </ul>
-
-    <h3>La fenêtre</h3>
-    <ul>
-      <li>
-        <strong>Le double vitrage :</strong> c’est la différence d’épaisseur ou de nature entre les deux vitres qui améliore sensiblement les performances acoustiques.
-        L’épaisseur de la lame d’air, elle, influe surtout sur les performances thermiques.
-      </li>
-      <li>
-        <strong>Le triple vitrage :</strong> plus performant sur le plan thermique, n’apporte pas de protection acoustique supplémentaire.
-      </li>
-      <li>
-        <strong>Le double vitrage à isolation renforcée (VIR) :</strong> qui comprend une vitre en verre feuilleté, est une très bonne solution thermo-acoustique.
-      </li>
-    </ul>
-
-    <p>
-      Dans tous les cas, choisissez les produits dotés d’une résistance thermique (R) et d’un indice d’affaiblissement acoustique pour les bruits aériens (Rw)
-      les plus importants possibles.
-    </p>
-
-    <p>
-      Rapide et peu coûteuse, la pose de joints d’étanchéité permet de réduire le passage de l’air et donc du bruit. Cette solution permet de diminuer de 5 dB le bruit perçu dans le logement.
-      Pour être efficaces, les joints d’étanchéité doivent être posés sur des menuiseries planes et en bon état.
-    </p>
-
-    <p>
-      Pour concilier ventilation et isolation acoustique, choisissez des entrées d’air « acoustiques ». Elles laissent passer l’air en limitant le passage du bruit.
-      Elles sont caractérisées par un indice d’affaiblissement acoustique pondéré Dnew(Ctr) (pour le bruit routier) ou Dnew(C) (pour le bruit aérien) exprimé en dB :
-      plus il est élevé, meilleure est l’isolation acoustique.
-    </p>
-
-    <p>
-      Dans les logements disposant d’une VMC, optez pour un indice supérieur de 6 dB à l’objectif d’isolation acoustique final.
-      Ne supprimez jamais la ventilation. Veillez au contraire à ce qu’elle persiste avec le renforcement acoustique.
-    </p>
-
-    <h3>Les volets roulants</h3>
-    <p>Plusieurs travaux sont possibles pour améliorer leur isolation :</p>
-    <ul>
-      <li>la pose de joints silicone entre la plaque de fermeture et le plafond ;</li>
-      <li>la pose d’absorbants et d’isolants acoustiques à l’intérieur du coffre ;</li>
-      <li>le renforcement du coffre avec des plaques en bois ou en plâtre.</li>
-    </ul>
-
-    <p>
-      Et si vous remplacez vos coffres de volets roulants, privilégiez un indice d’isolation acoustique de 12 à 14 dB supérieur à l’objectif d’isolation acoustique final.
-    </p>
-
-    <h3>La toiture</h3>
-    <p>Dans ce cas, on utilise des complexes d’isolation associant :</p>
-    <ul>
-      <li>
-        <strong>un isolant souple :</strong> laine minérale, de bois ou de chanvre, ouate de cellulose…
-        Plus l’isolant est épais, plus l’isolation acoustique (et thermique) est performante ;
-      </li>
-      <li>
-        <strong>un parement dense :</strong> plaques de plâtre, de gypse-cellulose ou de fibre de bois haute densité…
-      </li>
-    </ul>
-
-    <p>
-      Le professionnel chargé des travaux s’assurera au préalable que la charpente peut supporter l’isolation supplémentaire.
-      En effet, certaines plaques de parement dense (notamment en gypse-cellulose) sont lourdes. Il veillera également à la continuité parfaite de l’isolation.
-    </p>
+  content: "<p>🚧 En construction 🚧</p>"
   links:
     - href: https://librairie.ademe.fr/index.php?controller=attachment&id_attachment=1512&preview=1
       title: "Isoler son logement du bruit"
@@ -142,7 +56,7 @@
     value_lte: 8
   title: Réfléchir les positions et hauteur
   category: Aménager en fonction du contexte
-  content: ""
+  content: "<p>🚧 En construction 🚧</p>"
   links:
     - href: https://sante.gouv.fr/IMG/pdf/plu06.pdf
       title: "PLU et Bruit"
@@ -151,7 +65,7 @@
     value_lte: 6
   title: Le bruit dans les opérations d’aménagement
   category: Aménager en fonction du contexte
-  content: ""
+  content: "<p>🚧 En construction 🚧</p>"
   links:
     - href: https://www.ecoquartiers.logement.gouv.fr/assets/articles/documents/bruit-et-operations-d-amenagement-urbain.pdf
       title: "Bruit et opérations d’aménagement"
