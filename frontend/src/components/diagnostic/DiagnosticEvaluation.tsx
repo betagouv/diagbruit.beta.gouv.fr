@@ -177,12 +177,14 @@ const DiagnosticEvaluation = ({
               <Table
                 caption="Tableau de synthèse des niveaux de bruit par source"
                 noCaption
-                data={land_intersections_ld.map((intersection) => [
-                  getReadableSource(intersection.typesource, true),
-                  intersection.codeinfra || "Non connu",
-                  intersection.legende + " dB",
-                  getLnCodeInfraLegende(intersection.codeinfra),
-                ])}
+                data={land_intersections_ld
+                  .filter((intersection) => intersection.cbstype === "A")
+                  .map((intersection) => [
+                    getReadableSource(intersection.typesource, true),
+                    intersection.codeinfra || "Non connu",
+                    intersection.legende + " dB",
+                    getLnCodeInfraLegende(intersection.codeinfra),
+                  ])}
                 headers={[
                   "Type de source",
                   "Nom de la source",

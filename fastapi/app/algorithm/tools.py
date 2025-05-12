@@ -55,22 +55,32 @@ def normalize_codeinfra(value):
     value = re.sub(r'\s+', ' ', value).strip()
     return value
 
+from collections import defaultdict
+
 def filter_land_intersections_by_codeinfra(intersections):
-    filtered = {}
+    grouped_by_cbstype = defaultdict(dict)
 
     for item in intersections:
+        cbstype = item.get('cbstype')
         codeinfra_raw = item.get('codeinfra')
         norm_codeinfra = normalize_codeinfra(codeinfra_raw)
         legende = item.get('legende')
 
-        if norm_codeinfra not in filtered or legende > filtered[norm_codeinfra]['legende']:
-            filtered[norm_codeinfra] = item
+        if not cbstype:
+            continue
 
-    results = list(filtered.values())
-    codeinfra_not_null = [item for item in results if item.get('codeinfra') is not None]
+        if norm_codeinfra not in grouped_by_cbstype[cbstype] or \
+           legende > grouped_by_cbstype[cbstype][norm_codeinfra]['legende']:
+            grouped_by_cbstype[cbstype][norm_codeinfra] = item
+
+    filtered_items = [
+        item for codeinfra_dict in grouped_by_cbstype.values()
+        for item in codeinfra_dict.values()
+        if item.get('codeinfra') is not None
+    ]
 
     sorted_results = sorted(
-        codeinfra_not_null if codeinfra_not_null else ([results[0]] if results else []),
+        filtered_items if filtered_items else [],
         key=lambda x: x.get('legende', ''),
         reverse=True
     )
