@@ -10,17 +10,7 @@ SELECT
     id AS codeinfra,
     larg_secte AS buffer,
     categorie as sound_category,
-    codedept,
-    to_jsonb(ROW(
-        categorie,
-        electrifie,
-        etat,
-        id,
-        larg_secte,
-        largeur,
-        nature,
-        nb_voies
-    )) AS extra_fields
+    codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_tramway') }}
 
 UNION ALL
@@ -32,25 +22,7 @@ SELECT
     ligne AS codeinfra,
     CAST(sect_affec AS bigint) AS buffer,
     CAST(rang AS int) as sound_category,
-    codedept,
-    to_jsonb(ROW(
-        base_class,
-        communes,
-        dept,
-        evol_class,
-        lidebssseg,
-        lifinssseg,
-        ligne,
-        long_ssseg,
-        nvx_class,
-        pkdebssseg,
-        pkfinssseg,
-        publi_ap,
-        rang,
-        region,
-        sect_affec,
-        segment
-    )) AS extra_fields
+    codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
 
 UNION ALL
@@ -62,20 +34,7 @@ SELECT
     numero AS codeinfra,
     larg_secte AS buffer,
     cat_bruit as sound_category,
-    codedept,
-    to_jsonb(ROW(
-        cat_bruit,
-        cls_commen,
-        cls_id,
-        communes,
-        debutant,
-        finissant,
-        gestion,
-        horizon,
-        larg_secte,
-        numero,
-        projet
-    )) AS extra_fields
+    codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_routier') }}
 
 UNION ALL
@@ -87,21 +46,5 @@ SELECT
     toponyme AS codeinfra,
     larg_secte AS buffer,
     cat as sound_category,
-    codedept,
-    to_jsonb(ROW(
-        cat,
-        date_conf,
-        date_creat,
-        date_maj,
-        electrifie,
-        etat,
-        id,
-        id_vfn,
-        larg_secte,
-        largeur,
-        nature,
-        nb_voies,
-        pos_sol,
-        toponyme
-    )) AS extra_fields
+    codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_lgv') }}

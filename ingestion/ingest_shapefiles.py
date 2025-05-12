@@ -5,6 +5,10 @@ import argparse
 import os
 import sys
 from dotenv import load_dotenv
+from shapely import transform
+
+def drop_z(geom):
+    return transform(geom, lambda coords: coords, include_z=False)
 
 
 def create_schema_if_not_exists(engine, schema):
@@ -59,6 +63,8 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         if column_renames:
             print(f"Renaming columns: {column_renames}")
             gdf.rename(columns=column_renames, inplace=True)
+
+        gdf["geometry"] = gdf["geometry"].apply(drop_z)
 
         engine = create_engine(db_url)
         create_schema_if_not_exists(engine, schema)

@@ -12,7 +12,6 @@ WITH fixed_geometries AS (
         buffer,
         sound_category,
         codedept,
-        extra_fields,
         {{ repair_geometry('polygon_geom', 'is_valid', 'structure') }} AS geometry,
         is_valid AS original_is_valid,
         validity_reason AS original_validity_reason
@@ -27,7 +26,6 @@ SELECT
     buffer,
     sound_category,
     codedept,
-    extra_fields,
     geometry,
     original_is_valid,
     original_validity_reason,

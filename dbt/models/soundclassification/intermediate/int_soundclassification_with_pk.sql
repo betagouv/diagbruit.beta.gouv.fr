@@ -12,7 +12,6 @@ SELECT
     buffer,
     sound_category,
     codedept,
-    extra_fields,
     original_is_valid,
     original_validity_reason,
     is_valid_now,
