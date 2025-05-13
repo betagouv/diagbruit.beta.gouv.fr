@@ -18,6 +18,7 @@ default_diagnostic = {
     'land_intersections_ld': [],
     'land_intersections_ln': [],
     'air_intersections': [],
+    'recommendations': [],
     'soundclassification_intersections': [],
 }
 
