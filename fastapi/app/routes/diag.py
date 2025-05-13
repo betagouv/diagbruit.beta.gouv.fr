@@ -73,10 +73,10 @@ async def process_parcelle(parcelle: ParcelleRequest):
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
 
-def _generate_diagnostic_threaded(polygon_wkt: str):
+def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str):
     db = SessionLocal()
     try:
-        noisemap = query_noisemap_intersecting_features(db, polygon_wkt)
+        noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
         sound = query_soundclassification_intersecting_features(db, polygon_wkt)
         peb = query_peb_intersecting_features(db, polygon_wkt)
         return get_parcelle_diagnostic(noisemap, sound, peb)
@@ -84,9 +84,9 @@ def _generate_diagnostic_threaded(polygon_wkt: str):
         db.close()
 
 
-async def generate_diagnostic_async(polygon_wkt: str):
+async def generate_diagnostic_async(polygon_wkt: str, codedept: str):
     loop = asyncio.get_running_loop()
-    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt)
+    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt, codedept)
     return copy.deepcopy(diagnostic)
 
 
@@ -105,7 +105,8 @@ async def generate_diag_from_parcelles(
 
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            diagnostic = await generate_diagnostic_async(polygone)
+            codedept = f"0{result["parcelle"].code_insee[:2]}"
+            diagnostic = await generate_diagnostic_async(polygone, codedept)
 
             return {
                 "parcelle": result["parcelle"].dict(),
@@ -131,7 +132,8 @@ async def generate_diag_from_geometry(
     async def process_item(item: GeometryItem):
         try:
             polygone = create_multipolygon_from_coordinates(item.geometry)
-            diagnostic = await generate_diagnostic_async(polygone)
+            codedept = f"0{item.parcelle.code_insee[:2]}"
+            diagnostic = await generate_diagnostic_async(polygone, codedept)
             return {"parcelle": item.parcelle, "diagnostic": diagnostic}
         except Exception as e:
             raise HTTPException(

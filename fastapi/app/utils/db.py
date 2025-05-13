@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger('uvicorn.error')
 
 
-def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
+def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedept: str) -> List[Dict[str, Any]]:
     """
     Query the database for features that intersect with the given WKT geometry.
     Uses the NoiseMapItem model to query the database.
@@ -23,6 +23,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str) -> List
             NoiseMapItem.legende,
             NoiseMapItem.cbstype
         ).filter(
+            NoiseMapItem.codedept == codedept,
             func.ST_Intersects(
                 NoiseMapItem.geometry,
                 safe_geom
