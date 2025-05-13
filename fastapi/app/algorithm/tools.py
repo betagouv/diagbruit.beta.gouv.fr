@@ -73,14 +73,15 @@ def filter_land_intersections_by_codeinfra(intersections):
            legende > grouped_by_cbstype[cbstype][norm_codeinfra]['legende']:
             grouped_by_cbstype[cbstype][norm_codeinfra] = item
 
-    filtered_items = [
+    flatten_items = [
         item for codeinfra_dict in grouped_by_cbstype.values()
         for item in codeinfra_dict.values()
-        if item.get('codeinfra') is not None
     ]
 
+    flatten_items_not_null = [item for item in flatten_items if item.get('codeinfra') is not None]
+
     sorted_results = sorted(
-        filtered_items if filtered_items else [],
+        flatten_items_not_null if flatten_items_not_null else ([flatten_items[0]] if flatten_items else []),
         key=lambda x: x.get('legende', ''),
         reverse=True
     )
