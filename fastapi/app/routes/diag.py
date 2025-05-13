@@ -105,7 +105,7 @@ async def generate_diag_from_parcelles(
 
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
-            codedept = f"0{result["parcelle"].code_insee[:2]}"
+            codedept = f"0{result['parcelle'].code_insee[:2]}"
             diagnostic = await generate_diagnostic_async(polygone, codedept)
 
             return {
