@@ -173,7 +173,9 @@ const DiagnosticEvaluation = ({
             </ul>
           </p>
           <div className={cx(classes.sourcesTable)}>
-            {flags.isMultiExposedSources && (
+            {land_intersections_ld.some(
+              (intersection) => intersection.cbstype === "A"
+            ) && (
               <Table
                 caption="Tableau de synthèse des niveaux de bruit par source"
                 noCaption
