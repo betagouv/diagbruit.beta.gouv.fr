@@ -18,7 +18,7 @@ const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
     <div className={cx(classes.container)}>
       <i className={fr.cx(getIconeFromScore(score))} /> RISQUE{" "}
       {getTextFromScore(score)}
-      {!!db && ` - ${db} dB Lden`}
+      {!!db ? ` - ${db} dB` : " - moins de 55 db"}
     </div>
   );
 };

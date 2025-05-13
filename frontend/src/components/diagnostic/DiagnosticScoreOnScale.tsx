@@ -39,7 +39,10 @@ const DiagnosticScoreOnScale = ({
               backgroundColor: getColorFromScore(index + 1),
             }}
           >
-            {index + 1 === score && <span className={classes.cursor} />}
+            {index + 1 === score ||
+              (score === 0 && index === 0 && (
+                <span className={classes.cursor} />
+              ))}
           </div>
         ))}
       </div>
