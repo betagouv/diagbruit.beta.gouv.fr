@@ -10,7 +10,12 @@ import { fr } from "@codegouvfr/react-dsfr";
 const parcelleSchema = z.object({
   codeInsee: z.string().regex(/^\d{5}$/, "Code INSEE (5 chiffres)"),
   prefix: z.string().regex(/^\d{3}$/, "Préfixe (3 chiffres)"),
-  section: z.string().regex(/^[A-Z]{2}$/, "Section (2 lettres majuscules)"),
+  section: z
+    .string()
+    .regex(
+      /^[A-Z0-9]{2}$/,
+      "Section (2 caractères : lettres majuscules et/ou chiffres)"
+    ),
   numero: z.string().regex(/^\d{4}$/, "Numéro (4 chiffres)"),
 });
 
@@ -142,7 +147,7 @@ const fieldsConfig: Record<
     patternText: "Saisir une référence : AO, AA...",
     hintText: "Saisissez les références de section",
     nativeInputProps: {
-      pattern: "[A-Z]{2}",
+      pattern: "[A-Z0-9]{2}",
       type: "text",
     },
   },
