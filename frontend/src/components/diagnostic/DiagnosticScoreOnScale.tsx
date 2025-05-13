@@ -18,7 +18,6 @@ const DiagnosticScoreOnScale = ({
 }: DiagnosticScoreOnScaleProps) => {
   const { cx, classes } = useStyles();
 
-  console.log(DiagnosticScoreOnScale.name);
   return (
     <div className={cx(classes.container)}>
       {!light && (
