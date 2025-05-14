@@ -38,7 +38,7 @@ const DiagnosticLegalInfos = ({
               <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
                 Classement sonore
               </h3>
-              <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
+              <div className={cx(classes.section)}>
                 {getSoundClassificationHeaderLine()}
                 {soundclassification_intersections.length > 0 && (
                   <>
@@ -84,7 +84,7 @@ const DiagnosticLegalInfos = ({
                     </p>
                   </>
                 )}
-              </p>
+              </div>
             </>
           )}
           {air_intersections.length > 0 && (

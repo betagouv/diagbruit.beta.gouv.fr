@@ -95,83 +95,81 @@ const DiagnosticEvaluation = ({
           </h3>
           <p className={cx(classes.section, fr.cx("fr-mb-0"))}>
             {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}
-            <ul>
-              <li
-                dangerouslySetInnerHTML={{
-                  __html: flags.isMultiExposedDistinctTypeSources
-                    ? replacePlaceholders(
-                        EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                          .MULTI_EXPOSURE,
-                        {
-                          sources: Array.from(
-                            new Set(
-                              land_intersections_ld.map(
-                                (intersection) =>
-                                  `<b>${getReadableSource(
-                                    intersection.typesource
-                                  )}</b>`
-                              )
+          </p>
+          <ul>
+            <li
+              dangerouslySetInnerHTML={{
+                __html: flags.isMultiExposedDistinctTypeSources
+                  ? replacePlaceholders(
+                      EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                        .MULTI_EXPOSURE,
+                      {
+                        sources: Array.from(
+                          new Set(
+                            land_intersections_ld.map(
+                              (intersection) =>
+                                `<b>${getReadableSource(
+                                  intersection.typesource
+                                )}</b>`
                             )
-                          ).join(" et "),
-                        }
-                      )
-                    : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                        .NO_MULTI_EXPOSURE,
-                }}
-              />
-              {!!land_intersections_ld[0] && (
-                <li
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      land_intersections_ld[0].typeterr === "INFRA"
-                        ? replacePlaceholders(
-                            EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                              .MAIN_SOURCE_INFRA,
-                            {
-                              typesource: getReadableSource(
-                                land_intersections_ld[0].typesource
-                              ),
-                              codinfra:
-                                land_intersections_ld[0].codeinfra || "",
-                            }
                           )
-                        : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                            .MAIN_SOURCE_AGGLO,
-                  }}
-                />
-              )}
-              {flags.isMultiExposedLdenLn && (
-                <li
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT
-                        .INFO + getMultiExposedLdenLnSpecification(),
-                  }}
-                />
-              )}
+                        ).join(" et "),
+                      }
+                    )
+                  : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                      .NO_MULTI_EXPOSURE,
+              }}
+            />
+            {!!land_intersections_ld[0] && (
               <li
                 dangerouslySetInnerHTML={{
                   __html:
-                    replacePlaceholders(
-                      EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_INFO,
-                      {
-                        levelMax: max_db_lden,
-                        levelMin: min_db_lden,
-                      }
-                    ) + getDbLevelsSpecification(),
+                    land_intersections_ld[0].typeterr === "INFRA"
+                      ? replacePlaceholders(
+                          EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                            .MAIN_SOURCE_INFRA,
+                          {
+                            typesource: getReadableSource(
+                              land_intersections_ld[0].typesource
+                            ),
+                            codinfra: land_intersections_ld[0].codeinfra || "",
+                          }
+                        )
+                      : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                          .MAIN_SOURCE_AGGLO,
                 }}
               />
+            )}
+            {flags.isMultiExposedLdenLn && (
               <li
                 dangerouslySetInnerHTML={{
-                  __html: flags.isPriorityZone
-                    ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
-                        .IN_PRIORITY_ZONE
-                    : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
-                        .NOT_IN_PRIORITY_ZONE,
+                  __html:
+                    EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT.INFO +
+                    getMultiExposedLdenLnSpecification(),
                 }}
               />
-            </ul>
-          </p>
+            )}
+            <li
+              dangerouslySetInnerHTML={{
+                __html:
+                  replacePlaceholders(
+                    EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_INFO,
+                    {
+                      levelMax: max_db_lden,
+                      levelMin: min_db_lden,
+                    }
+                  ) + getDbLevelsSpecification(),
+              }}
+            />
+            <li
+              dangerouslySetInnerHTML={{
+                __html: flags.isPriorityZone
+                  ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE.IN_PRIORITY_ZONE
+                  : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
+                      .NOT_IN_PRIORITY_ZONE,
+              }}
+            />
+          </ul>
           <div className={cx(classes.sourcesTable)}>
             {land_intersections_ld.some(
               (intersection) => intersection.cbstype === "A"

@@ -36,18 +36,18 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
             <i className={cx(classes.titleIcon, fr.cx("ri-alert-fill"))} />{" "}
             Évaluation du risque
           </h2>
-          <p>
+          <div className={fr.cx("fr-mb-4v")}>
             <DiagnosticNoiseScore
               score={diagnostic.score}
               db={diagnostic.max_db_lden}
             />
-          </p>
+          </div>
           {diagnostic.equivalent_ambiences.length > 0 && (
             <>
               <p className={cx(classes.subTitle, fr.cx("fr-mb-2v"))}>
                 Ambiances sonores équivalentes
               </p>
-              <p>
+              <div>
                 {diagnostic.equivalent_ambiences.map((ambience, index) => (
                   <Tag
                     key={index}
@@ -59,7 +59,7 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
                     {ambience}
                   </Tag>
                 ))}
-              </p>
+              </div>
             </>
           )}
         </div>
@@ -70,7 +70,7 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
             />{" "}
             Résumé du diagnostic
           </h2>
-          <p
+          <div
             className={classes.summary}
             dangerouslySetInnerHTML={{
               __html: getSummaryTextFromDiagnostic(diagnostic),
