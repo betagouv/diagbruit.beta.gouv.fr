@@ -10,3 +10,4 @@ shapely==2.0.7
 httpx==0.27.0
 numpy<2
 PyYAML==6.0.1
+requests==2.31.0
