@@ -260,7 +260,17 @@ function DiagnosticPage() {
         {notIntegrated && (
           <Alert
             className={fr.cx("fr-my-4v")}
-            description="Cette parcelle ne figure pas dans les données actuellement disponibles."
+            description={
+              <div className={fr.cx("fr-mt-2v")}>
+                Malheureusement, cette parcelle ne figure pas dans les données
+                actuellement disponibles.
+                <div className={fr.cx("fr-mt-1v")}>
+                  <a href="https://tally.so/r/3xoeEd" target="_blank">
+                    Vous jugez cela dommage 😞 ? Dites le nous.
+                  </a>
+                </div>
+              </div>
+            }
             onClose={function noRefCheck() {}}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
