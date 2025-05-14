@@ -19,7 +19,8 @@
       "displayName": "conditions",
       "type": "component",
       "repeatable": false,
-      "component": "global.conditions"
+      "component": "global.conditions",
+      "required": true
     },
     "category": {
       "type": "relation",
@@ -32,6 +33,13 @@
         "preset": "defaultHtml"
       },
       "customField": "plugin::ckeditor5.CKEditor"
+    },
+    "links": {
+      "displayName": "link",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.link",
+      "required": false
     }
   }
 }

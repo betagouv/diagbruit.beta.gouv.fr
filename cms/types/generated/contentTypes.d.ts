@@ -415,7 +415,8 @@ export interface ApiRecommendationRecommendation
   };
   attributes: {
     category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
-    conditions: Schema.Attribute.Component<'global.conditions', false>;
+    conditions: Schema.Attribute.Component<'global.conditions', false> &
+      Schema.Attribute.Required;
     content: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',
@@ -426,6 +427,7 @@ export interface ApiRecommendationRecommendation
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    links: Schema.Attribute.Component<'global.link', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
