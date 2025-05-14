@@ -140,6 +140,24 @@ yarn start
 
 The frontend will be available at http://localhost:3000
 
+## 📁 Strapi (CMS)
+
+### Install Dependencies
+
+```
+cd strapi
+cp .env.example .env
+yarn
+```
+
+### Start the Application
+
+```
+yarn develop
+```
+
+The strapi interface will be available at http://localhost:1337
+
 ## ☁️ Deploying on Scalingo
 
 Add scalingo remotes
@@ -147,6 +165,7 @@ Add scalingo remotes
 ```
 git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-back.git
 git remote add scalingo-frontend git@ssh.osc-fr1.scalingo.com:diag-bruit-front.git
+git remote add scalingo-cms git@ssh.osc-fr1.scalingo.com:diag-bruit-cms.git
 ```
 
 Deploy FastAPI last commit
@@ -159,6 +178,12 @@ Deploy Frontend last commit
 
 ```
 git subtree push --prefix frontend scalingo-frontend main
+```
+
+Deploy Strapi CMS last commit
+
+```
+git subtree push --prefix cms scalingo-cms main
 ```
 
 ## 🧬 Macro architecture
