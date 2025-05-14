@@ -203,11 +203,16 @@ graph TD
     subgraph FastAPI["FastAPI"]
         D[Endpoint /diag/generate]
         D1[Calcul d'intersections]
-        D2[Algorithme de scoring et préconisations]
+        D2[Algorithme de scoring]
+        D3[Préconisations]
     end
 
     subgraph Frontend["Frontend"]
         E[OpenLayers Map]
+    end
+
+    subgraph Strapi["Strapi CMS"]
+        F[Éditeur de préconisations]
     end
 
     A --> PW
@@ -216,6 +221,8 @@ graph TD
     D --> D2
     D --> D1
     D1 --> C
+    D --> D3
+    D3 --> F
     E --> D
 
     classDef ingestion fill:#1a936f,stroke:#88d498,stroke-width:2px,color:#f3e9d2
@@ -227,7 +234,7 @@ graph TD
     class A ingestion
     class B0,B1,B2 dbt
     class PW,C postgres
-    class D,D1,D2 fastapi
+    class D,D1,D2,D3 fastapi
     class E frontend
 ```
 
@@ -268,6 +275,15 @@ diagbruit/
 │   ├── public/
 │   ├── src/
 │   └── tsconfig.json
+│
+├── cms/
+│   ├── .env.example
+│   ├── package.json
+│   ├── config/
+│   ├── database/
+│   ├── public/
+│   ├── src/
+│   └── types/
 │
 ├── setup-dev.sh
 ├── setup-dbt.sh
