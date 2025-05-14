@@ -7,6 +7,19 @@ Le reste du README est en anglais, dans un souci de cohérence et d'accessibilit
 ## 🧰 Prerequisites
 
 - Python 3.8+
+- Node.js v22 is required. You can check your version with:
+  ```bash
+  node -v
+  ```
+  If needed, install or switch to Node 22 using a version manager like nvm:
+  ```bash
+  nvm install 22
+  nvm use 22
+  ```
+- Yarn
+  ```bash
+  npm install -g yarn
+  ```
 - GEOS library for spatial data processing:
 
   ```bash
