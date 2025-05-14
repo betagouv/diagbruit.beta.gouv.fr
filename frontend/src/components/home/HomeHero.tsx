@@ -13,12 +13,37 @@ const HomeHero = () => {
             Comprendre rapidement le risque sonore <br /> sur une parcelle
             cadastrale
           </h1>
-          <p>
-            <b>diagBruit</b> est un service public qui facilite la compréhension
-            des risques liés au <b>bruit des transports</b>.
+          <p className={fr.cx("fr-mb-4v")}>
+            <b>diagBruit</b> est un outil qui vise deux objectifs :
           </p>
+          <ol className={fr.cx("fr-mb-6v")}>
+            <li>
+              <b>Alerter</b> les porteurs de projet et services à propos des
+              risques induits par la situation sonore d’une parcelle
+            </li>
+            <li>
+              <b>Proposer</b> des pistes de réflexions pour réaliser des
+              aménagements prenant en compte la dimension acoustique.
+            </li>
+          </ol>
           <Notice
-            description="Actuellement, les sources de données utilisées dans l'outil sont les cartes de bruit des grandes infrastructures de transports terrestres, les cartes de bruit des grandes agglomérations, les classements sonores, les plans d'exposition au bruit."
+            description={
+              <>
+                Actuellement les sources de données utilisées pour qualifier une
+                situation sonore dans diagBruit sont les cartes de bruit
+                “Grandes Insfratructures de Transport Terrestres” et “Grandes
+                Agglomérations”, plus les plans d’exposition au bruit.
+                {/* <br />
+                <br />
+                Les cartes de bruit sont des documents cartographiques issus de
+                modélisation. Les abaques de calcul présentent un certain nombre
+                d’approximation, tout comme certaines données d’entrée ou
+                paramètre de calcul. Les niveaux de bruit utilisés dans
+                diagBruit, et donc le diagnostic, peuvent ainsi être
+                approximatif et remis en cause par des études locales plus
+                approfondies (avec mesures sur site notamment). */}
+              </>
+            }
             iconDisplayed
             isClosable
             onClose={function noRefCheck() {}}
@@ -44,6 +69,14 @@ const useStyles = tss.create(() => ({
     },
     img: {
       maxWidth: "100%",
+      position: "relative",
+      top: "50%",
+      transform: "translateY(-50%)",
+    },
+    ol: {
+      "li::marker": {
+        fontWeight: "normal",
+      },
     },
     ".fr-notice__body": {
       ".fr-notice__desc": {

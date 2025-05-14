@@ -26,7 +26,7 @@ function HomePage() {
   return (
     <div className={fr.cx("fr-my-10v")}>
       <HomeHero />
-      <div className={cx(classes.subtitle, fr.cx("fr-mt-6v"))}>
+      <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
         <img src="/images/search.svg" />
         <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
       </div>
