@@ -158,7 +158,7 @@ The frontend will be available at http://localhost:3000
 ### Install Dependencies
 
 ```
-cd strapi
+cd cms
 cp .env.example .env
 yarn
 ```
