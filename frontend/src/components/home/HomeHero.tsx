@@ -19,7 +19,7 @@ const HomeHero = () => {
           <ol className={fr.cx("fr-mb-6v")}>
             <li>
               <b>Alerter</b> les porteurs de projet et services à propos des
-              risques induits par la situation sonore d’une parcelle
+              risques induits par la situation sonore d’une parcelle.
             </li>
             <li>
               <b>Proposer</b> des pistes de réflexions pour réaliser des
