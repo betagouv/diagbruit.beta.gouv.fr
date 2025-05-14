@@ -93,6 +93,7 @@ export function computeParcelleSiblings(
     filter: [
       "all",
       ["==", ["get", "commune"], feature.properties.commune],
+      ["==", ["get", "prefixe"], feature.properties.prefixe],
       ["==", ["get", "section"], feature.properties.section],
       ["==", ["get", "numero"], feature.properties.numero],
     ],
