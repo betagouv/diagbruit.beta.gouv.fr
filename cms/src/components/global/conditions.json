@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_global_conditions",
+  "info": {
+    "displayName": "conditions",
+    "icon": "oneToMany",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "score_gte": {
+      "type": "integer"
+    },
+    "score_lte": {
+      "type": "integer"
+    },
+    "source": {
+      "type": "enumeration",
+      "enum": [
+        "all",
+        "land",
+        "air"
+      ],
+      "default": "all",
+      "required": true
+    }
+  }
+}
