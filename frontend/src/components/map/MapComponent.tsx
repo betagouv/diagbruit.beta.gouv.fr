@@ -18,7 +18,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
 import { getRiskFromScore, getZoomFromGouvType } from "../../utils/tools";
-import { DiagnosticItem } from "../../utils/types";
+import { DiagnosticItem, DiagnosticResponseError } from "../../utils/types";
 import usePrevious from "../hooks/previous";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
@@ -50,6 +50,7 @@ type MapComponentProps = {
   onLoading: (loading: boolean) => void;
   onReady: () => void;
   onReset: () => void;
+  onErrorChange: (error?: DiagnosticResponseError) => void;
   addressDefaultValue?: AddressFeature;
 };
 
@@ -65,7 +66,14 @@ export interface ExposedMapMethods {
 
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
   (
-    { onDiagnosticsChange, onLoading, onReady, onReset, addressDefaultValue },
+    {
+      onDiagnosticsChange,
+      onLoading,
+      onReady,
+      onReset,
+      onErrorChange,
+      addressDefaultValue,
+    },
     ref
   ) => {
     const { cx, classes } = useStyles();
@@ -79,9 +87,20 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     const [hovered, setHovered] = useState<HoverInfo | null>(null);
     const [cursor, setCursor] = useState("default");
     const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const [diagError, setDiagError] = useState<
+      DiagnosticResponseError | undefined
+    >();
 
     const internalMapRef = useRef<MapRef>(null);
     const [map, setMap] = useState<MapInstance>();
+
+    const prevHovered = usePrevious(hovered);
+    const prevSelected = usePrevious(parcelle);
+
+    const { response, error, isLoading } = useDiagnostics(
+      parcelle,
+      parcelleSiblings
+    );
 
     useImperativeHandle(
       ref,
@@ -94,11 +113,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       }),
       [map, parcelle, setParcelle, setParcelleSiblings]
     );
-
-    const prevHovered = usePrevious(hovered);
-    const prevSelected = usePrevious(parcelle);
-
-    const { response, isLoading } = useDiagnostics(parcelle, parcelleSiblings);
 
     useHoverFeatureState(map, hovered, prevHovered);
     useOutlinePreviousSelection(map, parcelle, prevSelected);
@@ -228,6 +242,12 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     }, [isMapLoaded]);
 
     useEffect(() => {
+      if (onErrorChange) {
+        onErrorChange(error);
+      }
+    }, [error]);
+
+    useEffect(() => {
       const geometry = parcelle?.geometry as any;
       if (!map || !parcelle || !geometry?.coordinates) return;
 
@@ -259,6 +279,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           />
         </div>
         <Map
+          id="map"
           ref={mapRef}
           initialViewState={defaultViewState}
           onLoad={() => setIsMapLoaded(true)}

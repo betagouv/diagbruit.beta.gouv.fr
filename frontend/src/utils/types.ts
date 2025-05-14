@@ -1,5 +1,10 @@
-export type DiagnosticResponse = {
+export type DiagnosticResponseOk = {
   diagnostics: DiagnosticItem[];
+};
+
+export type DiagnosticResponseError = {
+  code: number;
+  message: string;
 };
 
 export type DiagnosticItem = {

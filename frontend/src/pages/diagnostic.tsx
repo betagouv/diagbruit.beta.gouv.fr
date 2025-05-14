@@ -31,6 +31,7 @@ function DiagnosticPage() {
 
   const [isMapReady, setIsMapReady] = useState(false);
   const [parcelleError, setParcelleError] = useState(false);
+  const [notIntegrated, setNotIntegrated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
     DiagnosticItem[]
@@ -94,6 +95,7 @@ function DiagnosticPage() {
       mapMethodsRef.current?.setParcelleSiblings([]);
     }
 
+    setNotIntegrated(false);
     setDiagnosticsResponses([]);
     setSearchValues(defaultSearchValues);
   };
@@ -226,6 +228,9 @@ function DiagnosticPage() {
             setIsMapReady(true);
           }}
           onReset={reset}
+          onErrorChange={(error) => {
+            setNotIntegrated(error?.code === 404);
+          }}
           addressDefaultValue={addressDefaultValue}
         />
         {diagnosticsResponses && diagnosticsResponses[0] && (
@@ -237,6 +242,7 @@ function DiagnosticPage() {
           </div>
         )}
         {!diagnosticsResponses.length &&
+          !notIntegrated &&
           (parcelleError || addressDefaultValue) && (
             <Alert
               className={fr.cx("fr-mt-6v")}
@@ -250,6 +256,16 @@ function DiagnosticPage() {
               }
             />
           )}
+
+        {notIntegrated && (
+          <Alert
+            className={fr.cx("fr-my-4v")}
+            description="Cette parcelle ne figure pas dans les données actuellement disponibles."
+            onClose={function noRefCheck() {}}
+            severity="error"
+            title="Parcelle non référencée dans diagBruit"
+          />
+        )}
       </div>
     </div>
   );

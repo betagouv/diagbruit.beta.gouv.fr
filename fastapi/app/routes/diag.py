@@ -10,7 +10,8 @@ from app.utils import (
     query_noisemap_intersecting_features,
     query_soundclassification_intersecting_features,
     query_peb_intersecting_features,
-    get_parcelle_coordinates
+    get_parcelle_coordinates,
+    codes_insee_whitelist
 )
 from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
@@ -103,6 +104,12 @@ async def generate_diag_from_parcelles(
                 "error": result["error"]
             }
 
+        if result['parcelle'].code_insee not in codes_insee_whitelist:
+            raise HTTPException(
+                status_code=404,
+                detail=f"La parcelle {result['parcelle'].dict()} ne fait pas parti des données intégrées"
+            )
+
         try:
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
             codedept = f"0{result['parcelle'].code_insee[:2]}"
@@ -130,6 +137,12 @@ async def generate_diag_from_geometry(
     request: GeometryRequest
 ):
     async def process_item(item: GeometryItem):
+        if item.parcelle.code_insee not in codes_insee_whitelist:
+            raise HTTPException(
+                status_code=404,
+                detail=f"La parcelle {item.parcelle.dict()} ne fait pas parti des données intégrées"
+            )
+
         try:
             polygone = create_multipolygon_from_coordinates(item.geometry)
             codedept = f"0{item.parcelle.code_insee[:2]}"
