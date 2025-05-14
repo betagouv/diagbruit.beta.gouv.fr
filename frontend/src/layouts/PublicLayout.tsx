@@ -2,6 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Header from "@codegouvfr/react-dsfr/Header";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { tss } from "tss-react/dsfr";
+import Notice from "@codegouvfr/react-dsfr/Notice";
+import { useLocation } from "react-router-dom";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -9,6 +11,7 @@ type PublicLayoutProps = {
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { cx, classes } = useStyles();
+  const { pathname } = useLocation();
 
   return (
     <main>
@@ -38,6 +41,22 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         id="fr-header-simple-header"
       />
+      {pathname === "/diagnostic" && (
+        <Notice
+          title={
+            <>
+              Aidez-nous à améliorer cet outil ! Faites nous part de vos retours
+              en remplissant{" "}
+              <a href="https://tally.so/r/3xoeEd" target="_blank">
+                ce court formulaire.
+              </a>
+            </>
+          }
+          isClosable
+          onClose={function noRefCheck() {}}
+          className={cx(classes.betaNotice)}
+        />
+      )}
       <div
         className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
       >
@@ -54,6 +73,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 const useStyles = tss.create(() => ({
   container: {
     minHeight: "85vh",
+  },
+  betaNotice: {
+    marginBottom: `-${fr.spacing("10v")}`,
   },
 }));
 
