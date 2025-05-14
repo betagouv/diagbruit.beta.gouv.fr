@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
@@ -14,6 +15,8 @@ type DiagnosticProps = {
 
 const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
+  const [searchParams] = useSearchParams();
+  const devMode = searchParams.get("dev") === "true";
 
   return (
     <div>
@@ -23,10 +26,11 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
         <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
-        {/* TO REMOVE */}
-        <Accordion label="Voir le retour de l'API">
-          <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
-        </Accordion>
+        {devMode && (
+          <Accordion label="Voir le retour de l'API">
+            <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
+          </Accordion>
+        )}
       </div>
     </div>
   );
