@@ -258,7 +258,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
       map.flyTo({
         center: [offsetLng, lat],
-        zoom: 18,
+        zoom: 17,
         essential: true,
       });
     }, [map, parcelle]);
@@ -287,7 +287,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           onMouseEnter={onHover}
           onMouseLeave={onHover}
           onMouseMove={onHover}
-          style={{ width: "100%", height: "600px" }}
+          style={{ width: "100%", height: "550px" }}
           mapStyle={orthoStyle as StyleSpecification}
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
