@@ -2,7 +2,7 @@
 
 Venez tester l'outil : [https://diagbruit.fr](https://diagbruit.fr)
 
-Remettre le bruit comme un critère important dans la construction des projets d’aménagement (particulier, promoteur, Opération d’intérêt Métropolitain ou National) pour que les gens bénéficient de cadres de vie apaisés, en intégrant les impacts sonores comme facteur clé dans les décisions d’aménagement. Actuellement ce n’est pas une priorité.
+Objectif : permettre aux instructeurs de permis de construire des collectivités d’alerter les porteurs de projet sur les risques sonores et de leur proposer des préconisations actionnables, pour que les constructions de demain respectent les principes d’un urbanisme favorable à la santé.
 
 Le reste du README est en anglais, dans un souci de cohérence et d'accessibilité.
 
