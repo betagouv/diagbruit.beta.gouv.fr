@@ -45,14 +45,19 @@ const DiagnosticLegalInfos = ({
                     <ul>
                       {soundclassification_intersections.map(
                         (soundClassification, index) => {
-                          const { codeinfra, typesource, distance } =
-                            soundClassification;
+                          const {
+                            codeinfra,
+                            typesource,
+                            sound_category,
+                            distance,
+                          } = soundClassification;
                           return (
                             <li key={index}>
                               La parcelle se situe à <b>{distance}</b> mètre
                               {distance > 1 ? "s" : ""} de la source{" "}
-                              <b>"{codeinfra}"</b> de catégorie{" "}
-                              <b>"{getReadableSource(typesource)}"</b>.
+                              <b>"{codeinfra}"</b> de type{" "}
+                              <b>"{getReadableSource(typesource)}"</b> et de
+                              catégorie <b>{sound_category}</b>.
                             </li>
                           );
                         }
