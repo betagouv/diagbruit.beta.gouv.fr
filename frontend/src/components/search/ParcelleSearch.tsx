@@ -52,8 +52,10 @@ const ParcelleSearch = ({
   });
 
   const onSubmit = async (data: ParcelleFormData) => {
-    const { codeInsee, section, numero } = data;
-    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=${codeInsee}&section=${section}&numero=${numero}`;
+    const { codeInsee, section, numero, prefix } = data;
+    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${
+      prefix !== "000" ? `com_abs=${prefix}` : `code_insee=${codeInsee}`
+    }&section=${section}&numero=${numero}`;
 
     setIsLoading(true);
     try {
