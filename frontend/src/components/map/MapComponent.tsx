@@ -19,7 +19,7 @@ import Map, {
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
 import { getRiskFromScore, getZoomFromGouvType } from "../../utils/tools";
 import { DiagnosticItem, DiagnosticResponseError } from "../../utils/types";
-import usePrevious from "../hooks/previous";
+import usePrevious from "../../hooks/previous";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
 import {
