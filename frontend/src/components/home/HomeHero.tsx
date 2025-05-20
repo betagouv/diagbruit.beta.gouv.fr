@@ -29,19 +29,13 @@ const HomeHero = () => {
           <Notice
             description={
               <>
-                Actuellement les sources de données utilisées pour qualifier une
-                situation sonore dans diagBruit sont les cartes de bruit
+                Les données utilisées dans l’outil sont les cartes de bruit
                 “Grandes Insfratructures de Transport Terrestres” et “Grandes
-                Agglomérations”, plus les plans d’exposition au bruit.
-                {/* <br />
-                <br />
-                Les cartes de bruit sont des documents cartographiques issus de
-                modélisation. Les abaques de calcul présentent un certain nombre
-                d’approximation, tout comme certaines données d’entrée ou
-                paramètre de calcul. Les niveaux de bruit utilisés dans
-                diagBruit, et donc le diagnostic, peuvent ainsi être
-                approximatif et remis en cause par des études locales plus
-                approfondies (avec mesures sur site notamment). */}
+                Agglomérations”, plus les plans d’exposition au bruit. Ces
+                documents sont issus de modélisation. Les calculs et certaines
+                données d’entrée nécessitent des approximations. Le diagnostic
+                créé par l’outil peut donc être remis en cause par des études
+                locales plus approfondies (avec mesures sur site).
               </>
             }
             iconDisplayed
