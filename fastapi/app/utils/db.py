@@ -23,10 +23,11 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.legende,
             NoiseMapItem.cbstype
         ).filter(
-            or_(
-                NoiseMapItem.codedept == codedept,
-                NoiseMapItem.codedept == None
-            ),
+            # or_(
+            #     NoiseMapItem.codedept == codedept,
+            #     NoiseMapItem.codedept == None
+            # ),
+            NoiseMapItem.codedept == codedept,
             func.ST_Intersects(
                 NoiseMapItem.geometry,
                 safe_geom
