@@ -22,10 +22,11 @@
       "component": "global.conditions",
       "required": true
     },
-    "category": {
+    "categories": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::category.category"
+      "relation": "oneToMany",
+      "target": "api::category.category",
+      "mappedBy": "recommendation"
     },
     "content": {
       "type": "customField",

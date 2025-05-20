@@ -12,6 +12,12 @@
   "attributes": {
     "title": {
       "type": "string"
+    },
+    "recommendation": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::recommendation.recommendation",
+      "inversedBy": "categories"
     }
   }
 }

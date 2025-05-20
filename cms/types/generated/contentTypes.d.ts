@@ -394,6 +394,10 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    recommendation: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::recommendation.recommendation'
+    >;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -414,7 +418,10 @@ export interface ApiRecommendationRecommendation
     draftAndPublish: true;
   };
   attributes: {
-    category: Schema.Attribute.Relation<'oneToOne', 'api::category.category'>;
+    categories: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::category.category'
+    >;
     conditions: Schema.Attribute.Component<'global.conditions', false> &
       Schema.Attribute.Required;
     content: Schema.Attribute.RichText &
