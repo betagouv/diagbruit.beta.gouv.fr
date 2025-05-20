@@ -7,6 +7,8 @@ import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
+import { useEffect } from "react";
+import { trackMatomoEvent } from "../../utils/matomo";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -17,6 +19,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
   const [searchParams] = useSearchParams();
   const devMode = searchParams.get("dev") === "true";
+
+  useEffect(() => {
+    trackMatomoEvent("Button", "Click", "Generate Diagnostic");
+  }, [diagnosticItem]);
 
   return (
     <div>
