@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
 import logging
 
@@ -23,7 +23,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.legende,
             NoiseMapItem.cbstype
         ).filter(
-            NoiseMapItem.codedept == codedept,
+            or_(
+                NoiseMapItem.codedept == codedept,
+                NoiseMapItem.codedept == None
+            ),
             func.ST_Intersects(
                 NoiseMapItem.geometry,
                 safe_geom
