@@ -21,7 +21,11 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const devMode = searchParams.get("dev") === "true";
 
   useEffect(() => {
-    trackMatomoEvent("Button", "Click", "Generate Diagnostic");
+    trackMatomoEvent(
+      "Action",
+      "Generate Diagnostic",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+    );
   }, [diagnosticItem]);
 
   return (
