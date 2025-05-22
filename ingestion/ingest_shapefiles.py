@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import geopandas as gpd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, inspect
 import argparse
 import os
 import sys
@@ -69,6 +69,14 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         engine = create_engine(db_url)
         create_schema_if_not_exists(engine, schema)
 
+        if if_exists == 'skip':
+            inspector = inspect(engine)
+            full_table_name = f"{schema}.{table_name}"
+            tables = inspector.get_table_names(schema=schema)
+            if table_name in tables:
+                print(f"ℹ️ Table {full_table_name} already exists — skipping ingestion.")
+                return True
+
         print(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
         gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists)
 
@@ -86,7 +94,7 @@ def main():
     parser.add_argument('file_path', help='Path to the shapefile (.shp)')
     parser.add_argument('table_name', help='Name for the table in the database')
     parser.add_argument('--schema', default='public_workspace', help='Database schema (default: public_workspace)')
-    parser.add_argument('--if-exists', choices=['fail', 'replace', 'append'], default='append', help='Action if table exists (default: append)')
+    parser.add_argument('--if-exists', choices=['fail', 'replace', 'append', 'skip'], default='append', help='Action if table exists (default: append)')
     parser.add_argument('--db-host', default=os.getenv('DB_HOST', 'localhost'), help='Database host')
     parser.add_argument('--db-port', default=os.getenv('DB_PORT', '5433'), help='Database port')
     parser.add_argument('--db-name', default=os.getenv('DB_NAME', 'diagbruit'), help='Database name')

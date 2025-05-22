@@ -3,7 +3,6 @@ set -e
 
 run_ingest() {
   echo "→ $1"
-  python ingest_shapefiles.py inputs/departments/depts.shp geo_departements
   python ingest_shapefiles.py "$@"
   echo "✅ Done: $1"
   echo '--------------------------------------------------------------------------'
@@ -65,6 +64,8 @@ FILES_SOUNDCLASS=(
 FILES_PEB=(
   "inputs/PEB/peb.shp raw_peb --if-exists replace"
 )
+
+python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-exists skip
 
 for cmd in "${FILES_INFRA[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
