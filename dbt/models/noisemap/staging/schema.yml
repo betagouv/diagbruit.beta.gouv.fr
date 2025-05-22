@@ -4,6 +4,18 @@ sources:
   - name: public_workspace
     schema: public_workspace
     tables:
+      - name: geo_departements
+        description: "French departments with their respective geometries"
+        columns:
+          - name: code
+            description: "Department code"
+          - name: nom
+            description: "Department name"
+          - name: geometry
+            description: "Geometry data in WKT format"
+  - name: public_workspace
+    schema: public_workspace
+    tables:
       - name: raw_noisemap
         description: "Raw noise map data imported from shapefiles"
         columns:

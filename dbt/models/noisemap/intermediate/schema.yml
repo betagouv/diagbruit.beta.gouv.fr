@@ -13,5 +13,8 @@ models:
   - name: int_noisemap_fixed_clean
     description: "Disaggregates MultiPolygons after geometries have been fixed with ST_MakeValid"
 
+  - name: int_noisemap_codedept
+    description: "Add a code department column to the noise map data if it doesn't exist"
+
   - name: int_noisemap_projected
     description: "Transforms geometries to EPSG:4326 (WGS84) coordinate system"

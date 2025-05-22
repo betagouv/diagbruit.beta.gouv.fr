@@ -3,6 +3,7 @@ set -e
 
 run_ingest() {
   echo "→ $1"
+  python ingest_shapefiles.py inputs/departments/depts.shp geo_departements
   python ingest_shapefiles.py "$@"
   echo "✅ Done: $1"
   echo '--------------------------------------------------------------------------'
