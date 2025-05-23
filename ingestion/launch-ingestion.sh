@@ -10,7 +10,7 @@ run_ingest() {
 
 RENAME_INFRA="--rename-column codinfra=codeinfra --rename-column idzonbruit=id"
 
-ADD_AGGLO="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO --add-column cbstype=A"
+ADD_AGGLO="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO"
 
 ADD_TYPE_F="--add-column typesource=F"
 ADD_TYPE_I="--add-column typesource=I"
@@ -38,20 +38,20 @@ FILES_INFRA=(
 )
 
 FILES_AGGLO_033=(
-  "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_F $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_I $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/route_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_R $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_F $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_I $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/route_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_R $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033"
-  "inputs/noise/AGGLO_033/NoiseContours_airportsInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_A $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_industryInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_I $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_railwaysInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_F $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_roadsInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_R $ADD_LDEN $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_airportsInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_A $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_industryInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_I $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_railwaysInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_F $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
-  "inputs/noise/AGGLO_033/NoiseContours_roadsInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_R $ADD_LNIGHT $ADD_AGGLO $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_F $ADD_CBS_C $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_I $ADD_CBS_C $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/route_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_R $ADD_CBS_C $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_F $ADD_CBS_C $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_I $ADD_CBS_C $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/route_depassement_de_seuil_Lnight.shp raw_noisemap $ADD_TYPE_R $ADD_CBS_C $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033"
+  "inputs/noise/AGGLO_033/NoiseContours_airportsInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_A $ADD_CBS_A $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_industryInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_I $ADD_CBS_A $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_railwaysInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_F $ADD_CBS_A $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_roadsInAgglomeration_Lden.shp raw_noisemap $ADD_TYPE_R $ADD_CBS_A $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_airportsInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_A $ADD_CBS_A $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_industryInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_I $ADD_CBS_A $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_railwaysInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_F $ADD_CBS_A $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
+  "inputs/noise/AGGLO_033/NoiseContours_roadsInAgglomeration_Lnight.shp raw_noisemap $ADD_TYPE_R $ADD_CBS_A $ADD_LNIGHT $ADD_AGGLO_033 $RENAME_AGGLO_033_WITH_SOURCE"
 )
 
 FILES_SOUNDCLASS=(
