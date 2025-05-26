@@ -188,7 +188,15 @@ const DiagnosticEvaluation = ({
                     intersection.codeinfra || "Non connu",
                     intersection.legende + " dB",
                     getLnCodeInfraLegende(intersection.codeinfra),
-                  ])}
+                  ])
+                  .concat(
+                    air_intersections.map((intersection) => [
+                      "Aérien",
+                      intersection.nom || "Non connu",
+                      intersection.legende + " dB",
+                      "-",
+                    ])
+                  )}
                 headers={[
                   "Type de source",
                   "Nom de la source",
