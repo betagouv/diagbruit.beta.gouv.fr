@@ -51,7 +51,7 @@ def get_recommendations_by_score(score: float) -> List[dict]:
     return [
         {
             "title": r["title"],
-            "category": r.get("category", {}).get('title'),
+            "categories": r["categories"],
             "content": r["content"],
             "links": r.get("links", []),
         }

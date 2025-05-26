@@ -56,9 +56,9 @@ const DiagnosticRecommendations = ({
             </div>
             {recommendations.map((recommendation, index) => (
               <Accordion key={index} label={recommendation.title}>
-                <Tag className={fr.cx("fr-mb-4v")}>
-                  {recommendation.category}
-                </Tag>
+                {recommendation.categories.map((category) => (
+                  <Tag className={fr.cx("fr-mb-4v")}>{category.title}</Tag>
+                ))}
                 <div
                   dangerouslySetInnerHTML={{ __html: recommendation.content }}
                 />

@@ -63,9 +63,14 @@ export type SoundClassificationIntersection = {
   distance: number;
 };
 
+export type RecommendationCategory = {
+  id: number;
+  title: string;
+};
+
 export type Recommendations = {
   title: string;
-  category: string;
+  categories: RecommendationCategory[];
   content: string;
   links: {
     href: string;
