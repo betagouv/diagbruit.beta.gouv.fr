@@ -16,10 +16,10 @@ function HomePage() {
 
   if (process.env.NODE_ENV === "development") {
     formValues = {
-      codeInsee: "44020",
+      codeInsee: "33063",
       prefix: "000",
-      section: "BI",
-      numero: "0148",
+      section: "DL",
+      numero: "0043",
     };
   }
 
