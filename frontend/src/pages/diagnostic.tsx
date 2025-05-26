@@ -75,6 +75,8 @@ function DiagnosticPage() {
             }
           });
         });
+      } else {
+        setIsLoading(false);
       }
     }
   };

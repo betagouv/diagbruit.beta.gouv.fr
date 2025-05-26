@@ -1,4 +1,5 @@
-import { centroid } from "@turf/turf";
+import { fr } from "@codegouvfr/react-dsfr";
+import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   Dispatch,
@@ -16,19 +17,19 @@ import Map, {
   MapRef,
   StyleSpecification,
 } from "react-map-gl/maplibre";
+import { tss } from "tss-react/dsfr";
+import usePrevious from "../../hooks/previous";
+import { encode } from "../../utils/compression";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
 import { getRiskFromScore, getZoomFromGouvType } from "../../utils/tools";
 import { DiagnosticItem, DiagnosticResponseError } from "../../utils/types";
-import usePrevious from "../../hooks/previous";
+import AddressSearch, { AddressFeature } from "../search/AddressSearch";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
 import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
-import AddressSearch, { AddressFeature } from "../search/AddressSearch";
-import { tss } from "tss-react/dsfr";
-import { fr } from "@codegouvfr/react-dsfr";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -167,10 +168,30 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       }
     };
 
+    const replaceSearchParams = (parcelle: MapGeoJSONFeature) => {
+      const queryParcelle = {
+        geometry: parcelle._geometry,
+        properties: {
+          ...parcelle.properties,
+          code_insee: parcelle.properties.commune,
+          idu: parcelle.properties.id,
+        },
+        bbox: bbox(parcelle._geometry),
+      };
+      const queryString = `?parcelle=${encode(queryParcelle)}`;
+      const params = new URLSearchParams(window.location.search);
+      params.set("parcelle", encode(queryParcelle));
+
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, "", newUrl);
+    };
+
     const handleDiagnostics = useCallback(() => {
       if (!map || !parcelle || !response?.diagnostics) return;
 
       onDiagnosticsChange(response.diagnostics);
+
+      replaceSearchParams(parcelle);
 
       const allParcelles = [...parcelleSiblings, parcelle];
 
