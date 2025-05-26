@@ -13,7 +13,9 @@ import { useMatomo } from "./hooks/useMatomo";
 startReactDsfr({ defaultColorScheme: "light" });
 
 const App = () => {
-  useMatomo();
+  if (process.env.NODE_ENV === "production") {
+    useMatomo();
+  }
 
   return (
     <PublicLayout>
