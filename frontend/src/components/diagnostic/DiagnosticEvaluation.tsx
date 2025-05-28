@@ -7,7 +7,7 @@ import {
   getReadableSource,
   replacePlaceholders,
 } from "../../utils/tools";
-import { DiagnosticItem } from "../../utils/types";
+import { DiagnosticItem, LandIntersection } from "../../utils/types";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticEvaluationProps = {
@@ -66,6 +66,17 @@ const DiagnosticEvaluation = ({
     );
 
     return ln_intersection ? ln_intersection.legende + " dB" : "-";
+  };
+
+  const getMaxPercentImpactedFromCodeInfra = (
+    landIntersections: LandIntersection[],
+    codeinfra: string
+  ) => {
+    const intersection = landIntersections
+      .filter((intersection) => intersection.codeinfra === codeinfra)
+      .sort((a, b) => b.percent_impacted - a.percent_impacted)[0];
+
+    return intersection ? intersection.percent_impacted : 0;
   };
 
   return (
@@ -140,7 +151,10 @@ const DiagnosticEvaluation = ({
                               codinfra:
                                 land_intersections_ld[0].codeinfra || "",
                               percent_impacted: Math.round(
-                                land_intersections_ld[0].percent_impacted * 100
+                                getMaxPercentImpactedFromCodeInfra(
+                                  land_intersections_ld,
+                                  land_intersections_ld[0].codeinfra || ""
+                                ) * 100
                               ),
                               direction: getReadableCardinality(
                                 land_intersections_ld[0].direction
