@@ -46,6 +46,8 @@ export type LandIntersection = {
   codeinfra: string | null;
   legende: number;
   cbstype: string;
+  percent_impacted: number;
+  directions: "N" | "S" | "E" | "W" | "NS" | "EW" | "NE" | "NW" | "SE" | "SW";
 };
 
 export type AirIntersection = {
