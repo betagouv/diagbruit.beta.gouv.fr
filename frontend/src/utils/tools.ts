@@ -1,6 +1,6 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
 import { SUMMARY_TEXTS } from "./texts/summary";
-import { Diagnostic, IntRange } from "./types";
+import { Cardinality, Diagnostic, IntRange } from "./types";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -174,5 +174,28 @@ export const getZoomFromGouvType = (type: string) => {
       return 19;
     default:
       return 18;
+  }
+};
+
+export const getReadableCardinality = (direction: Cardinality) => {
+  switch (direction) {
+    case "N":
+      return "le Nord";
+    case "S":
+      return "le Sud";
+    case "E":
+      return "l'Est";
+    case "W":
+      return "l'Ouest";
+    case "NE":
+      return "le Nord-Est";
+    case "NW":
+      return "le Nord-Ouest";
+    case "SE":
+      return "le Sud-Est";
+    case "SW":
+      return "le Sud-Ouest";
+    default:
+      return direction;
   }
 };

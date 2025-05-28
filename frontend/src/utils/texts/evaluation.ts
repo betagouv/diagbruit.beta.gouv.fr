@@ -9,7 +9,7 @@ export const EVALUATION_TEXTS = {
         "La parcelle n’est pas exposée à plusieurs sources de bruit des transports (selon les cartes de bruits stratégiques).",
 
       MAIN_SOURCE_INFRA:
-        "Elle est principalement impactée par la source <b>{{typesource}} ({{codinfra}})</b>.",
+        "Elle est impactée sur <b>{{percent_impacted}}%</b> de sa surface par la source <b>{{typesource}} ({{codinfra}})</b> depuis <b>{{direction}}</b>.",
 
       MAIN_SOURCE_AGGLO:
         "La parcelle est située dans une agglomération ayant réalisé ses cartes de bruit, et peut être soumise à des routes ou voies ferrées de faible trafic, dont la dénomination n’est pas fournie.",

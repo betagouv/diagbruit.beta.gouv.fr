@@ -2,7 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { tss } from "tss-react/dsfr";
 import { EVALUATION_TEXTS } from "../../utils/texts/evaluation";
-import { getReadableSource, replacePlaceholders } from "../../utils/tools";
+import {
+  getReadableCardinality,
+  getReadableSource,
+  replacePlaceholders,
+} from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
@@ -135,6 +139,12 @@ const DiagnosticEvaluation = ({
                               ),
                               codinfra:
                                 land_intersections_ld[0].codeinfra || "",
+                              percent_impacted: Math.round(
+                                land_intersections_ld[0].percent_impacted * 100
+                              ),
+                              direction: getReadableCardinality(
+                                land_intersections_ld[0].direction
+                              ),
                             }
                           )
                         : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS

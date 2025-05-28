@@ -39,6 +39,8 @@ export type DiagnosticFlags = {
   isPriorityZone: boolean;
 };
 
+export type Cardinality = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW";
+
 export type LandIntersection = {
   typeterr: string;
   typesource: string;
@@ -47,7 +49,7 @@ export type LandIntersection = {
   legende: number;
   cbstype: string;
   percent_impacted: number;
-  directions: "N" | "S" | "E" | "W" | "NS" | "EW" | "NE" | "NW" | "SE" | "SW";
+  direction: Cardinality;
 };
 
 export type AirIntersection = {
