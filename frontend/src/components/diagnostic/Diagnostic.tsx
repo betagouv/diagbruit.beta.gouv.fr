@@ -121,6 +121,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         <Tabs
           key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
           tabs={diagnosticTabs}
+          onTabChange={(tabId) => {
+            trackMatomoEvent(
+              "Action",
+              "Tab Change",
+              `Diagnostic Tab - ${tabId}`
+            );
+          }}
         />
         {devMode && (
           <Accordion label="Voir le retour de l'API">
