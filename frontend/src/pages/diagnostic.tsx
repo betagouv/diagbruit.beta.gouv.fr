@@ -231,6 +231,7 @@ function DiagnosticPage() {
           }}
           onReset={reset}
           onErrorChange={(error) => {
+            setDiagnosticsResponses([]);
             setNotIntegrated(error?.code === 404);
           }}
           addressDefaultValue={addressDefaultValue}
