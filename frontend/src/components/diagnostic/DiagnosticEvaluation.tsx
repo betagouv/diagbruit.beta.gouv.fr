@@ -199,9 +199,10 @@ const DiagnosticEvaluation = ({
             </ul>
           </div>
           <div className={cx(classes.sourcesTable)}>
-            {land_intersections_ld.some(
+            {(land_intersections_ld.some(
               (intersection) => intersection.cbstype === "A"
-            ) && (
+            ) ||
+              air_intersections.length) && (
               <Table
                 caption="Tableau de synthèse des niveaux de bruit par source"
                 noCaption
