@@ -26,12 +26,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [copied, setCopied] = useState(false);
 
   const devMode = searchParams.get("dev") === "true";
+  const tabId = searchParams.get("tab") || "evaluation";
 
   const diagnosticTabs = [
     {
       tabId: "evaluation",
       label: "Évaluation du risque",
-      isDefault: true,
+      isDefault: tabId === "evaluation",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -50,6 +51,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "legal",
       label: "Informations réglementaires",
+      isDefault: tabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -67,6 +69,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "recommendations",
       label: "Préconisations",
+      isDefault: tabId === "recommendations",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -83,14 +86,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
   ];
 
-  useEffect(() => {
-    trackMatomoEvent(
-      "Action",
-      "Generate Diagnostic",
-      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
-    );
-  }, [diagnosticItem]);
-
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -100,6 +95,22 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       console.error("Erreur lors de la copie de l'URL :", err);
     }
   };
+
+  const replaceSearchParams = (tabId: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tabId);
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, "", newUrl);
+  };
+
+  useEffect(() => {
+    trackMatomoEvent(
+      "Action",
+      "Generate Diagnostic",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+    );
+  }, [diagnosticItem]);
 
   return (
     <div>
@@ -121,7 +132,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         <Tabs
           key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
           tabs={diagnosticTabs}
-          onTabChange={(tabId) => {
+          onTabChange={(tabItem) => {
+            const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
+            replaceSearchParams(tabId);
             trackMatomoEvent(
               "Action",
               "Tab Change",
