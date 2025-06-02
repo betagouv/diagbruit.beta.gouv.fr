@@ -174,6 +174,7 @@ const useStyles = tss.create(() => ({
     flexDirection: "column",
     gap: fr.spacing("6v"),
     minHeight: "calc(100vh - 200px)",
+    marginTop: fr.spacing("2v"),
     ".fr-tabs__panel": {
       padding: `${fr.spacing("4v")} ${fr.spacing("8v")} ${fr.spacing(
         "8v"
