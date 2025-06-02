@@ -31,6 +31,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "evaluation",
       label: "Évaluation du risque",
+      isDefault: true,
       content: (
         <>
           <DiagnosticSectionTitle
@@ -117,7 +118,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       </div>
       <div className={cx(classes.container)}>
-        <Tabs tabs={diagnosticTabs} />
+        <Tabs
+          key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          tabs={diagnosticTabs}
+        />
         {devMode && (
           <Accordion label="Voir le retour de l'API">
             <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
