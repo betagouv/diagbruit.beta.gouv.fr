@@ -81,14 +81,7 @@ const DiagnosticEvaluation = ({
 
   return (
     <div className={cx(classes.container)}>
-      <DiagnosticScoreOnScale
-        score={diagnosticItem.diagnostic.score}
-        db={diagnosticItem.diagnostic.max_db_lden}
-        light
-      />
-      <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-        Cartes de bruit
-      </h3>
+      <h3 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h3>
       <div className={cx(classes.section)}>
         <p className={cx(fr.cx("fr-mb-0"))}>
           {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}

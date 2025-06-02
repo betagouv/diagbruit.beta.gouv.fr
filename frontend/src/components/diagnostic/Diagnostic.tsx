@@ -13,6 +13,7 @@ import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -42,6 +43,11 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               width: 80,
               height: 80,
             }}
+          />
+          <DiagnosticScoreOnScale
+            score={diagnosticItem.diagnostic.score}
+            db={diagnosticItem.diagnostic.max_db_lden}
+            light
           />
           <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
