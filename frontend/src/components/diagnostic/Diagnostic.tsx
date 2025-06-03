@@ -79,7 +79,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="2. Préconisations"
+            title="3. Préconisations"
             image={{
               src: "/images/innovation.svg",
               width: 80,
