@@ -4,7 +4,16 @@ from sqlalchemy import func, or_
 from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
 import logging
 import math
-from collections import defaultdict
+import yaml
+from pathlib import Path
+
+
+def load_config():
+    with open(Path(__file__).resolve().parent.parent / "references" / "globals.yaml", "r") as f:
+        return yaml.safe_load(f)
+
+
+CONFIG = load_config()
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -77,9 +86,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         )
 
         result = []
+        threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
         for r in stmt.all():
             percent_impacted = round(r.total_intersection_area / safe_geom_area, 2)
-            if percent_impacted > 0 and r.union_centroid_x and r.union_centroid_y:
+            if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
                 result.append({
                     "typeterr": r.typeterr,
                     "typesource": r.typesource,
