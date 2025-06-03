@@ -4,7 +4,7 @@ from collections import defaultdict
 
 
 def load_config():
-    with open(Path(__file__).resolve().parent.parent / "references" / "globals.yaml", "r") as f:
+    with open(Path(__file__).resolve().parent.parent.parent / "references" / "globals.yaml", "r") as f:
         return yaml.safe_load(f)
 
 
