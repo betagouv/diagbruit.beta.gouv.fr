@@ -79,6 +79,45 @@ const DiagnosticEvaluation = ({
     return intersection ? intersection.percent_impacted : 0;
   };
 
+  const getUniqueIntersectionsByCodeInfra = () => {
+    const maxLegendeByInfra: { [key: string]: LandIntersection } = {};
+
+    land_intersections_ld.forEach((entry) => {
+      if (entry.cbstype === "A") {
+        const key = entry.codeinfra || "null";
+        if (
+          !maxLegendeByInfra[key] ||
+          entry.legende > maxLegendeByInfra[key].legende
+        ) {
+          maxLegendeByInfra[key] = entry;
+        }
+      }
+    });
+
+    const values = Object.values(maxLegendeByInfra);
+
+    const filtered = values.filter((entry) => {
+      if (
+        values.some(
+          (intersection) =>
+            intersection.legende === entry.legende && !!intersection.codeinfra
+        ) &&
+        entry.codeinfra === null
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return filtered.sort((a, b) => b.legende - a.legende);
+  };
+
+  const land_intersections_ld_unique_display =
+    getUniqueIntersectionsByCodeInfra();
+
+  console.log(land_intersections_ld);
+  console.log(land_intersections_ld_unique_display);
+
   return (
     <div className={cx(classes.container)}>
       <h3 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h3>
@@ -171,14 +210,12 @@ const DiagnosticEvaluation = ({
         </ul>
       </div>
       <div className={cx(classes.sourcesTable)}>
-        {(land_intersections_ld.some(
-          (intersection) => intersection.cbstype === "A"
-        ) ||
-          air_intersections.length) && (
+        {(!!land_intersections_ld_unique_display.length ||
+          !!air_intersections.length) && (
           <Table
             caption="Tableau de synthèse des niveaux de bruit par source"
             noCaption
-            data={land_intersections_ld
+            data={land_intersections_ld_unique_display
               .filter((intersection) => intersection.cbstype === "A")
               .map((intersection) => [
                 getReadableSource(intersection.typesource, true),
