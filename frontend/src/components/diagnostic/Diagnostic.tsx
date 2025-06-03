@@ -40,8 +40,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="1. Évaluation du risque selon diagBruit"
             image={{
               src: "/images/connection-lost.svg",
-              width: 80,
-              height: 80,
+              width: 56,
+              height: 48,
             }}
           />
           <DiagnosticScoreOnScale
@@ -64,8 +64,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="2. Informations réglementaires"
             image={{
               src: "/images/document.svg",
-              width: 80,
-              height: 80,
+              width: 44,
+              height: 60,
             }}
           />
           <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
@@ -82,8 +82,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="3. Préconisations"
             image={{
               src: "/images/innovation.svg",
-              width: 80,
-              height: 80,
+              width: 55,
+              height: 60,
             }}
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
@@ -176,7 +176,7 @@ const useStyles = tss.create(() => ({
     minHeight: "calc(100vh - 200px)",
     marginTop: fr.spacing("2v"),
     ".fr-tabs__panel": {
-      padding: `${fr.spacing("4v")} ${fr.spacing("8v")} ${fr.spacing(
+      padding: `${fr.spacing("6v")} ${fr.spacing("8v")} ${fr.spacing(
         "8v"
       )} ${fr.spacing("8v")}`,
     },

@@ -34,12 +34,18 @@ const useStyles = tss.create(() => ({
     [fr.breakpoints.down("md")]: {
       flexDirection: "column",
     },
+    marginBottom: fr.spacing("4v"),
   },
   mainIcon: {
     padding: fr.spacing("1v"),
+    marginRight: fr.spacing("2v"),
   },
   content: {
-    paddingTop: fr.spacing("11v"),
+    display: "flex",
+    alignItems: "end",
+    h2: {
+      marginBottom: fr.spacing("2v"),
+    },
     [fr.breakpoints.down("md")]: {
       paddingTop: fr.spacing("2v"),
     },
