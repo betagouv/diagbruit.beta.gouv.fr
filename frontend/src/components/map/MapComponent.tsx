@@ -178,7 +178,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         },
         bbox: bbox(parcelle._geometry),
       };
-      const queryString = `?parcelle=${encode(queryParcelle)}`;
       const params = new URLSearchParams(window.location.search);
       params.set("parcelle", encode(queryParcelle));
 

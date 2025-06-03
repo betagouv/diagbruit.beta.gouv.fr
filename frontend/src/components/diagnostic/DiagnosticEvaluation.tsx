@@ -79,159 +79,166 @@ const DiagnosticEvaluation = ({
     return intersection ? intersection.percent_impacted : 0;
   };
 
+  const getUniqueIntersectionsByCodeInfra = () => {
+    const maxLegendeByInfra: { [key: string]: LandIntersection } = {};
+
+    land_intersections_ld.forEach((entry) => {
+      if (entry.cbstype === "A") {
+        const key = entry.codeinfra || "null";
+        if (
+          !maxLegendeByInfra[key] ||
+          entry.legende > maxLegendeByInfra[key].legende
+        ) {
+          maxLegendeByInfra[key] = entry;
+        }
+      }
+    });
+
+    const values = Object.values(maxLegendeByInfra);
+
+    const filtered = values.filter((entry) => {
+      if (
+        values.some(
+          (intersection) =>
+            intersection.legende === entry.legende && !!intersection.codeinfra
+        ) &&
+        entry.codeinfra === null
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return filtered.sort((a, b) => b.legende - a.legende);
+  };
+
+  const land_intersections_ld_unique_display =
+    getUniqueIntersectionsByCodeInfra();
+
+  console.log(land_intersections_ld);
+  console.log(land_intersections_ld_unique_display);
+
   return (
-    <div>
-      <div className={cx(classes.container)}>
-        <div>
-          <img
-            className={cx(classes.mainIcon)}
-            src="/images/connection-lost.svg"
-            width={80}
-            height={80}
+    <div className={cx(classes.container)}>
+      <h3 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h3>
+      <div className={cx(classes.section)}>
+        <p className={cx(fr.cx("fr-mb-0"))}>
+          {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}
+        </p>
+        <ul>
+          <li
+            dangerouslySetInnerHTML={{
+              __html: flags.isMultiExposedDistinctTypeSources
+                ? replacePlaceholders(
+                    EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                      .MULTI_EXPOSURE,
+                    {
+                      sources: Array.from(
+                        new Set(
+                          land_intersections_ld.map(
+                            (intersection) =>
+                              `<b>${getReadableSource(
+                                intersection.typesource
+                              )}</b>`
+                          )
+                        )
+                      ).join(" et "),
+                    }
+                  )
+                : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                    .NO_MULTI_EXPOSURE,
+            }}
           />
-        </div>
-        <div className={classes.content}>
-          <h2 className={fr.cx("fr-h5")}>
-            3. Évaluation du risque selon DiagBruit
-          </h2>
-          {/* <div className={fr.cx("fr-mb-4v")}>
-            <DiagnosticNoiseScore
-              score={diagnosticItem.diagnostic.score}
-              db={diagnosticItem.diagnostic.max_db_lden}
-            />
-          </div> */}
-          <DiagnosticScoreOnScale
-            score={diagnosticItem.diagnostic.score}
-            db={diagnosticItem.diagnostic.max_db_lden}
-            light
-          />
-          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Cartes de bruit
-          </h3>
-          <div className={cx(classes.section)}>
-            <p className={cx(fr.cx("fr-mb-0"))}>
-              {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}
-            </p>
-            <ul>
-              <li
-                dangerouslySetInnerHTML={{
-                  __html: flags.isMultiExposedDistinctTypeSources
+          {!!land_intersections_ld[0] && (
+            <li
+              dangerouslySetInnerHTML={{
+                __html:
+                  land_intersections_ld[0].typeterr === "INFRA"
                     ? replacePlaceholders(
                         EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                          .MULTI_EXPOSURE,
+                          .MAIN_SOURCE_INFRA,
                         {
-                          sources: Array.from(
-                            new Set(
-                              land_intersections_ld.map(
-                                (intersection) =>
-                                  `<b>${getReadableSource(
-                                    intersection.typesource
-                                  )}</b>`
-                              )
-                            )
-                          ).join(" et "),
+                          typesource: getReadableSource(
+                            land_intersections_ld[0].typesource
+                          ),
+                          codinfra: land_intersections_ld[0].codeinfra || "",
+                          percent_impacted: Math.round(
+                            getMaxPercentImpactedFromCodeInfra(
+                              land_intersections_ld,
+                              land_intersections_ld[0].codeinfra || ""
+                            ) * 100
+                          ),
+                          direction: getReadableCardinality(
+                            land_intersections_ld[0].direction
+                          ),
                         }
                       )
                     : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                        .NO_MULTI_EXPOSURE,
-                }}
-              />
-              {!!land_intersections_ld[0] && (
-                <li
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      land_intersections_ld[0].typeterr === "INFRA"
-                        ? replacePlaceholders(
-                            EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                              .MAIN_SOURCE_INFRA,
-                            {
-                              typesource: getReadableSource(
-                                land_intersections_ld[0].typesource
-                              ),
-                              codinfra:
-                                land_intersections_ld[0].codeinfra || "",
-                              percent_impacted: Math.round(
-                                getMaxPercentImpactedFromCodeInfra(
-                                  land_intersections_ld,
-                                  land_intersections_ld[0].codeinfra || ""
-                                ) * 100
-                              ),
-                              direction: getReadableCardinality(
-                                land_intersections_ld[0].direction
-                              ),
-                            }
-                          )
-                        : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                            .MAIN_SOURCE_AGGLO,
-                  }}
-                />
+                        .MAIN_SOURCE_AGGLO,
+              }}
+            />
+          )}
+          {flags.isMultiExposedLdenLn && (
+            <li
+              dangerouslySetInnerHTML={{
+                __html:
+                  EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT.INFO +
+                  getMultiExposedLdenLnSpecification(),
+              }}
+            />
+          )}
+          <li
+            dangerouslySetInnerHTML={{
+              __html:
+                replacePlaceholders(
+                  EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_INFO,
+                  {
+                    levelMax: max_db_lden,
+                    levelMin: min_db_lden,
+                  }
+                ) + getDbLevelsSpecification(),
+            }}
+          />
+          <li
+            dangerouslySetInnerHTML={{
+              __html: flags.isPriorityZone
+                ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE.IN_PRIORITY_ZONE
+                : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
+                    .NOT_IN_PRIORITY_ZONE,
+            }}
+          />
+        </ul>
+      </div>
+      <div className={cx(classes.sourcesTable)}>
+        {(!!land_intersections_ld_unique_display.length ||
+          !!air_intersections.length) && (
+          <Table
+            caption="Tableau de synthèse des niveaux de bruit par source"
+            noCaption
+            data={land_intersections_ld_unique_display
+              .filter((intersection) => intersection.cbstype === "A")
+              .map((intersection) => [
+                getReadableSource(intersection.typesource, true),
+                intersection.codeinfra || "Non connu",
+                intersection.legende + " dB",
+                getLnCodeInfraLegende(intersection.codeinfra),
+              ])
+              .concat(
+                air_intersections.map((intersection) => [
+                  "Aérien",
+                  intersection.nom || "Non connu",
+                  intersection.legende + " dB",
+                  "-",
+                ])
               )}
-              {flags.isMultiExposedLdenLn && (
-                <li
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      EVALUATION_TEXTS.INFORMATIONS.EXPOSURE.DAY_AND_NIGHT
-                        .INFO + getMultiExposedLdenLnSpecification(),
-                  }}
-                />
-              )}
-              <li
-                dangerouslySetInnerHTML={{
-                  __html:
-                    replacePlaceholders(
-                      EVALUATION_TEXTS.INFORMATIONS.NOISE_LEVELS.LEVEL_INFO,
-                      {
-                        levelMax: max_db_lden,
-                        levelMin: min_db_lden,
-                      }
-                    ) + getDbLevelsSpecification(),
-                }}
-              />
-              <li
-                dangerouslySetInnerHTML={{
-                  __html: flags.isPriorityZone
-                    ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
-                        .IN_PRIORITY_ZONE
-                    : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
-                        .NOT_IN_PRIORITY_ZONE,
-                }}
-              />
-            </ul>
-          </div>
-          <div className={cx(classes.sourcesTable)}>
-            {(land_intersections_ld.some(
-              (intersection) => intersection.cbstype === "A"
-            ) ||
-              air_intersections.length) && (
-              <Table
-                caption="Tableau de synthèse des niveaux de bruit par source"
-                noCaption
-                data={land_intersections_ld
-                  .filter((intersection) => intersection.cbstype === "A")
-                  .map((intersection) => [
-                    getReadableSource(intersection.typesource, true),
-                    intersection.codeinfra || "Non connu",
-                    intersection.legende + " dB",
-                    getLnCodeInfraLegende(intersection.codeinfra),
-                  ])
-                  .concat(
-                    air_intersections.map((intersection) => [
-                      "Aérien",
-                      intersection.nom || "Non connu",
-                      intersection.legende + " dB",
-                      "-",
-                    ])
-                  )}
-                headers={[
-                  "Type de source",
-                  "Nom de la source",
-                  "Niveau de bruit (jour)",
-                  "Niveau de bruit (nuit)",
-                ]}
-              />
-            )}
-          </div>
-        </div>
+            headers={[
+              "Type de source",
+              "Nom de la source",
+              "Niveau de bruit (jour)",
+              "Niveau de bruit (nuit)",
+            ]}
+          />
+        )}
       </div>
     </div>
   );
@@ -239,7 +246,6 @@ const DiagnosticEvaluation = ({
 
 const useStyles = tss.create(() => ({
   container: {
-    display: "flex",
     ul: {
       marginTop: fr.spacing("4v"),
       marginLeft: fr.spacing("4v"),
@@ -250,26 +256,19 @@ const useStyles = tss.create(() => ({
         },
       },
     },
+    paddingTop: fr.spacing("11v"),
     [fr.breakpoints.down("md")]: {
-      flexDirection: "column",
+      paddingTop: fr.spacing("2v"),
     },
-  },
-  mainIcon: {
-    padding: fr.spacing("1v"),
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(
       "2v"
     )} ${fr.spacing("10v")}`,
+    marginLeft: fr.spacing("6v"),
     borderLeft: `4px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
     ul: {
       marginBottom: 0,
-    },
-  },
-  content: {
-    paddingTop: fr.spacing("11v"),
-    [fr.breakpoints.down("md")]: {
-      paddingTop: fr.spacing("2v"),
     },
   },
   sourcesTable: {

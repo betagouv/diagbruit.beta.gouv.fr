@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Notice from "@codegouvfr/react-dsfr/Notice";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
@@ -11,6 +12,8 @@ import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
+import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -20,16 +23,74 @@ type DiagnosticProps = {
 const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
   const [searchParams] = useSearchParams();
-  const [copied, setCopied] = useState(false);
-  const devMode = searchParams.get("dev") === "true";
 
-  useEffect(() => {
-    trackMatomoEvent(
-      "Action",
-      "Generate Diagnostic",
-      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
-    );
-  }, [diagnosticItem]);
+  const [copied, setCopied] = useState(false);
+
+  const devMode = searchParams.get("dev") === "true";
+  const tabId = searchParams.get("tab") || "evaluation";
+
+  const diagnosticTabs = [
+    {
+      tabId: "evaluation",
+      label: "Évaluation du risque",
+      isDefault: tabId === "evaluation",
+      content: (
+        <>
+          <DiagnosticSectionTitle
+            title="1. Évaluation du risque selon diagBruit"
+            image={{
+              src: "/images/connection-lost.svg",
+              width: 80,
+              height: 80,
+            }}
+          />
+          <DiagnosticScoreOnScale
+            score={diagnosticItem.diagnostic.score}
+            db={diagnosticItem.diagnostic.max_db_lden}
+            light
+          />
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
+          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+        </>
+      ),
+    },
+    {
+      tabId: "legal",
+      label: "Informations réglementaires",
+      isDefault: tabId === "legal",
+      content: (
+        <>
+          <DiagnosticSectionTitle
+            title="2. Informations réglementaires"
+            image={{
+              src: "/images/document.svg",
+              width: 80,
+              height: 80,
+            }}
+          />
+          <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
+        </>
+      ),
+    },
+    {
+      tabId: "recommendations",
+      label: "Préconisations",
+      isDefault: tabId === "recommendations",
+      content: (
+        <>
+          <DiagnosticSectionTitle
+            title="3. Préconisations"
+            image={{
+              src: "/images/innovation.svg",
+              width: 80,
+              height: 80,
+            }}
+          />
+          <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
+        </>
+      ),
+    },
+  ];
 
   const handleCopyUrl = async () => {
     try {
@@ -40,6 +101,22 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       console.error("Erreur lors de la copie de l'URL :", err);
     }
   };
+
+  const replaceSearchParams = (tabId: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tabId);
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, "", newUrl);
+  };
+
+  useEffect(() => {
+    trackMatomoEvent(
+      "Action",
+      "Generate Diagnostic",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+    );
+  }, [diagnosticItem]);
 
   return (
     <div>
@@ -58,10 +135,19 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       </div>
       <div className={cx(classes.container)}>
-        <DiagnosticHero diagnosticItem={diagnosticItem} />
-        <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
-        <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
-        <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+        <Tabs
+          key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          tabs={diagnosticTabs}
+          onTabChange={(tabItem) => {
+            const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
+            replaceSearchParams(tabId);
+            trackMatomoEvent(
+              "Action",
+              "Tab Change",
+              `Diagnostic Tab - ${tabId}`
+            );
+          }}
+        />
         {devMode && (
           <Accordion label="Voir le retour de l'API">
             <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
@@ -87,6 +173,13 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     gap: fr.spacing("6v"),
+    minHeight: "calc(100vh - 200px)",
+    marginTop: fr.spacing("2v"),
+    ".fr-tabs__panel": {
+      padding: `${fr.spacing("4v")} ${fr.spacing("8v")} ${fr.spacing(
+        "8v"
+      )} ${fr.spacing("8v")}`,
+    },
   },
   alertCopied: {
     position: "fixed",

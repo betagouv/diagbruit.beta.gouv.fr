@@ -2,6 +2,7 @@ import yaml
 from pathlib import Path
 import unicodedata
 import re
+from collections import defaultdict
 
 default_diagnostic = {
     'score': 0,
@@ -56,7 +57,6 @@ def normalize_codeinfra(value):
     value = re.sub(r'\s+', ' ', value).strip()
     return value
 
-from collections import defaultdict
 
 def filter_land_intersections_by_codeinfra(intersections):
     grouped_by_cbstype = defaultdict(dict)
