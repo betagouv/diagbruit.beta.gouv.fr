@@ -1,7 +1,7 @@
 import copy
 
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning, get_recommendations_by_score)
-from .tools import (filter_land_intersections_by_codeinfra, filter_air_intersections_by_zone, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
+from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):

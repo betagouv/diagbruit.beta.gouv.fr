@@ -90,13 +90,6 @@ def filter_land_intersections_by_codeinfra(intersections):
     return sorted_results
 
 
-def filter_air_intersections_by_zone(intersections):
-    if not intersections:
-        return []
-
-    return [min(intersections, key=lambda x: x.get("zone", "Z"))]
-
-
 def filter_soundclassification_by_codeinfra(intersections):
     filtered = {}
 
