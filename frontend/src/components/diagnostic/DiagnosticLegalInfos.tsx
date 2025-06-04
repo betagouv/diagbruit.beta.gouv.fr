@@ -94,11 +94,28 @@ const DiagnosticLegalInfos = ({
             </h3>
             <div className={cx(classes.section)}>
               <p className={fr.cx("fr-mb-0")}>
-                La parcelle est situé dans un secteur du Plan d’Exposition au
-                Bruit de "<b>{air_intersections[0].nom}</b>" :
+                La parcelle est situé dans{" "}
+                {air_intersections.length > 1
+                  ? "plusieurs secteurs"
+                  : "un secteur"}{" "}
+                du Plan d’Exposition au Bruit de "
+                <b>{air_intersections[0].nom}</b>" :
               </p>
               <ul>
-                <li>zone : {air_intersections[0].zone}</li>
+                {air_intersections.map((intersection, index) => (
+                  <li key={index}>
+                    zone <b>{intersection.zone}</b>
+                    {air_intersections.length > 1 && (
+                      <>
+                        {" sur "}
+                        <b>
+                          {Math.round(intersection.percent_impacted * 100)}%
+                        </b>{" "}
+                        de sa surface
+                      </>
+                    )}
+                  </li>
+                ))}
               </ul>
               <p className={fr.cx("fr-mb-0")}>
                 Code de l’urbanisme dédié au PEB :{" "}

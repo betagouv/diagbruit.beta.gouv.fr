@@ -57,6 +57,7 @@ export type AirIntersection = {
   legende: number;
   nom: string;
   ref_doc: string;
+  percent_impacted: number;
 };
 
 export type SoundClassificationIntersection = {

@@ -52,7 +52,7 @@ def compute_aggregated_score_for_intersections(intersections, levels, all_inters
 
     reduced_list = sorted([items[0] for items in grouped_by_legende.values()], key=lambda item: item.get('percent_impacted', 0), reverse=True)
 
-    threshold = CONFIG.get("intersection_dominating_percentage_difference", 0.5)
+    threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
     if len(reduced_list) >= 2:
         p1 = reduced_list[0].get('percent_impacted', 0)
         p2 = reduced_list[1].get('percent_impacted', 0)
