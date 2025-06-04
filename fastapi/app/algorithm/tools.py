@@ -11,7 +11,7 @@ default_diagnostic = {
     'flags': {
         'hasClassificationWarning': False,
         'isMultiExposedSources': False,
-        'isMultiExposedDistinctTypeSources': False,
+        'isMultiExposedLandDistinctTypeSources': False,
         'isMultiExposedLdenLn': False,
         'isPriorityZone': False
     },
