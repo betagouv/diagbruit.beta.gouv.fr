@@ -50,8 +50,8 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['land_intersections_ld'] = intersections_AGGLO_ld + intersections_INFRA_ld
     diagnostic['land_intersections_ln'] = intersections_AGGLO_ln + intersections_INFRA_ln
 
-    # Return air intersection with the highest risk zone
-    diagnostic['air_intersections'] = filter_air_intersections_by_zone(peb_intersections)
+    # Return air intersections
+    diagnostic['air_intersections'] = peb_intersections
 
     # Return max db lden
     land_intersections_ld_cbs_A = [x for x in diagnostic['land_intersections_ld'] if x.get('cbstype') == 'A']
@@ -74,8 +74,8 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     # Return noisemap intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
 
-    # Flags : multiExposed
-    diagnostic['flags']['isMultiExposedSources'] = len(filter_land_intersections_by_codeinfra(land_intersections_ld_cbs_A) + diagnostic['air_intersections']) > 1
+    # Flags
+    diagnostic['flags']['isMultiExposedSources'] = (len(filter_land_intersections_by_codeinfra(land_intersections_ld_cbs_A)) + (1 if len(diagnostic['air_intersections']) > 0 else 0)) > 1
     diagnostic['flags']['isMultiExposedDistinctTypeSources'] = len({i.get('typesource') for i in diagnostic['land_intersections_ld'] if i.get('typesource')}) > 1
     diagnostic['flags']['isMultiExposedLdenLn'] = len(diagnostic['land_intersections_ld'] + diagnostic['land_intersections_ln']) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
