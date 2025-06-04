@@ -57,7 +57,7 @@ def compute_aggregated_score_for_intersections(intersections, levels, all_inters
         p1 = reduced_list[0].get('percent_impacted', 0)
         p2 = reduced_list[1].get('percent_impacted', 0)
         if p1 - p2 >= threshold:
-            return reduced_list[0].get('score', 0)
+            return compute_intersection_score(reduced_list[0], levels, all_intersections)
 
     return max([
         compute_intersection_score(intersection, levels, all_intersections) for intersection in intersections
