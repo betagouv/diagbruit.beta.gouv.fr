@@ -43,8 +43,8 @@ const DiagnosticEvaluation = ({
   const getMultiExposedLdenLnSpecification = () => {
     const dbBuffer = 10;
 
-    const ldenDb = land_intersections_ld[0].legende;
-    const lnDb = land_intersections_ln[0].legende + dbBuffer;
+    const ldenDb = land_intersections_ld[0]?.legende;
+    const lnDb = land_intersections_ln[0]?.legende + dbBuffer;
 
     if (ldenDb === lnDb) {
       return ".";
