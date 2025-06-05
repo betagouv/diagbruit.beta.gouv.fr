@@ -115,9 +115,6 @@ const DiagnosticEvaluation = ({
   const land_intersections_ld_unique_display =
     getUniqueIntersectionsByCodeInfra();
 
-  console.log(land_intersections_ld);
-  console.log(land_intersections_ld_unique_display);
-
   return (
     <div className={cx(classes.container)}>
       <h3 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h3>
