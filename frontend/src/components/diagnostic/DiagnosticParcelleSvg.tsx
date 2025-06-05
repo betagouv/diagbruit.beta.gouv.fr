@@ -67,16 +67,21 @@ const DiagnosticParcelleSvg = ({
   const scale = drawableWidth / geoWidth;
   const drawableHeight = geoHeight * scale;
 
-  const computedHeight = drawableHeight + 2 * padding;
+  const computedHeightRaw = drawableHeight + 2 * padding;
+  const computedHeight = Math.min(computedHeightRaw, 500);
+
+  const effectiveScale =
+    computedHeightRaw > 500 ? (500 - 2 * padding) / geoHeight : scale;
 
   const offsetX = (width - geoWidth * scale) / 2;
-  const offsetY = padding;
+  const offsetY =
+    computedHeightRaw > 500 ? (500 - geoHeight * effectiveScale) / 2 : padding;
 
   const convertRingToPoints = (ring: [number, number][]) =>
     ring
       .map(([lon, lat]) => {
-        const x = (lon - minLon) * scale + offsetX;
-        const y = (maxLat - lat) * scale + offsetY;
+        const x = (lon - minLon) * effectiveScale + offsetX;
+        const y = (maxLat - lat) * effectiveScale + offsetY;
         return `${x},${y}`;
       })
       .join(" ");
@@ -84,8 +89,8 @@ const DiagnosticParcelleSvg = ({
   const convertRingToPath = (ring: [number, number][]) =>
     ring
       .map(([lon, lat], index) => {
-        const x = (lon - minLon) * scale + offsetX;
-        const y = (maxLat - lat) * scale + offsetY;
+        const x = (lon - minLon) * effectiveScale + offsetX;
+        const y = (maxLat - lat) * effectiveScale + offsetY;
         return `${index === 0 ? "M" : "L"} ${x} ${y}`;
       })
       .join(" ") + " Z";
