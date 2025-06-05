@@ -157,28 +157,43 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
+        safe_geom_area = db.query(func.ST_Area(safe_geom)).scalar()
+
+        if not safe_geom_area or safe_geom_area == 0:
+            raise ValueError("safe_geom area is zero or invalid")
+
+        intersection_geom = func.ST_Intersection(PebItem.geometry, safe_geom)
 
         stmt = db.query(
             PebItem.zone,
             PebItem.legende,
             PebItem.nom,
-            PebItem.ref_doc
+            PebItem.ref_doc,
+            func.sum(func.ST_Area(intersection_geom)).label("intersection_area")
         ).filter(
             func.ST_Intersects(
                 PebItem.geometry,
                 safe_geom
             )
+        ).group_by(
+            PebItem.zone,
+            PebItem.legende,
+            PebItem.nom,
+            PebItem.ref_doc
         )
 
-        return [
-            {
+        result = []
+        for r in stmt.all():
+            percent_impacted = round(r.intersection_area / safe_geom_area, 2)
+            result.append({
                 "zone": r.zone,
                 "legende": r.legende,
                 "nom": r.nom,
-                "ref_doc": r.ref_doc
-            }
-            for r in stmt.all()
-        ]
+                "ref_doc": r.ref_doc,
+                "percent_impacted": percent_impacted
+            })
+
+        return result
 
     except Exception as e:
         logger.error(f"Database error in peb query: {str(e)}")

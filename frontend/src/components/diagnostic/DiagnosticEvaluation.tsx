@@ -128,7 +128,7 @@ const DiagnosticEvaluation = ({
         <ul>
           <li
             dangerouslySetInnerHTML={{
-              __html: flags.isMultiExposedDistinctTypeSources
+              __html: flags.isMultiExposedLandDistinctTypeSources
                 ? replacePlaceholders(
                     EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
                       .MULTI_EXPOSURE,

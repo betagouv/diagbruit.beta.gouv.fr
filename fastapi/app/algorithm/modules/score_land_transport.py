@@ -1,8 +1,17 @@
 import yaml
 from pathlib import Path
+from collections import defaultdict
 
 
-def load_levels(indicetype):
+def load_config():
+    with open(Path(__file__).resolve().parent.parent.parent / "references" / "globals.yaml", "r") as f:
+        return yaml.safe_load(f)
+
+
+CONFIG = load_config()
+
+
+def load_land_levels(indicetype):
     """
     Load YAML files with levels depending on indicetype needed.
     """
@@ -14,7 +23,7 @@ def load_levels(indicetype):
         return yaml.safe_load(f)
 
 
-def compute_intersection_score(intersection, levels, intersections_infra):
+def compute_intersection_score(intersection, levels, all_intersections):
     """
     Computes the score of a single intersection based on its 'legende' value
     and specific conditions related to infrastructure type.
@@ -29,11 +38,41 @@ def compute_intersection_score(intersection, levels, intersections_infra):
     # Specific case: if score is 7 and there's a matching type C intersection for the same typesource, add +1
     if score == 7 and any(
         inf.get("cbstype") == "C" and inf.get("typesource") == intersection.get("typesource")
-        for inf in intersections_infra
+        for inf in all_intersections
     ):
         score += 1
 
     return score
+
+
+def compute_aggregated_score_for_intersections(intersections, levels, all_intersections):
+    grouped_by_legende = defaultdict(list)
+    for item in intersections:
+        grouped_by_legende[item['legende']].append(item)
+
+    reduced_list = sorted([items[0] for items in grouped_by_legende.values()], key=lambda item: item.get('percent_impacted', 0), reverse=True)
+
+    threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
+    if len(reduced_list) >= 2:
+        p1 = reduced_list[0].get('percent_impacted', 0)
+        p2 = reduced_list[1].get('percent_impacted', 0)
+        if p1 - p2 >= threshold:
+            return compute_intersection_score(reduced_list[0], levels, all_intersections)
+
+    return max([
+        compute_intersection_score(intersection, levels, all_intersections) for intersection in intersections
+    ])
+
+
+def group_intersections_by_identifier(intersections):
+    """
+    Groups intersections by a unique identifier based on the (typesource, codeinfra) pair.
+    """
+    grouped = defaultdict(list)
+    for item in intersections:
+        identifier = f"{item['typesource']}_{item['codeinfra']}"
+        grouped[identifier].append(item)
+    return grouped
 
 
 def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype):
@@ -47,22 +86,16 @@ def get_land_score_from_sources(intersections_agglo, intersections_infra, indice
     4. Return the final score.
     """
     all_intersections = intersections_agglo + intersections_infra
-
     if not all_intersections:
         return 0
 
-    levels = load_levels(indicetype)
+    levels = load_land_levels(indicetype)
+    grouped = group_intersections_by_identifier(all_intersections)
 
-    intersection_scores = [
-        compute_intersection_score(intersection, levels, intersections_infra)
-        for intersection in all_intersections
+    scores = [
+        compute_aggregated_score_for_intersections(group, levels, all_intersections)
+        for group in grouped.values()
     ]
 
-    max_score = max(intersection_scores)
-
-    count_max_scores = intersection_scores.count(max_score)
-
-    if count_max_scores > 1:
-        max_score += 1
-
-    return max_score
+    max_score = max(scores)
+    return max_score + 1 if scores.count(max_score) > 1 else max_score
