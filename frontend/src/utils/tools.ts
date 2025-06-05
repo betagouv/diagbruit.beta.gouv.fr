@@ -1,6 +1,6 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
 import { SUMMARY_TEXTS } from "./texts/summary";
-import { Cardinality, Diagnostic, IntRange } from "./types";
+import { Cardinality, Diagnostic, Geometry, IntRange } from "./types";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -13,6 +13,13 @@ export const getColorFromScore = (score: number): string => {
   if (score > 8) return "#F95A5C";
   if (score > 6) return "#FA7659";
   if (score > 3) return "#CB9F2D";
+  return "#4B9F6C";
+};
+
+export const getColorFromLegende = (legende: number): string => {
+  if (legende >= 70) return "#F95A5C";
+  if (legende >= 65) return "#FA7659";
+  if (legende >= 60) return "#CB9F2D";
   return "#4B9F6C";
 };
 
@@ -198,4 +205,17 @@ export const getReadableCardinality = (direction: Cardinality) => {
     default:
       return direction;
   }
+};
+
+export const normalizeToRings = (geometry: Geometry): [number, number][][] => {
+  if (
+    geometry.length > 0 &&
+    Array.isArray(geometry[0]) &&
+    Array.isArray(geometry[0][0]) &&
+    typeof geometry[0][0][0] === "number"
+  ) {
+    return geometry as unknown as [number, number][][];
+  }
+
+  return geometry.flat(1) as unknown as [number, number][][];
 };

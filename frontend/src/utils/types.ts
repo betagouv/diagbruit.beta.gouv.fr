@@ -12,10 +12,13 @@ export type DiagnosticItem = {
   diagnostic: Diagnostic;
 };
 
+export type Geometry = [[[number, number]]];
+
 export type Parcelle = {
   code_insee: string;
   section: string;
   numero: string;
+  geometry: Geometry;
 };
 
 export type Diagnostic = {
