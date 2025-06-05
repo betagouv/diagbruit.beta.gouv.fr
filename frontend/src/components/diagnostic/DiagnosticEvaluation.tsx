@@ -216,6 +216,7 @@ const DiagnosticEvaluation = ({
               .filter((intersection) => intersection.cbstype === "A")
               .map((intersection) => [
                 getReadableSource(intersection.typesource, true),
+                intersection.typeterr === "INFRA" ? "État" : "Agglomération",
                 intersection.codeinfra || "Non connu",
                 intersection.legende + " dB",
                 getLnCodeInfraLegende(intersection.codeinfra),
@@ -223,6 +224,7 @@ const DiagnosticEvaluation = ({
               .concat(
                 air_intersections.map((intersection) => [
                   "Aérien",
+                  "État",
                   intersection.nom || "Non connu",
                   intersection.legende + " dB",
                   "-",
@@ -230,6 +232,7 @@ const DiagnosticEvaluation = ({
               )}
             headers={[
               "Type de source",
+              "Producteur",
               "Nom de la source",
               "Niveau de bruit (jour)",
               "Niveau de bruit (nuit)",
