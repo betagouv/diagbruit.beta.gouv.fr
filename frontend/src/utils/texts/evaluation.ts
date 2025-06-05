@@ -12,7 +12,7 @@ export const EVALUATION_TEXTS = {
         "Elle est impactée sur <b>{{percent_impacted}}%</b> de sa surface par la source <b>{{typesource}} ({{codinfra}})</b> depuis <b>{{direction}}</b>.",
 
       MAIN_SOURCE_AGGLO:
-        "La parcelle est située dans une agglomération ayant réalisé ses cartes de bruit, et peut être soumise à des routes ou voies ferrées de faible trafic, dont la dénomination n’est pas fournie.",
+        'La parcelle est <b>impactée par une carte de bruit "grande agglomération"</b> qui ne fournit pas le détail des noms de sources mais couvre l\'intégralité du territoire. Si la parcelle est également impactée par une carte de bruit <b>"grande infrastructure"</b>, les niveaux affichés ci-dessous <b>peuvent décrire des sources identiques</b>.',
     },
 
     EXPOSURE: {
