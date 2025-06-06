@@ -74,7 +74,10 @@ const DiagnosticRecommendations = ({
           {recommendations.map((recommendation, index) => (
             <Accordion key={index} label={recommendation.title}>
               {recommendation.categories.map((category) => (
-                <Tag className={fr.cx("fr-mb-4v", "fr-mr-2v")}>
+                <Tag
+                  key={category.title}
+                  className={fr.cx("fr-mb-4v", "fr-mr-2v")}
+                >
                   {category.title}
                 </Tag>
               ))}

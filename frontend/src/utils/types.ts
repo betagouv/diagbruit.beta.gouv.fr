@@ -51,6 +51,7 @@ export type LandIntersection = {
   codeinfra: string | null;
   legende: number;
   cbstype: string;
+  geometry_intersection: Geometry;
   percent_impacted: number;
   direction: Cardinality;
 };

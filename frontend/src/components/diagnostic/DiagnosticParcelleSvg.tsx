@@ -1,59 +1,54 @@
+import { useState, useRef } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
-import { Cardinality, Geometry, LandIntersection } from "../../utils/types";
-import { getColorFromLegende, normalizeToRings } from "../../utils/tools";
+import {
+  getColorFromLegende,
+  getReadableSource,
+  normalizeToRings,
+  transparentize,
+} from "../../utils/tools";
+import { Geometry, LandIntersection } from "../../utils/types";
 
 type DiagnosticParcelleSvgProps = {
   geometry: Geometry;
   intersections: LandIntersection[];
   width?: number;
-  height?: number;
   padding?: number;
 };
 
-const getGradientDirection = (direction: Cardinality) => {
-  switch (direction) {
-    case "S":
-      return { x1: "0%", y1: "100%", x2: "0%", y2: "0%" };
-    case "N":
-      return { x1: "0%", y1: "0%", x2: "0%", y2: "100%" };
-    case "W":
-      return { x1: "0%", y1: "0%", x2: "100%", y2: "0%" };
-    case "E":
-      return { x1: "100%", y1: "0%", x2: "0%", y2: "0%" };
-    case "SW":
-      return { x1: "0%", y1: "100%", x2: "100%", y2: "0%" };
-    case "SE":
-      return { x1: "100%", y1: "100%", x2: "0%", y2: "0%" };
-    case "NW":
-      return { x1: "0%", y1: "0%", x2: "100%", y2: "100%" };
-    case "NE":
-      return { x1: "100%", y1: "0%", x2: "0%", y2: "100%" };
-    default:
-      return { x1: "0%", y1: "0%", x2: "100%", y2: "0%" };
-  }
-};
+const BOX_SIZE = 500;
 
 const DiagnosticParcelleSvg = ({
   geometry,
   intersections,
-  width = 500,
-  height,
+  width = BOX_SIZE,
   padding = 10,
 }: DiagnosticParcelleSvgProps) => {
   const rings = normalizeToRings(geometry);
   const allPoints: [number, number][] = rings.flat();
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    content: string;
+  }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    content: "",
+  });
 
   if (
     !Array.isArray(rings) ||
     rings.length === 0 ||
-    rings.some((ring) => !Array.isArray(ring))
+    rings.some((r) => !Array.isArray(r))
   ) {
     return <div>Invalid geometry</div>;
   }
 
   const lons = allPoints.map(([lon]) => lon);
   const lats = allPoints.map(([, lat]) => lat);
-
   const minLon = Math.min(...lons);
   const maxLon = Math.max(...lons);
   const minLat = Math.min(...lats);
@@ -63,21 +58,16 @@ const DiagnosticParcelleSvg = ({
   const geoHeight = Math.max(maxLat - minLat, 1e-6);
 
   const drawableWidth = Math.max(width - 2 * padding, 1);
-
-  const scale = drawableWidth / geoWidth;
-  const drawableHeight = geoHeight * scale;
-
-  const computedHeightRaw = drawableHeight + 2 * padding;
-  const computedHeight = Math.min(computedHeightRaw, 500);
-
+  const initialScale = drawableWidth / geoWidth;
+  const rawHeight = geoHeight * initialScale + 2 * padding;
   const effectiveScale =
-    computedHeightRaw > 500 ? (500 - 2 * padding) / geoHeight : scale;
+    rawHeight > BOX_SIZE ? (BOX_SIZE - 2 * padding) / geoHeight : initialScale;
 
-  const offsetX = (width - geoWidth * scale) / 2;
-  const offsetY =
-    computedHeightRaw > 500 ? (500 - geoHeight * effectiveScale) / 2 : padding;
+  const computedHeight = BOX_SIZE;
+  const offsetX = (width - geoWidth * effectiveScale) / 2;
+  const offsetY = (BOX_SIZE - geoHeight * effectiveScale) / 2;
 
-  const convertRingToPoints = (ring: [number, number][]) =>
+  const projectRing = (ring: [number, number][]) =>
     ring
       .map(([lon, lat]) => {
         const x = (lon - minLon) * effectiveScale + offsetX;
@@ -86,75 +76,106 @@ const DiagnosticParcelleSvg = ({
       })
       .join(" ");
 
-  const convertRingToPath = (ring: [number, number][]) =>
-    ring
-      .map(([lon, lat], index) => {
-        const x = (lon - minLon) * effectiveScale + offsetX;
-        const y = (maxLat - lat) * effectiveScale + offsetY;
-        return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-      })
-      .join(" ") + " Z";
-
   return (
-    <svg width={width} height={computedHeight}>
-      <defs>
-        {intersections
-          .sort((a, b) => a.legende - b.legende)
-          .map((intersection, index) => {
-            const gradId = `grad-${index}`;
-            const dir = getGradientDirection(intersection.direction);
-            const color = getColorFromLegende(intersection.legende);
-            const p =
-              intersection.percent_impacted > 0.5
-                ? intersection.percent_impacted - 0.1
-                : intersection.percent_impacted + 0.1;
-
-            return (
-              <linearGradient
-                key={gradId}
-                id={gradId}
-                gradientUnits="userSpaceOnUse"
-                {...dir}
-              >
-                <stop offset="0%" stopColor={color} />
-                <stop offset={`${p * 100}%`} stopColor={color} />
-                <stop
-                  offset={`${p * 100}%`}
-                  stopColor={color}
-                  stopOpacity={0}
-                />
-                <stop offset="100%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
-            );
-          })}
-        <clipPath id="polygon-clip">
-          {rings.map((ring, i) => (
-            <path key={i} d={convertRingToPath(ring)} />
-          ))}
-        </clipPath>
-      </defs>
-
-      <g clipPath="url(#polygon-clip)">
-        {intersections.map((intersection, index) => (
+    <div style={{ position: "relative", width, height: computedHeight }}>
+      <svg width={width} height={computedHeight} ref={svgRef}>
+        {rings.map((ring, i) => (
           <polygon
-            key={index}
-            points={convertRingToPoints(rings[0])}
-            fill={`url(#grad-${index})`}
-            stroke="none"
+            key={`parcelle-${i}`}
+            points={projectRing(ring)}
+            fill="transparent"
+            stroke={fr.colors.decisions.background.flat.blueFrance.default}
+            strokeWidth={2}
+            onMouseEnter={(e) => {
+              const svgRect = svgRef.current?.getBoundingClientRect();
+              setTooltip({
+                visible: true,
+                x: e.clientX - (svgRect?.left ?? 0) + 10,
+                y: e.clientY - (svgRect?.top ?? 0) + 10,
+                content: "Zone non impactée par le bruit",
+              });
+            }}
+            onMouseMove={(e) => {
+              const svgRect = svgRef.current?.getBoundingClientRect();
+              setTooltip((prev) => ({
+                ...prev,
+                x: e.clientX - (svgRect?.left ?? 0) + 10,
+                y: e.clientY - (svgRect?.top ?? 0) + 10,
+              }));
+            }}
+            onMouseLeave={() => {
+              setTooltip({ visible: false, x: 0, y: 0, content: "" });
+            }}
           />
         ))}
-      </g>
 
-      {rings.map((ring, index) => (
-        <polygon
-          key={`stroke-${index}`}
-          points={convertRingToPoints(ring)}
-          fill="transparent"
-          stroke={fr.colors.decisions.background.flat.blueFrance.default}
-          strokeWidth="2"
-        />
-      ))}
-    </svg>
+        {intersections
+          .sort((a, b) => a.legende - b.legende)
+          .flatMap((intersection) => {
+            const color = getColorFromLegende(intersection.legende);
+            const intersectionRings = normalizeToRings(
+              intersection.geometry_intersection
+            );
+
+            const tooltipContent = `${intersection.typeterr}${
+              intersection.codeinfra ? ` - ${intersection.codeinfra}` : ""
+            } (${getReadableSource(intersection.typesource, false)}) : ${
+              intersection.legende
+            } dB sur ${Math.round(
+              intersection.percent_impacted * 100
+            )}% de la parcelle`;
+
+            return intersectionRings.map((ring, i) => (
+              <polygon
+                key={`intersection-${intersection.legende}-${i}`}
+                points={projectRing(ring)}
+                fill={transparentize(color, 0.5)}
+                strokeWidth={0}
+                onMouseEnter={(e) => {
+                  const svgRect = svgRef.current?.getBoundingClientRect();
+                  setTooltip({
+                    visible: true,
+                    x: e.clientX - (svgRect?.left ?? 0) + 10,
+                    y: e.clientY - (svgRect?.top ?? 0) + 10,
+                    content: tooltipContent,
+                  });
+                }}
+                onMouseMove={(e) => {
+                  const svgRect = svgRef.current?.getBoundingClientRect();
+                  setTooltip((prev) => ({
+                    ...prev,
+                    x: e.clientX - (svgRect?.left ?? 0) + 10,
+                    y: e.clientY - (svgRect?.top ?? 0) + 10,
+                  }));
+                }}
+                onMouseLeave={() => {
+                  setTooltip({ visible: false, x: 0, y: 0, content: "" });
+                }}
+              />
+            ));
+          })}
+      </svg>
+
+      {tooltip.visible && (
+        <div
+          style={{
+            position: "absolute",
+            top: tooltip.y,
+            left: tooltip.x,
+            background: "#000",
+            color: "#fff",
+            padding: "4px 8px",
+            fontSize: 12,
+            borderRadius: 4,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+            zIndex: 10,
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
+    </div>
   );
 };
 
