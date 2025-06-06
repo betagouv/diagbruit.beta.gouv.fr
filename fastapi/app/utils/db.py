@@ -1,10 +1,12 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func, cast
+from sqlalchemy.types import Text
 from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
 import logging
 import math
 import yaml
+import json
 from pathlib import Path
 
 
@@ -72,7 +74,8 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.cbstype,
             func.sum(func.ST_Area(intersection_geom)).label("total_intersection_area"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
-            func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y")
+            func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
+            cast(func.ST_AsGeoJSON(func.ST_Intersection(NoiseMapItem.geometry, safe_geom)), Text).label("geometry_intersection")
         ).filter(
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
@@ -82,13 +85,16 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.indicetype,
             NoiseMapItem.codeinfra,
             NoiseMapItem.legende,
-            NoiseMapItem.cbstype
+            NoiseMapItem.cbstype,
+            intersection_geom
         )
 
         result = []
         threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
         for r in stmt.all():
             percent_impacted = round(r.total_intersection_area / safe_geom_area, 2)
+            geometry_parsed = json.loads(r.geometry_intersection)
+            geometry_intersection = geometry_parsed["coordinates"]
             if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
                 result.append({
                     "typeterr": r.typeterr,
@@ -97,6 +103,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                     "cbstype": r.cbstype,
                     "legende": r.legende,
                     "codeinfra": r.codeinfra,
+                    "geometry_intersection": geometry_intersection,
                     "percent_impacted": percent_impacted,
                     "direction": determine_cardinality(safe_centroid, (r.union_centroid_x, r.union_centroid_y))
                 })

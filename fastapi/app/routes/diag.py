@@ -127,7 +127,7 @@ async def generate_diag_from_parcelles(
             diagnostic = await generate_diagnostic_async(polygone, codedept)
 
             return {
-                "parcelle": result["parcelle"].dict(),
+                "parcelle": {**result["parcelle"].dict(), "geometry": result["coordinates"]},
                 "diagnostic": diagnostic
             }
         except Exception as e:
@@ -158,7 +158,7 @@ async def generate_diag_from_geometry(
             polygone = create_multipolygon_from_coordinates(item.geometry)
             codedept = f"0{item.parcelle.code_insee[:2]}"
             diagnostic = await generate_diagnostic_async(polygone, codedept)
-            return {"parcelle": item.parcelle, "diagnostic": diagnostic}
+            return {"parcelle": {**dict(item.parcelle), "geometry": item.geometry}, "diagnostic": diagnostic}
         except Exception as e:
             raise HTTPException(
                 status_code=500,

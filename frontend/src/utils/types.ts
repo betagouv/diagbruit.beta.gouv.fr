@@ -12,10 +12,13 @@ export type DiagnosticItem = {
   diagnostic: Diagnostic;
 };
 
+export type Geometry = [[[number, number]]];
+
 export type Parcelle = {
   code_insee: string;
   section: string;
   numero: string;
+  geometry: Geometry;
 };
 
 export type Diagnostic = {
@@ -48,6 +51,7 @@ export type LandIntersection = {
   codeinfra: string | null;
   legende: number;
   cbstype: string;
+  geometry_intersection: Geometry;
   percent_impacted: number;
   direction: Cardinality;
 };
