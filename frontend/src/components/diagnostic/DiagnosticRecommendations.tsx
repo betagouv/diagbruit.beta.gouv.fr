@@ -21,22 +21,21 @@ const DiagnosticRecommendations = ({
     parcelle: { geometry },
   } = diagnosticItem;
 
-  const uniqueSourceCodeInfraCombinations = new Set(
-    land_intersections_ld.map(
-      (item) => `${item.typesource}|||${item.codeinfra}`
-    )
-  );
+  // const uniqueSourceCodeInfraCombinations = new Set(
+  //   land_intersections_ld.map(
+  //     (item) => `${item.typesource}|||${item.codeinfra}`
+  //   )
+  // );
   // const isDiagnosticMonoSource =
   //   uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
-  const isDiagnosticMonoSource = true;
 
   return (
     <div>
       <div className={cx(classes.container)}>
-        {isDiagnosticMonoSource && (
+        {!!land_intersections_ld.length && (
           <div className={fr.cx("fr-mb-10v")}>
             <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-              Position du bâti
+              Proposition d'une position de bâti
             </h3>
             <div className={cx(classes.section)}>
               <p className={fr.cx("fr-mb-0")}>
