@@ -31,7 +31,12 @@ const DiagnosticParcelleSvgNotice = ({
           </p>
         </div>
         {Array.from(
-          new Map(intersections.map((item) => [item.legende, item])).values()
+          new Map(
+            intersections.map((item) => [
+              getColorFromLegende(item.legende),
+              item,
+            ])
+          ).values()
         )
           .sort((a, b) => a.legende - b.legende)
           .map((intersection, index) => (

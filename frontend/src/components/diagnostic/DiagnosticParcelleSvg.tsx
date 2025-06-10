@@ -85,7 +85,7 @@ const DiagnosticParcelleSvg = ({
                 visible: true,
                 x: e.clientX - (svgRect?.left ?? 0) + 10,
                 y: e.clientY - (svgRect?.top ?? 0) + 10,
-                content: "Zone non impactée par le bruit",
+                content: "Zone moins impactée par le bruit",
               });
             }}
             onMouseMove={(e) => {
