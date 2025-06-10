@@ -6,7 +6,7 @@
 SELECT
     geometry,
     'tramway' AS source,
-    'T' AS typesource,
+    'F' AS typesource,
     id AS codeinfra,
     larg_secte AS buffer,
     categorie as sound_category,
