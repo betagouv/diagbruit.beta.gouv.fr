@@ -7,6 +7,10 @@ import {
   transparentize,
 } from "../../utils/tools";
 import { Geometry, LandIntersection } from "../../utils/types";
+import inside from "point-in-polygon";
+import { useMemo } from "react";
+import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
+import { useOptimalZone } from "../../hooks/useOptimalZone";
 
 type DiagnosticParcelleSvgProps = {
   geometry: Geometry;
@@ -24,7 +28,6 @@ const DiagnosticParcelleSvg = ({
   padding = 10,
 }: DiagnosticParcelleSvgProps) => {
   const rings = normalizeToRings(geometry);
-  const allPoints: [number, number][] = rings.flat();
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [tooltip, setTooltip] = useState<{
@@ -47,34 +50,24 @@ const DiagnosticParcelleSvg = ({
     return <div>Invalid geometry</div>;
   }
 
-  const lons = allPoints.map(([lon]) => lon);
-  const lats = allPoints.map(([, lat]) => lat);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-
-  const geoWidth = Math.max(maxLon - minLon, 1e-6);
-  const geoHeight = Math.max(maxLat - minLat, 1e-6);
-
-  const drawableWidth = Math.max(width - 2 * padding, 1);
-  const initialScale = drawableWidth / geoWidth;
-  const rawHeight = geoHeight * initialScale + 2 * padding;
-  const effectiveScale =
-    rawHeight > BOX_SIZE ? (BOX_SIZE - 2 * padding) / geoHeight : initialScale;
-
   const computedHeight = BOX_SIZE;
-  const offsetX = (width - geoWidth * effectiveScale) / 2;
-  const offsetY = (BOX_SIZE - geoHeight * effectiveScale) / 2;
 
-  const projectRing = (ring: [number, number][]) =>
-    ring
-      .map(([lon, lat]) => {
-        const x = (lon - minLon) * effectiveScale + offsetX;
-        const y = (maxLat - lat) * effectiveScale + offsetY;
-        return `${x},${y}`;
-      })
-      .join(" ");
+  const { projectPoint, projectRing } = getProjectionUtils(
+    rings,
+    width,
+    computedHeight,
+    padding
+  );
+
+  const { bestPoint, optimalZonePoints } = useOptimalZone({
+    geometry,
+    intersections,
+    projectPoint,
+    width,
+    height: computedHeight,
+    safeZoneThreshold: 0.1,
+    radiusPercent: 0.33,
+  });
 
   return (
     <div style={{ position: "relative", width, height: computedHeight }}>
@@ -126,9 +119,9 @@ const DiagnosticParcelleSvg = ({
             )}% de la parcelle`;
 
             return intersectionRings.map((ring, i) => (
-              <polygon
+              <path
                 key={`intersection-${intersection.legende}-${i}`}
-                points={projectRing(ring)}
+                d={smoothPolygon(ring.map(projectPoint))}
                 fill={transparentize(color, 0.5)}
                 strokeWidth={0}
                 onMouseEnter={(e) => {
@@ -154,6 +147,28 @@ const DiagnosticParcelleSvg = ({
               />
             ));
           })}
+
+        {bestPoint && (
+          <circle
+            cx={bestPoint.x}
+            cy={bestPoint.y}
+            r={5}
+            fill="red"
+            stroke="black"
+            strokeWidth={1.5}
+          />
+        )}
+
+        {optimalZonePoints.map((pt, i) => (
+          <circle
+            key={`optimalzone-${i}`}
+            cx={pt.x}
+            cy={pt.y}
+            r={1}
+            fill={fr.colors.decisions.background.flat.blueFrance.default}
+            opacity={0.7}
+          />
+        ))}
       </svg>
 
       {tooltip.visible && (
