@@ -57,14 +57,14 @@ const DiagnosticParcelleSvg = ({
     padding
   );
 
-  const { bestPoint, optimalZonePoints } = useOptimalZone({
+  const { optimalZonePoints } = useOptimalZone({
     geometry,
     intersections,
     projectPoint,
     width,
     height: computedHeight,
     safeZoneThreshold: 0.1,
-    radiusPercent: 0.33,
+    radiusPercent: 0.4,
   });
 
   return (
@@ -145,17 +145,6 @@ const DiagnosticParcelleSvg = ({
               />
             ));
           })}
-
-        {/* {bestPoint && (
-          <circle
-            cx={bestPoint.x}
-            cy={bestPoint.y}
-            r={5}
-            fill="red"
-            stroke="black"
-            strokeWidth={1.5}
-          />
-        )} */}
 
         {optimalZonePoints.map((pt, i) => (
           <circle
