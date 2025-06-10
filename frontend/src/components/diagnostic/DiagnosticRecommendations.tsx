@@ -26,19 +26,23 @@ const DiagnosticRecommendations = ({
       (item) => `${item.typesource}|||${item.codeinfra}`
     )
   );
-  const isDiagnosticMonoSource =
-    uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
+  // const isDiagnosticMonoSource =
+  //   uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
+  const isDiagnosticMonoSource = true;
 
   return (
     <div>
       <div className={cx(classes.container)}>
         {isDiagnosticMonoSource && (
           <div className={fr.cx("fr-mb-10v")}>
+            <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+              Position du bâti
+            </h3>
             <div className={cx(classes.section)}>
               <p className={fr.cx("fr-mb-0")}>
-                La parcelle n'est soumise qu'à une seule source de bruit
-                terrestre, voici une estimation de l'impact du bruit sur la
-                parcelle :
+                D'après les cartes de bruit “Grandes Insfratructures de
+                Transport Terrestres” et “Grandes Agglomérations”, voici une
+                estimation de l'impact du bruit sur la surface de la parcelle :
               </p>
             </div>
             <div
@@ -64,11 +68,16 @@ const DiagnosticRecommendations = ({
             </div>
           </div>
         )}
-        <div className={cx(classes.section)}>
-          <p className={fr.cx("fr-mb-0")}>
-            Des exemples de préconisations sont consultables sur les thématiques
-            suivantes :
-          </p>
+        <div>
+          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Documentation
+          </h3>
+          <div className={cx(classes.section)}>
+            <p className={fr.cx("fr-mb-0")}>
+              Des exemples de préconisations sont consultables sur les
+              thématiques suivantes :
+            </p>
+          </div>
         </div>
         <div
           className={cx(

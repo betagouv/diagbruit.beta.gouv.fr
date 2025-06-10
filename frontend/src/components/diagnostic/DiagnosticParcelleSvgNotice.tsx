@@ -30,24 +30,28 @@ const DiagnosticParcelleSvgNotice = ({
             Position idéale du bâti selon diagBruit
           </p>
         </div>
-        {intersections.map((intersection, index) => (
-          <div
-            className={classes.noticeIntersection}
-            key={`interesection-${index}`}
-          >
-            <span
-              style={{
-                backgroundColor: transparentize(
-                  getColorFromLegende(intersection.legende),
-                  0.7
-                ),
-              }}
-            />
-            <p>
-              Bruit de niveau {getTextFromLegende(intersection.legende, true)}
-            </p>
-          </div>
-        ))}
+        {Array.from(
+          new Map(intersections.map((item) => [item.legende, item])).values()
+        )
+          .sort((a, b) => a.legende - b.legende)
+          .map((intersection, index) => (
+            <div
+              className={classes.noticeIntersection}
+              key={`interesection-${index}`}
+            >
+              <span
+                style={{
+                  backgroundColor: transparentize(
+                    getColorFromLegende(intersection.legende),
+                    0.7
+                  ),
+                }}
+              />
+              <p>
+                Bruit de niveau {getTextFromLegende(intersection.legende, true)}
+              </p>
+            </div>
+          ))}
       </div>
     </CallOut>
   );
@@ -56,7 +60,7 @@ const DiagnosticParcelleSvgNotice = ({
 const useStyles = tss.create(() => ({
   callOutContainer: {
     h3: {
-      ...fr.typography[1].style,
+      ...fr.typography[0].style,
       marginBottom: fr.spacing("4v"),
     },
   },
