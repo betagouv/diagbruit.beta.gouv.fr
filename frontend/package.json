@@ -17,8 +17,12 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.2",
+    "d3-path": "^3.1.0",
+    "d3-shape": "^3.2.0",
     "maplibre-gl": "^5.3.0",
     "pako": "^2.1.0",
+    "point-in-polygon": "^1.1.0",
+    "polygon-clipping": "^0.15.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.1",
@@ -64,6 +68,7 @@
     ]
   },
   "devDependencies": {
+    "@types/d3-shape": "^3.1.7",
     "@types/pako": "^2.0.3"
   }
 }

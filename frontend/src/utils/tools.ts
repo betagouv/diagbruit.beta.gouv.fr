@@ -1,6 +1,7 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
+import { union } from "polygon-clipping";
 import { SUMMARY_TEXTS } from "./texts/summary";
-import { Cardinality, Diagnostic, IntRange } from "./types";
+import { Cardinality, Diagnostic, Geometry, IntRange } from "./types";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -16,11 +17,31 @@ export const getColorFromScore = (score: number): string => {
   return "#4B9F6C";
 };
 
-export const getTextFromScore = (score: number): string => {
-  if (score > 8) return "EXTRÊME";
-  if (score > 6) return "FORT";
-  if (score > 3) return "MOYEN";
-  return "FAIBLE";
+export const getColorFromLegende = (legende: number): string => {
+  if (legende >= 70) return "#F95A5C";
+  if (legende >= 65) return "#FA7659";
+  if (legende >= 60) return "#CB9F2D";
+  return "#4B9F6C";
+};
+
+export const getTextFromScore = (
+  score: number,
+  lowercase?: boolean
+): string => {
+  if (score > 8) return lowercase ? "extrême" : "EXTRÊME";
+  if (score > 6) return lowercase ? "fort" : "FORT";
+  if (score > 3) return lowercase ? "moyen" : "MOYEN";
+  return lowercase ? "faible" : "FAIBLE";
+};
+
+export const getTextFromLegende = (
+  legende: number,
+  lowercase?: boolean
+): string => {
+  if (legende >= 70) return lowercase ? "extrême" : "EXTRÊME";
+  if (legende >= 65) return lowercase ? "fort" : "FORT";
+  if (legende >= 60) return lowercase ? "moyen" : "MOYEN";
+  return lowercase ? "faible" : "FAIBLE";
 };
 
 export const getIconeFromScore = (
@@ -198,4 +219,46 @@ export const getReadableCardinality = (direction: Cardinality) => {
     default:
       return direction;
   }
+};
+
+export const normalizeToRings = (geometry: Geometry): [number, number][][] => {
+  if (
+    geometry.length > 0 &&
+    Array.isArray(geometry[0]) &&
+    Array.isArray(geometry[0][0]) &&
+    typeof geometry[0][0][0] === "number"
+  ) {
+    return geometry as unknown as [number, number][][];
+  }
+
+  return geometry.flat(1) as unknown as [number, number][][];
+};
+
+export const mergeRings = (
+  rings: [number, number][][]
+): [number, number][][] => {
+  const polygons: [number, number][][][] = rings.map((r) => [r]);
+
+  const unionResult = union(polygons);
+
+  return unionResult.flat() as [number, number][][];
+};
+
+export const transparentize = (hex: string, alpha: number): string => {
+  if (!/^#([0-9A-F]{6})$/i.test(hex)) {
+    throw new Error("Invalid hex color format. Use #RRGGBB.");
+  }
+
+  if (alpha < 0 || alpha > 1) {
+    throw new Error("Alpha must be between 0 and 1.");
+  }
+
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const a = Math.round(alpha * 255);
+
+  const toHex = (value: number) => value.toString(16).padStart(2, "0");
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
 };
