@@ -1,4 +1,5 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
+import { union } from "polygon-clipping";
 import { SUMMARY_TEXTS } from "./texts/summary";
 import { Cardinality, Diagnostic, Geometry, IntRange } from "./types";
 
@@ -231,6 +232,16 @@ export const normalizeToRings = (geometry: Geometry): [number, number][][] => {
   }
 
   return geometry.flat(1) as unknown as [number, number][][];
+};
+
+export const mergeRings = (
+  rings: [number, number][][]
+): [number, number][][] => {
+  const polygons: [number, number][][][] = rings.map((r) => [r]);
+
+  const unionResult = union(polygons);
+
+  return unionResult.flat() as [number, number][][];
 };
 
 export const transparentize = (hex: string, alpha: number): string => {

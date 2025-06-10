@@ -1,11 +1,11 @@
-import { useMemo } from "react";
 import inside from "point-in-polygon";
+import { useMemo } from "react";
 import { normalizeToRings } from "../utils/tools";
-import { Geometry, LandIntersection } from "../utils/types";
+import { LandIntersection } from "../utils/types";
 
 type ProjectedPoint = { x: number; y: number };
 type UseOptimalZoneOptions = {
-  geometry: Geometry;
+  rings: [number, number][][];
   intersections: LandIntersection[];
   projectPoint: (pt: [number, number]) => ProjectedPoint;
   width: number;
@@ -15,7 +15,7 @@ type UseOptimalZoneOptions = {
 };
 
 export function useOptimalZone({
-  geometry,
+  rings,
   intersections,
   projectPoint,
   width,
@@ -23,7 +23,6 @@ export function useOptimalZone({
   safeZoneThreshold = 0.1,
   radiusPercent = 0.33,
 }: UseOptimalZoneOptions) {
-  const rings = normalizeToRings(geometry);
   const step = 10;
 
   return useMemo(() => {
@@ -117,7 +116,7 @@ export function useOptimalZone({
 
     return { bestPoint, optimalZonePoints };
   }, [
-    geometry,
+    rings,
     intersections,
     projectPoint,
     width,

@@ -5,6 +5,7 @@ import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
   getColorFromLegende,
   getReadableSource,
+  mergeRings,
   normalizeToRings,
   transparentize,
 } from "../../utils/tools";
@@ -25,7 +26,8 @@ const DiagnosticParcelleSvg = ({
   width = BOX_SIZE,
   padding = 10,
 }: DiagnosticParcelleSvgProps) => {
-  const rings = normalizeToRings(geometry);
+  const rawRings = normalizeToRings(geometry);
+  const rings = mergeRings(rawRings);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [tooltip, setTooltip] = useState<{
@@ -58,7 +60,7 @@ const DiagnosticParcelleSvg = ({
   );
 
   const { optimalZonePoints } = useOptimalZone({
-    geometry,
+    rings,
     intersections,
     projectPoint,
     width,
