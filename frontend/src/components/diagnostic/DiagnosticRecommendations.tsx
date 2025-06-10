@@ -1,10 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
-import Tag from "@codegouvfr/react-dsfr/Tag";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
+import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -39,9 +40,24 @@ const DiagnosticRecommendations = ({
                 terrestre, voici une estimation de l'impact du bruit sur la
                 parcelle :
               </p>
-              <div className={cx(classes.svgContainer)}>
-                <DiagnosticParcelleSvg
-                  geometry={geometry}
+            </div>
+            <div
+              className={fr.cx(
+                "fr-grid-row",
+                "fr-grid-row--gutters",
+                "fr-my-10v"
+              )}
+            >
+              <div className={fr.cx("fr-col-lg-6")}>
+                <div className={cx(classes.svgContainer)}>
+                  <DiagnosticParcelleSvg
+                    geometry={geometry}
+                    intersections={land_intersections_ld}
+                  />
+                </div>
+              </div>
+              <div className={fr.cx("fr-col-lg-6")}>
+                <DiagnosticParcelleSvgNotice
                   intersections={land_intersections_ld}
                 />
               </div>
@@ -122,7 +138,7 @@ const useStyles = tss.create(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "300px",
+    height: "300px",
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(

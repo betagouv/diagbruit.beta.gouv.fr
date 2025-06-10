@@ -1,5 +1,7 @@
-import { useState, useRef } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
+import { useRef, useState } from "react";
+import { useOptimalZone } from "../../hooks/useOptimalZone";
+import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
   getColorFromLegende,
   getReadableSource,
@@ -7,10 +9,6 @@ import {
   transparentize,
 } from "../../utils/tools";
 import { Geometry, LandIntersection } from "../../utils/types";
-import inside from "point-in-polygon";
-import { useMemo } from "react";
-import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
-import { useOptimalZone } from "../../hooks/useOptimalZone";
 
 type DiagnosticParcelleSvgProps = {
   geometry: Geometry;
@@ -19,7 +17,7 @@ type DiagnosticParcelleSvgProps = {
   padding?: number;
 };
 
-const BOX_SIZE = 500;
+const BOX_SIZE = 300;
 
 const DiagnosticParcelleSvg = ({
   geometry,
@@ -148,7 +146,7 @@ const DiagnosticParcelleSvg = ({
             ));
           })}
 
-        {bestPoint && (
+        {/* {bestPoint && (
           <circle
             cx={bestPoint.x}
             cy={bestPoint.y}
@@ -157,7 +155,7 @@ const DiagnosticParcelleSvg = ({
             stroke="black"
             strokeWidth={1.5}
           />
-        )}
+        )} */}
 
         {optimalZonePoints.map((pt, i) => (
           <circle

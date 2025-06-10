@@ -23,11 +23,24 @@ export const getColorFromLegende = (legende: number): string => {
   return "#4B9F6C";
 };
 
-export const getTextFromScore = (score: number): string => {
-  if (score > 8) return "EXTRÊME";
-  if (score > 6) return "FORT";
-  if (score > 3) return "MOYEN";
-  return "FAIBLE";
+export const getTextFromScore = (
+  score: number,
+  lowercase?: boolean
+): string => {
+  if (score > 8) return lowercase ? "extrême" : "EXTRÊME";
+  if (score > 6) return lowercase ? "fort" : "FORT";
+  if (score > 3) return lowercase ? "moyen" : "MOYEN";
+  return lowercase ? "faible" : "FAIBLE";
+};
+
+export const getTextFromLegende = (
+  legende: number,
+  lowercase?: boolean
+): string => {
+  if (legende >= 70) return lowercase ? "extrême" : "EXTRÊME";
+  if (legende >= 65) return lowercase ? "fort" : "FORT";
+  if (legende >= 60) return lowercase ? "moyen" : "MOYEN";
+  return lowercase ? "faible" : "FAIBLE";
 };
 
 export const getIconeFromScore = (
