@@ -17,7 +17,7 @@ type DiagnosticParcelleSvgProps = {
   padding?: number;
 };
 
-const BOX_SIZE = 300;
+const BOX_SIZE = 400;
 
 const DiagnosticParcelleSvg = ({
   geometry,

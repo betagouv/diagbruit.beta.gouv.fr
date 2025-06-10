@@ -52,7 +52,7 @@ const DiagnosticRecommendations = ({
                 "fr-my-10v"
               )}
             >
-              <div className={fr.cx("fr-col-lg-6")}>
+              <div className={fr.cx("fr-col-lg-7")}>
                 <div className={cx(classes.svgContainer)}>
                   <DiagnosticParcelleSvg
                     geometry={geometry}
@@ -60,7 +60,7 @@ const DiagnosticRecommendations = ({
                   />
                 </div>
               </div>
-              <div className={fr.cx("fr-col-lg-6")}>
+              <div className={cx(classes.notice, fr.cx("fr-col-lg-5"))}>
                 <DiagnosticParcelleSvgNotice
                   intersections={land_intersections_ld}
                 />
@@ -147,7 +147,11 @@ const useStyles = tss.create(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "300px",
+    height: "400px",
+  },
+  notice: {
+    display: "flex",
+    alignItems: "center",
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(
