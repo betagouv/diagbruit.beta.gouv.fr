@@ -6,6 +6,7 @@ import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
+import { useSearchParams } from "react-router-dom";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -14,7 +15,10 @@ type DiagnosticRecommendationsProps = {
 const DiagnosticRecommendations = ({
   diagnosticItem,
 }: DiagnosticRecommendationsProps) => {
+  const [searchParams] = useSearchParams();
   const { cx, classes } = useStyles();
+
+  const devMode = searchParams.get("dev") === "true";
 
   const {
     diagnostic: { recommendations, land_intersections_ld, air_intersections },
@@ -32,7 +36,7 @@ const DiagnosticRecommendations = ({
   return (
     <div>
       <div className={cx(classes.container)}>
-        {!!land_intersections_ld.length && (
+        {devMode && !!land_intersections_ld.length && (
           <div className={fr.cx("fr-mb-10v")}>
             <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
               Proposition d'une position de bâti
