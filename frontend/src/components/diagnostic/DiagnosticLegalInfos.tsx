@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { getReadableSource } from "../../utils/tools";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { LEGAL_TEXTS } from "../../utils/texts/legal";
+import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -84,6 +85,11 @@ const DiagnosticLegalInfos = ({
                   </p>
                 </>
               )}
+            </div>
+            <div className={fr.cx("fr-mt-10v")}>
+              <DiagnosticInfrastructureNoiseTable
+                intersections={soundclassification_intersections}
+              />
             </div>
           </>
         )}

@@ -2,11 +2,14 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import { useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
-import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
+import DiagnosticParcelleSvg, {
+  DiagnosticParcelleSvgHandle,
+} from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
-import { useSearchParams } from "react-router-dom";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -17,11 +20,17 @@ const DiagnosticRecommendations = ({
 }: DiagnosticRecommendationsProps) => {
   const [searchParams] = useSearchParams();
   const { cx, classes } = useStyles();
+  const svgRef = useRef<DiagnosticParcelleSvgHandle>(null);
 
   const devMode = searchParams.get("dev") === "true";
 
   const {
-    diagnostic: { recommendations, land_intersections_ld, air_intersections },
+    diagnostic: {
+      recommendations,
+      land_intersections_ld,
+      air_intersections,
+      soundclassification_intersections,
+    },
     parcelle: { geometry },
   } = diagnosticItem;
 
@@ -32,6 +41,13 @@ const DiagnosticRecommendations = ({
   // );
   // const isDiagnosticMonoSource =
   //   uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
+
+  const points = svgRef.current?.optimalZonePoints;
+
+  // console.log(points);
+  // console.log(
+  //   soundclassification_intersections.map((sci) => sci.geometry_intersection)
+  // );
 
   return (
     <div>
@@ -58,6 +74,7 @@ const DiagnosticRecommendations = ({
               <div className={fr.cx("fr-col-lg-7")}>
                 <div className={cx(classes.svgContainer)}>
                   <DiagnosticParcelleSvg
+                    ref={svgRef}
                     geometry={geometry}
                     intersections={land_intersections_ld}
                   />

@@ -22,13 +22,13 @@ const DiagnosticParcelleSvgNotice = ({
       <div className={classes.noticeContainer}>
         <div className={classes.noticeParcelle}>
           <span />
-          <p className={fr.cx("fr-p-0")}>Parcelle</p>
+          <div className={fr.cx("fr-text--md")}>Parcelle</div>
         </div>
         <div className={classes.noticePerfectZone}>
           <span />
-          <p className={fr.cx("fr-p-0")}>
+          <div className={fr.cx("fr-text--md")}>
             Position idéale du bâti selon diagBruit
-          </p>
+          </div>
         </div>
         {Array.from(
           new Map(
@@ -53,10 +53,10 @@ const DiagnosticParcelleSvgNotice = ({
                   ),
                 }}
               />
-              <p>
+              <div className={fr.cx("fr-text--md")}>
                 Risque de niveau{" "}
                 {getTextFromLegende(intersection.legende, true)}
-              </p>
+              </div>
             </div>
           ))}
       </div>

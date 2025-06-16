@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useOptimalZone } from "../../hooks/useOptimalZone";
 import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
@@ -18,24 +18,21 @@ type DiagnosticParcelleSvgProps = {
   padding?: number;
 };
 
+export type DiagnosticParcelleSvgHandle = {
+  optimalZonePoints: { x: number; y: number }[];
+};
+
 const BOX_SIZE = 400;
 
-const DiagnosticParcelleSvg = ({
-  geometry,
-  intersections,
-  width = BOX_SIZE,
-  padding = 10,
-}: DiagnosticParcelleSvgProps) => {
+const DiagnosticParcelleSvg = forwardRef<
+  DiagnosticParcelleSvgHandle,
+  DiagnosticParcelleSvgProps
+>(({ geometry, intersections, width = BOX_SIZE, padding = 10 }, ref) => {
   const rawRings = normalizeToRings(geometry);
   const rings = mergeRings(rawRings);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const [tooltip, setTooltip] = useState<{
-    visible: boolean;
-    x: number;
-    y: number;
-    content: string;
-  }>({
+  const [tooltip, setTooltip] = useState({
     visible: false,
     x: 0,
     y: 0,
@@ -68,6 +65,10 @@ const DiagnosticParcelleSvg = ({
     safeZoneThreshold: 0.1,
     radiusPercent: 0.4,
   });
+
+  useImperativeHandle(ref, () => ({
+    optimalZonePoints,
+  }));
 
   return (
     <div style={{ position: "relative", width, height: computedHeight }}>
@@ -188,6 +189,6 @@ const DiagnosticParcelleSvg = ({
       )}
     </div>
   );
-};
+});
 
 export default DiagnosticParcelleSvg;
