@@ -244,7 +244,11 @@ export const mergeRings = (
   return unionResult.flat() as [number, number][][];
 };
 
-export const transparentize = (hex: string, alpha: number): string => {
+export const transparentize = (
+  hex: string,
+  alpha: number,
+  preserveAlpha = true
+): string => {
   if (!/^#([0-9A-F]{6})$/i.test(hex)) {
     throw new Error("Invalid hex color format. Use #RRGGBB.");
   }
@@ -256,9 +260,16 @@ export const transparentize = (hex: string, alpha: number): string => {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  const a = Math.round(alpha * 255);
 
   const toHex = (value: number) => value.toString(16).padStart(2, "0");
 
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
+  if (preserveAlpha) {
+    const a = Math.round(alpha * 255);
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
+  } else {
+    const lighten = (value: number) =>
+      Math.round(value + (255 - value) * (1 - alpha));
+
+    return `#${toHex(lighten(r))}${toHex(lighten(g))}${toHex(lighten(b))}`;
+  }
 };

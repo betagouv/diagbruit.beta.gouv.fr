@@ -48,12 +48,14 @@ const DiagnosticParcelleSvgNotice = ({
                 style={{
                   backgroundColor: transparentize(
                     getColorFromLegende(intersection.legende),
-                    0.7
+                    0.8,
+                    false
                   ),
                 }}
               />
               <p>
-                Bruit de niveau {getTextFromLegende(intersection.legende, true)}
+                Risque de niveau{" "}
+                {getTextFromLegende(intersection.legende, true)}
               </p>
             </div>
           ))}

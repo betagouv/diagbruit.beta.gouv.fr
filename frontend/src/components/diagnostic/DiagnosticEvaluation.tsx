@@ -8,7 +8,6 @@ import {
   replacePlaceholders,
 } from "../../utils/tools";
 import { DiagnosticItem, LandIntersection } from "../../utils/types";
-import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;

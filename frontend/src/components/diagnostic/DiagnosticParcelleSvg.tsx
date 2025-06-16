@@ -59,7 +59,7 @@ const DiagnosticParcelleSvg = ({
     padding
   );
 
-  const { optimalZonePoints } = useOptimalZone({
+  const { optimalZonePoints, bestPoint } = useOptimalZone({
     rings,
     intersections,
     projectPoint,
@@ -101,10 +101,9 @@ const DiagnosticParcelleSvg = ({
             }}
           />
         ))}
-
         {intersections
           .sort((a, b) => a.legende - b.legende)
-          .flatMap((intersection) => {
+          .flatMap((intersection, index) => {
             const color = getColorFromLegende(intersection.legende);
             const intersectionRings = normalizeToRings(
               intersection.geometry_intersection
@@ -120,9 +119,9 @@ const DiagnosticParcelleSvg = ({
 
             return intersectionRings.map((ring, i) => (
               <path
-                key={`intersection-${intersection.legende}-${i}`}
+                key={`intersection-${index}-${intersection.legende}-${i}`}
                 d={smoothPolygon(ring.map(projectPoint))}
-                fill={transparentize(color, 0.5)}
+                fill={transparentize(color, 0.8, false)}
                 strokeWidth={0}
                 onMouseEnter={(e) => {
                   const svgRect = svgRef.current?.getBoundingClientRect();
@@ -147,7 +146,15 @@ const DiagnosticParcelleSvg = ({
               />
             ));
           })}
-
+        {bestPoint && (
+          <circle
+            cx={bestPoint.x}
+            cy={bestPoint.y}
+            r={6}
+            fill={fr.colors.decisions.border.default.purpleGlycine.default}
+            opacity={0.8}
+          />
+        )}
         {optimalZonePoints.map((pt, i) => (
           <circle
             key={`optimalzone-${i}`}
