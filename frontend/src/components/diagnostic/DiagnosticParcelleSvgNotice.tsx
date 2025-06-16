@@ -24,6 +24,12 @@ const DiagnosticParcelleSvgNotice = ({
           <span />
           <div className={fr.cx("fr-text--md")}>Parcelle</div>
         </div>
+        <div className={classes.noticePerfectPoint}>
+          <span />
+          <div className={fr.cx("fr-text--md")}>
+            Point où le risque est le plus faible
+          </div>
+        </div>
         <div className={classes.noticePerfectZone}>
           <span />
           <div className={fr.cx("fr-text--md")}>
@@ -86,6 +92,22 @@ const useStyles = tss.create(() => ({
       marginRight: fr.spacing("2v"),
       backgroundColor: fr.colors.decisions.background.default.grey.default,
       border: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
+    },
+  },
+  noticePerfectPoint: {
+    display: "flex",
+    alignItems: "center",
+    span: {
+      display: "block",
+      width: fr.spacing("8v"),
+      height: fr.spacing("8v"),
+      marginRight: fr.spacing("2v"),
+      backgroundColor: fr.colors.decisions.background.default.grey.default,
+      backgroundImage: `radial-gradient(${fr.colors.decisions.border.default.purpleGlycine.default} 6px, transparent 6px)`,
+      backgroundSize: "12px 12px",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+      border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
     },
   },
   noticePerfectZone: {
