@@ -70,6 +70,8 @@ export type SoundClassificationIntersection = {
   codeinfra: string;
   sound_category: number;
   distance: number;
+  geometry_intersection: Geometry;
+  percent_impacted: number;
 };
 
 export type RecommendationCategory = {

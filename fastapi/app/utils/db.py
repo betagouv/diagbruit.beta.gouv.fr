@@ -118,11 +118,17 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
 def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
     """
     Query the database for sound classification features that intersect with the given WKT geometry.
-    Uses the SoundClassificationItem model to query the database.
+    Includes percent_impacted and geometry_intersection.
     """
     try:
         geom_4326 = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
         geom_2154 = func.ST_Transform(geom_4326, 2154)
+
+        safe_geom_area = db.query(func.ST_Area(geom_4326)).scalar()
+        if not safe_geom_area or safe_geom_area == 0:
+            raise ValueError("safe_geom area is zero or invalid")
+
+        intersection_geom = func.ST_Intersection(SoundClassificationItem.geometry, geom_4326)
 
         stmt = db.query(
             SoundClassificationItem.source,
@@ -134,28 +140,47 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                     SoundClassificationItem.source_geometry,
                     geom_2154
                 )
-            ).label("distance")
+            ).label("distance"),
+            func.sum(func.ST_Area(intersection_geom)).label("intersection_area"),
+            cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).filter(
-            func.ST_Intersects(
-                SoundClassificationItem.geometry,
-                geom_4326
-            )
+            func.ST_Intersects(SoundClassificationItem.geometry, geom_4326)
+        ).group_by(
+            SoundClassificationItem.source,
+            SoundClassificationItem.typesource,
+            SoundClassificationItem.codeinfra,
+            SoundClassificationItem.sound_category,
+            SoundClassificationItem.source_geometry,
+            intersection_geom
         ).order_by("distance")
 
-        return [
-            {
+        result = []
+        for r in stmt.all():
+            percent_impacted = round(r.intersection_area / safe_geom_area, 2) if r.intersection_area else 0.0
+
+            try:
+                geometry_parsed = json.loads(r.geometry_intersection)
+                geometry_intersection = geometry_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse geometry_intersection: {parse_err}")
+                geometry_intersection = None
+
+            result.append({
                 "source": r.source,
                 "typesource": r.typesource,
                 "codeinfra": r.codeinfra,
                 "sound_category": r.sound_category,
-                "distance": r.distance
-            }
-            for r in stmt.all()
-        ]
+                "distance": r.distance,
+                "percent_impacted": percent_impacted,
+                "geometry_intersection": geometry_intersection
+            })
+
+        return result
 
     except Exception as e:
         logger.error(f"Database error in sound classification query: {str(e)}")
         raise
+    
 
 def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
     """
