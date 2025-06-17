@@ -180,7 +180,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
     except Exception as e:
         logger.error(f"Database error in sound classification query: {str(e)}")
         raise
-    
+
 
 def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
     """

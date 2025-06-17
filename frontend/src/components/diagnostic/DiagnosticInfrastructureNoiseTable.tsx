@@ -137,6 +137,8 @@ const DiagnosticInfrastructureNoiseTable = ({
 
 const useStyles = tss.create(() => ({
   tableContainer: {
+    margin: 0,
+    paddingTop: fr.spacing("10v"),
     "--table-offset": "calc(32px + 1rem)",
     "& > table th, & > table td": {
       ...fr.typography[17].style,
@@ -144,8 +146,7 @@ const useStyles = tss.create(() => ({
       textAlign: "center",
     },
     "& caption": {
-      ...fr.typography[20].style,
-      paddingBottom: fr.spacing("2v"),
+      ...fr.typography[19].style,
     },
   },
   headerCell: {

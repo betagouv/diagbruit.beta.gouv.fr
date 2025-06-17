@@ -1,10 +1,9 @@
-import { tss } from "tss-react/dsfr";
-import { DiagnosticItem } from "../../utils/types";
 import { fr } from "@codegouvfr/react-dsfr";
-import { getReadableSource } from "../../utils/tools";
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { tss } from "tss-react/dsfr";
 import { LEGAL_TEXTS } from "../../utils/texts/legal";
+import { DiagnosticItem } from "../../utils/types";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
+import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -19,13 +18,6 @@ const DiagnosticLegalInfos = ({
     diagnostic: { soundclassification_intersections, air_intersections },
   } = diagnosticItem;
 
-  const getSoundClassificationHeaderLine = () => {
-    const hasMany = soundclassification_intersections.length > 1;
-    return hasMany
-      ? LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION.MULTIPLE_IMPACTS
-      : LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION.SINGLE_IMPACT;
-  };
-
   return (
     <div>
       <div className={cx(classes.container)}>
@@ -35,61 +27,41 @@ const DiagnosticLegalInfos = ({
               Classement sonore
             </h3>
             <div className={cx(classes.section)}>
-              {getSoundClassificationHeaderLine()}
-              {soundclassification_intersections.length > 0 && (
-                <>
-                  <ul>
-                    {soundclassification_intersections.map(
-                      (soundClassification, index) => {
-                        const {
-                          codeinfra,
-                          typesource,
-                          sound_category,
-                          distance,
-                        } = soundClassification;
-                        return (
-                          <li key={index}>
-                            La parcelle se situe à <b>{distance}</b> mètre
-                            {distance > 1 ? "s" : ""} de la source{" "}
-                            <b>"{codeinfra}"</b> de type{" "}
-                            <b>"{getReadableSource(typesource)}"</b> et de
-                            catégorie <b>{sound_category}</b>.
-                          </li>
-                        );
-                      }
-                    )}
-                  </ul>
-                  <p>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</p>
-                  <p className={fr.cx("fr-mb-0")}>
-                    Références :{" "}
-                    <a
-                      href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837"
-                      target="_blank"
-                    >
-                      Arrêté du 30 mai 1996
-                    </a>{" "}
-                    |{" "}
-                    <a
-                      href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
-                      target="_blank"
-                    >
-                      Arrêté du 23 juillet 2013
-                    </a>{" "}
-                    |{" "}
-                    <a
-                      href="https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533"
-                      target="_blank"
-                    >
-                      Arrêté du 3 septembre 2013
-                    </a>
-                  </p>
-                </>
-              )}
-            </div>
-            <div className={fr.cx("fr-mt-10v")}>
-              <DiagnosticInfrastructureNoiseTable
-                intersections={soundclassification_intersections}
-              />
+              <div className={fr.cx("fr-mb-6v")}>
+                <DiagnosticSoundClassificationTable
+                  intersections={soundclassification_intersections}
+                  caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
+                />
+              </div>
+              <p>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</p>
+              <p className={fr.cx("fr-mb-0")}>
+                Références :{" "}
+                <a
+                  href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837"
+                  target="_blank"
+                >
+                  Arrêté du 30 mai 1996
+                </a>{" "}
+                |{" "}
+                <a
+                  href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
+                  target="_blank"
+                >
+                  Arrêté du 23 juillet 2013
+                </a>{" "}
+                |{" "}
+                <a
+                  href="https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533"
+                  target="_blank"
+                >
+                  Arrêté du 3 septembre 2013
+                </a>
+              </p>
+              <div className={fr.cx("fr-mt-8v", "fr-mb-4v")}>
+                <DiagnosticInfrastructureNoiseTable
+                  intersections={soundclassification_intersections}
+                />
+              </div>
             </div>
           </>
         )}
