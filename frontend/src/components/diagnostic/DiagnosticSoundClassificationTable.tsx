@@ -19,7 +19,7 @@ const DiagnosticSoundClassificationTable = ({
     "Type de source",
     "Nom de la source",
     "Catégorie",
-    "Distance",
+    "Distance *",
   ];
 
   const data = intersections
@@ -49,6 +49,7 @@ const useStyles = tss.create(() => ({
     paddingTop: fr.spacing("10v"),
     "& caption": {
       ...fr.typography[19].style,
+      textDecoration: "underline",
     },
   },
 }));

@@ -147,6 +147,7 @@ const useStyles = tss.create(() => ({
     },
     "& caption": {
       ...fr.typography[19].style,
+      textDecoration: "underline",
     },
   },
   headerCell: {

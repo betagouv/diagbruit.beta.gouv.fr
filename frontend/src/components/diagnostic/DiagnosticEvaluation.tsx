@@ -214,6 +214,7 @@ const DiagnosticEvaluation = ({
           <Table
             caption="Tableau de synthèse des niveaux de bruit par source"
             noCaption
+            bordered
             data={land_intersections_ld_unique_display
               .filter((intersection) => intersection.cbstype === "A")
               .map((intersection) => [

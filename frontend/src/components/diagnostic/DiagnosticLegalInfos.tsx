@@ -33,7 +33,14 @@ const DiagnosticLegalInfos = ({
                   caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
                 />
               </div>
-              <p>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</p>
+              <p className={fr.cx("fr-text--sm")}>
+                <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
+              </p>
+              <div className={fr.cx("fr-mt-4v", "fr-mb-8v")}>
+                <DiagnosticInfrastructureNoiseTable
+                  intersections={soundclassification_intersections}
+                />
+              </div>
               <p className={fr.cx("fr-mb-0")}>
                 Références :{" "}
                 <a
@@ -57,11 +64,6 @@ const DiagnosticLegalInfos = ({
                   Arrêté du 3 septembre 2013
                 </a>
               </p>
-              <div className={fr.cx("fr-mt-8v", "fr-mb-4v")}>
-                <DiagnosticInfrastructureNoiseTable
-                  intersections={soundclassification_intersections}
-                />
-              </div>
             </div>
           </>
         )}

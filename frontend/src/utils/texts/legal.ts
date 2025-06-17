@@ -5,7 +5,7 @@ export const LEGAL_TEXTS = {
     INTRODUCTION: "Secteurs du classement sonore impactant la parcelle",
 
     DETAILS: {
-      NOTICE: `Selon la distance de la construction à la source, la présence de bâtiments ou de protections phoniques à la source, l’isolation acoustique règlementaire peut varier (cf lien ci-après).`,
+      NOTICE: `* La distance est une estimation par rapport aux données du classement sonore de la zone. Selon la distance de la construction à la source, la présence de bâtiments ou de protections phoniques à la source, l’isolation acoustique règlementaire peut varier (cf lien ci-après).`,
     },
   },
 };
