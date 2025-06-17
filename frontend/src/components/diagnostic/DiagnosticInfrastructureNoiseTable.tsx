@@ -103,8 +103,9 @@ const DiagnosticInfrastructureNoiseTable = ({
     >
       <table data-fr-js-table-element="true">
         <caption data-fr-js-table-caption="true">
-          Valeurs de bruit en dB selon la distance et de la catégorie
-          d’infrastructure
+          Exemple d'isolement{intersections.length > 1 ? "s" : ""} théorique
+          {intersections.length > 1 ? "s" : ""} pour une position du bâti la
+          plus défavorable (proche de la source)
         </caption>
         <thead>
           <tr>

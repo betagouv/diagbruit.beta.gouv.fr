@@ -28,7 +28,7 @@ const DiagnosticSoundClassificationTable = ({
       getReadableSource(typesource, true),
       codeinfra || "-",
       sound_category,
-      `${distance.toString()} mètre${distance > 1 ? "s" : ""}`,
+      `${distance.toString()} mètre${distance > 1 ? "s" : ""} *`,
     ]);
 
   return (
