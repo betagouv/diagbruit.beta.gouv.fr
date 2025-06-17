@@ -18,7 +18,7 @@ const DiagnosticParcelleSvgNotice = ({
   const { classes } = useStyles();
 
   return (
-    <CallOut title="Légende" className={classes.callOutContainer}>
+    <CallOut titleAs="h5" title="Légende" className={classes.callOutContainer}>
       <div className={classes.noticeContainer}>
         <div className={classes.noticeParcelle}>
           <span />

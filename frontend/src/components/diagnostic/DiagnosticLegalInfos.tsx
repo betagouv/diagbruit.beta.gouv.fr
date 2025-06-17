@@ -23,9 +23,9 @@ const DiagnosticLegalInfos = ({
       <div className={cx(classes.container)}>
         {soundclassification_intersections.length > 0 && (
           <>
-            <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
               Classement sonore
-            </h3>
+            </h4>
             <div className={cx(classes.section)}>
               <div className={fr.cx("fr-mb-6v")}>
                 <DiagnosticSoundClassificationTable
@@ -67,9 +67,9 @@ const DiagnosticLegalInfos = ({
         )}
         {air_intersections.length > 0 && (
           <>
-            <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
               Plan d'exposition au bruit aérien
-            </h3>
+            </h4>
             <div className={cx(classes.section)}>
               <p className={fr.cx("fr-mb-0")}>
                 La parcelle est situé dans{" "}

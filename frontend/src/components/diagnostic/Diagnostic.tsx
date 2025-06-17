@@ -149,7 +149,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           }}
         />
         {devMode && (
-          <Accordion label="Voir le retour de l'API">
+          <Accordion label="Voir le retour de l'API" titleAs="h2">
             <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
           </Accordion>
         )}

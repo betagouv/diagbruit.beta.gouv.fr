@@ -54,9 +54,9 @@ const DiagnosticRecommendations = ({
       <div className={cx(classes.container)}>
         {devMode && !!land_intersections_ld.length && (
           <div className={fr.cx("fr-mb-10v")}>
-            <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
               Proposition d'une position de bâti
-            </h3>
+            </h4>
             <div className={cx(classes.section)}>
               <p className={fr.cx("fr-mb-0")}>
                 D'après les cartes de bruit “Grandes Insfratructures de
@@ -89,9 +89,9 @@ const DiagnosticRecommendations = ({
           </div>
         )}
         <div>
-          <h3 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
             Documentation
-          </h3>
+          </h4>
           <div className={cx(classes.section)}>
             <p className={fr.cx("fr-mb-0")}>
               Des exemples de préconisations sont consultables sur les
@@ -117,7 +117,7 @@ const DiagnosticRecommendations = ({
             </Badge>
           </div>
           {recommendations.map((recommendation, index) => (
-            <Accordion key={index} label={recommendation.title}>
+            <Accordion key={index} label={recommendation.title} titleAs="h5">
               {recommendation.categories.map((category) => (
                 <Tag
                   key={category.title}

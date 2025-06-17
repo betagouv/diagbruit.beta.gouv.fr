@@ -119,7 +119,7 @@ const DiagnosticEvaluation = ({
 
   return (
     <div className={cx(classes.container)}>
-      <h3 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h3>
+      <h4 className={fr.cx("fr-text--lg", "fr-mb-4v")}>Cartes de bruit</h4>
       <div className={cx(classes.section)}>
         <p className={cx(fr.cx("fr-mb-0"))}>
           {EVALUATION_TEXTS.INFORMATIONS.INTRODUCTION}

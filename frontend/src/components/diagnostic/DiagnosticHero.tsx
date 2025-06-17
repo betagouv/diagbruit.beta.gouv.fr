@@ -21,10 +21,10 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
     <div className={cx(classes.container)}>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <h2 className={fr.cx("fr-h6", "fr-mb-4v")}>
+          <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
             <i className={cx(classes.titleIcon, fr.cx("ri-article-fill"))} />{" "}
-            Caratéristiques de votre recherche
-          </h2>
+            Caractéristiques de votre recherche
+          </h4>
           <p>
             <b>Code insee :</b> {parcelle.code_insee}
             <br />
@@ -32,10 +32,10 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
             <br />
             <b>Numéro de parcelle :</b> {parcelle.numero}
           </p>
-          <h2 className={fr.cx("fr-h6", "fr-mb-4v")}>
+          <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
             <i className={cx(classes.titleIcon, fr.cx("ri-alert-fill"))} />{" "}
             Évaluation du risque
-          </h2>
+          </h4>
           <div className={fr.cx("fr-mb-4v")}>
             <DiagnosticNoiseScore
               score={diagnostic.score}
@@ -64,12 +64,12 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
           )}
         </div>
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <h2 className={fr.cx("fr-h6", "fr-mb-4v")}>
+          <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
             <i
               className={cx(classes.titleIcon, fr.cx("ri-information-fill"))}
             />{" "}
             Résumé du diagnostic
-          </h2>
+          </h4>
           <div
             className={classes.summary}
             dangerouslySetInnerHTML={{

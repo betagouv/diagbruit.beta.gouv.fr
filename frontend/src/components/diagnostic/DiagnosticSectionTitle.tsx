@@ -22,7 +22,7 @@ const DiagnosticSectionTitle = ({
         <img className={cx(classes.mainIcon)} {...image} />
       </div>
       <div className={classes.content}>
-        <h2 className={fr.cx("fr-h5")}>{title}</h2>
+        <h3 className={fr.cx("fr-h5")}>{title}</h3>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ const useStyles = tss.create(() => ({
   content: {
     display: "flex",
     alignItems: "end",
-    h2: {
+    h3: {
       marginBottom: fr.spacing("2v"),
     },
     [fr.breakpoints.down("md")]: {
