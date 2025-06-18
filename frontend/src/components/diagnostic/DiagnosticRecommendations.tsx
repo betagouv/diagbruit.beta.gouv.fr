@@ -10,6 +10,7 @@ import DiagnosticParcelleSvg, {
   DiagnosticParcelleSvgHandle,
 } from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
+import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -85,6 +86,17 @@ const DiagnosticRecommendations = ({
                   intersections={land_intersections_ld}
                 />
               </div>
+            </div>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+              Isolement{soundclassification_intersections.length > 1 ? "s" : ""}{" "}
+              théorique{soundclassification_intersections.length > 1 ? "s" : ""}{" "}
+              avec la position idéale du bâti selon diagBruit
+            </h4>
+            <div className={cx(classes.section)}>
+              <DiagnosticInfrastructureNoiseTable
+                intersections={soundclassification_intersections}
+                color={fr.colors.decisions.border.default.purpleGlycine.default}
+              />
             </div>
           </div>
         )}

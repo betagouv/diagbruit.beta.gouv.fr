@@ -6,6 +6,8 @@ import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 
 type DiagnosticInfrastructureNoiseTableProps = {
   intersections: SoundClassificationIntersection[];
+  caption?: string;
+  color?: string;
 };
 
 type TableCellProps = {
@@ -17,8 +19,10 @@ type TableCellProps = {
 
 const DiagnosticInfrastructureNoiseTable = ({
   intersections,
+  caption,
+  color,
 }: DiagnosticInfrastructureNoiseTableProps) => {
-  const { cx, classes } = useStyles();
+  const { cx, classes } = useStyles({ hasCaption: !!caption });
 
   const CellContainer = ({
     isConcerned,
@@ -79,7 +83,8 @@ const DiagnosticInfrastructureNoiseTable = ({
           <div
             style={{
               backgroundColor: isConcerned
-                ? fr.colors.decisions.background.actionHigh.greenArchipel.active
+                ? color ||
+                  fr.colors.decisions.background.actionHigh.greenArchipel.active
                 : "initial",
               color: isConcerned ? "white" : "initial",
               fontWeight: isConcerned ? "bold" : "inherit",
@@ -102,11 +107,9 @@ const DiagnosticInfrastructureNoiseTable = ({
       data-fr-js-table="true"
     >
       <table data-fr-js-table-element="true">
-        <caption data-fr-js-table-caption="true">
-          Exemple d'isolement{intersections.length > 1 ? "s" : ""} théorique
-          {intersections.length > 1 ? "s" : ""} pour une position du bâti la
-          plus défavorable (proche de la source)
-        </caption>
+        {caption && (
+          <caption data-fr-js-table-caption="true">{caption}</caption>
+        )}
         <thead>
           <tr>
             {noiseTableHeaders.map((header, i) => (
@@ -136,29 +139,31 @@ const DiagnosticInfrastructureNoiseTable = ({
   );
 };
 
-const useStyles = tss.create(() => ({
-  tableContainer: {
-    margin: 0,
-    paddingTop: fr.spacing("10v"),
-    "--table-offset": "calc(32px + 1rem)",
-    "& > table th, & > table td": {
-      ...fr.typography[17].style,
-      whiteSpace: "nowrap",
-      textAlign: "center",
+const useStyles = tss
+  .withParams<{ hasCaption: boolean }>()
+  .create(({ hasCaption }) => ({
+    tableContainer: {
+      margin: 0,
+      paddingTop: hasCaption ? fr.spacing("10v") : fr.spacing("2v"),
+      "--table-offset": "calc(32px + 1rem)",
+      "& > table th, & > table td": {
+        ...fr.typography[17].style,
+        whiteSpace: "nowrap",
+        textAlign: "center",
+      },
+      "& caption": {
+        ...fr.typography[19].style,
+        textDecoration: "underline",
+      },
     },
-    "& caption": {
-      ...fr.typography[19].style,
-      textDecoration: "underline",
+    headerCell: {
+      fontWeight: "bold",
+      backgroundColor: fr.colors.decisions.background.alt.grey.default,
+      backgroundSize: "1px 100%",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "right",
+      backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.plain.grey.default}, ${fr.colors.decisions.border.plain.grey.default})`,
     },
-  },
-  headerCell: {
-    fontWeight: "bold",
-    backgroundColor: fr.colors.decisions.background.alt.grey.default,
-    backgroundSize: "1px 100%",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right",
-    backgroundImage: `linear-gradient(0deg, ${fr.colors.decisions.border.plain.grey.default}, ${fr.colors.decisions.border.plain.grey.default})`,
-  },
-}));
+  }));
 
 export default DiagnosticInfrastructureNoiseTable;
