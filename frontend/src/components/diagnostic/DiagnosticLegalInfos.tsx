@@ -38,7 +38,12 @@ const DiagnosticLegalInfos = ({
               </p>
               <div className={fr.cx("fr-mt-4v", "fr-mb-8v")}>
                 <DiagnosticInfrastructureNoiseTable
-                  intersections={soundclassification_intersections}
+                  intersectionsHelper={soundclassification_intersections.map(
+                    (intersection) => ({
+                      intersection,
+                      doesAffectOptimalZone: true,
+                    })
+                  )}
                   caption={
                     LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.ISOLATION_TABLE
                   }

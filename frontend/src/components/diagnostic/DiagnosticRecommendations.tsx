@@ -131,9 +131,7 @@ const DiagnosticRecommendations = ({
             </h4>
             <div className={cx(classes.section)}>
               <DiagnosticInfrastructureNoiseTable
-                intersections={optimalZoneSoundClassificationHelper
-                  .filter((helper) => helper.doesAffectOptimalZone)
-                  .map((helper) => helper.intersection)}
+                intersectionsHelper={optimalZoneSoundClassificationHelper}
                 color={fr.colors.decisions.border.default.purpleGlycine.default}
               />
             </div>

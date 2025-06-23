@@ -1,11 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { noiseTableData, noiseTableHeaders } from "../../utils/noisetable";
-import { SoundClassificationIntersection } from "../../utils/types";
+import {
+  SoundClassificationIntersection,
+  SoundClassificationIntersectionAffectedHelper,
+} from "../../utils/types";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 
 type DiagnosticInfrastructureNoiseTableProps = {
-  intersections: SoundClassificationIntersection[];
+  intersectionsHelper: SoundClassificationIntersectionAffectedHelper[];
   caption?: string;
   color?: string;
 };
@@ -18,7 +21,7 @@ type TableCellProps = {
 };
 
 const DiagnosticInfrastructureNoiseTable = ({
-  intersections,
+  intersectionsHelper,
   caption,
   color,
 }: DiagnosticInfrastructureNoiseTableProps) => {
@@ -26,11 +29,13 @@ const DiagnosticInfrastructureNoiseTable = ({
 
   const CellContainer = ({
     isConcerned,
-    intersectionsMatch,
+    isLegacy,
+    intersectionsHelpersMatch,
     children,
   }: {
     isConcerned: boolean;
-    intersectionsMatch: SoundClassificationIntersection[];
+    isLegacy: boolean;
+    intersectionsHelpersMatch: SoundClassificationIntersectionAffectedHelper[];
     children: React.ReactNode;
   }) => {
     if (!isConcerned) return <>{children}</>;
@@ -38,12 +43,23 @@ const DiagnosticInfrastructureNoiseTable = ({
     return (
       <Tooltip
         kind="hover"
-        title={intersectionsMatch
-          .map(
-            (intersection) =>
-              `${intersection.codeinfra} à ${intersection.distance}m`
-          )
-          .join(", ")}
+        title={
+          <div style={{ textAlign: isLegacy ? "center" : "left" }}>
+            {isLegacy && <>Non concerné avec cette position du bâti</>}
+            <div
+              style={{
+                textDecoration: isLegacy ? "line-through" : "initial",
+              }}
+            >
+              {intersectionsHelpersMatch
+                .map(
+                  (helper) =>
+                    `${helper.intersection.codeinfra} à ${helper.intersection.distance}m`
+                )
+                .join(", ")}
+            </div>
+          </div>
+        }
       >
         {children}
       </Tooltip>
@@ -61,14 +77,28 @@ const DiagnosticInfrastructureNoiseTable = ({
     const previousDistance =
       parseInt((noiseTableHeaders[cellIndex - 1] || "").split(" ")[0]) || 0;
 
-    const intersectionsMatch = intersections.filter(
-      (intersection) =>
-        intersection.sound_category === categoryIndex &&
-        intersection.distance < currentDistance &&
-        intersection.distance >= previousDistance
+    const intersectionsHelperMatch = intersectionsHelper.filter(
+      (helper) =>
+        helper.intersection.sound_category === categoryIndex &&
+        helper.intersection.distance < currentDistance &&
+        helper.intersection.distance >= previousDistance
     );
 
-    const isConcerned = !!intersectionsMatch.length && !isHeader;
+    const isConcerned = !!intersectionsHelperMatch.length && !isHeader;
+    const isLegacy =
+      isConcerned &&
+      intersectionsHelperMatch.every((helper) => !helper.doesAffectOptimalZone);
+
+    let backgroundColor = "initial";
+
+    if (isConcerned) {
+      backgroundColor =
+        color || fr.colors.decisions.background.actionHigh.greenArchipel.active;
+    }
+
+    if (isLegacy) {
+      backgroundColor = fr.colors.decisions.background.actionHigh.grey.active;
+    }
 
     return (
       <td
@@ -78,14 +108,12 @@ const DiagnosticInfrastructureNoiseTable = ({
       >
         <CellContainer
           isConcerned={isConcerned}
-          intersectionsMatch={intersectionsMatch}
+          isLegacy={isLegacy}
+          intersectionsHelpersMatch={intersectionsHelperMatch}
         >
           <div
             style={{
-              backgroundColor: isConcerned
-                ? color ||
-                  fr.colors.decisions.background.actionHigh.greenArchipel.active
-                : "initial",
+              backgroundColor,
               color: isConcerned ? "white" : "initial",
               fontWeight: isConcerned ? "bold" : "inherit",
               borderRadius: fr.spacing("1v"),
