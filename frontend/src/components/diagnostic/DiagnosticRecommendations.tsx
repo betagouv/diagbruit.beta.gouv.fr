@@ -3,27 +3,22 @@ import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import {
   DiagnosticItem,
   LandIntersection,
   SoundClassificationIntersection,
+  SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
 import DiagnosticParcelleSvg, {
   DiagnosticParcelleSvgHandle,
 } from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
-import { doesOptimalZoneIntersect, normalizeToRings } from "../../utils/tools";
+import { doesOptimalZoneIntersect } from "../../utils/tools";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
-};
-
-type SoundClassificationIntersectionAffectedHelper = {
-  intersection: SoundClassificationIntersection;
-  doesAffectOptimalZone: boolean;
 };
 
 const DiagnosticRecommendations = ({
