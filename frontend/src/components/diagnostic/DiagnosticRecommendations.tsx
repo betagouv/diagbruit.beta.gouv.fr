@@ -2,28 +2,44 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
-import { DiagnosticItem } from "../../utils/types";
+import {
+  DiagnosticItem,
+  LandIntersection,
+  SoundClassificationIntersection,
+} from "../../utils/types";
 import DiagnosticParcelleSvg, {
   DiagnosticParcelleSvgHandle,
 } from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
+import { doesOptimalZoneIntersect, normalizeToRings } from "../../utils/tools";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
 };
 
+type SoundClassificationIntersectionAffectedHelper = {
+  intersection: SoundClassificationIntersection;
+  doesAffectOptimalZone: boolean;
+};
+
 const DiagnosticRecommendations = ({
   diagnosticItem,
 }: DiagnosticRecommendationsProps) => {
-  const [searchParams] = useSearchParams();
   const { cx, classes } = useStyles();
-  const svgRef = useRef<DiagnosticParcelleSvgHandle>(null);
 
-  const devMode = searchParams.get("dev") === "true";
+  const [
+    optimalZoneSoundClassificationHelper,
+    setOptimalZoneSoundClassificationHelper,
+  ] = useState<SoundClassificationIntersectionAffectedHelper[]>([]);
+
+  const svgRef = useRef<DiagnosticParcelleSvgHandle>(null);
+  const lastOptimalZoneSoundClassificationHelperRef = useRef<
+    SoundClassificationIntersectionAffectedHelper[]
+  >([]);
 
   const {
     diagnostic: {
@@ -35,25 +51,49 @@ const DiagnosticRecommendations = ({
     parcelle: { geometry },
   } = diagnosticItem;
 
-  // const uniqueSourceCodeInfraCombinations = new Set(
-  //   land_intersections_ld.map(
-  //     (item) => `${item.typesource}|||${item.codeinfra}`
-  //   )
-  // );
-  // const isDiagnosticMonoSource =
-  //   uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
+  const uniqueSourceCodeInfraCombinations = new Set(
+    land_intersections_ld.map(
+      (item) => `${item.typesource}|||${item.codeinfra}`
+    )
+  );
+  const isDiagnosticMonoSource =
+    uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
 
-  const points = svgRef.current?.optimalZonePoints;
+  const optimalZonePoints = svgRef.current?.optimalZonePoints;
+  const projectPoint = svgRef.current?.projectPoint;
 
-  // console.log(points);
-  // console.log(
-  //   soundclassification_intersections.map((sci) => sci.geometry_intersection)
-  // );
+  const computeSoundClassificationHelpers = useCallback(() => {
+    if (!optimalZonePoints || !projectPoint) return [];
+
+    return soundclassification_intersections.map((intersection) => ({
+      intersection,
+      doesAffectOptimalZone: doesOptimalZoneIntersect(
+        optimalZonePoints,
+        intersection.geometry_intersection,
+        projectPoint
+      ),
+    }));
+  }, [optimalZonePoints, projectPoint, soundclassification_intersections]);
+
+  useEffect(() => {
+    const computedSoundClassificationHelper =
+      computeSoundClassificationHelpers();
+    const hasChanged =
+      JSON.stringify(computedSoundClassificationHelper) !==
+      JSON.stringify(lastOptimalZoneSoundClassificationHelperRef.current);
+    if (hasChanged) {
+      lastOptimalZoneSoundClassificationHelperRef.current =
+        computedSoundClassificationHelper;
+      setOptimalZoneSoundClassificationHelper(
+        computedSoundClassificationHelper
+      );
+    }
+  }, [computeSoundClassificationHelpers]);
 
   return (
     <div>
       <div className={cx(classes.container)}>
-        {devMode && !!land_intersections_ld.length && (
+        {!!land_intersections_ld.length && isDiagnosticMonoSource && (
           <div className={fr.cx("fr-mb-10v")}>
             <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
               Proposition d'une position de bâti
@@ -88,13 +128,17 @@ const DiagnosticRecommendations = ({
               </div>
             </div>
             <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-              Isolement{soundclassification_intersections.length > 1 ? "s" : ""}{" "}
-              théorique{soundclassification_intersections.length > 1 ? "s" : ""}{" "}
-              avec la position idéale du bâti selon diagBruit
+              Isolement
+              {soundclassification_intersections.length > 1 ? "s" : ""}{" "}
+              théorique
+              {soundclassification_intersections.length > 1 ? "s" : ""} avec la
+              position idéale du bâti selon diagBruit
             </h4>
             <div className={cx(classes.section)}>
               <DiagnosticInfrastructureNoiseTable
-                intersections={soundclassification_intersections}
+                intersections={optimalZoneSoundClassificationHelper
+                  .filter((helper) => helper.doesAffectOptimalZone)
+                  .map((helper) => helper.intersection)}
                 color={fr.colors.decisions.border.default.purpleGlycine.default}
               />
             </div>

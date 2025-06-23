@@ -2,6 +2,7 @@ import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
 import { union } from "polygon-clipping";
 import { SUMMARY_TEXTS } from "./texts/summary";
 import { Cardinality, Diagnostic, Geometry, IntRange } from "./types";
+import inside from "point-in-polygon";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -272,4 +273,19 @@ export const transparentize = (
 
     return `#${toHex(lighten(r))}${toHex(lighten(g))}${toHex(lighten(b))}`;
   }
+};
+
+export const doesOptimalZoneIntersect = (
+  optimalZonePoints: { x: number; y: number }[],
+  intersectionGeometry: Geometry,
+  projectPoint: (point: [number, number]) => { x: number; y: number }
+): boolean => {
+  const rings = normalizeToRings(intersectionGeometry);
+  const projectedRings = rings.map((ring) =>
+    ring.map(projectPoint).map(({ x, y }) => [x, y] as [number, number])
+  );
+
+  return optimalZonePoints.some((pt) =>
+    projectedRings.some((ring) => inside([pt.x, pt.y], ring))
+  );
 };
