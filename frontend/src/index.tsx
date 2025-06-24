@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import Home from "./pages/home";
 import Diagnostic from "./pages/diagnostic";
+import Changelogs from "./pages/changelogs";
 import reportWebVitals from "./reportWebVitals";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import PublicLayout from "./layouts/PublicLayout";
@@ -23,6 +24,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/diagnostic" element={<Diagnostic />} />
+        <Route path="/changelogs" element={<Changelogs />} />
       </Routes>
     </PublicLayout>
   );

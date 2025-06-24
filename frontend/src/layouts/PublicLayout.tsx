@@ -23,6 +23,15 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             Française
           </>
         }
+        quickAccessItems={[
+          {
+            iconId: "ri-flashlight-line",
+            text: "Nouveautés",
+            linkProps: {
+              href: "/changelogs",
+            },
+          },
+        ]}
         serviceTitle="diagBruit"
         serviceTagline={
           <>

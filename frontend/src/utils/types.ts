@@ -90,6 +90,13 @@ export type Recommendations = {
   }[];
 };
 
+export type Changelog = {
+  id: number;
+  title: string;
+  content: string;
+  date: string;
+};
+
 type Enumerate<
   N extends number,
   Acc extends number[] = []

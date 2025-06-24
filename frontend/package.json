@@ -17,6 +17,7 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.2",
+    "axios": "^1.10.0",
     "d3-path": "^3.1.0",
     "d3-shape": "^3.2.0",
     "maplibre-gl": "^5.3.0",
