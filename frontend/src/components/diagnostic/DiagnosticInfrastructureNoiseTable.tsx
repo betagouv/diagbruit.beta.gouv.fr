@@ -6,9 +6,12 @@ import {
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
+import { helpers } from "@turf/turf";
 
 type DiagnosticInfrastructureNoiseTableProps = {
-  intersectionsHelper: SoundClassificationIntersectionAffectedHelper[];
+  intersectionsHelper:
+    | SoundClassificationIntersection[]
+    | SoundClassificationIntersectionAffectedHelper[];
   caption?: string;
   color?: string;
 };
@@ -20,12 +23,36 @@ type TableCellProps = {
   isHeader: boolean;
 };
 
+const isAffectedHelperArray = (
+  arr:
+    | SoundClassificationIntersection[]
+    | SoundClassificationIntersectionAffectedHelper[]
+): arr is SoundClassificationIntersectionAffectedHelper[] => {
+  return Array.isArray(arr) && arr.length > 0 && "intersection" in arr[0];
+};
+
 const DiagnosticInfrastructureNoiseTable = ({
   intersectionsHelper,
   caption,
   color,
 }: DiagnosticInfrastructureNoiseTableProps) => {
   const { cx, classes } = useStyles({ hasCaption: !!caption });
+
+  const usableIntersectionsHelper: SoundClassificationIntersectionAffectedHelper[] =
+    isAffectedHelperArray(intersectionsHelper)
+      ? intersectionsHelper
+      : intersectionsHelper.map((intersection) => ({
+          intersection,
+          doesAffectOptimalZone: true,
+        }));
+
+  const getDistanceFromHelper = (
+    helper: SoundClassificationIntersectionAffectedHelper
+  ) => {
+    return helper.preciseDistance && helper.doesAffectOptimalZone
+      ? helper.preciseDistance
+      : helper.intersection.distance;
+  };
 
   const CellContainer = ({
     isConcerned,
@@ -54,7 +81,9 @@ const DiagnosticInfrastructureNoiseTable = ({
               {intersectionsHelpersMatch
                 .map(
                   (helper) =>
-                    `${helper.intersection.codeinfra} à ${helper.intersection.distance}m`
+                    `${helper.intersection.codeinfra} à ${getDistanceFromHelper(
+                      helper
+                    )}m`
                 )
                 .join(", ")}
             </div>
@@ -77,11 +106,15 @@ const DiagnosticInfrastructureNoiseTable = ({
     const previousDistance =
       parseInt((noiseTableHeaders[cellIndex - 1] || "").split(" ")[0]) || 0;
 
-    const intersectionsHelperMatch = intersectionsHelper.filter(
-      (helper) =>
-        helper.intersection.sound_category === categoryIndex &&
-        helper.intersection.distance < currentDistance &&
-        helper.intersection.distance >= previousDistance
+    const intersectionsHelperMatch = usableIntersectionsHelper.filter(
+      (helper) => {
+        const distance = getDistanceFromHelper(helper);
+        return (
+          helper.intersection.sound_category === categoryIndex &&
+          distance < currentDistance &&
+          distance >= previousDistance
+        );
+      }
     );
 
     const isConcerned = !!intersectionsHelperMatch.length && !isHeader;

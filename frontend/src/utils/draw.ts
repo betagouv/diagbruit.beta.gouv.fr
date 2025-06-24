@@ -26,10 +26,25 @@ export const getProjectionUtils = (
   const offsetX = (width - geoWidth * effectiveScale) / 2;
   const offsetY = (height - geoHeight * effectiveScale) / 2;
 
-  const projectPoint = ([lon, lat]: [number, number]) => {
+  const projectPoint = ([lon, lat]: [number, number]): {
+    x: number;
+    y: number;
+  } => {
     const x = (lon - minLon) * effectiveScale + offsetX;
     const y = (maxLat - lat) * effectiveScale + offsetY;
     return { x, y };
+  };
+
+  const unprojectPoint = ({
+    x,
+    y,
+  }: {
+    x: number;
+    y: number;
+  }): [number, number] => {
+    const lon = (x - offsetX) / effectiveScale + minLon;
+    const lat = maxLat - (y - offsetY) / effectiveScale;
+    return [lon, lat];
   };
 
   const projectRing = (ring: [number, number][]) =>
@@ -44,6 +59,7 @@ export const getProjectionUtils = (
   return {
     projectPoint,
     projectRing,
+    unprojectPoint,
   };
 };
 

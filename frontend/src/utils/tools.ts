@@ -289,3 +289,34 @@ export const doesOptimalZoneIntersect = (
     projectedRings.some((ring) => inside([pt.x, pt.y], ring))
   );
 };
+
+export const getMinDistanceToSourcePoint = (
+  optimalZonePoints: { x: number; y: number }[],
+  sourcePoint: [number, number],
+  unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number]
+): number => {
+  const toRadians = (deg: number) => (deg * Math.PI) / 180;
+  const R = 6371000;
+
+  const [lon1, lat1] = sourcePoint.map(toRadians);
+
+  const optimalZoneUnprojected = optimalZonePoints.map((point) =>
+    unprojectPoint(point)
+  );
+
+  const distances = optimalZoneUnprojected.map(([lon2Deg, lat2Deg]) => {
+    const lon2 = toRadians(lon2Deg);
+    const lat2 = toRadians(lat2Deg);
+
+    const dLat = lat2 - lat1;
+    const dLon = lon2 - lon1;
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  });
+
+  return Math.round(Math.min(...distances));
+};

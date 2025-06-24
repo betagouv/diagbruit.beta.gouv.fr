@@ -71,6 +71,7 @@ export type SoundClassificationIntersection = {
   sound_category: number;
   distance: number;
   geometry_intersection: Geometry;
+  geometry_source_point: [number, number];
   percent_impacted: number;
 };
 
@@ -104,4 +105,5 @@ export type IntRange<F extends number, T extends number> = Exclude<
 export type SoundClassificationIntersectionAffectedHelper = {
   intersection: SoundClassificationIntersection;
   doesAffectOptimalZone: boolean;
+  preciseDistance?: number;
 };

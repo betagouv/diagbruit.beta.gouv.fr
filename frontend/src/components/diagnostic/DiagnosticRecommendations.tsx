@@ -5,17 +5,18 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import {
+  doesOptimalZoneIntersect,
+  getMinDistanceToSourcePoint,
+} from "../../utils/tools";
+import {
   DiagnosticItem,
-  LandIntersection,
-  SoundClassificationIntersection,
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
+import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 import DiagnosticParcelleSvg, {
   DiagnosticParcelleSvgHandle,
 } from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
-import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
-import { doesOptimalZoneIntersect } from "../../utils/tools";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -56,19 +57,31 @@ const DiagnosticRecommendations = ({
 
   const optimalZonePoints = svgRef.current?.optimalZonePoints;
   const projectPoint = svgRef.current?.projectPoint;
+  const unprojectPoint = svgRef.current?.unprojectPoint;
 
-  const computeSoundClassificationHelpers = useCallback(() => {
-    if (!optimalZonePoints || !projectPoint) return [];
+  const computeSoundClassificationHelpers =
+    useCallback((): SoundClassificationIntersectionAffectedHelper[] => {
+      if (!optimalZonePoints || !projectPoint || !unprojectPoint) return [];
 
-    return soundclassification_intersections.map((intersection) => ({
-      intersection,
-      doesAffectOptimalZone: doesOptimalZoneIntersect(
-        optimalZonePoints,
-        intersection.geometry_intersection,
-        projectPoint
-      ),
-    }));
-  }, [optimalZonePoints, projectPoint, soundclassification_intersections]);
+      return soundclassification_intersections.map((intersection) => ({
+        intersection,
+        doesAffectOptimalZone: doesOptimalZoneIntersect(
+          optimalZonePoints,
+          intersection.geometry_intersection,
+          projectPoint
+        ),
+        preciseDistance: getMinDistanceToSourcePoint(
+          optimalZonePoints,
+          intersection.geometry_source_point,
+          unprojectPoint
+        ),
+      }));
+    }, [
+      optimalZonePoints,
+      projectPoint,
+      unprojectPoint,
+      soundclassification_intersections,
+    ]);
 
   useEffect(() => {
     const computedSoundClassificationHelper =

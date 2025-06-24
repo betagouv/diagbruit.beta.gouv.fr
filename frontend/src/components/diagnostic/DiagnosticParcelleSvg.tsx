@@ -21,6 +21,7 @@ type DiagnosticParcelleSvgProps = {
 export type DiagnosticParcelleSvgHandle = {
   optimalZonePoints: { x: number; y: number }[];
   projectPoint: (point: [number, number]) => { x: number; y: number };
+  unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number];
 };
 
 const BOX_SIZE = 400;
@@ -50,7 +51,7 @@ const DiagnosticParcelleSvg = forwardRef<
 
   const computedHeight = BOX_SIZE;
 
-  const { projectPoint, projectRing } = getProjectionUtils(
+  const { projectPoint, projectRing, unprojectPoint } = getProjectionUtils(
     rings,
     width,
     computedHeight,
@@ -70,6 +71,7 @@ const DiagnosticParcelleSvg = forwardRef<
   useImperativeHandle(ref, () => ({
     optimalZonePoints,
     projectPoint,
+    unprojectPoint,
   }));
 
   return (

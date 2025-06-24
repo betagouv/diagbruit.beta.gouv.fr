@@ -135,6 +135,15 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             SoundClassificationItem.typesource,
             SoundClassificationItem.codeinfra,
             SoundClassificationItem.sound_category,
+            cast(
+                func.ST_AsGeoJSON(
+                    func.ST_Transform(
+                        func.ST_ClosestPoint(SoundClassificationItem.source_geometry, geom_2154),
+                        4326
+                    )
+                ),
+                Text
+            ).label("geometry_source_point"),
             func.round(
                 func.ST_Distance(
                     SoundClassificationItem.source_geometry,
@@ -165,6 +174,13 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 logger.warning(f"Could not parse geometry_intersection: {parse_err}")
                 geometry_intersection = None
 
+            try:
+                geometry_source_point_parsed = json.loads(r.geometry_source_point)
+                geometry_source_point = geometry_source_point_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse source_point: {parse_err}")
+                geometry_source_point = None
+
             result.append({
                 "source": r.source,
                 "typesource": r.typesource,
@@ -172,7 +188,8 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "sound_category": r.sound_category,
                 "distance": r.distance,
                 "percent_impacted": percent_impacted,
-                "geometry_intersection": geometry_intersection
+                "geometry_source_point": geometry_source_point,
+                "geometry_intersection": geometry_intersection,
             })
 
         return result
