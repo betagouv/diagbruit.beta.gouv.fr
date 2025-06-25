@@ -41,7 +41,7 @@ function ChangelogsPage() {
 
   return (
     <div className={cx(classes.container, fr.cx("fr-my-10v"))}>
-      <h1>Nouveautés sur diagBruit</h1>
+      <h1 className={fr.cx("fr-mb-10v")}>Nouveautés sur diagBruit</h1>
       {changelogs.map((changelog) => (
         <div key={changelog.id} className={fr.cx("fr-mb-16v")}>
           <h2>{changelog.title}</h2>
