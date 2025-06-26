@@ -87,9 +87,6 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.legende,
             NoiseMapItem.cbstype,
             intersection_geom
-        ).order_by(
-            NoiseMapItem.legende.desc(),
-            NoiseMapItem.typeterr.desc()
         )
 
         result = []

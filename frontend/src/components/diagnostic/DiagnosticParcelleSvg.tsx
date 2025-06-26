@@ -69,7 +69,7 @@ const DiagnosticParcelleSvg = forwardRef<
   return (
     <div style={{ position: "relative", width, height: computedHeight }}>
       <svg width={width} height={computedHeight} ref={svgRef}>
-        {intersections
+        {[...intersections]
           .sort((a, b) => a.legende - b.legende)
           .flatMap((intersection, index) => {
             const color = getColorFromLegende(intersection.legende);

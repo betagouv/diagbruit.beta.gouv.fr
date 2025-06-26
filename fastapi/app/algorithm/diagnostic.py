@@ -47,8 +47,21 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['score'] = base_score + penalty
 
     # Return land intersections
-    diagnostic['land_intersections_ld'] = intersections_AGGLO_ld + intersections_INFRA_ld
-    diagnostic['land_intersections_ln'] = intersections_AGGLO_ln + intersections_INFRA_ln
+    typeterr_order = {"INFRA": 0, "AGGLO": 1}
+    diagnostic['land_intersections_ld'] = sorted(
+        intersections_AGGLO_ld + intersections_INFRA_ld,
+        key=lambda x: (
+            -x["legende"],
+            typeterr_order.get(x["typeterr"], 99)
+        )
+    )
+    diagnostic['land_intersections_ln'] = sorted(
+        intersections_AGGLO_ln + intersections_INFRA_ln,
+        key=lambda x: (
+            -x["legende"],
+            typeterr_order.get(x["typeterr"], 99)
+        )
+    )
 
     # Return air intersections
     diagnostic['air_intersections'] = peb_intersections
