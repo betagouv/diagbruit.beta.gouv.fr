@@ -46,17 +46,10 @@ const DiagnosticRecommendations = ({
       land_intersections_ld,
       air_intersections,
       soundclassification_intersections,
+      flags: { isMultiExposedSources },
     },
     parcelle: { geometry },
   } = diagnosticItem;
-
-  const uniqueSourceCodeInfraCombinations = new Set(
-    land_intersections_ld.map(
-      (item) => `${item.typesource}|||${item.codeinfra}`
-    )
-  );
-  const isDiagnosticMonoSource =
-    uniqueSourceCodeInfraCombinations.size + air_intersections.length === 1;
 
   const optimalZonePoints = svgRef.current?.optimalZonePoints;
   const projectPoint = svgRef.current?.projectPoint;
@@ -106,10 +99,10 @@ const DiagnosticRecommendations = ({
       <div className={cx(classes.container)}>
         {devMode &&
           !!land_intersections_ld.length &&
-          isDiagnosticMonoSource && (
+          !isMultiExposedSources && (
             <div className={fr.cx("fr-mb-10v")}>
               <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Proposition d'une position de bâti
+                Proposition d'une zone de bâti
               </h4>
               <div className={cx(classes.section)}>
                 <p className={fr.cx("fr-mb-0")}>
@@ -146,9 +139,14 @@ const DiagnosticRecommendations = ({
                 {soundclassification_intersections.length > 1 ? "s" : ""}{" "}
                 théorique
                 {soundclassification_intersections.length > 1 ? "s" : ""} avec
-                la position idéale du bâti selon diagBruit
+                la zone idéale du bâti selon diagBruit
               </h4>
               <div className={cx(classes.section)}>
+                <p className={fr.cx("fr-hint-text")}>
+                  La distance traduit l'écart minimale entre la source de bruit
+                  et la zone idéale (i.e. l'isolement maximale à mettre en
+                  oeuvre)
+                </p>
                 <DiagnosticInfrastructureNoiseTable
                   intersectionsHelper={optimalZoneSoundClassificationHelper}
                   color={

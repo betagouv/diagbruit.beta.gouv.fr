@@ -74,11 +74,12 @@ const DiagnosticEvaluation = ({
     landIntersections: LandIntersection[],
     codeinfra: string
   ) => {
-    const intersection = landIntersections
-      .filter((intersection) => intersection.codeinfra === codeinfra)
-      .sort((a, b) => b.percent_impacted - a.percent_impacted)[0];
-
-    return intersection ? intersection.percent_impacted : 0;
+    return landIntersections
+      .filter(
+        (intersection) =>
+          intersection.codeinfra === codeinfra && intersection.cbstype === "A"
+      )
+      .reduce((acc, current) => acc + current.percent_impacted, 0);
   };
 
   const getUniqueIntersectionsByCodeInfra = () => {

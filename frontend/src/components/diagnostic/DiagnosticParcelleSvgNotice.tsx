@@ -33,7 +33,7 @@ const DiagnosticParcelleSvgNotice = ({
         <div className={classes.noticePerfectZone}>
           <span />
           <div className={fr.cx("fr-text--md")}>
-            Position idéale du bâti selon diagBruit
+            Zone idéale du bâti selon diagBruit
           </div>
         </div>
         {Array.from(
