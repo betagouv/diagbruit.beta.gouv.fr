@@ -96,22 +96,9 @@ const DiagnosticEvaluation = ({
       }
     });
 
-    const values = Object.values(maxLegendeByInfra);
-
-    const filtered = values.filter((entry) => {
-      if (
-        values.some(
-          (intersection) =>
-            intersection.legende === entry.legende && !!intersection.codeinfra
-        ) &&
-        entry.codeinfra === null
-      ) {
-        return false;
-      }
-      return true;
-    });
-
-    return filtered.sort((a, b) => b.legende - a.legende);
+    return Object.values(maxLegendeByInfra).sort(
+      (a, b) => b.legende - a.legende
+    );
   };
 
   const land_intersections_ld_unique_display =
