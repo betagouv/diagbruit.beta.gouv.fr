@@ -1,10 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { useOptimalZone } from "../../hooks/useOptimalZone";
 import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
   getColorFromLegende,
-  getReadableSource,
   mergeRings,
   normalizeToRings,
   transparentize,
@@ -33,13 +32,6 @@ const DiagnosticParcelleSvg = forwardRef<
   const rawRings = normalizeToRings(geometry);
   const rings = mergeRings(rawRings);
   const svgRef = useRef<SVGSVGElement>(null);
-
-  const [tooltip, setTooltip] = useState({
-    visible: false,
-    x: 0,
-    y: 0,
-    content: "",
-  });
 
   if (
     !Array.isArray(rings) ||
@@ -77,35 +69,6 @@ const DiagnosticParcelleSvg = forwardRef<
   return (
     <div style={{ position: "relative", width, height: computedHeight }}>
       <svg width={width} height={computedHeight} ref={svgRef}>
-        {rings.map((ring, i) => (
-          <polygon
-            key={`parcelle-${i}`}
-            points={projectRing(ring)}
-            fill="transparent"
-            stroke={fr.colors.decisions.background.flat.blueFrance.default}
-            strokeWidth={2}
-            onMouseEnter={(e) => {
-              const svgRect = svgRef.current?.getBoundingClientRect();
-              setTooltip({
-                visible: true,
-                x: e.clientX - (svgRect?.left ?? 0) + 10,
-                y: e.clientY - (svgRect?.top ?? 0) + 10,
-                content: "Zone moins impactée par le bruit",
-              });
-            }}
-            onMouseMove={(e) => {
-              const svgRect = svgRef.current?.getBoundingClientRect();
-              setTooltip((prev) => ({
-                ...prev,
-                x: e.clientX - (svgRect?.left ?? 0) + 10,
-                y: e.clientY - (svgRect?.top ?? 0) + 10,
-              }));
-            }}
-            onMouseLeave={() => {
-              setTooltip({ visible: false, x: 0, y: 0, content: "" });
-            }}
-          />
-        ))}
         {intersections
           .sort((a, b) => a.legende - b.legende)
           .flatMap((intersection, index) => {
@@ -114,43 +77,24 @@ const DiagnosticParcelleSvg = forwardRef<
               intersection.geometry_intersection
             );
 
-            const tooltipContent = `${intersection.typeterr}${
-              intersection.codeinfra ? ` - ${intersection.codeinfra}` : ""
-            } (${getReadableSource(intersection.typesource, false)}) : ${
-              intersection.legende
-            } dB sur ${Math.round(
-              intersection.percent_impacted * 100
-            )}% de la parcelle`;
-
             return intersectionRings.map((ring, i) => (
               <path
                 key={`intersection-${index}-${intersection.legende}-${i}`}
                 d={smoothPolygon(ring.map(projectPoint))}
                 fill={transparentize(color, 0.8, false)}
                 strokeWidth={0}
-                onMouseEnter={(e) => {
-                  const svgRect = svgRef.current?.getBoundingClientRect();
-                  setTooltip({
-                    visible: true,
-                    x: e.clientX - (svgRect?.left ?? 0) + 10,
-                    y: e.clientY - (svgRect?.top ?? 0) + 10,
-                    content: tooltipContent,
-                  });
-                }}
-                onMouseMove={(e) => {
-                  const svgRect = svgRef.current?.getBoundingClientRect();
-                  setTooltip((prev) => ({
-                    ...prev,
-                    x: e.clientX - (svgRect?.left ?? 0) + 10,
-                    y: e.clientY - (svgRect?.top ?? 0) + 10,
-                  }));
-                }}
-                onMouseLeave={() => {
-                  setTooltip({ visible: false, x: 0, y: 0, content: "" });
-                }}
               />
             ));
           })}
+        {rings.map((ring, i) => (
+          <polygon
+            key={`parcelle-${i}`}
+            points={projectRing(ring)}
+            fill="transparent"
+            stroke={fr.colors.decisions.background.flat.blueFrance.default}
+            strokeWidth={2}
+          />
+        ))}
         {bestPoint && (
           <circle
             cx={bestPoint.x}
@@ -171,26 +115,6 @@ const DiagnosticParcelleSvg = forwardRef<
           />
         ))}
       </svg>
-
-      {tooltip.visible && (
-        <div
-          style={{
-            position: "absolute",
-            top: tooltip.y,
-            left: tooltip.x,
-            background: "#000",
-            color: "#fff",
-            padding: "4px 8px",
-            fontSize: 12,
-            borderRadius: 4,
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            zIndex: 10,
-          }}
-        >
-          {tooltip.content}
-        </div>
-      )}
     </div>
   );
 });
