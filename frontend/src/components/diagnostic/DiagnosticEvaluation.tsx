@@ -70,16 +70,18 @@ const DiagnosticEvaluation = ({
     return ln_intersection ? ln_intersection.legende + " dB" : "-";
   };
 
-  const getMaxPercentImpactedFromCodeInfra = (
+  const getPercentImpactedFromCodeInfra = (
     landIntersections: LandIntersection[],
     codeinfra: string
   ) => {
-    return landIntersections
+    const computedPercentImpacted = landIntersections
       .filter(
         (intersection) =>
           intersection.codeinfra === codeinfra && intersection.cbstype === "A"
       )
       .reduce((acc, current) => acc + current.percent_impacted, 0);
+
+    return computedPercentImpacted === 0.99 ? 1 : computedPercentImpacted;
   };
 
   const getUniqueIntersectionsByCodeInfra = () => {
@@ -150,7 +152,7 @@ const DiagnosticEvaluation = ({
                           ),
                           codinfra: land_intersections_ld[0].codeinfra || "",
                           percent_impacted: Math.round(
-                            getMaxPercentImpactedFromCodeInfra(
+                            getPercentImpactedFromCodeInfra(
                               land_intersections_ld,
                               land_intersections_ld[0].codeinfra || ""
                             ) * 100
