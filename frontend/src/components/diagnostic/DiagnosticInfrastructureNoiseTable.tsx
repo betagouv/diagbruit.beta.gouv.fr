@@ -54,6 +54,48 @@ const DiagnosticInfrastructureNoiseTable = ({
       : helper.intersection.distance;
   };
 
+  const distanceIntersectionHelperMatcher = (
+    helper: SoundClassificationIntersectionAffectedHelper,
+    previousDistance: number,
+    currentDistance: number,
+    nextDistance: number,
+    categoryIndex: number
+  ) => {
+    const distance = getDistanceFromHelper(helper);
+
+    const distanceToNext = Math.abs(distance - nextDistance);
+    const distanceToCurrent = Math.abs(distance - currentDistance);
+    const distanceToPrevious = Math.abs(distance - previousDistance);
+
+    const isSameCategory = helper.intersection.sound_category === categoryIndex;
+    const pickFromNext =
+      distance <= currentDistance &&
+      distance > previousDistance &&
+      distanceToCurrent < distanceToPrevious;
+    const pickFromPrevious =
+      distance >= currentDistance &&
+      distance < nextDistance &&
+      distanceToCurrent <= distanceToNext;
+
+    return isSameCategory && (pickFromNext || pickFromPrevious);
+  };
+
+  const getDistancesFromSiblings = (cellIndex: number) => {
+    const currentDistance =
+      parseInt((noiseTableHeaders[cellIndex] || "").split(" ")[0]) || 0;
+    const previousDistance =
+      parseInt((noiseTableHeaders[cellIndex - 1] || "").split(" ")[0]) || 0;
+    const nextDistance =
+      parseInt((noiseTableHeaders[cellIndex + 1] || "").split(" ")[0]) ||
+      Infinity;
+
+    return {
+      currentDistance,
+      previousDistance,
+      nextDistance,
+    };
+  };
+
   const CellContainer = ({
     isConcerned,
     isLegacy,
@@ -101,20 +143,18 @@ const DiagnosticInfrastructureNoiseTable = ({
     cell,
     isHeader,
   }: TableCellProps) => {
-    const currentDistance =
-      parseInt((noiseTableHeaders[cellIndex] || "").split(" ")[0]) || 0;
-    const previousDistance =
-      parseInt((noiseTableHeaders[cellIndex - 1] || "").split(" ")[0]) || 0;
+    const { previousDistance, currentDistance, nextDistance } =
+      getDistancesFromSiblings(cellIndex);
 
     const intersectionsHelperMatch = usableIntersectionsHelper.filter(
-      (helper) => {
-        const distance = getDistanceFromHelper(helper);
-        return (
-          helper.intersection.sound_category === categoryIndex &&
-          distance < currentDistance &&
-          distance >= previousDistance
-        );
-      }
+      (helper) =>
+        distanceIntersectionHelperMatcher(
+          helper,
+          previousDistance,
+          currentDistance,
+          nextDistance,
+          categoryIndex
+        )
     );
 
     const isConcerned = !!intersectionsHelperMatch.length && !isHeader;
