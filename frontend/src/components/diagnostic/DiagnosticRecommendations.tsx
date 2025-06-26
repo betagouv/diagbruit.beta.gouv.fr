@@ -44,7 +44,6 @@ const DiagnosticRecommendations = ({
     diagnostic: {
       recommendations,
       land_intersections_ld,
-      air_intersections,
       soundclassification_intersections,
       flags: { isMultiExposedSources },
     },
@@ -94,68 +93,81 @@ const DiagnosticRecommendations = ({
     }
   }, [computeSoundClassificationHelpers]);
 
+  const displayComputedRecommendation = () => {
+    if (isMultiExposedSources) {
+      return (
+        <div className={cx(classes.section)}>
+          Le service diagBruit détermine une zone idéale de position du bâti
+          exclusivement pour les parcelles présentant une exposition unique à
+          une source sonore. Cette condition n'étant pas remplie ici, la
+          parcelle ne peut en bénéficier.
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <div className={cx(classes.section)}>
+          <p className={fr.cx("fr-mb-0")}>
+            D'après les cartes de bruit “Grandes Insfratructures de Transport
+            Terrestres” et “Grandes Agglomérations”, voici une estimation de
+            l'impact du bruit sur la surface de la parcelle :
+          </p>
+        </div>
+        <div
+          className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-my-10v")}
+        >
+          <div className={fr.cx("fr-col-lg-7")}>
+            <div className={cx(classes.svgContainer)}>
+              <DiagnosticParcelleSvg
+                ref={svgRef}
+                geometry={geometry}
+                intersections={land_intersections_ld}
+              />
+            </div>
+          </div>
+          <div className={cx(classes.notice, fr.cx("fr-col-lg-5"))}>
+            <DiagnosticParcelleSvgNotice
+              intersections={land_intersections_ld}
+            />
+          </div>
+        </div>
+        {!!soundclassification_intersections.length && (
+          <div>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+              Isolement
+              {soundclassification_intersections.length > 1 ? "s" : ""}{" "}
+              théorique
+              {soundclassification_intersections.length > 1 ? "s" : ""} avec la
+              zone idéale du bâti selon diagBruit
+            </h4>
+            <div className={cx(classes.section)}>
+              <p className={fr.cx("fr-hint-text")}>
+                La distance traduit l'écart minimale entre la source de bruit et
+                la zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
+              </p>
+              <DiagnosticInfrastructureNoiseTable
+                intersectionsHelper={optimalZoneSoundClassificationHelper}
+                color={fr.colors.decisions.border.default.purpleGlycine.default}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className={cx(classes.container)}>
-        {devMode &&
-          !!land_intersections_ld.length &&
-          !isMultiExposedSources && (
-            <div className={fr.cx("fr-mb-10v")}>
-              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Proposition d'une zone de bâti
-              </h4>
-              <div className={cx(classes.section)}>
-                <p className={fr.cx("fr-mb-0")}>
-                  D'après les cartes de bruit “Grandes Insfratructures de
-                  Transport Terrestres” et “Grandes Agglomérations”, voici une
-                  estimation de l'impact du bruit sur la surface de la parcelle
-                  :
-                </p>
-              </div>
-              <div
-                className={fr.cx(
-                  "fr-grid-row",
-                  "fr-grid-row--gutters",
-                  "fr-my-10v"
-                )}
-              >
-                <div className={fr.cx("fr-col-lg-7")}>
-                  <div className={cx(classes.svgContainer)}>
-                    <DiagnosticParcelleSvg
-                      ref={svgRef}
-                      geometry={geometry}
-                      intersections={land_intersections_ld}
-                    />
-                  </div>
-                </div>
-                <div className={cx(classes.notice, fr.cx("fr-col-lg-5"))}>
-                  <DiagnosticParcelleSvgNotice
-                    intersections={land_intersections_ld}
-                  />
-                </div>
-              </div>
-              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Isolement
-                {soundclassification_intersections.length > 1 ? "s" : ""}{" "}
-                théorique
-                {soundclassification_intersections.length > 1 ? "s" : ""} avec
-                la zone idéale du bâti selon diagBruit
-              </h4>
-              <div className={cx(classes.section)}>
-                <p className={fr.cx("fr-hint-text")}>
-                  La distance traduit l'écart minimale entre la source de bruit
-                  et la zone idéale (i.e. l'isolement maximale à mettre en
-                  oeuvre)
-                </p>
-                <DiagnosticInfrastructureNoiseTable
-                  intersectionsHelper={optimalZoneSoundClassificationHelper}
-                  color={
-                    fr.colors.decisions.border.default.purpleGlycine.default
-                  }
-                />
-              </div>
-            </div>
-          )}
+        {devMode && (
+          <div className={fr.cx("fr-mb-10v")}>
+            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+              Proposition d'une zone de bâti
+            </h4>
+            {displayComputedRecommendation()}
+          </div>
+        )}
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
             Documentation
