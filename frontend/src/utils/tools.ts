@@ -1,7 +1,13 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
 import { union } from "polygon-clipping";
 import { SUMMARY_TEXTS } from "./texts/summary";
-import { Cardinality, Diagnostic, Geometry, IntRange } from "./types";
+import {
+  Cardinality,
+  Diagnostic,
+  DiagnosticItem,
+  Geometry,
+  IntRange,
+} from "./types";
 import inside from "point-in-polygon";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
@@ -319,4 +325,129 @@ export const getMinDistanceToSourcePoint = (
   });
 
   return Math.round(Math.min(...distances));
+};
+
+export const getNoiseSourceFromDiagnosticItem = (
+  diagnosticItem: DiagnosticItem
+) => {
+  const {
+    diagnostic: {
+      air_intersections,
+      land_intersections_ld,
+      land_intersections_ln,
+    },
+  } = diagnosticItem;
+
+  const land_intersections = land_intersections_ld.concat(
+    land_intersections_ln
+  );
+
+  if (!!air_intersections.length && !land_intersections.length) {
+    return "air";
+  }
+
+  if (!!land_intersections.length && !air_intersections.length) {
+    return "land";
+  }
+
+  if (!!land_intersections.length && !!air_intersections.length) {
+    return "multi";
+  }
+};
+
+export const getRecommendationsFilterConditionsFromDiagnostic = (
+  diagnosticItem: DiagnosticItem,
+  isolation: number
+) => {
+  const {
+    diagnostic: { score },
+  } = diagnosticItem;
+  return {
+    conditions: {
+      $and: [
+        {
+          $or: [
+            {
+              score_gte: {
+                $lte: score,
+              },
+              score_lte: {
+                $null: true,
+              },
+            },
+            {
+              score_gte: {
+                $null: true,
+              },
+              score_lte: {
+                $null: true,
+              },
+            },
+            {
+              score_gte: {
+                $null: true,
+              },
+              score_lte: {
+                $gte: score,
+              },
+            },
+            {
+              score_gte: {
+                $lte: score,
+              },
+              score_lte: {
+                $gte: score,
+              },
+            },
+          ],
+        },
+        {
+          $or: [
+            {
+              source: "all",
+            },
+            {
+              source: getNoiseSourceFromDiagnosticItem(diagnosticItem),
+            },
+          ],
+        },
+        {
+          $or: [
+            {
+              isolation_gte: {
+                $lte: isolation,
+              },
+              isolation_lte: {
+                $null: true,
+              },
+            },
+            {
+              isolation_gte: {
+                $null: true,
+              },
+              isolation_lte: {
+                $null: true,
+              },
+            },
+            {
+              isolation_gte: {
+                $null: true,
+              },
+              isolation_lte: {
+                $gte: isolation,
+              },
+            },
+            {
+              isolation_gte: {
+                $lte: isolation,
+              },
+              isolation_lte: {
+                $gte: isolation,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
 };

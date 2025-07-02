@@ -7,9 +7,12 @@ import { tss } from "tss-react/dsfr";
 import {
   doesOptimalZoneIntersect,
   getMinDistanceToSourcePoint,
+  getNoiseSourceFromDiagnosticItem,
+  getRecommendationsFilterConditionsFromDiagnostic,
 } from "../../utils/tools";
 import {
   DiagnosticItem,
+  Recommendation,
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
@@ -18,6 +21,9 @@ import DiagnosticParcelleSvg, {
 } from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 import { useSearchParams } from "react-router-dom";
+import axios from "axios";
+import { Loader } from "../ui/Loader";
+import { getIsolation } from "../../utils/isolation";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -30,6 +36,8 @@ const DiagnosticRecommendations = ({
   const [searchParams] = useSearchParams();
   const devMode = searchParams.get("dev") === "true";
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [
     optimalZoneSoundClassificationHelper,
     setOptimalZoneSoundClassificationHelper,
@@ -42,7 +50,6 @@ const DiagnosticRecommendations = ({
 
   const {
     diagnostic: {
-      recommendations,
       land_intersections_ld,
       soundclassification_intersections,
       flags: { isMultiExposedSources },
@@ -58,19 +65,24 @@ const DiagnosticRecommendations = ({
     useCallback((): SoundClassificationIntersectionAffectedHelper[] => {
       if (!optimalZonePoints || !projectPoint || !unprojectPoint) return [];
 
-      return soundclassification_intersections.map((intersection) => ({
-        intersection,
-        doesAffectOptimalZone: doesOptimalZoneIntersect(
-          optimalZonePoints,
-          intersection.geometry_intersection,
-          projectPoint
-        ),
-        preciseDistance: getMinDistanceToSourcePoint(
+      return soundclassification_intersections.map((intersection) => {
+        const preciseDistance = getMinDistanceToSourcePoint(
           optimalZonePoints,
           intersection.geometry_source_point,
           unprojectPoint
-        ),
-      }));
+        );
+
+        return {
+          intersection,
+          doesAffectOptimalZone: doesOptimalZoneIntersect(
+            optimalZonePoints,
+            intersection.geometry_intersection,
+            projectPoint
+          ),
+          preciseDistance,
+          isolation: getIsolation(intersection.sound_category, preciseDistance),
+        };
+      });
     }, [
       optimalZonePoints,
       projectPoint,
@@ -92,6 +104,35 @@ const DiagnosticRecommendations = ({
       );
     }
   }, [computeSoundClassificationHelpers]);
+
+  useEffect(() => {
+    const max_isolation = !!optimalZoneSoundClassificationHelper.length
+      ? Math.max(
+          ...optimalZoneSoundClassificationHelper.map(
+            (helper) => helper.isolation
+          )
+        )
+      : 0;
+
+    axios
+      .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
+        params: {
+          populate: "*",
+          filters: getRecommendationsFilterConditionsFromDiagnostic(
+            diagnosticItem,
+            max_isolation
+          ),
+        },
+      })
+      .then((res) => {
+        setRecommendations(res.data.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.error(err);
+      });
+  }, [optimalZoneSoundClassificationHelper]);
 
   const displayComputedRecommendation = () => {
     if (isMultiExposedSources) {
@@ -151,11 +192,60 @@ const DiagnosticRecommendations = ({
                 color={fr.colors.decisions.border.default.purpleGlycine.default}
               />
             </div>
+            <div className={fr.cx("fr-my-10v")}>
+              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                Documentation d'isolation avec ce zone de bâti
+              </h4>
+              {displayAccordionRecommendations(
+                recommendations.filter(
+                  (recommendation) => !!recommendation.isolation
+                )
+              )}
+            </div>
           </div>
         )}
       </div>
     );
   };
+
+  const displayAccordionRecommendations = (
+    tmpRecommendations: Recommendation[]
+  ) => {
+    return tmpRecommendations.map((recommendation, index) => (
+      <Accordion key={index} label={recommendation.title} titleAs="h5">
+        {recommendation.categories.map((category) => (
+          <Tag key={category.title} className={fr.cx("fr-mb-4v", "fr-mr-2v")}>
+            {category.title}
+          </Tag>
+        ))}
+        <div dangerouslySetInnerHTML={{ __html: recommendation.content }} />
+        {!!recommendation.links.length && (
+          <div className={cx(classes.links)}>
+            <p className={fr.cx("fr-mb-2v")}>
+              <b>Liens utiles :</b>
+            </p>
+            <ul className={fr.cx("fr-mb-0")}>
+              {recommendation.links.map((link, index) => (
+                <li key={index}>
+                  <a href={link.href} target="_blank">
+                    {link.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Accordion>
+    ));
+  };
+
+  if (isLoading) {
+    return (
+      <div className={fr.cx("fr-my-12w")}>
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -170,12 +260,13 @@ const DiagnosticRecommendations = ({
         )}
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Documentation
+            Documentation complémentaire
           </h4>
           <div className={cx(classes.section)}>
             <p className={fr.cx("fr-mb-0")}>
-              Des exemples de préconisations sont consultables sur les
-              thématiques suivantes :
+              Cette médiathèque de préconisations est filtrée en fonction du
+              contexte spécifique de la parcelle, et ce filtrage sera
+              progressivement enrichi et optimisé au fil du temps.
             </p>
           </div>
         </div>
@@ -196,37 +287,11 @@ const DiagnosticRecommendations = ({
               Work in progress
             </Badge>
           </div>
-          {recommendations.map((recommendation, index) => (
-            <Accordion key={index} label={recommendation.title} titleAs="h5">
-              {recommendation.categories.map((category) => (
-                <Tag
-                  key={category.title}
-                  className={fr.cx("fr-mb-4v", "fr-mr-2v")}
-                >
-                  {category.title}
-                </Tag>
-              ))}
-              <div
-                dangerouslySetInnerHTML={{ __html: recommendation.content }}
-              />
-              {recommendation.links.length && (
-                <div className={cx(classes.links)}>
-                  <p className={fr.cx("fr-mb-2v")}>
-                    <b>Liens utiles :</b>
-                  </p>
-                  <ul className={fr.cx("fr-mb-0")}>
-                    {recommendation.links.map((link, index) => (
-                      <li key={index}>
-                        <a href={link.href} target="_blank">
-                          {link.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Accordion>
-          ))}
+          {displayAccordionRecommendations(
+            recommendations.filter(
+              (recommendation) => !recommendation.isolation
+            )
+          )}
         </div>
       </div>
     </div>

@@ -472,6 +472,7 @@ export interface ApiRecommendationRecommendation
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    isolation: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     links: Schema.Attribute.Component<'global.link', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

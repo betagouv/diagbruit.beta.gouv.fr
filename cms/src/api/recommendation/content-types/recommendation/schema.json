@@ -41,6 +41,10 @@
       "repeatable": true,
       "component": "global.link",
       "required": false
+    },
+    "isolation": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

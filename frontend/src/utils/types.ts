@@ -31,7 +31,6 @@ export type Diagnostic = {
   air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
   equivalent_ambiences: string[];
-  recommendations: Recommendations[];
 };
 
 export type DiagnosticFlags = {
@@ -80,10 +79,11 @@ export type RecommendationCategory = {
   title: string;
 };
 
-export type Recommendations = {
+export type Recommendation = {
   title: string;
   categories: RecommendationCategory[];
   content: string;
+  isolation: boolean;
   links: {
     href: string;
     title: string;
@@ -112,5 +112,6 @@ export type IntRange<F extends number, T extends number> = Exclude<
 export type SoundClassificationIntersectionAffectedHelper = {
   intersection: SoundClassificationIntersection;
   doesAffectOptimalZone: boolean;
-  preciseDistance?: number;
+  preciseDistance: number;
+  isolation: number;
 };
