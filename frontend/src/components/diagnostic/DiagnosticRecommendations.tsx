@@ -2,12 +2,14 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import { useCallback, useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
+import { getIsolation } from "../../utils/isolation";
 import {
   doesOptimalZoneIntersect,
   getMinDistanceToSourcePoint,
-  getNoiseSourceFromDiagnosticItem,
   getRecommendationsFilterConditionsFromDiagnostic,
 } from "../../utils/tools";
 import {
@@ -15,15 +17,10 @@ import {
   Recommendation,
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
-import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
-import DiagnosticParcelleSvg, {
-  DiagnosticParcelleSvgHandle,
-} from "./DiagnosticParcelleSvg";
-import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
-import { useSearchParams } from "react-router-dom";
-import axios from "axios";
 import { Loader } from "../ui/Loader";
-import { getIsolation } from "../../utils/isolation";
+import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
+import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
+import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -43,11 +40,6 @@ const DiagnosticRecommendations = ({
     setOptimalZoneSoundClassificationHelper,
   ] = useState<SoundClassificationIntersectionAffectedHelper[]>([]);
 
-  const svgRef = useRef<DiagnosticParcelleSvgHandle>(null);
-  const lastOptimalZoneSoundClassificationHelperRef = useRef<
-    SoundClassificationIntersectionAffectedHelper[]
-  >([]);
-
   const {
     diagnostic: {
       land_intersections_ld,
@@ -57,53 +49,30 @@ const DiagnosticRecommendations = ({
     parcelle: { geometry },
   } = diagnosticItem;
 
-  const optimalZonePoints = svgRef.current?.optimalZonePoints;
-  const projectPoint = svgRef.current?.projectPoint;
-  const unprojectPoint = svgRef.current?.unprojectPoint;
-
-  const computeSoundClassificationHelpers =
-    useCallback((): SoundClassificationIntersectionAffectedHelper[] => {
-      if (!optimalZonePoints || !projectPoint || !unprojectPoint) return [];
-
-      return soundclassification_intersections.map((intersection) => {
-        const preciseDistance = getMinDistanceToSourcePoint(
-          optimalZonePoints,
-          intersection.geometry_source_point,
-          unprojectPoint
-        );
-
-        return {
-          intersection,
-          doesAffectOptimalZone: doesOptimalZoneIntersect(
-            optimalZonePoints,
-            intersection.geometry_intersection,
-            projectPoint
-          ),
-          preciseDistance,
-          isolation: getIsolation(intersection.sound_category, preciseDistance),
-        };
-      });
-    }, [
-      optimalZonePoints,
-      projectPoint,
-      unprojectPoint,
-      soundclassification_intersections,
-    ]);
-
-  useEffect(() => {
-    const computedSoundClassificationHelper =
-      computeSoundClassificationHelpers();
-    const hasChanged =
-      JSON.stringify(computedSoundClassificationHelper) !==
-      JSON.stringify(lastOptimalZoneSoundClassificationHelperRef.current);
-    if (hasChanged) {
-      lastOptimalZoneSoundClassificationHelperRef.current =
-        computedSoundClassificationHelper;
-      setOptimalZoneSoundClassificationHelper(
-        computedSoundClassificationHelper
+  const computeSoundClassificationHelpers = (
+    optimalZonePoints: { x: number; y: number }[],
+    projectPoint: (point: [number, number]) => { x: number; y: number },
+    unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number]
+  ): SoundClassificationIntersectionAffectedHelper[] => {
+    return soundclassification_intersections.map((intersection) => {
+      const preciseDistance = getMinDistanceToSourcePoint(
+        optimalZonePoints,
+        intersection.geometry_source_point,
+        unprojectPoint
       );
-    }
-  }, [computeSoundClassificationHelpers]);
+
+      return {
+        intersection,
+        doesAffectOptimalZone: doesOptimalZoneIntersect(
+          optimalZonePoints,
+          intersection.geometry_intersection,
+          projectPoint
+        ),
+        preciseDistance,
+        isolation: getIsolation(intersection.sound_category, preciseDistance),
+      };
+    });
+  };
 
   useEffect(() => {
     const max_isolation = !!optimalZoneSoundClassificationHelper.length
@@ -161,9 +130,13 @@ const DiagnosticRecommendations = ({
           <div className={fr.cx("fr-col-lg-7")}>
             <div className={cx(classes.svgContainer)}>
               <DiagnosticParcelleSvg
-                ref={svgRef}
                 geometry={geometry}
                 intersections={land_intersections_ld}
+                onOptimalUtilsLoaded={(...props) => {
+                  setOptimalZoneSoundClassificationHelper(
+                    computeSoundClassificationHelpers(...props)
+                  );
+                }}
               />
             </div>
           </div>
@@ -218,7 +191,10 @@ const DiagnosticRecommendations = ({
             {category.title}
           </Tag>
         ))}
-        <div dangerouslySetInnerHTML={{ __html: recommendation.content }} />
+        <div
+          className={cx(classes.recommendationContent)}
+          dangerouslySetInnerHTML={{ __html: recommendation.content }}
+        />
         {!!recommendation.links.length && (
           <div className={cx(classes.links)}>
             <p className={fr.cx("fr-mb-2v")}>
@@ -334,6 +310,12 @@ const useStyles = tss.create(() => ({
     marginTop: fr.spacing("8v"),
     ul: {
       marginLeft: fr.spacing("4v"),
+    },
+  },
+  recommendationContent: {
+    img: {
+      height: "auto",
+      aspectRatio: "auto",
     },
   },
 }));
