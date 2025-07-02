@@ -115,9 +115,7 @@ const DiagnosticRecommendations = ({
       );
     }
 
-    const computedSpecificRecommendations = recommendations.filter(
-      (recommendation) => !!recommendation.isolation
-    );
+    const computedSpecificRecommendations = recommendations;
 
     return (
       <div>
@@ -168,17 +166,23 @@ const DiagnosticRecommendations = ({
                 intersectionsHelper={optimalZoneSoundClassificationHelper}
                 color={fr.colors.decisions.border.default.purpleGlycine.default}
               />
+
+              {!!computedSpecificRecommendations.length && (
+                <div className={fr.cx("fr-mt-10v", "fr-mb-4v")}>
+                  <h5
+                    className={cx(
+                      classes.subtitle,
+                      fr.cx("fr-text--md", "fr-mb-4v")
+                    )}
+                  >
+                    Documentation d'isolation associée
+                  </h5>
+                  {displayAccordionRecommendations(
+                    computedSpecificRecommendations
+                  )}
+                </div>
+              )}
             </div>
-            {!!computedSpecificRecommendations.length && (
-              <div className={fr.cx("fr-my-10v")}>
-                <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                  Documentation d'isolation avec cette zone de bâti
-                </h4>
-                {displayAccordionRecommendations(
-                  computedSpecificRecommendations
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
@@ -321,6 +325,9 @@ const useStyles = tss.create(() => ({
       height: "auto",
       aspectRatio: "auto",
     },
+  },
+  subtitle: {
+    textDecoration: "underline",
   },
 }));
 
