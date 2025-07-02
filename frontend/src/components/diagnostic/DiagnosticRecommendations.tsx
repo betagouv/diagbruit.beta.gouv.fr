@@ -115,6 +115,10 @@ const DiagnosticRecommendations = ({
       );
     }
 
+    const computedSpecificRecommendations = recommendations.filter(
+      (recommendation) => !!recommendation.isolation
+    );
+
     return (
       <div>
         <div className={cx(classes.section)}>
@@ -165,16 +169,16 @@ const DiagnosticRecommendations = ({
                 color={fr.colors.decisions.border.default.purpleGlycine.default}
               />
             </div>
-            <div className={fr.cx("fr-my-10v")}>
-              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Documentation d'isolation avec cette zone de bâti
-              </h4>
-              {displayAccordionRecommendations(
-                recommendations.filter(
-                  (recommendation) => !!recommendation.isolation
-                )
-              )}
-            </div>
+            {!!computedSpecificRecommendations.length && (
+              <div className={fr.cx("fr-my-10v")}>
+                <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                  Documentation d'isolation avec cette zone de bâti
+                </h4>
+                {displayAccordionRecommendations(
+                  computedSpecificRecommendations
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
