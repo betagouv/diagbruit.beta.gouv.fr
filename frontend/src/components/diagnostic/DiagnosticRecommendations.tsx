@@ -115,7 +115,9 @@ const DiagnosticRecommendations = ({
       );
     }
 
-    const computedSpecificRecommendations = recommendations;
+    const computedSpecificRecommendations = recommendations.filter(
+      (recommendation) => !!recommendation.isolation
+    );
 
     return (
       <div>
