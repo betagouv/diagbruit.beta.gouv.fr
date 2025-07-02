@@ -167,7 +167,7 @@ const DiagnosticRecommendations = ({
             </div>
             <div className={fr.cx("fr-my-10v")}>
               <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Documentation d'isolation avec ce zone de bâti
+                Documentation d'isolation avec cette zone de bâti
               </h4>
               {displayAccordionRecommendations(
                 recommendations.filter(
