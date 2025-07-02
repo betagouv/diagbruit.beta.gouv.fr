@@ -24,9 +24,9 @@
     },
     "categories": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::category.category",
-      "mappedBy": "recommendation"
+      "mappedBy": "recommendations"
     },
     "content": {
       "type": "customField",

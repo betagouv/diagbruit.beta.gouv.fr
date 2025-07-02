@@ -394,8 +394,8 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    recommendation: Schema.Attribute.Relation<
-      'manyToOne',
+    recommendations: Schema.Attribute.Relation<
+      'manyToMany',
       'api::recommendation.recommendation'
     >;
     title: Schema.Attribute.String;
@@ -457,7 +457,7 @@ export interface ApiRecommendationRecommendation
   };
   attributes: {
     categories: Schema.Attribute.Relation<
-      'oneToMany',
+      'manyToMany',
       'api::category.category'
     >;
     conditions: Schema.Attribute.Component<'global.conditions', false> &

@@ -13,9 +13,9 @@
     "title": {
       "type": "string"
     },
-    "recommendation": {
+    "recommendations": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::recommendation.recommendation",
       "inversedBy": "categories"
     }
