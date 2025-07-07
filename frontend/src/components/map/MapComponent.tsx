@@ -321,11 +321,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         {openTilesMapNotLoading && (
           <div className={classes.bigAlert}>
             <p className={fr.cx("fr-text--xl")}>❌</p>
-            <p className={fr.cx("fr-mb-0")}>
+            <p className={fr.cx("fr-mb-3v")}>
               <b>Erreur lors du chargement des fonds de carte.</b>
             </p>
             <p>
-              <br /> Cela est dû à un problème avec notre fournisseur externe
+              Cela est dû à un problème avec notre fournisseur externe
               (GeoGouv).
               <br /> Veuillez réessayer un peu plus tard.
             </p>
