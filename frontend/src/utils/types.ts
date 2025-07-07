@@ -36,6 +36,7 @@ export type Diagnostic = {
 export type DiagnosticFlags = {
   hasClassificationWarning: boolean;
   isMultiExposedSources: boolean;
+  isMultiExposedLandSources: boolean;
   isMultiExposedLandDistinctTypeSources: boolean;
   isMultiExposedLdenLn: boolean;
   isPriorityZone: boolean;

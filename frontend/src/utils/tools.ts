@@ -462,13 +462,19 @@ export const getRecommendationsUtilFlags = (
       land_intersections_ld,
       soundclassification_intersections,
       air_intersections,
-      flags: { isMultiExposedSources },
+      flags: { isMultiExposedLandSources },
     },
   } = diagnosticItem;
 
+  const hasDominatingAirIntersection =
+    Math.max(
+      ...air_intersections.map((intersection) => intersection.percent_impacted)
+    ) > 0.8;
+
   return {
     isMonoExposed:
-      !isMultiExposedSources && soundclassification_intersections.length < 2,
+      !isMultiExposedLandSources &&
+      soundclassification_intersections.length < 2,
     isAffectedByNoisemapIntersections: land_intersections_ld.length > 0,
     isAffectedBySoundclassificationIntersections:
       soundclassification_intersections.length > 0,
@@ -476,12 +482,7 @@ export const getRecommendationsUtilFlags = (
       soundclassification_intersections.length > 1,
     isAffectedByAirIntersections: air_intersections.length > 0,
     isAffectedBySeveralAirIntersections:
-      air_intersections.length > 1 &&
-      Math.max(
-        ...air_intersections.map(
-          (intersection) => intersection.percent_impacted
-        )
-      ) > 0,
+      air_intersections.length > 1 && !hasDominatingAirIntersection,
     isSoundclassificationStillApplied: max_isolation > 0,
   };
 };

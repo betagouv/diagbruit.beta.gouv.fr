@@ -53,6 +53,12 @@ const DiagnosticRecommendations = ({
     optimalZoneSoundClassificationHelper
   );
   const utilFlags = getRecommendationsUtilFlags(diagnosticItem, max_isolation);
+  const computedCommonRecommendations = recommendations.filter(
+    (recommendation) => !recommendation.isolation
+  );
+  const computedSpecificRecommendations = recommendations.filter(
+    (recommendation) => !!recommendation.isolation
+  );
 
   const computeSoundClassificationHelpers = (
     optimalZonePoints: { x: number; y: number }[],
@@ -111,15 +117,35 @@ const DiagnosticRecommendations = ({
     )
       return;
 
-    const computedSpecificRecommendations = recommendations.filter(
-      (recommendation) => !!recommendation.isolation
-    );
-
-    if (!utilFlags.isAffectedBySoundclassificationIntersections) {
+    if (
+      !utilFlags.isAffectedBySoundclassificationIntersections &&
+      !utilFlags.isAffectedByAirIntersections
+    ) {
       return (
         <div className={cx(classes.section)}>
-          La parcelle n’est pas située dans une zone soumise au classement
-          sonore.
+          <div className={fr.cx("fr-mb-6v")}>
+            Cette parcelle a été cartographiée par l’agglomération, qui
+            cartographie l’ensemble des infrastructures de transport. Cependant,
+            elle n’est pas soumise au classement sonore (route de plus de 5000
+            veh / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
+            d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
+            1999)
+          </div>
+          {displayAccordionRecommendations(computedSpecificRecommendations)}
+        </div>
+      );
+    }
+
+    if (utilFlags.isAffectedByAirIntersections) {
+      return (
+        <div className={cx(classes.section)}>
+          <div className={fr.cx("fr-mb-4v")}>
+            <Badge severity="info">Work in progress</Badge>
+          </div>
+          En plus des cartes de bruit stratégiques, cette parcelle est soumise
+          au plan d'exposition au bruit aérien. Nos préconisations d'isolations
+          liée à la combinaison des bruits aériens et terrestre sont en cours de
+          rédaction.
         </div>
       );
     }
@@ -127,27 +153,13 @@ const DiagnosticRecommendations = ({
     if (!utilFlags.isSoundclassificationStillApplied) {
       return (
         <div className={cx(classes.section)}>
-          <div>
+          <div className={fr.cx("fr-mb-6v")}>
             La zone idéale de position du bâti déterminée par diagBruit n’est
-            pas située dans une zone soumise au classement sonore. <br />
-            <Notice
-              className={fr.cx("fr-mt-2v", "fr-mb-8v")}
-              description={
-                <>
-                  Attention : cette recommandation repose uniquement sur une
-                  modélisation acoustique, une étude acoustique est nécessaire
-                  pour vérifier ces informations.
-                </>
-              }
-              iconDisplayed
-              isClosable
-              onClose={function noRefCheck() {}}
-              severity="info"
-              title=""
-            />
-          </div>
-          <div className={fr.cx("fr-mt-2v")}>
-            Isolation minimale à respecter :
+            pas Soumise au classement sonore. Attention ! Comme expliqué plus
+            haut, l’utilisation des cartes de bruit est pour déterminer la zone
+            idéale est abusive et ne vise qu’à alerter le porteur de projet.
+            Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
+            l’extérieur est de 30 dB (arrêté 30 juin 1999)
           </div>
           {displayAccordionRecommendations(computedSpecificRecommendations)}
         </div>
@@ -160,6 +172,14 @@ const DiagnosticRecommendations = ({
           Isolement théorique avec la zone idéale du bâti selon diagBruit
         </h4>
         <div className={cx(classes.section)}>
+          <p>
+            Attention ! L’isolement proposé ici est simplement informatif. Il
+            vise à fournir une démonstration par l’exemple du processus de
+            détermination des objectifs, techniques et matériaux d’isolation
+            possibles. Le calcul définitif devra avant tout se baser sur la
+            position, les dimensions et le contexte (autres bâtiments,
+            protections acoustiques) réel du projet.
+          </p>
           <p className={fr.cx("fr-hint-text")}>
             La distance traduit l'écart minimale entre la source de bruit et la
             zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
@@ -191,31 +211,64 @@ const DiagnosticRecommendations = ({
     if (!utilFlags.isMonoExposed) {
       return (
         <div className={cx(classes.section)}>
-          Le service diagBruit détermine une zone idéale de position du bâti
-          exclusivement pour les parcelles présentant une exposition unique à
-          une source sonore. Cette condition n'étant pas remplie ici, la
+          Actuellement, le service diagBruit ne détermine une zone idéale de
+          position du bâti que pour les parcelles présentant une exposition à
+          une source sonore unique. Cette condition n'étant pas remplie ici, la
           parcelle ne peut en bénéficier.
         </div>
       );
     }
 
     if (!utilFlags.isAffectedByNoisemapIntersections) {
-      return (
-        <div className={cx(classes.section)}>
-          Cette parcelle n’est pas concernée par les cartes de bruit
-          stratégiques. La position du bâti sur la parcelle n’a donc pas
-          d’impact particulier au regard du bruit.
-        </div>
-      );
+      if (!utilFlags.isAffectedByAirIntersections) {
+        return (
+          <div className={cx(classes.section)}>
+            Cette parcelle n’est impactée ni par les cartes de bruit
+            stratégique, ni par le plan d’exposition au bruit. DiagBruit ne peut
+            fournir de position idéale et de préconisation d’isolement, mais
+            rappel que le niveau minimal d’isolation vis-à-vis de l’extérieur
+            est de 30 dB (arrêté 30 juin 1999)
+          </div>
+        );
+      }
+
+      if (!utilFlags.isAffectedBySeveralAirIntersections) {
+        return (
+          <div className={cx(classes.section)}>
+            Le calcul de la zone idéale de construction selon diagBruit repose
+            actuellement sur les cartes de bruit route et fer (plus d’info ici).
+            Cette parcelle est impactée par une zone d’un Plan d’Exposition au
+            Bruit. diagBruit ne préconise pas de position préférentielle pour le
+            moment. Se référer à la documentation pour des exemples de calcul
+            d’isolement
+          </div>
+        );
+      } else {
+        return (
+          <div className={cx(classes.section)}>
+            Le calcul de la zone idéale de construction selon diagBruit repose
+            actuellement sur les cartes de bruit route et fer (plus d’info ici).
+            Cette parcelle est impactée par plusieurs zones d’un Plan
+            d’Exposition au Bruit. diagBruit ne préconise pas de position
+            préférentielle pour le moment, mais utilisera dans le futur la zone
+            présentant le risque le plus élevé comme référence. Se référer à la
+            documentation pour des exemples de calcul d’isolement et prévoir une
+            étude acoustique spécifique.
+          </div>
+        );
+      }
     }
 
     return (
       <div>
         <div className={cx(classes.section)}>
           <p className={fr.cx("fr-mb-0")}>
-            D'après les cartes de bruit “Grandes Insfratructures de Transport
-            Terrestres” et “Grandes Agglomérations”, voici une estimation de
-            l'impact du bruit sur la surface de la parcelle :
+            Attention ! La zone idéale est issue des cartes de bruit
+            stratégique, dont l’objectif n’est pas de prévoir le bruit à
+            l’échelle d’un bâtiment, mais plutôt d’une zone de quelques km².
+            L’utilisation de ces cartes pour un objectif aussi précis n’est pas
+            réaliste, et vise principalement à alerter le porteur de projet en
+            lui fournissant un exemple.
           </p>
         </div>
         <div
@@ -315,18 +368,16 @@ const DiagnosticRecommendations = ({
               contexte spécifique de la parcelle, et ce filtrage sera
               progressivement enrichi et optimisé au fil du temps.
             </p>
-            <div
-              className={cx(
-                classes.accordions,
-                fr.cx("fr-accordions-group", "fr-mt-6v")
-              )}
-            >
-              {displayAccordionRecommendations(
-                recommendations.filter(
-                  (recommendation) => !recommendation.isolation
-                )
-              )}
-            </div>
+            {!!computedCommonRecommendations.length && (
+              <div
+                className={cx(
+                  classes.accordions,
+                  fr.cx("fr-accordions-group", "fr-mt-6v")
+                )}
+              >
+                {displayAccordionRecommendations(computedCommonRecommendations)}
+              </div>
+            )}
           </div>
         </div>
       </div>
