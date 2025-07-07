@@ -15,6 +15,7 @@ import Map, {
   MapInstance,
   MapLayerMouseEvent,
   MapRef,
+  MapSourceDataEvent,
   StyleSpecification,
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
@@ -30,6 +31,7 @@ import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -88,12 +90,13 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     const [hovered, setHovered] = useState<HoverInfo | null>(null);
     const [cursor, setCursor] = useState("default");
     const [isMapLoaded, setIsMapLoaded] = useState(false);
-    const [diagError, setDiagError] = useState<
-      DiagnosticResponseError | undefined
-    >();
+    const [openTilesMapNotLoading, setOpenTilesMapNotLoading] = useState(false);
 
     const internalMapRef = useRef<MapRef>(null);
     const [map, setMap] = useState<MapInstance>();
+
+    const [openMapTilesLoaded, setOpenMapTilesLoaded] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const prevHovered = usePrevious(hovered);
     const prevSelected = usePrevious(parcelle);
@@ -124,6 +127,21 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         setMap(ref.getMap());
       }
     }, []);
+
+    const onMapLoad = () => {
+      setIsMapLoaded(true);
+    };
+
+    const onMapSourceData = (e: MapSourceDataEvent) => {
+      if ((((e.source as any)?.url as string) || "").includes("openmaptiles")) {
+        if (e.isSourceLoaded) {
+          setOpenMapTilesLoaded(true);
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+        }
+      }
+    };
 
     const onClick = useCallback(
       (event: MapLayerMouseEvent) => {
@@ -246,8 +264,8 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     );
 
     useEffect(() => {
-      onLoading(isLoading);
-    }, [isLoading]);
+      onLoading(isLoading || !openMapTilesLoaded);
+    }, [isLoading, openMapTilesLoaded]);
 
     useEffect(() => {
       if (isMapLoaded && response?.diagnostics) {
@@ -283,8 +301,45 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       });
     }, [map, parcelle]);
 
+    useEffect(() => {
+      timeoutRef.current = setTimeout(() => {
+        if (!openMapTilesLoaded) {
+          setOpenTilesMapNotLoading(true);
+          setOpenMapTilesLoaded(true);
+        }
+      }, 5000);
+
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }, []);
+
     return (
       <div className={classes.container}>
+        {openTilesMapNotLoading && (
+          <div className={classes.bigAlert}>
+            <p className={fr.cx("fr-text--xl")}>❌</p>
+            <p className={fr.cx("fr-mb-0")}>
+              <b>Erreur lors du chargement des fonds de carte.</b>
+            </p>
+            <p>
+              <br /> Cela est dû à un problème avec notre fournisseur externe
+              (GeoGouv).
+              <br /> Veuillez réessayer un peu plus tard.
+            </p>
+            <Button
+              iconId="ri-restart-line"
+              size="small"
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Essayer de recharger la page
+            </Button>
+          </div>
+        )}
         <div className={cx(classes.search)}>
           <label htmlFor="mapSearch">Adresse ou zone géographique</label>
           <p className={fr.cx("fr-hint-text", "fr-mb-2v")}>
@@ -302,13 +357,14 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           id="map"
           ref={mapRef}
           initialViewState={defaultViewState}
-          onLoad={() => setIsMapLoaded(true)}
+          onLoad={onMapLoad}
           onClick={onClick}
           onMouseEnter={onHover}
           onMouseLeave={onHover}
           onMouseMove={onHover}
           style={{ width: "100%", height: "550px" }}
           mapStyle={orthoStyle as StyleSpecification}
+          onSourceData={onMapSourceData}
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
         />
@@ -334,6 +390,20 @@ const useStyles = tss.create(() => ({
       left: 0,
       width: "100%",
     },
+  },
+  bigAlert: {
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    display: "flex",
+    flexDirection: "column",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    height: "100vh",
+    width: "100vw",
+    zIndex: 9999,
   },
 }));
 
