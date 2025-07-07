@@ -236,24 +236,23 @@ const DiagnosticRecommendations = ({
         return (
           <div className={cx(classes.section)}>
             Le calcul de la zone idéale de construction selon diagBruit repose
-            actuellement sur les cartes de bruit route et fer (plus d’info ici).
-            Cette parcelle est impactée par une zone d’un Plan d’Exposition au
-            Bruit. diagBruit ne préconise pas de position préférentielle pour le
-            moment. Se référer à la documentation pour des exemples de calcul
-            d’isolement
+            actuellement sur les cartes de bruit route et fer. Cette parcelle
+            est impactée par une zone d’un Plan d’Exposition au Bruit. diagBruit
+            ne préconise pas de position préférentielle pour le moment. Se
+            référer à la documentation pour des exemples de calcul d’isolement
           </div>
         );
       } else {
         return (
           <div className={cx(classes.section)}>
             Le calcul de la zone idéale de construction selon diagBruit repose
-            actuellement sur les cartes de bruit route et fer (plus d’info ici).
-            Cette parcelle est impactée par plusieurs zones d’un Plan
-            d’Exposition au Bruit. diagBruit ne préconise pas de position
-            préférentielle pour le moment, mais utilisera dans le futur la zone
-            présentant le risque le plus élevé comme référence. Se référer à la
-            documentation pour des exemples de calcul d’isolement et prévoir une
-            étude acoustique spécifique.
+            actuellement sur les cartes de bruit route et fer. Cette parcelle
+            est impactée par plusieurs zones d’un Plan d’Exposition au Bruit.
+            diagBruit ne préconise pas de position préférentielle pour le
+            moment, mais utilisera dans le futur la zone présentant le risque le
+            plus élevé comme référence. Se référer à la documentation pour des
+            exemples de calcul d’isolement et prévoir une étude acoustique
+            spécifique.
           </div>
         );
       }
