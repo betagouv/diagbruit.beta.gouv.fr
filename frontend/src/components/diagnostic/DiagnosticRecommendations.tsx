@@ -22,6 +22,7 @@ import { Loader } from "../ui/Loader";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
+import Notice from "@codegouvfr/react-dsfr/Notice";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -126,13 +127,24 @@ const DiagnosticRecommendations = ({
     if (!utilFlags.isSoundclassificationStillApplied) {
       return (
         <div className={cx(classes.section)}>
-          La zone idéale de position du bâti déterminée par diagBruit n’est pas
-          située dans une zone soumise au classement sonore.
-          <br />
-          <div className={fr.cx("fr-hint-text")}>
-            ⚠️ Attention : cette recommandation repose uniquement sur une
-            modélisation acoustique, une étude acoustique est nécessaire pour
-            vérifier ces informations.
+          <div>
+            La zone idéale de position du bâti déterminée par diagBruit n’est
+            pas située dans une zone soumise au classement sonore. <br />
+            <Notice
+              className={fr.cx("fr-mt-2v", "fr-mb-8v")}
+              description={
+                <>
+                  Attention : cette recommandation repose uniquement sur une
+                  modélisation acoustique, une étude acoustique est nécessaire
+                  pour vérifier ces informations.
+                </>
+              }
+              iconDisplayed
+              isClosable
+              onClose={function noRefCheck() {}}
+              severity="info"
+              title=""
+            />
           </div>
           <div className={fr.cx("fr-mt-2v")}>
             Isolation minimale à respecter :
@@ -327,6 +339,14 @@ const useStyles = tss.create(() => ({
     flexGrow: 1,
     [fr.breakpoints.down("md")]: {
       paddingTop: fr.spacing("2v"),
+    },
+    ".fr-notice__body": {
+      ".fr-notice__desc": {
+        ...fr.typography[17].style,
+      },
+      button: {
+        display: "none",
+      },
     },
   },
   mainIcon: {
