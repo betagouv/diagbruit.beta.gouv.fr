@@ -4,13 +4,14 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { getIsolation } from "../../utils/isolation";
 import {
   doesOptimalZoneIntersect,
+  getMaxIsolationFromSoundClassificationAffectedHelper,
   getMinDistanceToSourcePoint,
   getRecommendationsFilterConditionsFromDiagnostic,
+  getRecommendationsUtilFlags,
 } from "../../utils/tools";
 import {
   DiagnosticItem,
@@ -30,8 +31,6 @@ const DiagnosticRecommendations = ({
   diagnosticItem,
 }: DiagnosticRecommendationsProps) => {
   const { cx, classes } = useStyles();
-  const [searchParams] = useSearchParams();
-  const devMode = searchParams.get("dev") === "true";
 
   const [isLoading, setIsLoading] = useState(true);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -49,6 +48,11 @@ const DiagnosticRecommendations = ({
     parcelle: { geometry },
   } = diagnosticItem;
 
+  const max_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
+    optimalZoneSoundClassificationHelper
+  );
+  const utilFlags = getRecommendationsUtilFlags(diagnosticItem, max_isolation);
+
   const computeSoundClassificationHelpers = (
     optimalZonePoints: { x: number; y: number }[],
     projectPoint: (point: [number, number]) => { x: number; y: number },
@@ -61,28 +65,24 @@ const DiagnosticRecommendations = ({
         unprojectPoint
       );
 
+      const doesAffectOptimalZone = doesOptimalZoneIntersect(
+        optimalZonePoints,
+        intersection.geometry_intersection,
+        projectPoint
+      );
+
       return {
         intersection,
-        doesAffectOptimalZone: doesOptimalZoneIntersect(
-          optimalZonePoints,
-          intersection.geometry_intersection,
-          projectPoint
-        ),
+        doesAffectOptimalZone,
         preciseDistance,
-        isolation: getIsolation(intersection.sound_category, preciseDistance),
+        isolation: doesAffectOptimalZone
+          ? getIsolation(intersection.sound_category, preciseDistance)
+          : 0,
       };
     });
   };
 
   useEffect(() => {
-    const max_isolation = !!optimalZoneSoundClassificationHelper.length
-      ? Math.max(
-          ...optimalZoneSoundClassificationHelper.map(
-            (helper) => helper.isolation
-          )
-        )
-      : 0;
-
     axios
       .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
         params: {
@@ -103,8 +103,80 @@ const DiagnosticRecommendations = ({
       });
   }, [optimalZoneSoundClassificationHelper]);
 
+  const displayIsolationInformations = () => {
+    if (
+      !utilFlags.isAffectedByNoisemapIntersections ||
+      !utilFlags.isMonoExposed
+    )
+      return;
+
+    const computedSpecificRecommendations = recommendations.filter(
+      (recommendation) => !!recommendation.isolation
+    );
+
+    if (!utilFlags.isAffectedBySoundclassificationIntersections) {
+      return (
+        <div className={cx(classes.section)}>
+          La parcelle n’est pas située dans une zone soumise au classement
+          sonore.
+        </div>
+      );
+    }
+
+    if (!utilFlags.isSoundclassificationStillApplied) {
+      return (
+        <div className={cx(classes.section)}>
+          La zone idéale de position du bâti déterminée par diagBruit n’est pas
+          située dans une zone soumise au classement sonore.
+          <br />
+          <div className={fr.cx("fr-hint-text")}>
+            ⚠️ Attention : cette recommandation repose uniquement sur une
+            modélisation acoustique, une étude acoustique est nécessaire pour
+            vérifier ces informations.
+          </div>
+          <div className={fr.cx("fr-mt-2v")}>
+            Isolation minimale à respecter :
+          </div>
+          {displayAccordionRecommendations(computedSpecificRecommendations)}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+          Isolement théorique avec la zone idéale du bâti selon diagBruit
+        </h4>
+        <div className={cx(classes.section)}>
+          <p className={fr.cx("fr-hint-text")}>
+            La distance traduit l'écart minimale entre la source de bruit et la
+            zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
+          </p>
+          <DiagnosticInfrastructureNoiseTable
+            intersectionsHelper={optimalZoneSoundClassificationHelper}
+            color={fr.colors.decisions.border.default.purpleGlycine.default}
+          />
+
+          {!!computedSpecificRecommendations.length && (
+            <div className={fr.cx("fr-mt-10v", "fr-mb-4v")}>
+              <h5
+                className={cx(
+                  classes.subtitle,
+                  fr.cx("fr-text--md", "fr-mb-4v")
+                )}
+              >
+                Documentation d'isolation associée
+              </h5>
+              {displayAccordionRecommendations(computedSpecificRecommendations)}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const displayComputedRecommendation = () => {
-    if (isMultiExposedSources) {
+    if (!utilFlags.isMonoExposed) {
       return (
         <div className={cx(classes.section)}>
           Le service diagBruit détermine une zone idéale de position du bâti
@@ -115,9 +187,15 @@ const DiagnosticRecommendations = ({
       );
     }
 
-    const computedSpecificRecommendations = recommendations.filter(
-      (recommendation) => !!recommendation.isolation
-    );
+    if (!utilFlags.isAffectedByNoisemapIntersections) {
+      return (
+        <div className={cx(classes.section)}>
+          Cette parcelle n’est pas concernée par les cartes de bruit
+          stratégiques. La position du bâti sur la parcelle n’a donc pas
+          d’impact particulier au regard du bruit.
+        </div>
+      );
+    }
 
     return (
       <div>
@@ -150,43 +228,6 @@ const DiagnosticRecommendations = ({
             />
           </div>
         </div>
-        {!!soundclassification_intersections.length && (
-          <div>
-            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-              Isolement
-              {soundclassification_intersections.length > 1 ? "s" : ""}{" "}
-              théorique
-              {soundclassification_intersections.length > 1 ? "s" : ""} avec la
-              zone idéale du bâti selon diagBruit
-            </h4>
-            <div className={cx(classes.section)}>
-              <p className={fr.cx("fr-hint-text")}>
-                La distance traduit l'écart minimale entre la source de bruit et
-                la zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
-              </p>
-              <DiagnosticInfrastructureNoiseTable
-                intersectionsHelper={optimalZoneSoundClassificationHelper}
-                color={fr.colors.decisions.border.default.purpleGlycine.default}
-              />
-
-              {!!computedSpecificRecommendations.length && (
-                <div className={fr.cx("fr-mt-10v", "fr-mb-4v")}>
-                  <h5
-                    className={cx(
-                      classes.subtitle,
-                      fr.cx("fr-text--md", "fr-mb-4v")
-                    )}
-                  >
-                    Documentation d'isolation associée
-                  </h5>
-                  {displayAccordionRecommendations(
-                    computedSpecificRecommendations
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     );
   };
@@ -235,15 +276,23 @@ const DiagnosticRecommendations = ({
 
   return (
     <div>
+      <div
+        style={{
+          position: "absolute",
+          top: "1rem",
+          right: "1rem",
+        }}
+      >
+        <Badge severity="info">Work in progress</Badge>
+      </div>
       <div className={cx(classes.container)}>
-        {devMode && (
-          <div className={fr.cx("fr-mb-10v")}>
-            <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-              Proposition d'une zone de bâti
-            </h4>
-            {displayComputedRecommendation()}
-          </div>
-        )}
+        <div className={fr.cx("fr-mb-10v")}>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Proposition d'une zone de bâti
+          </h4>
+          {displayComputedRecommendation()}
+          {displayIsolationInformations()}
+        </div>
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
             Documentation complémentaire
@@ -254,30 +303,19 @@ const DiagnosticRecommendations = ({
               contexte spécifique de la parcelle, et ce filtrage sera
               progressivement enrichi et optimisé au fil du temps.
             </p>
+            <div
+              className={cx(
+                classes.accordions,
+                fr.cx("fr-accordions-group", "fr-mt-6v")
+              )}
+            >
+              {displayAccordionRecommendations(
+                recommendations.filter(
+                  (recommendation) => !recommendation.isolation
+                )
+              )}
+            </div>
           </div>
-        </div>
-        <div
-          className={cx(
-            classes.accordions,
-            fr.cx("fr-accordions-group", "fr-mt-6v")
-          )}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "end",
-              marginTop: "-2rem",
-            }}
-          >
-            <Badge className={fr.cx("fr-mb-2v")} severity="info">
-              Work in progress
-            </Badge>
-          </div>
-          {displayAccordionRecommendations(
-            recommendations.filter(
-              (recommendation) => !recommendation.isolation
-            )
-          )}
         </div>
       </div>
     </div>

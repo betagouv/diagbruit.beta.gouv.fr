@@ -7,6 +7,7 @@ import {
   DiagnosticItem,
   Geometry,
   IntRange,
+  SoundClassificationIntersectionAffectedHelper,
 } from "./types";
 import inside from "point-in-polygon";
 
@@ -450,4 +451,49 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
       ],
     },
   };
+};
+
+export const getRecommendationsUtilFlags = (
+  diagnosticItem: DiagnosticItem,
+  max_isolation: number
+) => {
+  const {
+    diagnostic: {
+      land_intersections_ld,
+      soundclassification_intersections,
+      air_intersections,
+      flags: { isMultiExposedSources },
+    },
+  } = diagnosticItem;
+
+  return {
+    isMonoExposed:
+      !isMultiExposedSources && soundclassification_intersections.length < 2,
+    isAffectedByNoisemapIntersections: land_intersections_ld.length > 0,
+    isAffectedBySoundclassificationIntersections:
+      soundclassification_intersections.length > 0,
+    isAffectedBySeveralSoundclassificationIntersections:
+      soundclassification_intersections.length > 1,
+    isAffectedByAirIntersections: air_intersections.length > 0,
+    isAffectedBySeveralAirIntersections:
+      air_intersections.length > 1 &&
+      Math.max(
+        ...air_intersections.map(
+          (intersection) => intersection.percent_impacted
+        )
+      ) > 0,
+    isSoundclassificationStillApplied: max_isolation > 0,
+  };
+};
+
+export const getMaxIsolationFromSoundClassificationAffectedHelper = (
+  optimalZoneSoundClassificationHelper: SoundClassificationIntersectionAffectedHelper[]
+) => {
+  return !!optimalZoneSoundClassificationHelper.length
+    ? Math.max(
+        ...optimalZoneSoundClassificationHelper.map(
+          (helper) => helper.isolation
+        )
+      )
+    : 0;
 };
