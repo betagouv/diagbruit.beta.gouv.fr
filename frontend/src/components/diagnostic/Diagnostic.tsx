@@ -94,9 +94,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   const handleCopyUrl = async () => {
     try {
+      trackMatomoEvent(
+        "Action",
+        "Copy Diagnostic",
+        `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+      );
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
-      setTimeout(() => setCopied(false), 3000); // reset après 3s
+      setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       console.error("Erreur lors de la copie de l'URL :", err);
     }

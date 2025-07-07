@@ -181,6 +181,7 @@ Add scalingo remotes
 git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-back.git
 git remote add scalingo-frontend git@ssh.osc-fr1.scalingo.com:diag-bruit-front.git
 git remote add scalingo-cms git@ssh.osc-fr1.scalingo.com:diag-bruit-cms.git
+git remote add scalingo-metabase git@ssh.osc-fr1.scalingo.com:diag-bruit-metabase.git
 ```
 
 Deploy FastAPI last commit
@@ -199,6 +200,12 @@ Deploy Strapi CMS last commit
 
 ```
 git subtree push --prefix cms scalingo-cms main
+```
+
+Deploy Metabase last commit
+
+```
+git subtree push --prefix metabase scalingo-metabase main
 ```
 
 ## 🧬 Macro architecture

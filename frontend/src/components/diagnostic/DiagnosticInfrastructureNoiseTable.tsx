@@ -1,12 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import { tss } from "tss-react/dsfr";
+import { getIsolation } from "../../utils/isolation";
 import { noiseTableData, noiseTableHeaders } from "../../utils/noisetable";
 import {
   SoundClassificationIntersection,
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
-import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
-import { helpers } from "@turf/turf";
 
 type DiagnosticInfrastructureNoiseTableProps = {
   intersectionsHelper:
@@ -44,6 +44,11 @@ const DiagnosticInfrastructureNoiseTable = ({
       : intersectionsHelper.map((intersection) => ({
           intersection,
           doesAffectOptimalZone: true,
+          preciseDistance: intersection.distance,
+          isolation: getIsolation(
+            intersection.sound_category,
+            intersection.distance
+          ),
         }));
 
   const getDistanceFromHelper = (

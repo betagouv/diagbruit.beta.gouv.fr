@@ -8,9 +8,11 @@ export interface GlobalConditions extends Struct.ComponentSchema {
     icon: 'oneToMany';
   };
   attributes: {
+    isolation_gte: Schema.Attribute.Integer;
+    isolation_lte: Schema.Attribute.Integer;
     score_gte: Schema.Attribute.Integer;
     score_lte: Schema.Attribute.Integer;
-    source: Schema.Attribute.Enumeration<['all', 'land', 'air']> &
+    source: Schema.Attribute.Enumeration<['all', 'land', 'air', 'multi']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'all'>;
   };

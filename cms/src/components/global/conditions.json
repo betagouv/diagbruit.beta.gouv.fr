@@ -18,10 +18,17 @@
       "enum": [
         "all",
         "land",
-        "air"
+        "air",
+        "multi"
       ],
       "default": "all",
       "required": true
+    },
+    "isolation_lte": {
+      "type": "integer"
+    },
+    "isolation_gte": {
+      "type": "integer"
     }
   }
 }

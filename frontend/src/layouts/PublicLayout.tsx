@@ -1,9 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Header from "@codegouvfr/react-dsfr/Header";
 import Footer from "@codegouvfr/react-dsfr/Footer";
-import { tss } from "tss-react/dsfr";
+import Header from "@codegouvfr/react-dsfr/Header";
 import Notice from "@codegouvfr/react-dsfr/Notice";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { tss } from "tss-react/dsfr";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -12,8 +12,6 @@ type PublicLayoutProps = {
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { cx, classes } = useStyles();
   const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
-  const devMode = searchParams.get("dev") === "true";
 
   return (
     <main>
@@ -25,19 +23,15 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             Française
           </>
         }
-        quickAccessItems={
-          devMode
-            ? [
-                {
-                  iconId: "ri-flashlight-line",
-                  text: "Nouveautés",
-                  linkProps: {
-                    href: "/changelogs",
-                  },
-                },
-              ]
-            : []
-        }
+        quickAccessItems={[
+          {
+            iconId: "ri-flashlight-line",
+            text: "Nouveautés",
+            linkProps: {
+              href: "/changelogs",
+            },
+          },
+        ]}
         serviceTitle="diagBruit"
         serviceTagline={
           <>

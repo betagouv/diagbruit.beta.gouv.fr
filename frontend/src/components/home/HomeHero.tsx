@@ -29,13 +29,20 @@ const HomeHero = () => {
           <Notice
             description={
               <>
-                Les données utilisées dans l’outil sont les cartes de bruit
-                “Grandes Insfratructures de Transport Terrestres” et “Grandes
-                Agglomérations”, plus les plans d’exposition au bruit. Ces
-                documents sont issus de modélisation. Les calculs et certaines
-                données d’entrée nécessitent des approximations. Le diagnostic
-                créé par l’outil peut donc être remis en cause par des études
-                locales plus approfondies (avec mesures sur site).
+                Attention ! DiagBruit ne prend en compte{" "}
+                <b>
+                  que les sources sonores routières, ferroviaires et
+                  aéroportuaires
+                </b>
+                . Le diagnostic{" "}
+                <b>
+                  se base sur les Cartes de Bruit Stratégiques, les Plans
+                  d’Exposition au Bruit et les Classements Sonores des Voies
+                </b>
+                . Ces documents sont issus de modélisation qui nécessitent
+                certaines approximations, une étude locale approfondie reste le
+                moyen le plus sur d’estimer le risque sonore réel prenant en
+                compte l’ensemble des sources
               </>
             }
             iconDisplayed

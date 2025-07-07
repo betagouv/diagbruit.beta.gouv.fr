@@ -49,7 +49,10 @@ function ChangelogsPage() {
             <p className={fr.cx("fr-hint-text")}>
               Publiée le {new Date(changelog.date).toLocaleDateString("fr-FR")}
             </p>
-            <div dangerouslySetInnerHTML={{ __html: changelog.content }} />
+            <div
+              className={cx(classes.changelogContent)}
+              dangerouslySetInnerHTML={{ __html: changelog.content }}
+            />
           </Highlight>
         </div>
       ))}
@@ -66,7 +69,12 @@ const useStyles = tss.create(() => ({
       ...fr.typography[2].style,
     },
   },
-  title: {},
+  changelogContent: {
+    img: {
+      height: "auto",
+      aspectRatio: "auto",
+    },
+  },
 }));
 
 export default ChangelogsPage;

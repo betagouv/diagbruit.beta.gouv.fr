@@ -81,9 +81,6 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
 
-    # Return the recommendations based on the score
-    diagnostic['recommendations'] = get_recommendations_by_score(diagnostic['score'])
-
     # Return noisemap intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
 
