@@ -117,8 +117,9 @@ const DiagnosticInfrastructureNoiseTable = ({
         const distance = getDistanceFromHelper(helper);
         return (
           helper.intersection.sound_category === categoryIndex &&
-          (distance > currentDistance || (cellIndex === 1 && distance <= 10)) &&
-          distance <= nextDistance
+          (distance >= currentDistance ||
+            (cellIndex === 1 && distance <= 10)) &&
+          distance < nextDistance
         );
       }
     );
