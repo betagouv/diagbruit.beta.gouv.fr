@@ -455,7 +455,7 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
 
 export const getRecommendationsUtilFlags = (
   diagnosticItem: DiagnosticItem,
-  max_isolation: number
+  land_isolation: number
 ) => {
   const {
     diagnostic: {
@@ -483,7 +483,7 @@ export const getRecommendationsUtilFlags = (
     isAffectedByAirIntersections: air_intersections.length > 0,
     isAffectedBySeveralAirIntersections:
       air_intersections.length > 1 && !hasDominatingAirIntersection,
-    isSoundclassificationStillApplied: max_isolation > 0,
+    isSoundclassificationStillApplied: land_isolation > 0,
   };
 };
 

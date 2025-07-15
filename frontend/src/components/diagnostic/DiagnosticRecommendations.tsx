@@ -5,7 +5,11 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
-import { getIsolation } from "../../utils/isolation";
+import {
+  getAirIsolation,
+  getComputedIsolation,
+  getLandIsolation,
+} from "../../utils/isolation";
 import {
   doesOptimalZoneIntersect,
   getMaxIsolationFromSoundClassificationAffectedHelper,
@@ -22,7 +26,6 @@ import { Loader } from "../ui/Loader";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
-import Notice from "@codegouvfr/react-dsfr/Notice";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -44,15 +47,20 @@ const DiagnosticRecommendations = ({
     diagnostic: {
       land_intersections_ld,
       soundclassification_intersections,
-      flags: { isMultiExposedSources },
+      air_intersections,
     },
     parcelle: { geometry },
   } = diagnosticItem;
 
-  const max_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
+  const land_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
     optimalZoneSoundClassificationHelper
   );
-  const utilFlags = getRecommendationsUtilFlags(diagnosticItem, max_isolation);
+  const air_isolation = getAirIsolation(air_intersections);
+  const computed_isolation = getComputedIsolation(
+    land_isolation,
+    air_isolation
+  );
+  const utilFlags = getRecommendationsUtilFlags(diagnosticItem, land_isolation);
   const computedCommonRecommendations = recommendations.filter(
     (recommendation) => !recommendation.isolation
   );
@@ -83,7 +91,7 @@ const DiagnosticRecommendations = ({
         doesAffectOptimalZone,
         preciseDistance,
         isolation: doesAffectOptimalZone
-          ? getIsolation(intersection.sound_category, preciseDistance)
+          ? getLandIsolation(intersection.sound_category, preciseDistance)
           : 0,
       };
     });
@@ -96,7 +104,7 @@ const DiagnosticRecommendations = ({
           populate: "*",
           filters: getRecommendationsFilterConditionsFromDiagnostic(
             diagnosticItem,
-            max_isolation
+            land_isolation
           ),
         },
       })
