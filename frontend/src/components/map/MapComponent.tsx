@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -22,7 +23,11 @@ import { tss } from "tss-react/dsfr";
 import usePrevious from "../../hooks/previous";
 import { encode } from "../../utils/compression";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
-import { getRiskFromScore, getZoomFromGouvType } from "../../utils/tools";
+import {
+  getRiskFromScore,
+  getZoomFromGeometry,
+  getZoomFromGouvType,
+} from "../../utils/tools";
 import { DiagnosticItem, DiagnosticResponseError } from "../../utils/types";
 import AddressSearch, { AddressFeature } from "../search/AddressSearch";
 import orthoStyle from "./styles/ortho.json";
@@ -31,7 +36,6 @@ import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
-import Button from "@codegouvfr/react-dsfr/Button";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -296,7 +300,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
       map.flyTo({
         center: [offsetLng, lat],
-        zoom: 17,
+        zoom: getZoomFromGeometry(parcelle._geometry),
         essential: true,
       });
     }, [map, parcelle]);

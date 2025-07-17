@@ -1,4 +1,6 @@
 import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
+import area from "@turf/area";
+import inside from "point-in-polygon";
 import { union } from "polygon-clipping";
 import { SUMMARY_TEXTS } from "./texts/summary";
 import {
@@ -9,7 +11,6 @@ import {
   IntRange,
   SoundClassificationIntersectionAffectedHelper,
 } from "./types";
-import inside from "point-in-polygon";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -204,6 +205,16 @@ export const getZoomFromGouvType = (type: string) => {
     default:
       return 18;
   }
+};
+
+export const getZoomFromGeometry = (geometry: GeoJSON.Geometry): number => {
+  const surface = area(geometry);
+
+  if (surface < 500) return 19;
+  if (surface < 1000) return 18;
+  if (surface < 5000) return 17;
+  if (surface < 20000) return 16;
+  return 16;
 };
 
 export const getReadableCardinality = (direction: Cardinality) => {
