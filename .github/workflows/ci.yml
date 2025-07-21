@@ -21,20 +21,15 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd fastapi
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip freeze
-
-      - name: Debug list files
-        run: |
-            ls -la
-            echo "PYTHONPATH=$(pwd)"
-
 
       - name: Run tests with coverage
         run: |
+          cd fastapi
           source venv/bin/activate
           export PYTHONPATH=$(pwd)
           pytest --cov=app tests/
