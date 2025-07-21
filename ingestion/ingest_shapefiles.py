@@ -76,6 +76,7 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
             if table_name in tables:
                 print(f"ℹ️ Table {full_table_name} already exists — skipping ingestion.")
                 return True
+            if_exists = 'replace'
 
         print(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
         gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists)
