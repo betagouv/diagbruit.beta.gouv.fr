@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  fastapi-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +27,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
           pip freeze
+
+      - name: Debug list files
+        working-directory: fastapi
+        run: |
+            ls -la
+            echo "PYTHONPATH=$(pwd)"
+
 
       - name: Run tests with coverage
         working-directory: fastapi
