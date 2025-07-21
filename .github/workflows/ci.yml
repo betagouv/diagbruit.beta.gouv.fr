@@ -20,7 +20,6 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        working-directory: fastapi
         run: |
           python -m venv venv
           source venv/bin/activate
@@ -29,14 +28,12 @@ jobs:
           pip freeze
 
       - name: Debug list files
-        working-directory: fastapi
         run: |
             ls -la
             echo "PYTHONPATH=$(pwd)"
 
 
       - name: Run tests with coverage
-        working-directory: fastapi
         run: |
           source venv/bin/activate
           export PYTHONPATH=$(pwd)
