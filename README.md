@@ -141,7 +141,7 @@ The API will be available at http://127.0.0.1:8000
 
 ## ✅ Tests
 
-### Lancer les tests manuellement en local
+### Run tests manually (local)
 
 Depuis le dossier `fastapi` :
 
@@ -149,17 +149,17 @@ Depuis le dossier `fastapi` :
 pytest
 ```
 
-### Tests automatisés dans les Pull Requests
+### Automated tests in Pull Requests
 
-Les tests sont automatiquement exécutés à chaque PR ou push sur main via une GitHub Action.
-Cette CI :
+Tests are automatically run on each pull request or push to the main branch via a GitHub Action.
+This CI pipeline performs the following steps:
 
-1. Lance une base PostgreSQL avec PostGIS.
-2. Exécute les scripts d'ingestion (/ingestion/launch-ingestion.sh).
-3. Lance la pipeline dbt run dans le dossier /dbt.
-4. Exécute tous les tests FastAPI présents dans le dossier fastapi/tests/.
+1. Launches a PostgreSQL database with PostGIS.
+2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
+3. Executes the dbt run pipeline in the /dbt folder.
+4. Runs all FastAPI tests located in fastapi/tests/.
 
-Le badge en haut du README reflète l'état de cette CI.
+The badge at the top of the README reflects the status of this CI.
 
 ## 🗺️ Frontend
 
