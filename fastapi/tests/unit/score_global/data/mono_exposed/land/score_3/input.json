@@ -1,0 +1,17 @@
+{
+  "noisemap_intersections": [
+    {
+      "typeterr": "AGGLO",
+      "typesource": "R",
+      "indicetype": "LD",
+      "cbstype": "A",
+      "legende": 55.0,
+      "codeinfra": null,
+      "percent_impacted": 0.33,
+      "direction": "NE"
+    }
+  ],
+  "soundclassification_intersections": [],
+  "peb_intersections": [],
+  "expected_score": 3
+}
