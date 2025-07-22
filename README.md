@@ -139,28 +139,6 @@ The API will be available at http://127.0.0.1:8000
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-## ✅ Tests
-
-### Run tests manually (local)
-
-Depuis le dossier `fastapi` :
-
-```bash
-pytest
-```
-
-### Automated tests in Pull Requests
-
-Tests are automatically run on each pull request or push to the main branch via a GitHub Action.
-This CI pipeline performs the following steps:
-
-1. Launches a PostgreSQL database with PostGIS.
-2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
-3. Executes the dbt run pipeline in the /dbt folder.
-4. Runs all FastAPI tests located in fastapi/tests/.
-
-The badge at the top of the README reflects the status of this CI.
-
 ## 🗺️ Frontend
 
 ### Install Dependencies
@@ -196,6 +174,28 @@ yarn develop
 ```
 
 The strapi interface will be available at http://localhost:1337
+
+## ✅ Tests
+
+### Run tests manually (local)
+
+Depuis le dossier `fastapi` :
+
+```bash
+pytest
+```
+
+### Automated tests in Pull Requests
+
+Tests are automatically run on each pull request or push to the main branch via a GitHub Action.
+This CI pipeline performs the following steps:
+
+1. Launches a PostgreSQL database with PostGIS.
+2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
+3. Executes the dbt run pipeline in the /dbt folder.
+4. Runs all FastAPI tests located in fastapi/tests/.
+
+The badge at the top of the README reflects the status of this CI.
 
 ## ☁️ Deploying on Scalingo
 
