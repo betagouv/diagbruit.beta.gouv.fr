@@ -1,5 +1,7 @@
 # 🙉 diagBruit 🙉
 
+[![CI Tests](https://github.com/betagouv/diagbruit.beta.gouv.fr/actions/workflows/ci.yml/badge.svg)](https://github.com/betagouv/diagbruit.beta.gouv.fr/actions/workflows/ci.yml)
+
 Venez tester l'outil : [https://diagbruit.fr](https://diagbruit.fr)
 
 Objectif : permettre aux instructeurs de permis de construire des collectivités d’alerter les porteurs de projet sur les risques sonores et de leur proposer des préconisations actionnables, pour que les constructions de demain respectent les principes d’un urbanisme favorable à la santé.
@@ -137,6 +139,28 @@ The API will be available at http://127.0.0.1:8000
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
+## ✅ Tests
+
+### Lancer les tests manuellement en local
+
+Depuis le dossier `fastapi` :
+
+```bash
+pytest
+```
+
+### Tests automatisés dans les Pull Requests
+
+Les tests sont automatiquement exécutés à chaque PR ou push sur main via une GitHub Action.
+Cette CI :
+
+1. Lance une base PostgreSQL avec PostGIS.
+2. Exécute les scripts d'ingestion (/ingestion/launch-ingestion.sh).
+3. Lance la pipeline dbt run dans le dossier /dbt.
+4. Exécute tous les tests FastAPI présents dans le dossier fastapi/tests/.
+
+Le badge en haut du README reflète l'état de cette CI.
+
 ## 🗺️ Frontend
 
 ### Install Dependencies
@@ -273,7 +297,9 @@ diagbruit/
 │   │   ├── routes/
 │   │   ├── schemas/
 │   │   └── utils/
-│   │
+│   ├── tests/
+│   │   ├── integration/
+│   │   ├── unit/
 │   ├── .env.example
 │   ├── requirements.txt
 │
