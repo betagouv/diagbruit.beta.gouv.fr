@@ -8,24 +8,28 @@ run_ingest() {
   echo '--------------------------------------------------------------------------'
 }
 
+# Définition des options communes
 RENAME_INFRA="--rename-column codinfra=codeinfra --rename-column idzonbruit=id"
 
-ADD_AGGLO="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO"
-
+ADD_AGGLO_033="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO"
 ADD_TYPE_F="--add-column typesource=F"
 ADD_TYPE_I="--add-column typesource=I"
 ADD_TYPE_R="--add-column typesource=R"
 ADD_TYPE_A="--add-column typesource=A"
 
+ADD_CBS_A="--add-column cbstype=A"
+ADD_CBS_C="--add-column cbstype=C"
+
 ADD_LDEN="--add-column indicetype=LD"
 ADD_LNIGHT="--add-column indicetype=LN"
-
-RENAME_AGGLO_033="--rename-column category=legende --ignore-column gid"
-RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
 
 ADD_SOUNDCLASSIFICATION_033="--add-column codedept=033"
 RENAME_SOUNDCLASSIFICATION_033_ROUTIER="--rename-column nom_tronc=segment"
 
+RENAME_AGGLO_033="--rename-column category=legende --ignore-column gid"
+RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
+
+# Fichiers à ingérer
 FILES_INFRA=(
   "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033/N_BRUIT_ZBRD_INFRA_R_C_LN_S_033.shp raw_noisemap --if-exists replace $RENAME_INFRA"
   "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033/N_BRUIT_ZBRD_INFRA_F_C_LD_S_033.shp raw_noisemap $RENAME_INFRA"
@@ -65,8 +69,10 @@ FILES_PEB=(
   "inputs/PEB/peb.shp raw_peb --if-exists replace"
 )
 
+# Ingestion des données de base
 python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-exists skip
 
+# Boucles d’ingestion
 for cmd in "${FILES_INFRA[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done

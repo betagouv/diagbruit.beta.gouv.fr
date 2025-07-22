@@ -9,7 +9,8 @@ def load_json(file_path):
         return json.load(f)
 
 test_cases = [
-    ("input_geom_simple.json", "expected_output_geom_simple.json")
+    ("input_geom_simple.json", "expected_output_geom_simple.json"),
+    ("input_geom_double.json", "expected_output_geom_double.json")
 ]
 
 @pytest.mark.asyncio
