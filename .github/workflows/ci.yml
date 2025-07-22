@@ -6,6 +6,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -35,7 +38,7 @@ jobs:
       - name: Set up Python for ingestion
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install ingestion dependencies
         working-directory: ingestion
@@ -57,7 +60,7 @@ jobs:
       - name: Set up Python for DBT
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dbt dependencies
         working-directory: dbt
@@ -81,7 +84,7 @@ jobs:
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install FastAPI dependencies
         working-directory: fastapi
