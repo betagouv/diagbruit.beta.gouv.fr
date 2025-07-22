@@ -9,15 +9,15 @@ def load_json(file_path):
         return json.load(f)
 
 test_cases = [
-    ("input_geom_simple.json", "expected_output_geom_simple.json"),
-    ("input_geom_double.json", "expected_output_geom_double.json")
+    ("simple_parcelle_geometry/input.json", "simple_parcelle_geometry/output.json"),
+    ("double_parcelles_geometries/input.json", "double_parcelles_geometries/output.json")
 ]
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("input_file,expected_file", test_cases)
 async def test_diag_generate_from_geometries(input_file, expected_file):
-    payload = load_json(os.path.join("tests", "integration", "data", input_file))
-    expected = load_json(os.path.join("tests", "integration", "data", expected_file))
+    payload = load_json(os.path.join("tests", "integration", "diagnostic_from_geometries", "data", input_file))
+    expected = load_json(os.path.join("tests", "integration", "diagnostic_from_geometries", "data", expected_file))
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
