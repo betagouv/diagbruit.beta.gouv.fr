@@ -1,0 +1,28 @@
+{
+  "intersections_agglo": [
+    {
+      "typeterr": "AGGLO",
+      "typesource": "R",
+      "indicetype": "LN",
+      "cbstype": "A",
+      "legende": 60.0,
+      "codeinfra": null,
+      "percent_impacted": 0.1,
+      "direction": "W"
+    }
+  ],
+  "intersections_infra": [
+    {
+      "typeterr": "INFRA",
+      "typesource": "F",
+      "indicetype": "LD",
+      "cbstype": "A",
+      "legende": 60.0,
+      "codeinfra": "570000",
+      "percent_impacted": 0.09,
+      "direction": "NE"
+    }
+  ],
+  "indicetype": "LD",
+  "expected_score": 6
+}
