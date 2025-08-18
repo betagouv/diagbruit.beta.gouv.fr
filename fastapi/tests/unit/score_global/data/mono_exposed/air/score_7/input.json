@@ -1,0 +1,14 @@
+{
+  "noisemap_intersections": [],
+  "soundclassification_intersections": [],
+  "peb_intersections": [
+      {
+        "zone": "C",
+        "legende": 55,
+        "nom": "B. MERIGNAC",
+        "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
+        "percent_impacted": 1
+      }
+  ],
+  "expected_score": 7
+}
