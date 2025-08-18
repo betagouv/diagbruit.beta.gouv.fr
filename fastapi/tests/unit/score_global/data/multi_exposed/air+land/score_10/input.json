@@ -1,0 +1,25 @@
+{
+  "noisemap_intersections": [
+    {
+      "typeterr": "INFRA",
+      "typesource": "F",
+      "indicetype": "LD",
+      "cbstype": "A",
+      "legende": 65.0,
+      "codeinfra": "570000",
+      "percent_impacted": 0.09,
+      "direction": "NE"
+    }
+  ],
+  "soundclassification_intersections": [],
+  "peb_intersections": [
+      {
+        "zone": "B",
+        "legende": 55,
+        "nom": "B. MERIGNAC",
+        "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
+        "percent_impacted": 1
+      }
+  ],
+  "expected_score": 10
+}
