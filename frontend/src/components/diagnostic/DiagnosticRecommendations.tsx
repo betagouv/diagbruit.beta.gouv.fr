@@ -114,43 +114,40 @@ const DiagnosticRecommendations = ({
       !utilFlags.isAffectedByAirIntersections
     ) {
       return (
-        <div className={cx(classes.section)}>
+        <p>
           Cette parcelle a été cartographiée par l’agglomération, qui
           cartographie l’ensemble des infrastructures de transport. Cependant,
           elle n’est pas soumise au classement sonore (route de plus de 5000 veh
           / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
           d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
           1999)
-        </div>
+        </p>
       );
     }
 
     if (utilFlags.isAffectedByAirIntersections) {
       return (
-        <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-4v")}>
-            <Badge severity="info">Work in progress</Badge>
-          </div>
-          En plus des cartes de bruit stratégiques, cette parcelle est soumise
-          au plan d'exposition au bruit aérien. Nos préconisations d'isolations
-          liée à la combinaison des bruits aériens et terrestre sont en cours de
-          rédaction.
-        </div>
+        <p>
+          <i>
+            ⚠️ En plus des cartes de bruit stratégiques, cette parcelle est
+            soumise au plan d'exposition au bruit aérien. Nos préconisations
+            d'isolations liée à la combinaison des bruits aériens et terrestre
+            sont en cours de rédaction.
+          </i>
+        </p>
       );
     }
 
     if (!utilFlags.isSoundclassificationStillApplied) {
       return (
-        <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-6v")}>
-            La zone idéale de position du bâti déterminée par diagBruit n’est
-            pas Soumise au classement sonore. Attention ! Comme expliqué plus
-            haut, l’utilisation des cartes de bruit est pour déterminer la zone
-            idéale est abusive et ne vise qu’à alerter le porteur de projet.
-            Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
-            l’extérieur est de 30 dB (arrêté 30 juin 1999)
-          </div>
-        </div>
+        <p>
+          La zone idéale de position du bâti déterminée par diagBruit n’est pas
+          Soumise au classement sonore. Attention ! Comme expliqué plus haut,
+          l’utilisation des cartes de bruit est pour déterminer la zone idéale
+          est abusive et ne vise qu’à alerter le porteur de projet. Sans
+          classement sonore, le niveau minimal d’isolation vis-à-vis de
+          l’extérieur est de 30 dB (arrêté 30 juin 1999)
+        </p>
       );
     }
 
