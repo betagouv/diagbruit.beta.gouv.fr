@@ -101,15 +101,6 @@ const DiagnosticParcelleSvg = ({
             strokeWidth={2}
           />
         ))}
-        {bestPoint && (
-          <circle
-            cx={bestPoint.x}
-            cy={bestPoint.y}
-            r={6}
-            fill={fr.colors.decisions.border.default.purpleGlycine.default}
-            opacity={0.8}
-          />
-        )}
         {optimalZonePoints.map((pt, i) => (
           <circle
             key={`optimalzone-${i}`}
