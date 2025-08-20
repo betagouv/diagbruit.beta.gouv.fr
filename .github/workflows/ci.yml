@@ -1,0 +1,103 @@
+name: CI pipeline - ingestion + dbt + tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.3
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_DB: diagbruit
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd="pg_isready -U user -d diagbruit"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------
+      # 1. Setup Python for ingestion
+      # -----------------------------
+      - name: Set up Python for ingestion
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ingestion dependencies
+        working-directory: ingestion
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run ingestion script
+        working-directory: ingestion
+        run: |
+          source venv/bin/activate
+          chmod +x launch-ingestion.sh
+          ./launch-ingestion.sh
+
+      # -----------------------------
+      # 2. Setup Python for DBT
+      # -----------------------------
+      - name: Set up Python for DBT
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dbt dependencies
+        working-directory: dbt
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run dbt pipeline
+        working-directory: dbt
+        env:
+          DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+        run: |
+          source venv/bin/activate
+          cp profiles.yml.example profiles.yml
+          dbt run
+
+      # -----------------------------
+      # 3. Run FastAPI tests
+      # -----------------------------
+      - name: Set up Python for FastAPI
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FastAPI dependencies
+        working-directory: fastapi
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run FastAPI tests
+        working-directory: fastapi
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5433/diagbruit
+        run: |
+          source venv/bin/activate
+          export PYTHONPATH=$(pwd)
+          pytest --cov=app tests/

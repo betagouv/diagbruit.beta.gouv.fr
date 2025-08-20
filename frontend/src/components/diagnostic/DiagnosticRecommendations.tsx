@@ -26,6 +26,8 @@ import { Loader } from "../ui/Loader";
 import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
+import Notice from "@codegouvfr/react-dsfr/Notice";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -55,15 +57,14 @@ const DiagnosticRecommendations = ({
   const land_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
     optimalZoneSoundClassificationHelper
   );
+  
   const air_isolation = getAirIsolation(air_intersections);
   const computed_isolation = getComputedIsolation(
     land_isolation,
     air_isolation
   );
   const utilFlags = getRecommendationsUtilFlags(diagnosticItem, land_isolation);
-  const computedCommonRecommendations = recommendations.filter(
-    (recommendation) => !recommendation.isolation
-  );
+
   const computedSpecificRecommendations = recommendations.filter(
     (recommendation) => !!recommendation.isolation
   );
@@ -120,97 +121,67 @@ const DiagnosticRecommendations = ({
 
   const displayIsolationInformations = () => {
     if (
-      !utilFlags.isAffectedByNoisemapIntersections ||
-      !utilFlags.isMonoExposed
-    )
-      return;
-
-    if (
       !utilFlags.isAffectedBySoundclassificationIntersections &&
       !utilFlags.isAffectedByAirIntersections
     ) {
       return (
-        <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-6v")}>
-            Cette parcelle a été cartographiée par l’agglomération, qui
-            cartographie l’ensemble des infrastructures de transport. Cependant,
-            elle n’est pas soumise au classement sonore (route de plus de 5000
-            veh / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
-            d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
-            1999)
-          </div>
-          {displayAccordionRecommendations(computedSpecificRecommendations)}
-        </div>
+        <p>
+          Cette parcelle a été cartographiée par l’agglomération, qui
+          cartographie l’ensemble des infrastructures de transport. Cependant,
+          elle n’est pas soumise au classement sonore (route de plus de 5000 veh
+          / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
+          d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
+          1999)
+        </p>
       );
     }
 
     if (utilFlags.isAffectedByAirIntersections) {
       return (
-        <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-4v")}>
-            <Badge severity="info">Work in progress</Badge>
-          </div>
-          En plus des cartes de bruit stratégiques, cette parcelle est soumise
-          au plan d'exposition au bruit aérien. Nos préconisations d'isolations
-          liée à la combinaison des bruits aériens et terrestre sont en cours de
-          rédaction.
-        </div>
+        <p>
+          <i>
+            ⚠️ En plus des cartes de bruit stratégiques, cette parcelle est
+            soumise au plan d'exposition au bruit aérien. Nos préconisations
+            d'isolations liée à la combinaison des bruits aériens et terrestre
+            sont en cours de rédaction.
+          </i>
+        </p>
       );
     }
 
     if (!utilFlags.isSoundclassificationStillApplied) {
       return (
-        <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-6v")}>
-            La zone idéale de position du bâti déterminée par diagBruit n’est
-            pas Soumise au classement sonore. Attention ! Comme expliqué plus
-            haut, l’utilisation des cartes de bruit est pour déterminer la zone
-            idéale est abusive et ne vise qu’à alerter le porteur de projet.
-            Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
-            l’extérieur est de 30 dB (arrêté 30 juin 1999)
-          </div>
-          {displayAccordionRecommendations(computedSpecificRecommendations)}
-        </div>
+        <p>
+          La zone idéale de position du bâti déterminée par diagBruit n’est pas
+          Soumise au classement sonore. Attention ! Comme expliqué plus haut,
+          l’utilisation des cartes de bruit est pour déterminer la zone idéale
+          est abusive et ne vise qu’à alerter le porteur de projet. Sans
+          classement sonore, le niveau minimal d’isolation vis-à-vis de
+          l’extérieur est de 30 dB (arrêté 30 juin 1999)
+        </p>
       );
     }
 
     return (
       <div>
-        <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-          Isolement théorique avec la zone idéale du bâti selon diagBruit
-        </h4>
-        <div className={cx(classes.section)}>
-          <p>
-            Attention ! L’isolement proposé ici est simplement informatif. Il
-            vise à fournir une démonstration par l’exemple du processus de
-            détermination des objectifs, techniques et matériaux d’isolation
-            possibles. Le calcul définitif devra avant tout se baser sur la
-            position, les dimensions et le contexte (autres bâtiments,
-            protections acoustiques) réel du projet.
-          </p>
-          <p className={fr.cx("fr-hint-text")}>
+        <p>
+          Attention ! L’isolement proposé ici est simplement informatif. Il vise
+          à fournir une démonstration par l’exemple du processus de
+          détermination des objectifs, techniques et matériaux d’isolation
+          possibles. Le calcul définitif devra avant tout se baser sur la
+          position, les dimensions et le contexte (autres bâtiments, protections
+          acoustiques) réel du projet.
+        </p>
+        <div className={cx(classes.section, fr.cx("fr-mb-6v"))}>
+          <p className={fr.cx("fr-mb-0")}>
             La distance traduit l'écart minimale entre la source de bruit et la
             zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
           </p>
-          <DiagnosticInfrastructureNoiseTable
-            intersectionsHelper={optimalZoneSoundClassificationHelper}
-            color={fr.colors.decisions.border.default.purpleGlycine.default}
-          />
-
-          {!!computedSpecificRecommendations.length && (
-            <div className={fr.cx("fr-mt-10v", "fr-mb-4v")}>
-              <h5
-                className={cx(
-                  classes.subtitle,
-                  fr.cx("fr-text--md", "fr-mb-4v")
-                )}
-              >
-                Documentation d'isolation associée
-              </h5>
-              {displayAccordionRecommendations(computedSpecificRecommendations)}
-            </div>
-          )}
         </div>
+        <DiagnosticInfrastructureNoiseTable
+          intersectionsHelper={optimalZoneSoundClassificationHelper}
+          color={fr.colors.decisions.border.default.purpleGlycine.default}
+        />
       </div>
     );
   };
@@ -218,41 +189,41 @@ const DiagnosticRecommendations = ({
   const displayComputedRecommendation = () => {
     if (!utilFlags.isMonoExposed) {
       return (
-        <div className={cx(classes.section)}>
+        <p className={fr.cx("fr-mb-0")}>
           Actuellement, le service diagBruit ne détermine une zone idéale de
           position du bâti que pour les parcelles présentant une exposition à
           une source sonore unique. Cette condition n'étant pas remplie ici, la
           parcelle ne peut en bénéficier.
-        </div>
+        </p>
       );
     }
 
     if (!utilFlags.isAffectedByNoisemapIntersections) {
       if (!utilFlags.isAffectedByAirIntersections) {
         return (
-          <div className={cx(classes.section)}>
+          <p className={fr.cx("fr-mb-0")}>
             Cette parcelle n’est impactée ni par les cartes de bruit
             stratégique, ni par le plan d’exposition au bruit. DiagBruit ne peut
             fournir de position idéale et de préconisation d’isolement, mais
             rappel que le niveau minimal d’isolation vis-à-vis de l’extérieur
             est de 30 dB (arrêté 30 juin 1999)
-          </div>
+          </p>
         );
       }
 
       if (!utilFlags.isAffectedBySeveralAirIntersections) {
         return (
-          <div className={cx(classes.section)}>
+          <p className={fr.cx("fr-mb-0")}>
             Le calcul de la zone idéale de construction selon diagBruit repose
             actuellement sur les cartes de bruit route et fer. Cette parcelle
             est impactée par une zone d’un Plan d’Exposition au Bruit. diagBruit
             ne préconise pas de position préférentielle pour le moment. Se
             référer à la documentation pour des exemples de calcul d’isolement
-          </div>
+          </p>
         );
       } else {
         return (
-          <div className={cx(classes.section)}>
+          <p className={fr.cx("fr-mb-0")}>
             Le calcul de la zone idéale de construction selon diagBruit repose
             actuellement sur les cartes de bruit route et fer. Cette parcelle
             est impactée par plusieurs zones d’un Plan d’Exposition au Bruit.
@@ -261,23 +232,21 @@ const DiagnosticRecommendations = ({
             plus élevé comme référence. Se référer à la documentation pour des
             exemples de calcul d’isolement et prévoir une étude acoustique
             spécifique.
-          </div>
+          </p>
         );
       }
     }
 
     return (
       <div>
-        <div className={cx(classes.section)}>
-          <p className={fr.cx("fr-mb-0")}>
-            Attention ! La zone idéale est issue des cartes de bruit
-            stratégique, dont l’objectif n’est pas de prévoir le bruit à
-            l’échelle d’un bâtiment, mais plutôt d’une zone de quelques km².
-            L’utilisation de ces cartes pour un objectif aussi précis n’est pas
-            réaliste, et vise principalement à alerter le porteur de projet en
-            lui fournissant un exemple.
-          </p>
-        </div>
+        <p className={fr.cx("fr-mb-0")}>
+          Attention ! La zone idéale est issue des cartes de bruit stratégique,
+          dont l’objectif n’est pas de prévoir le bruit à l’échelle d’un
+          bâtiment, mais plutôt d’une zone de quelques km². L’utilisation de ces
+          cartes pour un objectif aussi précis n’est pas réaliste, et vise
+          principalement à alerter le porteur de projet en lui fournissant un
+          exemple.
+        </p>
         <div
           className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-my-10v")}
         >
@@ -304,40 +273,6 @@ const DiagnosticRecommendations = ({
     );
   };
 
-  const displayAccordionRecommendations = (
-    tmpRecommendations: Recommendation[]
-  ) => {
-    return tmpRecommendations.map((recommendation, index) => (
-      <Accordion key={index} label={recommendation.title} titleAs="h5">
-        {recommendation.categories.map((category) => (
-          <Tag key={category.title} className={fr.cx("fr-mb-4v", "fr-mr-2v")}>
-            {category.title}
-          </Tag>
-        ))}
-        <div
-          className={cx(classes.recommendationContent)}
-          dangerouslySetInnerHTML={{ __html: recommendation.content }}
-        />
-        {!!recommendation.links.length && (
-          <div className={cx(classes.links)}>
-            <p className={fr.cx("fr-mb-2v")}>
-              <b>Liens utiles :</b>
-            </p>
-            <ul className={fr.cx("fr-mb-0")}>
-              {recommendation.links.map((link, index) => (
-                <li key={index}>
-                  <a href={link.href} target="_blank">
-                    {link.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </Accordion>
-    ));
-  };
-
   if (isLoading) {
     return (
       <div className={fr.cx("fr-my-12w")}>
@@ -358,34 +293,83 @@ const DiagnosticRecommendations = ({
         <Badge severity="info">Work in progress</Badge>
       </div>
       <div className={cx(classes.container)}>
-        <div className={fr.cx("fr-mb-10v")}>
-          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Proposition d'une zone de bâti
+        <Alert
+          className={cx(classes.alert, fr.cx("fr-my-4v"))}
+          closable
+          description={
+            <>
+              DiagBruit ne prend en compte que les{" "}
+              <b>sources sonores routières, ferroviaires et aéroportuaires</b>.
+              Le diagnostic se base sur les{" "}
+              <b>
+                Cartes de Bruit Stratégiques, les Plans d’Exposition au Bruit et
+                les Classements Sonores des Voies
+              </b>
+              . <br />
+              <br />
+              Ces documents sont issus de modélisations qui génèrent certaines
+              approximations. En complément du diagnostic, une étude terrain
+              locale assure toujours une meilleure caractérisation de la
+              situation et du risque sonore réel.
+            </>
+          }
+          onClose={function noRefCheck() {}}
+          severity="info"
+          title=""
+        />
+        <div>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
+            Préconisation d’une zone de bâti selon les caractéristiques de la
+            parcelle
           </h4>
           {displayComputedRecommendation()}
-          {displayIsolationInformations()}
-        </div>
-        <div>
-          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Documentation complémentaire
-          </h4>
-          <div className={cx(classes.section)}>
-            <p className={fr.cx("fr-mb-0")}>
-              Cette médiathèque de préconisations est filtrée en fonction du
-              contexte spécifique de la parcelle, et ce filtrage sera
-              progressivement enrichi et optimisé au fil du temps.
-            </p>
-            {!!computedCommonRecommendations.length && (
-              <div
-                className={cx(
-                  classes.accordions,
-                  fr.cx("fr-accordions-group", "fr-mt-6v")
-                )}
-              >
-                {displayAccordionRecommendations(computedCommonRecommendations)}
-              </div>
-            )}
-          </div>
+          {utilFlags.isMonoExposed && (
+            <>
+              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                Suggestions d’isolement théorique
+              </h4>
+              {displayIsolationInformations()}
+              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                Documentation d'isolation
+              </h4>
+              {computedSpecificRecommendations.map((recommendation, index) => (
+                <Accordion
+                  key={index}
+                  label={recommendation.title}
+                  titleAs="h5"
+                >
+                  {recommendation.categories.map((category) => (
+                    <Tag
+                      key={category.title}
+                      className={fr.cx("fr-mb-4v", "fr-mr-2v")}
+                    >
+                      {category.title}
+                    </Tag>
+                  ))}
+                  <div
+                    className={cx(classes.recommendationContent)}
+                    dangerouslySetInnerHTML={{ __html: recommendation.content }}
+                  />
+                  {!!recommendation.links.length && (
+                    <div className={cx(classes.links)}>
+                      <p className={fr.cx("fr-mb-2v")}>
+                        <b>Liens utiles :</b>
+                      </p>
+                      <ul className={fr.cx("fr-mb-0")}>
+                        {recommendation.links.map((link, index) => (
+                          <li key={index}>
+                            <a href={link.href} target="_blank">
+                              {link.title}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </Accordion>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -446,6 +430,11 @@ const useStyles = tss.create(() => ({
   },
   subtitle: {
     textDecoration: "underline",
+  },
+  alert: {
+    ".fr-alert__title": {
+      margin: 0,
+    },
   },
 }));
 

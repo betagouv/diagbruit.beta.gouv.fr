@@ -53,7 +53,7 @@ function DiagnosticPage() {
 
         map.flyTo({
           center: [centerLng, centerLat],
-          zoom: 17,
+          zoom: 15,
           essential: true,
           speed: 10,
         });

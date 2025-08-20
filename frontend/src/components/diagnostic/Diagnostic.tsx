@@ -14,6 +14,7 @@ import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
+import DiagnosticDocumentation from "./DiagnosticDocumentation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -87,6 +88,24 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
+        </>
+      ),
+    },
+    {
+      tabId: "documentation",
+      label: "Documentation",
+      isDefault: tabId === "documentation",
+      content: (
+        <>
+          <DiagnosticSectionTitle
+            title="4. Documentation"
+            image={{
+              src: "/images/document.svg",
+              width: 55,
+              height: 60,
+            }}
+          />
+          <DiagnosticDocumentation diagnosticItem={diagnosticItem} />
         </>
       ),
     },

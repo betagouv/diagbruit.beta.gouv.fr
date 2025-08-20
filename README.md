@@ -1,5 +1,7 @@
 # 🙉 diagBruit 🙉
 
+[![CI Tests](https://github.com/betagouv/diagbruit.beta.gouv.fr/actions/workflows/ci.yml/badge.svg)](https://github.com/betagouv/diagbruit.beta.gouv.fr/actions/workflows/ci.yml)
+
 Venez tester l'outil : [https://diagbruit.fr](https://diagbruit.fr)
 
 Objectif : permettre aux instructeurs de permis de construire des collectivités d’alerter les porteurs de projet sur les risques sonores et de leur proposer des préconisations actionnables, pour que les constructions de demain respectent les principes d’un urbanisme favorable à la santé.
@@ -173,6 +175,28 @@ yarn develop
 
 The strapi interface will be available at http://localhost:1337
 
+## ✅ Tests
+
+### Run tests manually (local)
+
+Depuis le dossier `fastapi` :
+
+```bash
+pytest
+```
+
+### Automated tests in Pull Requests
+
+Tests are automatically run on each pull request or push to the main branch via a GitHub Action.
+This CI pipeline performs the following steps:
+
+1. Launches a PostgreSQL database with PostGIS.
+2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
+3. Executes the dbt run pipeline in the /dbt folder.
+4. Runs all FastAPI tests located in fastapi/tests/.
+
+The badge at the top of the README reflects the status of this CI.
+
 ## ☁️ Deploying on Scalingo
 
 Add scalingo remotes
@@ -273,7 +297,9 @@ diagbruit/
 │   │   ├── routes/
 │   │   ├── schemas/
 │   │   └── utils/
-│   │
+│   ├── tests/
+│   │   ├── integration/
+│   │   ├── unit/
 │   ├── .env.example
 │   ├── requirements.txt
 │
