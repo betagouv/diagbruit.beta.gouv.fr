@@ -356,11 +356,11 @@ export const getNoiseSourceFromDiagnosticItem = (
 
   const noiseSources = [];
 
-  if (!!air_intersections.length && !land_intersections.length) {
+  if (!!air_intersections.length) {
     noiseSources.push("air");
   }
 
-  if (!!land_intersections.length && !air_intersections.length) {
+  if (!!land_intersections.length) {
     noiseSources.push("land");
   }
 
@@ -376,6 +376,8 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
   } = diagnosticItem;
 
   const noiseSources = getNoiseSourceFromDiagnosticItem(diagnosticItem);
+
+  console.log(noiseSources);
 
   return {
     conditions: {
