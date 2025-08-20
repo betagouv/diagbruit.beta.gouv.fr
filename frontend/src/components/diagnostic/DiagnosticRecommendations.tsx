@@ -110,6 +110,19 @@ const DiagnosticRecommendations = ({
 
   const displayIsolationInformations = () => {
     if (
+      !utilFlags.isAffectedByNoisemapIntersections &&
+      !utilFlags.isAffectedByAirIntersections
+    ) {
+      return (
+        <p>
+          Cette parcelle n’est impactée ni par les cartes de bruit stratégique,
+          ni par le plan d’exposition au bruit. Le niveau minimal d’isolation
+          vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin 1999)
+        </p>
+      );
+    }
+
+    if (
       !utilFlags.isAffectedBySoundclassificationIntersections &&
       !utilFlags.isAffectedByAirIntersections
     ) {
@@ -125,7 +138,10 @@ const DiagnosticRecommendations = ({
       );
     }
 
-    if (utilFlags.isAffectedByAirIntersections) {
+    if (
+      utilFlags.isAffectedByAirIntersections &&
+      utilFlags.isAffectedBySoundclassificationIntersections
+    ) {
       return (
         <p>
           <i>
@@ -136,6 +152,14 @@ const DiagnosticRecommendations = ({
           </i>
         </p>
       );
+    }
+
+    if (
+      utilFlags.isAffectedByAirIntersections &&
+      !utilFlags.isAffectedByNoisemapIntersections
+    ) {
+      //RIGHT THERE
+      return <p>Hi !</p>;
     }
 
     if (!utilFlags.isSoundclassificationStillApplied) {
