@@ -354,17 +354,17 @@ export const getNoiseSourceFromDiagnosticItem = (
     land_intersections_ln
   );
 
+  const noiseSources = [];
+
   if (!!air_intersections.length && !land_intersections.length) {
-    return "air";
+    noiseSources.push("air");
   }
 
   if (!!land_intersections.length && !air_intersections.length) {
-    return "land";
+    noiseSources.push("land");
   }
 
-  if (!!land_intersections.length && !!air_intersections.length) {
-    return "multi";
-  }
+  return noiseSources;
 };
 
 export const getRecommendationsFilterConditionsFromDiagnostic = (
@@ -374,6 +374,9 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
   const {
     diagnostic: { score },
   } = diagnosticItem;
+
+  const noiseSources = getNoiseSourceFromDiagnosticItem(diagnosticItem);
+
   return {
     conditions: {
       $and: [
@@ -418,9 +421,7 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
             {
               source: "all",
             },
-            {
-              source: getNoiseSourceFromDiagnosticItem(diagnosticItem),
-            },
+            ...noiseSources.map((noiseSource) => ({ source: noiseSource })),
           ],
         },
         {

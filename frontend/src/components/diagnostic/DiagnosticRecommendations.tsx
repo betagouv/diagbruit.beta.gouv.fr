@@ -108,7 +108,7 @@ const DiagnosticRecommendations = ({
           populate: "*",
           filters: getRecommendationsFilterConditionsFromDiagnostic(
             diagnosticItem,
-            land_isolation
+            computed_isolation
           ),
         },
       })
