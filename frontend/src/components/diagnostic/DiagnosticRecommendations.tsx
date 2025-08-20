@@ -57,13 +57,16 @@ const DiagnosticRecommendations = ({
   const land_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
     optimalZoneSoundClassificationHelper
   );
-  
+
   const air_isolation = getAirIsolation(air_intersections);
   const computed_isolation = getComputedIsolation(
     land_isolation,
     air_isolation
   );
-  const utilFlags = getRecommendationsUtilFlags(diagnosticItem, land_isolation);
+  const utilFlags = getRecommendationsUtilFlags(
+    diagnosticItem,
+    computed_isolation
+  );
 
   const computedSpecificRecommendations = recommendations.filter(
     (recommendation) => !!recommendation.isolation
@@ -153,24 +156,41 @@ const DiagnosticRecommendations = ({
       utilFlags.isAffectedByAirIntersections &&
       utilFlags.isAffectedBySoundclassificationIntersections
     ) {
-      return (
-        <p>
-          <i>
-            ⚠️ En plus des cartes de bruit stratégiques, cette parcelle est
-            soumise au plan d'exposition au bruit aérien. Nos préconisations
-            d'isolations liée à la combinaison des bruits aériens et terrestre
-            sont en cours de rédaction.
-          </i>
-        </p>
-      );
+      //TODO : DISPLAY A CUSTOM TABLE TO EXPLAIN COMPUTED ISOLATION REQUIREMENTS?
+      if (utilFlags.isMonoExposed) {
+        return (
+          <p>
+            Attention ! L’isolement proposé ici est simplement informatif. Cette
+            parcelle est soumise au classement sonore et se situe en zone{" "}
+            {air_intersections[0].zone} du Plan d'Exposition au Bruit. En
+            respectant la zone de bâti préconisée par diagBruit, l'isolation
+            théorique est de {computed_isolation} dB.
+          </p>
+        );
+      } else {
+        return (
+          <p>
+            Cette parcelle est soumise au classement sonore et se situe en zone{" "}
+            {air_intersections[0].zone} du Plan d'Exposition au Bruit,
+            l'isolation théorique pour cette multi-exposition est de{" "}
+            {computed_isolation} dB.
+          </p>
+        );
+      }
     }
 
     if (
       utilFlags.isAffectedByAirIntersections &&
       !utilFlags.isAffectedByNoisemapIntersections
     ) {
-      //RIGHT THERE
-      return <p>Hi !</p>;
+      //TODO : DISPLAY A CUSTOM TABLE TO EXPLAIN AIR ISOLATION REQUIREMENTS?
+      return (
+        <p>
+          Cette parcelle se situe en zone {air_intersections[0].zone} du Plan
+          d'Exposition au Bruit, l'isolation théorique est de {air_isolation}{" "}
+          dB.
+        </p>
+      );
     }
 
     if (!utilFlags.isSoundclassificationStillApplied) {
@@ -241,8 +261,7 @@ const DiagnosticRecommendations = ({
             Le calcul de la zone idéale de construction selon diagBruit repose
             actuellement sur les cartes de bruit route et fer. Cette parcelle
             est impactée par une zone d’un Plan d’Exposition au Bruit. diagBruit
-            ne préconise pas de position préférentielle pour le moment. Se
-            référer à la documentation pour des exemples de calcul d’isolement
+            ne préconise pas de position préférentielle pour le moment.
           </p>
         );
       } else {
