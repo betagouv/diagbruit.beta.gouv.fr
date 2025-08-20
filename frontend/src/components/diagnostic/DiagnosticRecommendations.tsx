@@ -112,26 +112,17 @@ const DiagnosticRecommendations = ({
 
   const displayIsolationInformations = () => {
     if (
-      !utilFlags.isAffectedByNoisemapIntersections ||
-      !utilFlags.isMonoExposed
-    )
-      return;
-
-    if (
       !utilFlags.isAffectedBySoundclassificationIntersections &&
       !utilFlags.isAffectedByAirIntersections
     ) {
       return (
         <div className={cx(classes.section)}>
-          <div className={fr.cx("fr-mb-6v")}>
-            Cette parcelle a été cartographiée par l’agglomération, qui
-            cartographie l’ensemble des infrastructures de transport. Cependant,
-            elle n’est pas soumise au classement sonore (route de plus de 5000
-            veh / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
-            d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
-            1999)
-          </div>
-          {displayAccordionRecommendations(computedSpecificRecommendations)}
+          Cette parcelle a été cartographiée par l’agglomération, qui
+          cartographie l’ensemble des infrastructures de transport. Cependant,
+          elle n’est pas soumise au classement sonore (route de plus de 5000 veh
+          / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
+          d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
+          1999)
         </div>
       );
     }
@@ -161,7 +152,6 @@ const DiagnosticRecommendations = ({
             Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
             l’extérieur est de 30 dB (arrêté 30 juin 1999)
           </div>
-          {displayAccordionRecommendations(computedSpecificRecommendations)}
         </div>
       );
     }
@@ -188,20 +178,6 @@ const DiagnosticRecommendations = ({
             intersectionsHelper={optimalZoneSoundClassificationHelper}
             color={fr.colors.decisions.border.default.purpleGlycine.default}
           />
-
-          {!!computedSpecificRecommendations.length && (
-            <div className={fr.cx("fr-mt-10v", "fr-mb-4v")}>
-              <h5
-                className={cx(
-                  classes.subtitle,
-                  fr.cx("fr-text--md", "fr-mb-4v")
-                )}
-              >
-                Documentation d'isolation associée
-              </h5>
-              {displayAccordionRecommendations(computedSpecificRecommendations)}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -352,10 +328,22 @@ const DiagnosticRecommendations = ({
       <div className={cx(classes.container)}>
         <div className={fr.cx("fr-mb-10v")}>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-            Proposition d'une zone de bâti
+            Préconisation d’une zone de bâti selon les caractéristiques de la
+            parcelle
           </h4>
           {displayComputedRecommendation()}
-          {displayIsolationInformations()}
+          {utilFlags.isMonoExposed && (
+            <>
+              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                Suggestions d’isolement théorique
+              </h4>
+              {displayIsolationInformations()}
+              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+                Documentation d'isolation
+              </h4>
+              {displayAccordionRecommendations(computedSpecificRecommendations)}
+            </>
+          )}
         </div>
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
