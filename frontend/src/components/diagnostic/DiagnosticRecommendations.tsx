@@ -159,7 +159,7 @@ const DiagnosticRecommendations = ({
             d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
             1999)
           </p>
-          <DiagnosticIsolationBadge isolation={computed_isolation} />
+          <DiagnosticIsolationBadge isolation={30} />
         </div>
       );
     }
