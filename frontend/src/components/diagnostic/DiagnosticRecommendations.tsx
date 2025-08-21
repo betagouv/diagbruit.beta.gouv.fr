@@ -226,7 +226,7 @@ const DiagnosticRecommendations = ({
             haut, l’utilisation des cartes de bruit est pour déterminer la zone
             idéale est abusive et ne vise qu’à alerter le porteur de projet.
             Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
-            l’extérieur est de 30 dB (arrêté 30 juin 1999)
+            l’extérieur est de 30 dB (arrêté 30 juin 1999).
           </p>
           <DiagnosticIsolationBadge isolation={30} />
         </div>
