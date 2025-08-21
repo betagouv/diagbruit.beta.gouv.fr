@@ -150,14 +150,17 @@ const DiagnosticRecommendations = ({
       !utilFlags.isAffectedByAirIntersections
     ) {
       return (
-        <p>
-          Cette parcelle a été cartographiée par l’agglomération, qui
-          cartographie l’ensemble des infrastructures de transport. Cependant,
-          elle n’est pas soumise au classement sonore (route de plus de 5000 veh
-          / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
-          d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
-          1999)
-        </p>
+        <div>
+          <p>
+            Cette parcelle a été cartographiée par l’agglomération, qui
+            cartographie l’ensemble des infrastructures de transport. Cependant,
+            elle n’est pas soumise au classement sonore (route de plus de 5000
+            veh / j ; voie ferrées de plus de 50 trains / j). Le niveau minimal
+            d’isolation vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin
+            1999)
+          </p>
+          <DiagnosticIsolationBadge isolation={computed_isolation} />
+        </div>
       );
     }
 
