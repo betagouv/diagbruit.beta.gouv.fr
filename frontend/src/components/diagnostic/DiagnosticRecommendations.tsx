@@ -29,6 +29,7 @@ import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -137,11 +138,13 @@ const DiagnosticRecommendations = ({
       !utilFlags.isAffectedByAirIntersections
     ) {
       return (
-        <p>
-          Cette parcelle n’est impactée ni par les cartes de bruit stratégique,
-          ni par le plan d’exposition au bruit. Le niveau minimal d’isolation
-          vis-à-vis de l’extérieur est de 30 dB (arrêté 30 juin 1999)
-        </p>
+        <div>
+          <p>
+            Cette parcelle n’est impactée ni par les cartes de bruit
+            stratégique, ni par le plan d’exposition au bruit.
+          </p>
+          <DiagnosticIsolationBadge isolation={30} />
+        </div>
       );
     }
 
@@ -168,22 +171,28 @@ const DiagnosticRecommendations = ({
       //TODO : DISPLAY A CUSTOM TABLE TO EXPLAIN COMPUTED ISOLATION REQUIREMENTS?
       if (utilFlags.isMonoExposed) {
         return (
-          <p>
-            Attention ! L’isolement proposé ici est simplement informatif. Cette
-            parcelle est soumise au classement sonore et se situe en zone{" "}
-            {air_intersections[0].zone} du Plan d'Exposition au Bruit. En
-            respectant la zone de bâti préconisée par diagBruit, l'isolation
-            théorique est de {computed_isolation} dB.
-          </p>
+          <div>
+            <p>
+              Attention ! L’isolement proposé ici est simplement informatif.
+              Cette parcelle est soumise au classement sonore et se situe en
+              zone {air_intersections[0].zone} du Plan d'Exposition au Bruit. En
+              respectant la zone de bâti préconisée par diagBruit, l'isolation
+              théorique est de {computed_isolation} dB.
+            </p>
+            <DiagnosticIsolationBadge isolation={computed_isolation} />
+          </div>
         );
       } else {
         return (
-          <p>
-            Cette parcelle est soumise au classement sonore et se situe en zone{" "}
-            {air_intersections[0].zone} du Plan d'Exposition au Bruit,
-            l'isolation théorique pour cette multi-exposition est de{" "}
-            {computed_isolation} dB.
-          </p>
+          <div>
+            <p>
+              Cette parcelle est soumise au classement sonore et se situe en
+              zone {air_intersections[0].zone} du Plan d'Exposition au Bruit,
+              l'isolation théorique pour cette multi-exposition est de{" "}
+              {computed_isolation} dB.
+            </p>
+            <DiagnosticIsolationBadge isolation={computed_isolation} />
+          </div>
         );
       }
     }
@@ -194,11 +203,13 @@ const DiagnosticRecommendations = ({
     ) {
       //TODO : DISPLAY A CUSTOM TABLE TO EXPLAIN AIR ISOLATION REQUIREMENTS?
       return (
-        <p>
-          Cette parcelle se situe en zone {air_intersections[0].zone} du Plan
-          d'Exposition au Bruit, l'isolation théorique est de {air_isolation}{" "}
-          dB.
-        </p>
+        <div>
+          <p>
+            Cette parcelle se situe en zone {air_intersections[0].zone} du Plan
+            d'Exposition au Bruit.
+          </p>
+          <DiagnosticIsolationBadge isolation={air_isolation} />
+        </div>
       );
     }
 
@@ -208,14 +219,17 @@ const DiagnosticRecommendations = ({
       land_optimal_isolation === 0
     ) {
       return (
-        <p>
-          La zone idéale de position du bâti déterminée par diagBruit n’est pas
-          Soumise au classement sonore. Attention ! Comme expliqué plus haut,
-          l’utilisation des cartes de bruit est pour déterminer la zone idéale
-          est abusive et ne vise qu’à alerter le porteur de projet. Sans
-          classement sonore, le niveau minimal d’isolation vis-à-vis de
-          l’extérieur est de 30 dB (arrêté 30 juin 1999)
-        </p>
+        <div>
+          <p>
+            La zone idéale de position du bâti déterminée par diagBruit n’est
+            pas Soumise au classement sonore. Attention ! Comme expliqué plus
+            haut, l’utilisation des cartes de bruit est pour déterminer la zone
+            idéale est abusive et ne vise qu’à alerter le porteur de projet.
+            Sans classement sonore, le niveau minimal d’isolation vis-à-vis de
+            l’extérieur est de 30 dB (arrêté 30 juin 1999)
+          </p>
+          <DiagnosticIsolationBadge isolation={30} />
+        </div>
       );
     }
 
@@ -229,16 +243,7 @@ const DiagnosticRecommendations = ({
           position, les dimensions et le contexte (autres bâtiments, protections
           acoustiques) réel du projet.
         </p>
-        <div className={cx(classes.section, fr.cx("fr-mb-6v"))}>
-          <p className={fr.cx("fr-mb-0")}>
-            La distance traduit l'écart minimale entre la source de bruit et la
-            zone idéale (i.e. l'isolement maximale à mettre en oeuvre)
-          </p>
-        </div>
-        <DiagnosticInfrastructureNoiseTable
-          intersectionsHelper={optimalZoneSoundClassificationHelper}
-          color={fr.colors.decisions.border.default.purpleGlycine.default}
-        />
+        <DiagnosticIsolationBadge isolation={land_isolation} />
       </div>
     );
   };
@@ -261,9 +266,7 @@ const DiagnosticRecommendations = ({
           <p className={fr.cx("fr-mb-0")}>
             Cette parcelle n’est impactée ni par les cartes de bruit
             stratégique, ni par le plan d’exposition au bruit. DiagBruit ne peut
-            fournir de position idéale et de préconisation d’isolement, mais
-            rappel que le niveau minimal d’isolation vis-à-vis de l’extérieur
-            est de 30 dB (arrêté 30 juin 1999)
+            fournir de position idéale et de préconisation d’isolement.
           </p>
         );
       }
