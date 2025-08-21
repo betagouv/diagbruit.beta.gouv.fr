@@ -24,12 +24,9 @@ import {
   SoundClassificationIntersectionAffectedHelper,
 } from "../../utils/types";
 import { Loader } from "../ui/Loader";
-import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
+import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
 import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
 import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
-import Notice from "@codegouvfr/react-dsfr/Notice";
-import Alert from "@codegouvfr/react-dsfr/Alert";
-import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -352,30 +349,6 @@ const DiagnosticRecommendations = ({
         <Badge severity="info">Work in progress</Badge>
       </div>
       <div className={cx(classes.container)}>
-        <Alert
-          className={cx(classes.alert, fr.cx("fr-my-4v"))}
-          closable
-          description={
-            <>
-              DiagBruit ne prend en compte que les{" "}
-              <b>sources sonores routières, ferroviaires et aéroportuaires</b>.
-              Le diagnostic se base sur les{" "}
-              <b>
-                Cartes de Bruit Stratégiques, les Plans d’Exposition au Bruit et
-                les Classements Sonores des Voies
-              </b>
-              . <br />
-              <br />
-              Ces documents sont issus de modélisations qui génèrent certaines
-              approximations. En complément du diagnostic, une étude terrain
-              locale assure toujours une meilleure caractérisation de la
-              situation et du risque sonore réel.
-            </>
-          }
-          onClose={function noRefCheck() {}}
-          severity="info"
-          title=""
-        />
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
             Préconisation d’une zone de bâti selon les caractéristiques de la
@@ -481,11 +454,6 @@ const useStyles = tss.create(() => ({
   },
   subtitle: {
     textDecoration: "underline",
-  },
-  alert: {
-    ".fr-alert__title": {
-      margin: 0,
-    },
   },
 }));
 
