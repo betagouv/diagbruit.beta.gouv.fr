@@ -1,4 +1,4 @@
-import { AirIntersection } from "./types";
+import { AirIntersection, SoundClassificationIntersection } from "./types";
 
 type LandIsolationTable = { [distance: number]: number[] };
 
@@ -34,7 +34,7 @@ const isolationCorrectionTable: { maxGap: number; correction: number }[] = [
   { maxGap: Infinity, correction: 0 },
 ];
 
-export const getLandIsolation = (
+export const getLandIntersectionIsolation = (
   category: number,
   distance: number
 ): number => {
@@ -56,6 +56,20 @@ export const getLandIsolation = (
 
   const lastIsolations = landIsolationTable[distances[0]];
   return lastIsolations[category - 1] ?? 0;
+};
+
+export const getLandIsolation = (
+  soundclassification_intersections: SoundClassificationIntersection[]
+): number => {
+  if (!soundclassification_intersections.length) return 0;
+  return Math.max(
+    ...soundclassification_intersections.map((intersection) =>
+      getLandIntersectionIsolation(
+        intersection.sound_category,
+        intersection.distance
+      )
+    )
+  );
 };
 
 export const getAirIsolation = (

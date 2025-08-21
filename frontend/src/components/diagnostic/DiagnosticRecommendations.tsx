@@ -8,6 +8,7 @@ import { tss } from "tss-react/dsfr";
 import {
   getAirIsolation,
   getComputedIsolation,
+  getLandIntersectionIsolation,
   getLandIsolation,
 } from "../../utils/isolation";
 import {
@@ -54,9 +55,14 @@ const DiagnosticRecommendations = ({
     parcelle: { geometry },
   } = diagnosticItem;
 
-  const land_isolation = getMaxIsolationFromSoundClassificationAffectedHelper(
-    optimalZoneSoundClassificationHelper
-  );
+  const land_optimal_isolation =
+    getMaxIsolationFromSoundClassificationAffectedHelper(
+      optimalZoneSoundClassificationHelper
+    );
+
+  const land_isolation = !!land_optimal_isolation
+    ? land_optimal_isolation
+    : getLandIsolation(soundclassification_intersections);
 
   const air_isolation = getAirIsolation(air_intersections);
   const computed_isolation = getComputedIsolation(
@@ -95,7 +101,10 @@ const DiagnosticRecommendations = ({
         doesAffectOptimalZone,
         preciseDistance,
         isolation: doesAffectOptimalZone
-          ? getLandIsolation(intersection.sound_category, preciseDistance)
+          ? getLandIntersectionIsolation(
+              intersection.sound_category,
+              preciseDistance
+            )
           : 0,
       };
     });
@@ -181,7 +190,7 @@ const DiagnosticRecommendations = ({
 
     if (
       utilFlags.isAffectedByAirIntersections &&
-      !utilFlags.isAffectedByNoisemapIntersections
+      !utilFlags.isAffectedBySeveralSoundclassificationIntersections
     ) {
       //TODO : DISPLAY A CUSTOM TABLE TO EXPLAIN AIR ISOLATION REQUIREMENTS?
       return (
@@ -193,7 +202,11 @@ const DiagnosticRecommendations = ({
       );
     }
 
-    if (!utilFlags.isSoundclassificationStillApplied) {
+    if (
+      utilFlags.isMonoExposed &&
+      utilFlags.isAffectedByNoisemapIntersections &&
+      land_optimal_isolation === 0
+    ) {
       return (
         <p>
           La zone idéale de position du bâti déterminée par diagBruit n’est pas
@@ -366,53 +379,45 @@ const DiagnosticRecommendations = ({
             parcelle
           </h4>
           {displayComputedRecommendation()}
-          {utilFlags.isMonoExposed && (
-            <>
-              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Suggestions d’isolement théorique
-              </h4>
-              {displayIsolationInformations()}
-              <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
-                Documentation d'isolation
-              </h4>
-              {computedSpecificRecommendations.map((recommendation, index) => (
-                <Accordion
-                  key={index}
-                  label={recommendation.title}
-                  titleAs="h5"
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Suggestions d’isolement théorique
+          </h4>
+          {displayIsolationInformations()}
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-8v")}>
+            Documentation d'isolation
+          </h4>
+          {computedSpecificRecommendations.map((recommendation, index) => (
+            <Accordion key={index} label={recommendation.title} titleAs="h5">
+              {recommendation.categories.map((category) => (
+                <Tag
+                  key={category.title}
+                  className={fr.cx("fr-mb-4v", "fr-mr-2v")}
                 >
-                  {recommendation.categories.map((category) => (
-                    <Tag
-                      key={category.title}
-                      className={fr.cx("fr-mb-4v", "fr-mr-2v")}
-                    >
-                      {category.title}
-                    </Tag>
-                  ))}
-                  <div
-                    className={cx(classes.recommendationContent)}
-                    dangerouslySetInnerHTML={{ __html: recommendation.content }}
-                  />
-                  {!!recommendation.links.length && (
-                    <div className={cx(classes.links)}>
-                      <p className={fr.cx("fr-mb-2v")}>
-                        <b>Liens utiles :</b>
-                      </p>
-                      <ul className={fr.cx("fr-mb-0")}>
-                        {recommendation.links.map((link, index) => (
-                          <li key={index}>
-                            <a href={link.href} target="_blank">
-                              {link.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Accordion>
+                  {category.title}
+                </Tag>
               ))}
-            </>
-          )}
+              <div
+                className={cx(classes.recommendationContent)}
+                dangerouslySetInnerHTML={{ __html: recommendation.content }}
+              />
+              {!!recommendation.links.length && (
+                <div className={cx(classes.links)}>
+                  <p className={fr.cx("fr-mb-2v")}>
+                    <b>Liens utiles :</b>
+                  </p>
+                  <ul className={fr.cx("fr-mb-0")}>
+                    {recommendation.links.map((link, index) => (
+                      <li key={index}>
+                        <a href={link.href} target="_blank">
+                          {link.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Accordion>
+          ))}
         </div>
       </div>
     </div>
