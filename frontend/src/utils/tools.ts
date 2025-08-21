@@ -162,7 +162,7 @@ export const getSummaryTextFromDiagnostic = (
   } else if (hasLandIntersections && !hasAirIntersections) {
     content += SUMMARY_TEXTS.CONTENT.LAND.generateContent(
       risk,
-      flags.isMultiExposedSources
+      flags.isMultiExposedLandSources
     );
   } else if (hasLandIntersections && hasAirIntersections) {
     content += SUMMARY_TEXTS.CONTENT.MULTI.generateContent(risk);
@@ -377,8 +377,6 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
 
   const noiseSources = getNoiseSourceFromDiagnosticItem(diagnosticItem);
 
-  console.log(noiseSources);
-
   return {
     conditions: {
       $and: [
@@ -476,7 +474,7 @@ export const getRecommendationsUtilFlags = (
       land_intersections_ld,
       soundclassification_intersections,
       air_intersections,
-      flags: { isMultiExposedLandSources },
+      flags: { isMultiExposedSources },
     },
   } = diagnosticItem;
 
@@ -487,8 +485,7 @@ export const getRecommendationsUtilFlags = (
 
   return {
     isMonoExposed:
-      !isMultiExposedLandSources &&
-      soundclassification_intersections.length < 2,
+      !isMultiExposedSources && soundclassification_intersections.length < 2,
     isAffectedByNoisemapIntersections: land_intersections_ld.length > 0,
     isAffectedBySoundclassificationIntersections:
       soundclassification_intersections.length > 0,
@@ -497,7 +494,6 @@ export const getRecommendationsUtilFlags = (
     isAffectedByAirIntersections: air_intersections.length > 0,
     isAffectedBySeveralAirIntersections:
       air_intersections.length > 1 && !hasDominatingAirIntersection,
-    isSoundclassificationStillApplied: land_isolation > 0,
   };
 };
 

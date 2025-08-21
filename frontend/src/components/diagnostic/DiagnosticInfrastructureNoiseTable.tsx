@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import { tss } from "tss-react/dsfr";
-import { getLandIsolation } from "../../utils/isolation";
+import { getLandIntersectionIsolation } from "../../utils/isolation";
 import { noiseTableData, noiseTableHeaders } from "../../utils/noisetable";
 import {
   SoundClassificationIntersection,
@@ -45,7 +45,7 @@ const DiagnosticInfrastructureNoiseTable = ({
           intersection,
           doesAffectOptimalZone: true,
           preciseDistance: intersection.distance,
-          isolation: getLandIsolation(
+          isolation: getLandIntersectionIsolation(
             intersection.sound_category,
             intersection.distance
           ),
