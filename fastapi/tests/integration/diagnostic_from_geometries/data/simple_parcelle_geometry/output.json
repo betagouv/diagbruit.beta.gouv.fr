@@ -84,7 +84,7 @@
                 "min_db_lden": 65,
                 "flags": {
                     "hasClassificationWarning": false,
-                    "isMultiExposedSources": true,
+                    "isMultiExposedSources": false,
                     "isMultiExposedLandDistinctTypeSources": true,
                     "isMultiExposedLdenLn": true,
                     "isPriorityZone": true,
