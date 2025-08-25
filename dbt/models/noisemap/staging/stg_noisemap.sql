@@ -17,20 +17,9 @@ SELECT
     producteur,
     codeinfra,
     typesource,
-
-    CASE
-        WHEN cbstype IS NULL THEN
-            CASE 
-                WHEN CAST(REGEXP_SUBSTR(legende, '\d{2}') AS INTEGER) >= 70 THEN 'C'
-                ELSE 'A'
-            END
-        ELSE cbstype
-    END AS cbstype,
-
+    cbstype,
     zonedef,
-
     REGEXP_SUBSTR(legende, '\d{2}') AS legende,
-
     indicetype,
     validedeb,
     validefin,
