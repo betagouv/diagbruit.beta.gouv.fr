@@ -41,6 +41,13 @@ FILES_INFRA=(
   "inputs/noise/INFRA_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033/N_BRUIT_ZBRD_INFRA_R_A_LD_S_033.shp raw_noisemap $RENAME_INFRA"
 )
 
+FILES_INFRA_FASTLINES=(
+  "inputs/noise/INFRA_FASTLINES_033/type_a_lden/l_bruit_zbr_infra_r_autoroute_a_ld_d33.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_FASTLINES_033/type_a_ln/l_bruit_zbr_infra_r_autoroute_a_ln_d33.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_FASTLINES_033/type_c_ln/l_bruit_zbr_infra_r_autoroute_c_ln_d33.shp raw_noisemap $RENAME_INFRA"
+  "inputs/noise/INFRA_FASTLINES_033/type_c_lden/l_bruit_zbr_infra_r_autoroute_c_ld_d33.shp raw_noisemap $RENAME_INFRA"
+)
+
 FILES_AGGLO_033=(
   "inputs/noise/AGGLO_033/fer_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_F $ADD_CBS_C $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033"
   "inputs/noise/AGGLO_033/industrie_depassement_de_seuil_Lden.shp raw_noisemap $ADD_TYPE_I $ADD_CBS_C $ADD_LDEN $ADD_AGGLO_033 $RENAME_AGGLO_033"
@@ -74,6 +81,7 @@ python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-e
 
 # Boucles d’ingestion
 for cmd in "${FILES_INFRA[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_INFRA_FASTLINES[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
