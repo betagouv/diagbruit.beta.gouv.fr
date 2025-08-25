@@ -24,6 +24,7 @@ ingestion/inputs/**/AGGLO_*
 !ingestion/inputs/**/AGGLO_033
 ingestion/inputs/**/INFRA_*
 !ingestion/inputs/**/INFRA_033
+!ingestion/inputs/**/INFRA_FASTLINES_033
 
 # Virtual environments
 .venv/

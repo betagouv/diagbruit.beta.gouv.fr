@@ -72,7 +72,7 @@ const DiagnosticEvaluation = ({
 
   const getPercentImpactedFromCodeInfra = (
     landIntersections: LandIntersection[],
-    codeinfra: string
+    codeinfra: string | null
   ) => {
     const computedPercentImpacted = landIntersections
       .filter(
@@ -81,7 +81,11 @@ const DiagnosticEvaluation = ({
       )
       .reduce((acc, current) => acc + current.percent_impacted, 0);
 
-    return computedPercentImpacted === 0.99 ? 1 : computedPercentImpacted;
+    return computedPercentImpacted === 0.99
+      ? 1
+      : computedPercentImpacted > 1
+      ? 1
+      : computedPercentImpacted;
   };
 
   const getUniqueIntersectionsByCodeInfra = () => {
@@ -150,11 +154,12 @@ const DiagnosticEvaluation = ({
                           typesource: getReadableSource(
                             land_intersections_ld[0].typesource
                           ),
-                          codinfra: land_intersections_ld[0].codeinfra || "",
+                          codinfra:
+                            land_intersections_ld[0].codeinfra || "nom inconnu",
                           percent_impacted: Math.round(
                             getPercentImpactedFromCodeInfra(
                               land_intersections_ld,
-                              land_intersections_ld[0].codeinfra || ""
+                              land_intersections_ld[0].codeinfra
                             ) * 100
                           ),
                           direction: getReadableCardinality(

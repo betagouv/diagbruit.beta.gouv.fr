@@ -174,7 +174,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         />
         {devMode && (
           <Accordion label="Voir le retour de l'API" titleAs="h2">
-            <pre>{JSON.stringify(diagnosticItem, null, 2)}</pre>
+            <pre>
+              {JSON.stringify(
+                diagnosticItem,
+                (k, v) => (k.startsWith("geometry") ? undefined : v),
+                2
+              )}
+            </pre>
           </Accordion>
         )}
         {copied && (

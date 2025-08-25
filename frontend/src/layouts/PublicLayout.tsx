@@ -2,8 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import Header from "@codegouvfr/react-dsfr/Header";
 import Notice from "@codegouvfr/react-dsfr/Notice";
-import { useLocation } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { Settings } from "../utils/types";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -12,6 +15,34 @@ type PublicLayoutProps = {
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { cx, classes } = useStyles();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const [settings, setSettings] = useState<Settings>();
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_CMS_URL}/api/setting`)
+      .then((res) => {
+        setSettings(res.data.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (settings?.maintenance && !pathname.startsWith("/maintenance")) {
+      navigate("/maintenance", { replace: true });
+    }
+  }, [settings]);
+
+  if (settings?.maintenance) {
+    return (
+      <main>
+        <div className={classes.maintenance}>{children}</div>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -85,6 +116,13 @@ const useStyles = tss.create(() => ({
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,
+  },
+  maintenance: {
+    display: "flex",
+    width: "100vw",
+    height: "100vh",
+    alignItems: "center",
+    justifyContent: "center",
   },
 }));
 

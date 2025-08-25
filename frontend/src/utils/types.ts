@@ -91,6 +91,10 @@ export type Recommendation = {
   }[];
 };
 
+export type Settings = {
+  maintenance: boolean;
+};
+
 export type Changelog = {
   id: number;
   title: string;
