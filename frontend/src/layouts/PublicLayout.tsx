@@ -33,6 +33,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   useEffect(() => {
     if (settings?.maintenance && !pathname.startsWith("/maintenance")) {
       navigate("/maintenance", { replace: true });
+    } else if (!settings?.maintenance && pathname.startsWith("/maintenance")) {
+      navigate("/", { replace: true });
     }
   }, [settings]);
 
