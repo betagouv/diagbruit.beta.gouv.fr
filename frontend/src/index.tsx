@@ -6,6 +6,7 @@ import Home from "./pages/home";
 import Diagnostic from "./pages/diagnostic";
 import Changelogs from "./pages/changelogs";
 import Stats from "./pages/stats";
+import Maintenance from "./pages/maintenance";
 import reportWebVitals from "./reportWebVitals";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import PublicLayout from "./layouts/PublicLayout";
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/diagnostic" element={<Diagnostic />} />
         <Route path="/changelogs" element={<Changelogs />} />
         <Route path="/stats" element={<Stats />} />
+        <Route path="/maintenance" element={<Maintenance />} />
       </Routes>
     </PublicLayout>
   );
