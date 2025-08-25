@@ -46,12 +46,6 @@ FILES_INFRA_FASTLINES=(
   "inputs/noise/INFRA_FASTLINES_033/type_a_ln/l_bruit_zbr_infra_r_autoroute_a_ln_d33.shp raw_noisemap $RENAME_INFRA"
   "inputs/noise/INFRA_FASTLINES_033/type_c_ln/l_bruit_zbr_infra_r_autoroute_c_ln_d33.shp raw_noisemap $RENAME_INFRA"
   "inputs/noise/INFRA_FASTLINES_033/type_c_lden/l_bruit_zbr_infra_r_autoroute_c_ld_d33.shp raw_noisemap $RENAME_INFRA"
-
-  # Département 044 TO REMOVE
-  "inputs/noise/INFRA_FASTLINES_044/type_a_lden/N_BRUIT_ZBR_R_A_LD_S_044.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/INFRA_FASTLINES_044/type_a_ln/N_BRUIT_ZBR_R_A_LN_S_044.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/INFRA_FASTLINES_044/type_c_ln/N_BRUIT_ZBR_R_C_LN_S_044.shp raw_noisemap $RENAME_INFRA"
-  "inputs/noise/INFRA_FASTLINES_044/type_c_lden/N_BRUIT_ZBR_R_C_LD_S_044.shp raw_noisemap $RENAME_INFRA"
 )
 
 FILES_AGGLO_033=(
