@@ -8,6 +8,7 @@ from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
+from ..version import get_api_version
 import asyncio
 import logging
 import math
@@ -280,7 +281,8 @@ async def upsert_diagnostic_result(
             numero=numero,
             geometry=geometry_element,
             score=score,
-            diagnostic_result=diagnostic_result
+            diagnostic_result=diagnostic_result,
+            api_version=get_api_version()
         )
         
         stmt = stmt.on_conflict_do_update(
@@ -288,6 +290,7 @@ async def upsert_diagnostic_result(
             set_={
                 'score': stmt.excluded.score,
                 'diagnostic_result': stmt.excluded.diagnostic_result,
+                'api_version': stmt.excluded.api_version,
                 'updated_at': stmt.excluded.updated_at
             }
         )

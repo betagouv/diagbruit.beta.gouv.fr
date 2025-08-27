@@ -4,13 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from .routes import diag, metabase
 from .database import engine
 from . import models
+from .version import get_api_version
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="diagBruit FastAPI",
     description="An simple api to get diagBruit diagnostics. Powered by diagBruit 🚀",
-    version="0.1.0",
+    version=get_api_version(),
 )
 
 app.add_middleware(

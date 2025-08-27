@@ -17,6 +17,7 @@ class Result(Base):
     geometry = Column(Geometry('MULTIPOLYGON', srid=4326), nullable=False)
     diagnostic_result = Column(MutableDict.as_mutable(JSONB), nullable=False)
     score = Column(Integer, nullable=False)
+    api_version = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
