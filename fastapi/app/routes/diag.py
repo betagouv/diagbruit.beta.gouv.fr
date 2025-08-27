@@ -7,11 +7,14 @@ from typing import List, Union
 from app.database import SessionLocal
 from app.utils import (
     create_multipolygon_from_coordinates,
+    get_parcelle_coordinates,
+    codes_insee_whitelist
+)
+from app.utils.db import (
     query_noisemap_intersecting_features,
     query_soundclassification_intersecting_features,
     query_peb_intersecting_features,
-    get_parcelle_coordinates,
-    codes_insee_whitelist
+    upsert_diagnostic_result
 )
 from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
@@ -126,6 +129,14 @@ async def generate_diag_from_parcelles(
             codedept = f"0{result['parcelle'].code_insee[:2]}"
             diagnostic = await generate_diagnostic_async(polygone, codedept)
 
+            asyncio.create_task(upsert_diagnostic_result(
+                code_insee=result['parcelle'].code_insee,
+                section=result['parcelle'].section,
+                numero=result['parcelle'].numero,
+                geometry=result["coordinates"],
+                diagnostic_result=diagnostic
+            ))
+
             return {
                 "parcelle": {**result["parcelle"].dict(), "geometry": result["coordinates"]},
                 "diagnostic": diagnostic
@@ -158,6 +169,15 @@ async def generate_diag_from_geometry(
             polygone = create_multipolygon_from_coordinates(item.geometry)
             codedept = f"0{item.parcelle.code_insee[:2]}"
             diagnostic = await generate_diagnostic_async(polygone, codedept)
+            
+            asyncio.create_task(upsert_diagnostic_result(
+                code_insee=item.parcelle.code_insee,
+                section=item.parcelle.section,
+                numero=item.parcelle.numero,
+                geometry=item.geometry,
+                diagnostic_result=diagnostic
+            ))
+            
             return {"parcelle": {**dict(item.parcelle), "geometry": item.geometry}, "diagnostic": diagnostic}
         except Exception as e:
             raise HTTPException(

@@ -1,8 +1,14 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import func, cast
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
+from geoalchemy2 import WKTElement
 from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
+from ..models.result import Result
+from ..database import SessionLocal
+from ..utils.geometry import create_multipolygon_from_coordinates
+import asyncio
 import logging
 import math
 import yaml
@@ -247,3 +253,48 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
     except Exception as e:
         logger.error(f"Database error in peb query: {str(e)}")
         raise
+
+
+async def upsert_diagnostic_result(
+    code_insee: str,
+    section: str,
+    numero: str,
+    geometry: List,
+    diagnostic_result: Dict[str, Any]
+):
+    """
+    Asynchronously save diagnostic result to database.
+    If parcelle already exists, update only the diagnostic_result.
+    """
+    db = SessionLocal()
+    loop = asyncio.get_running_loop()
+    
+    try:
+        polygon_wkt = create_multipolygon_from_coordinates(geometry)
+        geometry_element = WKTElement(polygon_wkt, srid=4326)
+        
+        stmt = insert(Result).values(
+            code_insee=code_insee,
+            section=section,
+            numero=numero,
+            geometry=geometry_element,
+            diagnostic_result=diagnostic_result
+        )
+        
+        stmt = stmt.on_conflict_do_update(
+            index_elements=['code_insee', 'section', 'numero'],
+            set_={
+                'diagnostic_result': stmt.excluded.diagnostic_result,
+                'updated_at': stmt.excluded.updated_at
+            }
+        )
+        
+        await loop.run_in_executor(None, lambda: db.execute(stmt))
+        await loop.run_in_executor(None, db.commit)
+        
+    except Exception as e:
+        await loop.run_in_executor(None, db.rollback)
+        logger.error(f"Error saving diagnostic result for {code_insee}-{section}-{numero}: {str(e)}")
+        raise
+    finally:
+        await loop.run_in_executor(None, db.close)
