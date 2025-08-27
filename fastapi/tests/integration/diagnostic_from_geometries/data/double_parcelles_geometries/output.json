@@ -42,7 +42,7 @@
                     "hasClassificationWarning": false,
                     "isMultiExposedSources": false,
                     "isMultiExposedLandDistinctTypeSources": true,
-                    "isMultiExposedLdenLn": true,
+                    "isMultiExposedLdenLn": false,
                     "isPriorityZone": false,
                     "isMultiExposedLandSources": false
                 },
