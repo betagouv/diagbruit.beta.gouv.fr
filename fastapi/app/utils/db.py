@@ -260,6 +260,7 @@ async def upsert_diagnostic_result(
     section: str,
     numero: str,
     geometry: List,
+    score: int,
     diagnostic_result: Dict[str, Any]
 ):
     """
@@ -278,12 +279,14 @@ async def upsert_diagnostic_result(
             section=section,
             numero=numero,
             geometry=geometry_element,
+            score=score,
             diagnostic_result=diagnostic_result
         )
         
         stmt = stmt.on_conflict_do_update(
             index_elements=['code_insee', 'section', 'numero'],
             set_={
+                'score': stmt.excluded.score,
                 'diagnostic_result': stmt.excluded.diagnostic_result,
                 'updated_at': stmt.excluded.updated_at
             }

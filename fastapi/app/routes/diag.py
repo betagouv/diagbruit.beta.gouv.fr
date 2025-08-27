@@ -134,6 +134,7 @@ async def generate_diag_from_parcelles(
                 section=result['parcelle'].section,
                 numero=result['parcelle'].numero,
                 geometry=result["coordinates"],
+                score=diagnostic['score'],
                 diagnostic_result=diagnostic
             ))
 
@@ -175,6 +176,7 @@ async def generate_diag_from_geometry(
                 section=item.parcelle.section,
                 numero=item.parcelle.numero,
                 geometry=item.geometry,
+                score=diagnostic['score'],
                 diagnostic_result=diagnostic
             ))
             
