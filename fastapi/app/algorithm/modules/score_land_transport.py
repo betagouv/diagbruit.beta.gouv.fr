@@ -75,19 +75,25 @@ def group_intersections_by_identifier(intersections):
     return grouped
 
 
-def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype):
+def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype, percent_unimpacted):
     """
     Returns the final score based on all intersections.
 
     Process:
-    1. Compute the score for each intersection.
-    2. Identify the highest score.
-    3. If multiple intersections share the highest score, apply a +1 penalty.
-    4. Return the final score.
+    1. If no intersections return 0
+    2. If unimpacted zone is gte threshold return 3
+    3. Compute the score for each intersection.
+    4. Identify the highest score.
+    5. If multiple intersections share the highest score, apply a +1 penalty.
+    6. Return the final score.
     """
     all_intersections = intersections_agglo + intersections_infra
     if not all_intersections:
         return 0
+
+    unimpacted_threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
+    if percent_unimpacted >= unimpacted_threshold:
+        return 3
 
     levels = load_land_levels(indicetype)
     grouped = group_intersections_by_identifier(all_intersections)

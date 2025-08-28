@@ -22,7 +22,8 @@ def test_get_land_score_from_sources_cases(input_path):
     diagnostic = get_parcelle_diagnostic(
         noisemap_intersections=case["noisemap_intersections"],
         soundclassification_intersections=case["soundclassification_intersections"],
-        peb_intersections=case["peb_intersections"]
+        peb_intersections=case["peb_intersections"],
+        percent_unimpacted=0
     )
 
     assert diagnostic['score'] == case["expected_score"], (

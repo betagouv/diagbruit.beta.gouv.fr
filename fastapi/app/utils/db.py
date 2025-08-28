@@ -56,7 +56,7 @@ def determine_cardinality(safe_centroid, intersection_centroid):
         return "E"
 
 
-def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedept: str) -> List[Dict[str, Any]]:
+def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedept: str) -> Dict[str, Any]:
     """
     Query the database for features that intersect with the given WKT geometry.
     Uses the NoiseMapItem model to query the database.
@@ -64,7 +64,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
-        safe_geom_area = db.query(func.ST_Area(safe_geom)).scalar()
+        safe_geom_area = db.query(func.ST_Area(func.Geography(safe_geom))).scalar()
         safe_centroid = db.query(func.ST_X(func.ST_Centroid(safe_geom)), func.ST_Y(func.ST_Centroid(safe_geom))).first()
 
         if not safe_geom_area or safe_geom_area == 0:
@@ -79,7 +79,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.codeinfra,
             NoiseMapItem.legende,
             NoiseMapItem.cbstype,
-            func.sum(func.ST_Area(intersection_geom)).label("total_intersection_area"),
+            func.sum(func.ST_Area(func.Geography(intersection_geom))).label("total_intersection_area_m2"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
             func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
             cast(func.ST_AsGeoJSON(func.ST_Intersection(NoiseMapItem.geometry, safe_geom)), Text).label("geometry_intersection")
@@ -99,7 +99,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         result = []
         threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
         for r in stmt.all():
-            percent_impacted = round(r.total_intersection_area / safe_geom_area, 2)
+            percent_impacted = round((r.total_intersection_area_m2 or 0) / safe_geom_area, 2)
             geometry_parsed = json.loads(r.geometry_intersection)
             geometry_intersection = geometry_parsed["coordinates"]
             if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
@@ -115,14 +115,39 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                     "direction": determine_cardinality(safe_centroid, (r.union_centroid_x, r.union_centroid_y))
                 })
 
-        return result
+        rest_expr = func.ST_Multi(
+            func.ST_CollectionExtract(
+                func.ST_Difference(
+                    safe_geom,
+                    func.COALESCE(
+                        func.ST_Union(func.ST_Intersection(NoiseMapItem.geometry, safe_geom)),
+                        func.ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)
+                    )
+                ),
+                3
+            )
+        )
+
+        rest_row = db.query(
+            func.ST_Area(func.Geography(rest_expr)).label("rest_area_m2")
+        ).filter(
+            NoiseMapItem.codedept == codedept,
+            func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
+        ).one()
+
+        percent_unimpacted = round((rest_row.rest_area_m2 or 0) / safe_geom_area, 2)
+
+        return {
+            "intersections": result,
+            "percent_unimpacted": percent_unimpacted
+        }
 
     except Exception as e:
         logger.error(f"Database error in noisemap query : {str(e)}")
         raise
 
 
-def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
+def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for sound classification features that intersect with the given WKT geometry.
     Includes percent_impacted and geometry_intersection.
@@ -199,14 +224,16 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "geometry_intersection": geometry_intersection,
             })
 
-        return result
+        return {
+            "intersections": result
+        }
 
     except Exception as e:
         logger.error(f"Database error in sound classification query: {str(e)}")
         raise
 
 
-def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict[str, Any]]:
+def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for sound classification features that intersect with the given WKT geometry.
     Uses the SoundClassificationItem model to query the database.
@@ -249,7 +276,9 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> List[Dict
                 "percent_impacted": percent_impacted
             })
 
-        return result
+        return {
+            "intersections": result
+        }
 
     except Exception as e:
         logger.error(f"Database error in peb query: {str(e)}")
