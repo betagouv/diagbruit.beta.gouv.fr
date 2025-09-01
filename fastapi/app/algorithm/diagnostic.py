@@ -37,11 +37,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     # Apply a penalty if there is a constant noise on almost the same noise level
     base_score = max(score_ld, score_ln)
     score_diff = abs(score_ld - score_ln)
-
-    penalty = {
-        0: 2,
-        1: 1
-    }.get(score_diff, 0)
+    penalty = 1 if base_score >= 4 and score_diff <= 1 else 0
 
     # Return the final score
     diagnostic['score'] = base_score + penalty
