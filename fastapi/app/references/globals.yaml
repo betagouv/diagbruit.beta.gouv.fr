@@ -1,3 +1,4 @@
 intersection_minimum_percentage_required: 0.05
+intersection_land_maximum_unimpacted_zone: 0.5
 intersection_land_dominating_percentage_difference: 0.5
 intersection_air_dominating_percentage_difference: 0.8

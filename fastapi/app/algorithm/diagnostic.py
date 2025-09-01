@@ -4,7 +4,7 @@ from .modules import (get_land_score_from_sources, get_air_score_from_sources, g
 from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 
-def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections):
+def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, percent_unimpacted):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
@@ -21,8 +21,8 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         intersections_INFRA_ld,
         intersections_INFRA_ln
     ) = get_filtered_land_intersections(noisemap_intersections)
-    score_land_ld = get_land_score_from_sources(intersections_AGGLO_ld, intersections_INFRA_ld, 'LD')
-    score_land_ln = get_land_score_from_sources(intersections_AGGLO_ln, intersections_INFRA_ln, 'LN')
+    score_land_ld = get_land_score_from_sources(intersections_AGGLO_ld, intersections_INFRA_ld, 'LD', percent_unimpacted)
+    score_land_ln = get_land_score_from_sources(intersections_AGGLO_ln, intersections_INFRA_ln, 'LN', percent_unimpacted)
 
     # Calculate score on AIR
     score_air = get_air_score_from_sources(peb_intersections)
