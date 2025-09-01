@@ -15,6 +15,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticDocumentation from "./DiagnosticDocumentation";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -158,42 +159,57 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           </Button>
         </div>
       </div>
-      <div className={cx(classes.container)}>
-        <Tabs
-          key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-          tabs={diagnosticTabs}
-          onTabChange={(tabItem) => {
-            const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
-            replaceSearchParams(tabId);
-            trackMatomoEvent(
-              "Action",
-              "Tab Change",
-              `Diagnostic Tab - ${tabId}`
-            );
-          }}
-        />
-        {devMode && (
-          <Accordion label="Voir le retour de l'API" titleAs="h2">
-            <pre>
-              {JSON.stringify(
-                diagnosticItem,
-                (k, v) => (k.startsWith("geometry") ? undefined : v),
-                2
-              )}
-            </pre>
-          </Accordion>
-        )}
-        {copied && (
-          <Notice
-            severity="info"
-            description="URL copiée dans le presse-papiers"
-            title=""
-            className={cx(classes.alertCopied)}
+      {diagnosticItem.diagnostic.score === 0 ? (
+        <div className={cx(classes.container)}>
+          <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>
+            Cette parcelle n’est impactée ni par les cartes de bruit
+            stratégique, ni par le plan d’exposition au bruit.{" "}
+          </h3>
+          <Alert
+            description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
             onClose={function noRefCheck() {}}
-            isClosable
+            severity="info"
+            title=""
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className={cx(classes.container)}>
+          <Tabs
+            key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+            tabs={diagnosticTabs}
+            onTabChange={(tabItem) => {
+              const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
+              replaceSearchParams(tabId);
+              trackMatomoEvent(
+                "Action",
+                "Tab Change",
+                `Diagnostic Tab - ${tabId}`
+              );
+            }}
+          />
+          {devMode && (
+            <Accordion label="Voir le retour de l'API" titleAs="h2">
+              <pre>
+                {JSON.stringify(
+                  diagnosticItem,
+                  (k, v) => (k.startsWith("geometry") ? undefined : v),
+                  2
+                )}
+              </pre>
+            </Accordion>
+          )}
+        </div>
+      )}
+      {copied && (
+        <Notice
+          severity="info"
+          description="URL copiée dans le presse-papiers"
+          title=""
+          className={cx(classes.alertCopied)}
+          onClose={function noRefCheck() {}}
+          isClosable
+        />
+      )}
     </div>
   );
 };
@@ -210,6 +226,9 @@ const useStyles = tss.create(() => ({
         "8v"
       )} ${fr.spacing("8v")}`,
     },
+  },
+  subtitle: {
+    ...fr.typography[1].style,
   },
   alertCopied: {
     position: "fixed",
