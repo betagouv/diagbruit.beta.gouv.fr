@@ -7,7 +7,7 @@
       "cbstype": "A",
       "legende": 70,
       "codeinfra": "570000",
-      "percent_impacted": 0.09,
+      "percent_impacted": 0.9,
       "direction": "NE"
     },
     {
@@ -17,7 +17,7 @@
       "cbstype": "A",
       "legende": 50,
       "codeinfra": "570000",
-      "percent_impacted": 0.09,
+      "percent_impacted": 0.9,
       "direction": "NE"
     }
   ],
