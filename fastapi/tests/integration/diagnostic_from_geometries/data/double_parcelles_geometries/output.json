@@ -83,7 +83,7 @@
                 ]
             },
             "diagnostic": {
-                "score": 5,
+                "score": 3,
                 "max_db_lden": 70,
                 "min_db_lden": 55,
                 "flags": {
