@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: topo
+    description: "Final topographic data table ready for consumption"
+    columns:
+      - name: pk
+        description: "Primary key"
+      - name: id
+        description: "Original feature ID"
+      - name: polygon_id
+        description: "Unique polygon identifier"
+      - name: nature
+        description: "Nature of the topographic feature"
+      - name: usage1
+        description: "Primary usage"
+      - name: usage2
+        description: "Secondary usage"
+      - name: geometry
+        description: "Geometry in EPSG:4326"
+      - name: area_m2
+        description: "Area in square meters"
