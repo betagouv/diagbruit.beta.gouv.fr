@@ -8,6 +8,39 @@ run_ingest() {
   echo '--------------------------------------------------------------------------'
 }
 
+download_batiment_files() {
+  local target_dir="inputs/topo/DEPT_033/batiment"
+  local base_url="https://diagbruit.s3.eu-west-3.amazonaws.com/data/topo/DEPT_033/batiment"
+  local files=("BATIMENT.cpg" "BATIMENT.shp" "BATIMENT.prj" "BATIMENT.dbf" "BATIMENT.shx")
+  
+  local need_download=false
+  for file in "${files[@]}"; do
+    if [ ! -f "$target_dir/$file" ]; then
+      need_download=true
+      break
+    fi
+  done
+  
+  if [ "$need_download" = true ]; then
+    echo "📥 Downloading batiment shapefile from S3..."
+    mkdir -p "$target_dir"
+    
+    for file in "${files[@]}"; do
+      if [ ! -f "$target_dir/$file" ]; then
+        echo "  → Downloading $file"
+        curl -s -o "$target_dir/$file" "$base_url/$file"
+      else
+        echo "  ✓ $file already exists"
+      fi
+    done
+    
+    echo "✅ Batiment shapefile download complete"
+    echo '--------------------------------------------------------------------------'
+  else
+    echo "✓ Batiment shapefile already exists, skipping download"
+  fi
+}
+
 # Définition des options communes
 RENAME_INFRA="--rename-column codinfra=codeinfra --rename-column idzonbruit=id"
 
@@ -76,6 +109,13 @@ FILES_PEB=(
   "inputs/PEB/peb.shp raw_peb --if-exists replace"
 )
 
+FILES_TOPO=(
+  "inputs/topo/DEPT_033/batiment/BATIMENT.shp raw_topo --if-exists replace"
+)
+
+# Download batiment files from S3 if needed
+download_batiment_files
+
 # Ingestion des données de base
 python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-exists skip
 
@@ -85,3 +125,4 @@ for cmd in "${FILES_INFRA_FASTLINES[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_TOPO[@]}"; do run_ingest $cmd; done
