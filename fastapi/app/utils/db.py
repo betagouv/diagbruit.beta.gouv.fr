@@ -120,7 +120,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                 func.ST_Difference(
                     safe_geom,
                     func.COALESCE(
-                        func.ST_Union(func.ST_Intersection(NoiseMapItem.geometry, safe_geom)),
+                        func.ST_Union(
+                            func.ST_Intersection(
+                                NoiseMapItem.geometry, 
+                                safe_geom
+                            )
+                        ).filter(NoiseMapItem.indicetype == 'LD'),
                         func.ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)
                     )
                 ),
