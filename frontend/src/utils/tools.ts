@@ -484,8 +484,7 @@ export const getRecommendationsUtilFlags = (
     ) > 0.8;
 
   return {
-    isMonoExposed:
-      !isMultiExposedSources && soundclassification_intersections.length < 2,
+    isMonoExposed: !isMultiExposedSources,
     isAffectedByNoisemapIntersections: land_intersections_ld.length > 0,
     isAffectedBySoundclassificationIntersections:
       soundclassification_intersections.length > 0,
