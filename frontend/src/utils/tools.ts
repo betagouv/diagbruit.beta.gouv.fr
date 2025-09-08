@@ -26,6 +26,13 @@ export const getColorFromScore = (score: number): string => {
   return "#4B9F6C";
 };
 
+export const getColorFromRisk = (risk: number): string => {
+  if (risk > 2) return "#F95A5C";
+  if (risk > 1) return "#FA7659";
+  if (risk > 0) return "#CB9F2D";
+  return "#4B9F6C";
+};
+
 export const getColorFromLegende = (legende: number): string => {
   if (legende >= 70) return "#F95A5C";
   if (legende >= 65) return "#FA7659";

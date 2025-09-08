@@ -81,7 +81,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
 
     # Return the big zones of risks
-    diagnostic["zone"] = get_zones_from_intersections(diagnostic['land_intersections_ld'])
+    diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld'])
 
     # Flags
     diagnostic['flags']['isMultiExposedSources'] = ((1 if len(filter_land_intersections_by_codeinfra(land_intersections_ld_cbs_A)) > 0 else 0) + (1 if len(diagnostic['air_intersections']) > 0 else 0)) > 1

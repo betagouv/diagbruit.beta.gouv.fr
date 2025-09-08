@@ -72,7 +72,8 @@ def get_zones_from_intersections(intersections):
 
         zones.append({
             "risk": risk,
-            "geometry": mapping(clipped)
+            "geometry": [list(clipped.exterior.coords)] if clipped.geom_type == "Polygon"
+            else [list(p.exterior.coords) for p in clipped.geoms]
         })
 
         cumulative_higher = clipped if cumulative_higher is None else unary_union([cumulative_higher, clipped])

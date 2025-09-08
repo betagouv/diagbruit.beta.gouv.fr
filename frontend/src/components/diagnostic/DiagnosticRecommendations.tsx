@@ -49,6 +49,7 @@ const DiagnosticRecommendations = ({
       land_intersections_ld,
       soundclassification_intersections,
       air_intersections,
+      zones,
     },
     parcelle: { geometry },
   } = diagnosticItem;
@@ -313,7 +314,7 @@ const DiagnosticRecommendations = ({
             <div className={cx(classes.svgContainer)}>
               <DiagnosticParcelleSvg
                 geometry={geometry}
-                intersections={land_intersections_ld}
+                zones={zones}
                 onOptimalUtilsLoaded={(...props) => {
                   setOptimalZoneSoundClassificationHelper(
                     computeSoundClassificationHelpers(...props)

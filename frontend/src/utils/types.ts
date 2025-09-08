@@ -28,6 +28,7 @@ export type Diagnostic = {
   flags: DiagnosticFlags;
   land_intersections_ld: LandIntersection[];
   land_intersections_ln: LandIntersection[];
+  zones: Zone[];
   air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
   equivalent_ambiences: string[];
@@ -54,6 +55,11 @@ export type LandIntersection = {
   geometry_intersection: Geometry;
   percent_impacted: number;
   direction: Cardinality;
+};
+
+export type Zone = {
+  risk: number;
+  geometry: Geometry;
 };
 
 export type AirIntersection = {

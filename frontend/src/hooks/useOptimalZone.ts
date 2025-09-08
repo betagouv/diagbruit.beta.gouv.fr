@@ -1,12 +1,12 @@
 import inside from "point-in-polygon";
 import { useMemo } from "react";
 import { normalizeToRings } from "../utils/tools";
-import { LandIntersection } from "../utils/types";
+import { Zone } from "../utils/types";
 
 type ProjectedPoint = { x: number; y: number };
 type UseOptimalZoneOptions = {
   rings: [number, number][][];
-  intersections: LandIntersection[];
+  zones: Zone[];
   projectPoint: (pt: [number, number]) => ProjectedPoint;
   width: number;
   height: number;
@@ -16,7 +16,7 @@ type UseOptimalZoneOptions = {
 
 export function useOptimalZone({
   rings,
-  intersections,
+  zones,
   projectPoint,
   width,
   height,
@@ -41,29 +41,29 @@ export function useOptimalZone({
 
     const insidePoints = grid.filter((pt) => inside([pt.x, pt.y], rawPolygon));
 
-    const intersectionPixels = intersections.flatMap((intersection) =>
-      normalizeToRings(intersection.geometry_intersection).map((ring) => ({
-        legende: intersection.legende,
+    const zonePixels = zones.flatMap((zone) =>
+      normalizeToRings(zone.geometry).map((ring) => ({
+        risk: zone.risk,
         ring: ring.map(projectPoint),
       }))
     );
 
-    const sortedByDb = [...new Set(intersections.map((i) => i.legende))].sort(
+    const sortedByDb = [...new Set(zones.map((i) => i.risk))].sort(
       (a, b) => a - b
     );
-    const minDb = sortedByDb[0] ?? 0;
-    const maxDb = sortedByDb.at(-1) ?? 100;
+    const minRisk = sortedByDb[0] ?? 0;
+    const maxRisk = sortedByDb.at(-1) ?? 100;
 
     const pointInfos = insidePoints.map((pt) => {
       let minLegende: number | null = null;
-      const rings = intersectionPixels.filter(({ ring }) =>
+      const rings = zonePixels.filter(({ ring }) =>
         inside(
           [pt.x, pt.y],
           ring.map(({ x, y }) => [x, y] as [number, number])
         )
       );
       if (rings.length > 0) {
-        minLegende = Math.min(...rings.map((r) => r.legende));
+        minLegende = Math.min(...rings.map((r) => r.risk));
       }
       return { ...pt, legende: minLegende };
     });
@@ -71,7 +71,7 @@ export function useOptimalZone({
     const safePoints = pointInfos.filter((pt) => pt.legende === null);
 
     const distanceToContour = (pt: ProjectedPoint) => {
-      const allContours = intersectionPixels.flatMap(({ ring }) => ring);
+      const allContours = zonePixels.flatMap(({ ring }) => ring);
       return Math.min(
         ...allContours.map((c) => Math.hypot(c.x - pt.x, c.y - pt.y))
       );
@@ -89,9 +89,9 @@ export function useOptimalZone({
         { x: 0, y: 0, dist: -Infinity }
       );
     } else {
-      const minNoisePoints = pointInfos.filter((pt) => pt.legende === minDb);
-      const loudContours = intersectionPixels
-        .filter((i) => i.legende === maxDb)
+      const minNoisePoints = pointInfos.filter((pt) => pt.legende === minRisk);
+      const loudContours = zonePixels
+        .filter((i) => i.risk === maxRisk)
         .flatMap(({ ring }) => ring);
 
       bestPoint = minNoisePoints.reduce(
@@ -117,7 +117,7 @@ export function useOptimalZone({
     return { bestPoint, optimalZonePoints };
   }, [
     rings,
-    intersections,
+    zones,
     projectPoint,
     width,
     height,
