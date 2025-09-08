@@ -48,7 +48,10 @@ const ParcelleSearch = ({
   } = useForm<ParcelleFormData>({
     resolver: zodResolver(parcelleSchema),
     mode: "all",
-    defaultValues: formValues,
+    defaultValues: {
+      prefix: "000",
+      ...formValues,
+    },
   });
 
   const onSubmit = async (data: ParcelleFormData) => {
@@ -68,6 +71,24 @@ const ParcelleSearch = ({
       onParcelleRequested({ error }, data);
     }
     setIsLoading(false);
+  };
+
+  const handleInputChange = (
+    field: any,
+    fieldName: keyof ParcelleFormData,
+    value: string
+  ) => {
+    let formattedValue = value;
+    if (fieldName === "prefix") {
+      const digits = value.replace(/\D/g, "").slice(value.length - 3);
+      formattedValue = digits.padStart(3, "0");
+    } else if (fieldName === "numero") {
+      const digits = value.replace(/\D/g, "").slice(value.length - 4);
+      formattedValue = digits.padStart(4, "0");
+    } else if (fieldName === "section") {
+      formattedValue = value.toUpperCase().slice(0, 2);
+    }
+    field.onChange(formattedValue);
   };
 
   useEffect(() => {
@@ -96,8 +117,22 @@ const ParcelleSearch = ({
                 hintText={config.hintText}
                 stateRelatedMessage={config.patternText}
                 nativeInputProps={{
-                  ...field,
                   ...config.nativeInputProps,
+                  value: field.value || "",
+                  onChange: (e) => {
+                    const fieldName = name as keyof ParcelleFormData;
+                    if (
+                      fieldName === "prefix" ||
+                      fieldName === "numero" ||
+                      fieldName === "section"
+                    ) {
+                      handleInputChange(field, fieldName, e.target.value);
+                    } else {
+                      field.onChange(e.target.value);
+                    }
+                  },
+                  onBlur: field.onBlur,
+                  name: field.name,
                 }}
               />
             )}
@@ -140,8 +175,10 @@ const fieldsConfig: Record<
     patternText: "Exemple : 000, 001",
     hintText: "Saisissez les références de préfixe",
     nativeInputProps: {
+      inputMode: "numeric",
       pattern: "\\d{3}",
       type: "text",
+      placeholder: "000",
     },
   },
   section: {
@@ -156,11 +193,12 @@ const fieldsConfig: Record<
   numero: {
     label: "Numéro de parcelle",
     hintText: "Saisissez les références de parcelle",
-    patternText: "Exemple : 0545, 01",
+    patternText: "Exemple : 0545, 0001",
     nativeInputProps: {
       inputMode: "numeric",
       pattern: "\\d{4}",
       type: "text",
+      placeholder: "0000",
     },
   },
 };
