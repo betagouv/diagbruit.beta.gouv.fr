@@ -14,12 +14,21 @@ def _geometry_from_intersection(intersection):
         return None
 
     try:
+        geom = shape({"type": "MultiPolygon", "coordinates": coords})
+        if not geom.is_valid:
+            geom = geom.buffer(0)
+        return geom
+    except Exception:
+        pass
+
+    try:
         geom = shape({"type": "Polygon", "coordinates": coords})
         if not geom.is_valid:
             geom = geom.buffer(0)
         return geom
     except Exception:
         return None
+
 
 def get_zones_from_intersections(intersections):
     levels = load_land_levels('LD')
@@ -39,7 +48,6 @@ def get_zones_from_intersections(intersections):
         if not geoms:
             continue
         merged = unary_union(geoms)
-        # Clean
         if not merged.is_valid:
             merged = merged.buffer(0)
         if not merged.is_empty:
