@@ -29,7 +29,6 @@ def _utm_transformer_for_geom(geom):
     Choisit automatiquement une projection UTM (EPSG:326xx/327xx) selon la position.
     Retourne une fonction de transformation WGS84 -> mètres.
     """
-    # Point représentatif sûr (intérieur à la géométrie)
     rep = geom.representative_point()
     lon, lat = rep.x, rep.y
     zone = int((lon + 180) // 6) + 1
