@@ -23,7 +23,7 @@ def test_get_land_score_from_sources_cases(input_path):
         intersections_agglo=case["intersections_agglo"],
         intersections_infra=case["intersections_infra"],
         indicetype=case["indicetype"],
-        percent_unimpacted=0
+        percent_unimpacted=0,
     )
 
     assert result == case["expected_score"], (
