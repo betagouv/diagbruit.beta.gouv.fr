@@ -1,5 +1,12 @@
-
 from .score_land_transport import get_land_score_from_sources
+from .score_land_transport import compute_intersection_score
+from .score_land_transport import load_land_levels
+from .score_land_transport import group_intersections_by_identifier
+
+from .zones import get_zones_from_intersections
+
 from .score_air import get_air_score_from_sources
+
 from .classification_warning import get_classification_warning
+
 from .recommendations import get_recommendations_by_score

@@ -1,10 +1,10 @@
 import copy
 
-from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning, get_recommendations_by_score)
+from .modules import (get_land_score_from_sources, get_air_score_from_sources, get_classification_warning, get_zones_from_intersections)
 from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
 
 
-def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, percent_unimpacted):
+def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, percent_unimpacted, populate):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
@@ -79,6 +79,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Return noisemap intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
+
+    # Return the big zones of risks
+    diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld']) if populate.zones else []
 
     # Flags
     diagnostic['flags']['isMultiExposedSources'] = ((1 if len(filter_land_intersections_by_codeinfra(land_intersections_ld_cbs_A)) > 0 else 0) + (1 if len(diagnostic['air_intersections']) > 0 else 0)) > 1

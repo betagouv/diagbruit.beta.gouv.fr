@@ -2,6 +2,7 @@ import json
 import pytest
 from pathlib import Path
 from app.algorithm import get_parcelle_diagnostic
+from app.routes.diag import Populate
 
 
 def collect_test_cases():
@@ -23,7 +24,8 @@ def test_get_land_score_from_sources_cases(input_path):
         noisemap_intersections=case["noisemap_intersections"],
         soundclassification_intersections=case["soundclassification_intersections"],
         peb_intersections=case["peb_intersections"],
-        percent_unimpacted=0
+        percent_unimpacted=0,
+        populate=Populate(zones=False)
     )
 
     assert diagnostic['score'] == case["expected_score"], (

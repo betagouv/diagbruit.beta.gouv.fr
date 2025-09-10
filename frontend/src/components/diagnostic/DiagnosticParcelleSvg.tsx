@@ -4,15 +4,16 @@ import { useOptimalZone } from "../../hooks/useOptimalZone";
 import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
   getColorFromLegende,
+  getColorFromRisk,
   mergeRings,
   normalizeToRings,
   transparentize,
 } from "../../utils/tools";
-import { Geometry, LandIntersection } from "../../utils/types";
+import { Geometry, Zone } from "../../utils/types";
 
 type DiagnosticParcelleSvgProps = {
   geometry: Geometry;
-  intersections: LandIntersection[];
+  zones: Zone[];
   width?: number;
   padding?: number;
   onOptimalUtilsLoaded: (
@@ -26,7 +27,7 @@ const BOX_SIZE = 400;
 
 const DiagnosticParcelleSvg = ({
   geometry,
-  intersections,
+  zones,
   width = BOX_SIZE,
   padding = 10,
   onOptimalUtilsLoaded,
@@ -55,7 +56,7 @@ const DiagnosticParcelleSvg = ({
 
   const { optimalZonePoints, bestPoint } = useOptimalZone({
     rings,
-    intersections,
+    zones,
     projectPoint,
     width,
     height: computedHeight,
@@ -75,17 +76,15 @@ const DiagnosticParcelleSvg = ({
   return (
     <div style={{ position: "relative", width, height: computedHeight }}>
       <svg width={width} height={computedHeight} ref={svgRef}>
-        {[...intersections]
-          .sort((a, b) => a.legende - b.legende)
-          .flatMap((intersection, index) => {
-            const color = getColorFromLegende(intersection.legende);
-            const intersectionRings = normalizeToRings(
-              intersection.geometry_intersection
-            );
+        {[...zones]
+          .sort((a, b) => a.risk - b.risk)
+          .flatMap((zone, index) => {
+            const color = getColorFromRisk(zone.risk);
+            const intersectionRings = normalizeToRings(zone.geometry);
 
             return intersectionRings.map((ring, i) => (
               <path
-                key={`intersection-${index}-${intersection.legende}-${i}`}
+                key={`intersection-${index}-${zone.risk}-${i}`}
                 d={smoothPolygon(ring.map(projectPoint))}
                 fill={transparentize(color, 0.8, false)}
                 strokeWidth={0}

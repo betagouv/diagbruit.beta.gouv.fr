@@ -26,6 +26,13 @@ export const getColorFromScore = (score: number): string => {
   return "#4B9F6C";
 };
 
+export const getColorFromRisk = (risk: number): string => {
+  if (risk > 2) return "#F95A5C";
+  if (risk > 1) return "#FA7659";
+  if (risk > 0) return "#CB9F2D";
+  return "#4B9F6C";
+};
+
 export const getColorFromLegende = (legende: number): string => {
   if (legende >= 70) return "#F95A5C";
   if (legende >= 65) return "#FA7659";
@@ -43,13 +50,10 @@ export const getTextFromScore = (
   return lowercase ? "faible" : "FAIBLE";
 };
 
-export const getTextFromLegende = (
-  legende: number,
-  lowercase?: boolean
-): string => {
-  if (legende >= 70) return lowercase ? "extrême" : "EXTRÊME";
-  if (legende >= 65) return lowercase ? "fort" : "FORT";
-  if (legende >= 60) return lowercase ? "moyen" : "MOYEN";
+export const getTextFromRisk = (risk: number, lowercase?: boolean): string => {
+  if (risk > 2) return lowercase ? "extrême" : "EXTRÊME";
+  if (risk > 1) return lowercase ? "fort" : "FORT";
+  if (risk > 0) return lowercase ? "moyen" : "MOYEN";
   return lowercase ? "faible" : "FAIBLE";
 };
 
