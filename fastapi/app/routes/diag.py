@@ -21,19 +21,25 @@ from concurrent.futures import ThreadPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=4)
 
+class Populate(BaseModel):
+    zones: bool = Field(False, example=False)
 
 class ParcelleRequest(BaseModel):
     code_insee: str = Field(..., example="33063")
     section: str = Field(..., example="CE")
     numero: str = Field(..., example="0019")
 
+class SingleParcelleRequest(BaseModel):
+    parcelle: ParcelleRequest
+    populate: Populate
 
 class MultiParcelleRequest(BaseModel):
-    parcelles: List[ParcelleRequest]
+    parcelles: List[SingleParcelleRequest]
 
 
 class GeometryItem(BaseModel):
     parcelle: ParcelleRequest
+    populate: Populate
     geometry: Union[
         List[List[List[float]]],
         List[List[List[List[float]]]]
@@ -74,21 +80,21 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-async def process_parcelle(parcelle: ParcelleRequest):
+async def process_parcelle(parcelle: ParcelleRequest, populate: Populate):
     try:
         coordinates = await get_parcelle_coordinates(
             code_insee=parcelle.code_insee,
             section=parcelle.section,
             numero=parcelle.numero
         )
-        return {"parcelle": parcelle, "coordinates": coordinates}
+        return {"parcelle": parcelle, "coordinates": coordinates, "populate": populate}
     except HTTPException as e:
         return {"parcelle": parcelle, "error": {"status_code": e.status_code, "detail": e.detail}}
     except Exception as e:
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
 
-def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str):
+def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Populate):
     db = SessionLocal()
     try:
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
@@ -99,15 +105,16 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str):
             noisemap.get('intersections', []),
             sound.get('intersections', []),
             peb.get('intersections', []),
-            percent_unimpacted
+            percent_unimpacted,
+            populate
         )
     finally:
         db.close()
 
 
-async def generate_diagnostic_async(polygon_wkt: str, codedept: str):
+async def generate_diagnostic_async(polygon_wkt: str, codedept: str, populate: Populate):
     loop = asyncio.get_running_loop()
-    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt, codedept)
+    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt, codedept, populate)
     return copy.deepcopy(diagnostic)
 
 
@@ -115,7 +122,7 @@ async def generate_diagnostic_async(polygon_wkt: str, codedept: str):
 async def generate_diag_from_parcelles(
     request: MultiParcelleRequest
 ):
-    results = await asyncio.gather(*(process_parcelle(p) for p in request.parcelles))
+    results = await asyncio.gather(*(process_parcelle(p.parcelle, p.populate) for p in request.parcelles))
 
     async def process_result(result):
         if "error" in result:
@@ -131,9 +138,12 @@ async def generate_diag_from_parcelles(
             )
 
         try:
+            print(result)
+            populate = result["populate"]
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
             codedept = f"0{result['parcelle'].code_insee[:2]}"
-            diagnostic = await generate_diagnostic_async(polygone, codedept)
+
+            diagnostic = await generate_diagnostic_async(polygone, codedept, populate)
 
             asyncio.create_task(upsert_diagnostic_result(
                 code_insee=result['parcelle'].code_insee,
@@ -173,9 +183,10 @@ async def generate_diag_from_geometry(
             )
 
         try:
+            populate = item.populate
             polygone = create_multipolygon_from_coordinates(item.geometry)
             codedept = f"0{item.parcelle.code_insee[:2]}"
-            diagnostic = await generate_diagnostic_async(polygone, codedept)
+            diagnostic = await generate_diagnostic_async(polygone, codedept, populate)
             
             asyncio.create_task(upsert_diagnostic_result(
                 code_insee=item.parcelle.code_insee,

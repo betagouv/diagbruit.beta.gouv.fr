@@ -30,6 +30,9 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
     const mainParcelle = {
       parcelle: { code_insee, section, numero },
       geometry: parcelle.geometry.coordinates,
+      populate: {
+        zones: true,
+      },
     };
 
     const siblings = parcelleSiblings.map((sibling) => {
@@ -41,28 +44,19 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
           numero: numero.toString().padStart(4, "0"),
         },
         geometry: sibling.geometry.coordinates,
+        populate: {
+          zone: false,
+        },
       };
     });
 
-    const allRequested = [mainParcelle, ...siblings];
-
     const archivedIds = new Set(archives.map((a) => getParcelleId(a.parcelle)));
 
-    const itemsToRequest = allRequested.filter(
+    const siblingsToRequest = siblings.filter(
       (item) => !archivedIds.has(getParcelleId(item.parcelle))
     );
 
-    if (itemsToRequest.length === 0) {
-      const diagnostics = allRequested
-        .map((p) => {
-          const id = getParcelleId(p.parcelle);
-          return archives.find((a) => getParcelleId(a.parcelle) === id);
-        })
-        .filter(Boolean) as DiagnosticItem[];
-
-      setResponse({ diagnostics });
-      return;
-    }
+    const itemsToRequest = [mainParcelle, ...siblingsToRequest];
 
     setIsLoading(true);
     setError(undefined);
@@ -87,15 +81,19 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
         } else {
           res.json().then((apiResponse: DiagnosticResponseOk) => {
             const newDiagnostics = apiResponse.diagnostics;
+            const newDiagnosticsIds = new Set(
+              newDiagnostics.map((item) => getParcelleId(item.parcelle))
+            );
 
             const updatedArchives = [
-              ...archives,
-              ...newDiagnostics.filter(
-                (item) => !archivedIds.has(getParcelleId(item.parcelle))
+              ...archives.filter(
+                (archive) =>
+                  !newDiagnosticsIds.has(getParcelleId(archive.parcelle))
               ),
+              ...newDiagnostics,
             ];
 
-            const diagnostics = allRequested
+            const diagnostics = [mainParcelle, ...siblings]
               .map((p) => {
                 const id = getParcelleId(p.parcelle);
                 return updatedArchives.find(
