@@ -2,35 +2,54 @@ from . import (compute_intersection_score, load_land_levels, group_intersections
 from app.utils import get_risk_from_score
 from collections import defaultdict
 from shapely.geometry import shape, mapping, MultiPolygon, Polygon
-from shapely.ops import unary_union
+from shapely.ops import unary_union, transform
+import pyproj
 
 def _geometry_from_intersection(intersection):
     """
     Build a Shapely geometry from the intersection's 'geometry_intersection' field.
-    The input looks like a GeoJSON MultiPolygon coordinates array.
+    The input looks like a GeoJSON MultiPolygon/Polygon coordinates array (in EPSG:4326).
     """
     coords = intersection.get("geometry_intersection")
     if not coords:
         return None
 
-    try:
-        geom = shape({"type": "MultiPolygon", "coordinates": coords})
-        if not geom.is_valid:
-            geom = geom.buffer(0)
-        return geom
-    except Exception:
-        pass
+    for gtype in ("MultiPolygon", "Polygon"):
+        try:
+            geom = shape({"type": gtype, "coordinates": coords})
+            if not geom.is_valid:
+                geom = geom.buffer(0)
+            return geom
+        except Exception:
+            continue
+    return None
 
-    try:
-        geom = shape({"type": "Polygon", "coordinates": coords})
-        if not geom.is_valid:
-            geom = geom.buffer(0)
-        return geom
-    except Exception:
-        return None
+def _utm_transformer_for_geom(geom):
+    """
+    Choisit automatiquement une projection UTM (EPSG:326xx/327xx) selon la position.
+    Retourne une fonction de transformation WGS84 -> mètres.
+    """
+    # Point représentatif sûr (intérieur à la géométrie)
+    rep = geom.representative_point()
+    lon, lat = rep.x, rep.y
+    zone = int((lon + 180) // 6) + 1
+    epsg = (32600 if lat >= 0 else 32700) + zone  # 326 = hém. Nord, 327 = Sud
+    return pyproj.Transformer.from_crs("EPSG:4326", f"EPSG:{epsg}", always_xy=True).transform
 
+def _area_m2(geom):
+    """
+    Calcule l'aire en m² en reprojetant la géométrie en UTM local.
+    """
+    project = _utm_transformer_for_geom(geom)
+    geom_m = transform(project, geom)
+    return geom_m.area
 
-def get_zones_from_intersections(intersections):
+def get_zones_from_intersections(intersections, min_area=1.0):
+    """
+    Produit des 'zones' par niveau de risque.
+    - Sortie: geometry = coordonnées uniquement (sans 'type'), en EPSG:4326
+    - Filtre les géométries dont l'aire < min_area (m²)
+    """
     levels = load_land_levels('LD')
     grouped = group_intersections_by_identifier(intersections)
 
@@ -66,10 +85,7 @@ def get_zones_from_intersections(intersections):
         if geom.is_empty:
             continue
 
-        if cumulative_higher is None:
-            clipped = geom
-        else:
-            clipped = geom.difference(cumulative_higher)
+        clipped = geom if cumulative_higher is None else geom.difference(cumulative_higher)
 
         if clipped.is_empty:
             continue
@@ -78,10 +94,31 @@ def get_zones_from_intersections(intersections):
         if clipped.is_empty:
             continue
 
+        valid_coords = []
+
+        if clipped.geom_type == "Polygon":
+            if _area_m2(clipped) >= min_area:
+                valid_coords = [list(clipped.exterior.coords)]
+        elif clipped.geom_type == "MultiPolygon":
+            for p in clipped.geoms:
+                if p.is_empty:
+                    continue
+                if not p.is_valid:
+                    p = p.buffer(0)
+                    if p.is_empty:
+                        continue
+                if _area_m2(p) >= min_area:
+                    valid_coords.append(list(p.exterior.coords))
+        else:
+            pass
+
+        if not valid_coords:
+            cumulative_higher = clipped if cumulative_higher is None else unary_union([cumulative_higher, clipped])
+            continue
+
         zones.append({
             "risk": risk,
-            "geometry": [list(clipped.exterior.coords)] if clipped.geom_type == "Polygon"
-            else [list(p.exterior.coords) for p in clipped.geoms]
+            "geometry": valid_coords
         })
 
         cumulative_higher = clipped if cumulative_higher is None else unary_union([cumulative_higher, clipped])

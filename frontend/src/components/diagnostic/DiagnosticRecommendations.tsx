@@ -324,9 +324,7 @@ const DiagnosticRecommendations = ({
             </div>
           </div>
           <div className={cx(classes.notice, fr.cx("fr-col-lg-5"))}>
-            <DiagnosticParcelleSvgNotice
-              intersections={land_intersections_ld}
-            />
+            <DiagnosticParcelleSvgNotice zones={zones} />
           </div>
         </div>
       </div>

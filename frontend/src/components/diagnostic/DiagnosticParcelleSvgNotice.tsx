@@ -2,18 +2,18 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { tss } from "tss-react/dsfr";
 import {
-  getColorFromLegende,
-  getTextFromLegende,
+  getColorFromRisk,
+  getTextFromRisk,
   transparentize,
 } from "../../utils/tools";
-import { LandIntersection } from "../../utils/types";
+import { Zone } from "../../utils/types";
 
 type DiagnosticParcelleSvgNoticeProps = {
-  intersections: LandIntersection[];
+  zones: Zone[];
 };
 
 const DiagnosticParcelleSvgNotice = ({
-  intersections,
+  zones,
 }: DiagnosticParcelleSvgNoticeProps) => {
   const { classes } = useStyles();
 
@@ -32,14 +32,11 @@ const DiagnosticParcelleSvgNotice = ({
         </div>
         {Array.from(
           new Map(
-            intersections.map((item) => [
-              getColorFromLegende(item.legende),
-              item,
-            ])
+            zones.map((zone) => [getColorFromRisk(zone.risk), zone])
           ).values()
         )
-          .sort((a, b) => a.legende - b.legende)
-          .map((intersection, index) => (
+          .sort((a, b) => a.risk - b.risk)
+          .map((zone, index) => (
             <div
               className={classes.noticeIntersection}
               key={`interesection-${index}`}
@@ -47,15 +44,14 @@ const DiagnosticParcelleSvgNotice = ({
               <span
                 style={{
                   backgroundColor: transparentize(
-                    getColorFromLegende(intersection.legende),
+                    getColorFromRisk(zone.risk),
                     0.8,
                     false
                   ),
                 }}
               />
               <div className={fr.cx("fr-text--md")}>
-                Risque de niveau{" "}
-                {getTextFromLegende(intersection.legende, true)}
+                Risque de niveau {getTextFromRisk(zone.risk, true)}
               </div>
             </div>
           ))}

@@ -50,13 +50,10 @@ export const getTextFromScore = (
   return lowercase ? "faible" : "FAIBLE";
 };
 
-export const getTextFromLegende = (
-  legende: number,
-  lowercase?: boolean
-): string => {
-  if (legende >= 70) return lowercase ? "extrême" : "EXTRÊME";
-  if (legende >= 65) return lowercase ? "fort" : "FORT";
-  if (legende >= 60) return lowercase ? "moyen" : "MOYEN";
+export const getTextFromRisk = (risk: number, lowercase?: boolean): string => {
+  if (risk > 2) return lowercase ? "extrême" : "EXTRÊME";
+  if (risk > 1) return lowercase ? "fort" : "FORT";
+  if (risk > 0) return lowercase ? "moyen" : "MOYEN";
   return lowercase ? "faible" : "FAIBLE";
 };
 
