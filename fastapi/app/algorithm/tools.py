@@ -23,6 +23,18 @@ default_diagnostic = {
     'soundclassification_intersections': [],
 }
 
+DIRECTION_PRIORITIES = {
+    "N":  {"N": 0, "NE": 1, "NW": 1},
+    "NE": {"NE": 0, "N": 1, "E": 1},
+    "E":  {"E": 0, "NE": 1, "SE": 1},
+    "SE": {"SE": 0, "E": 1, "S": 1},
+    "S":  {"S": 0, "SE": 1, "SW": 1},
+    "SW": {"SW": 0, "S": 1, "W": 1},
+    "W":  {"W": 0, "SW": 1, "NW": 1},
+    "NW": {"NW": 0, "W": 1, "N": 1},
+}
+
+
 def get_filtered_land_intersections(noisemap_intersections):
     """
     Get all the filtered arrays needed to calculate score in modules.

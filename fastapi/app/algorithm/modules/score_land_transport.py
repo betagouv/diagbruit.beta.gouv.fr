@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 from collections import defaultdict
+from ..tools import DIRECTION_PRIORITIES
 
 
 def load_config():
@@ -64,13 +65,53 @@ def compute_aggregated_score_for_intersections(intersections, levels, all_inters
     ])
 
 
+def find_similar_intersections(item, intersections):
+    """
+    Return intersections that:
+      - have a non-null codeinfra
+      - have the same typesource
+      - have a direction equal to, +45°, or -45° vs the given item
+      - have a legende within ±5 of the item's legende
+    Ordered by closeness: 0° first, then ±45°.
+    """
+    item_dir = item.get("direction")
+    item_legende = item.get("legende")
+    item_typesource = item.get("typesource")
+
+    priority_map = DIRECTION_PRIORITIES.get(item_dir, {})
+
+    candidates = [
+        other for other in intersections
+        if other.get("codeinfra") not in (None, "")
+        and other.get("typesource") == item_typesource
+        and other.get("direction") in priority_map
+        and other.get("legende") is not None
+        and abs(other.get("legende") - item_legende) <= 5
+    ]
+
+    return sorted(candidates, key=lambda x: priority_map[x["direction"]])
+
+
+def determine_codeinfra(item, intersections):
+
+    if item['codeinfra'] is not None:
+        return item['codeinfra']
+
+    similar = find_similar_intersections(item, intersections)
+
+    if len(similar):
+        return similar[0].get('codeinfra')
+
+    return 'NONE'
+
+
 def group_intersections_by_identifier(intersections):
     """
     Groups intersections by a unique identifier based on the (typesource, codeinfra) pair.
     """
     grouped = defaultdict(list)
     for item in intersections:
-        identifier = f"{item['typesource']}_{item['codeinfra']}"
+        identifier = f"INTERSECTIONS_{item['typesource']}_{determine_codeinfra(item, intersections)}"
         grouped[identifier].append(item)
     return grouped
 
