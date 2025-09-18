@@ -38,6 +38,7 @@ env/
 
 # FastAPI / Uvicorn logs
 fastapi/*.log
+fastapi/colorizer
 
 # VS Code / PyCharm / IDEs
 .vscode/
