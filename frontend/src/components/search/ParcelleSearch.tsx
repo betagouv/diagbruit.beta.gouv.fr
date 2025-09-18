@@ -79,12 +79,14 @@ const ParcelleSearch = ({
     value: string
   ) => {
     let formattedValue = value;
-    if (fieldName === "prefix") {
-      const digits = value.replace(/\D/g, "").slice(value.length - 3);
-      formattedValue = digits.padStart(3, "0");
-    } else if (fieldName === "numero") {
-      const digits = value.replace(/\D/g, "").slice(value.length - 4);
-      formattedValue = digits.padStart(4, "0");
+    console.log(value);
+    if (fieldName === "prefix" || fieldName === "numero") {
+      const valueMaxLength = fieldName === "prefix" ? 3 : 4;
+      const digits =
+        value.length > valueMaxLength
+          ? value.replace(/\D/g, "").slice(value.length - valueMaxLength)
+          : value;
+      formattedValue = digits.padStart(valueMaxLength, "0");
     } else if (fieldName === "section") {
       formattedValue = value.toUpperCase().slice(0, 2);
     }
@@ -178,7 +180,6 @@ const fieldsConfig: Record<
       inputMode: "numeric",
       pattern: "\\d{3}",
       type: "text",
-      placeholder: "000",
     },
   },
   section: {
@@ -198,7 +199,6 @@ const fieldsConfig: Record<
       inputMode: "numeric",
       pattern: "\\d{4}",
       type: "text",
-      placeholder: "0000",
     },
   },
 };
