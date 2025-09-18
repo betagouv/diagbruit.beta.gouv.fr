@@ -111,7 +111,7 @@ def group_intersections_by_identifier(intersections):
     """
     grouped = defaultdict(list)
     for item in intersections:
-        identifier = f"INTERSECTIONS_{item['typesource']}_{determine_codeinfra(item, intersections)}"
+        identifier = f"{item['typesource']}_INTERSECTIONS_{determine_codeinfra(item, intersections)}"
         grouped[identifier].append(item)
     return grouped
 
