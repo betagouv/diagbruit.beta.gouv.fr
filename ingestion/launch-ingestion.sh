@@ -11,7 +11,7 @@ run_ingest() {
 download_batiment_files() {
   local target_dir="inputs/topo/DEPT_033/batiment"
   local base_url="https://diagbruit.s3.eu-west-3.amazonaws.com/data/topo/DEPT_033/batiment"
-  local files=("BATIMENT.cpg" "BATIMENT.shp" "BATIMENT.prj" "BATIMENT.dbf" "BATIMENT.shx")
+  local files=("export_batiment_construction_bdnb.cpg" "export_batiment_construction_bdnb.shp" "export_batiment_construction_bdnb.prj" "export_batiment_construction_bdnb.dbf" "export_batiment_construction_bdnb.shx")
   
   local need_download=false
   for file in "${files[@]}"; do
@@ -110,7 +110,7 @@ FILES_PEB=(
 )
 
 FILES_TOPO=(
-  "inputs/topo/DEPT_033/batiment/BATIMENT.shp raw_topo --if-exists replace"
+  "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_topo --if-exists replace"
 )
 
 # Download batiment files from S3 if needed

@@ -6,17 +6,39 @@ models:
     columns:
       - name: pk
         description: "Primary key"
-      - name: id
-        description: "Original feature ID"
+      - name: fid
+        description: "Original feature identifier (float8)"
       - name: polygon_id
-        description: "Unique polygon identifier"
-      - name: nature
-        description: "Nature of the topographic feature"
-      - name: usage1
-        description: "Primary usage"
-      - name: usage2
-        description: "Secondary usage"
+        description: "Unique polygon identifier (fid + geom_idx)"
+      - name: batiment_c
+        description: "Building classification code"
+      - name: batiment_g
+        description: "Building group identifier"
+      - name: code_depar
+        description: "Department code"
+      - name: code_iris
+        description: "IRIS statistical area code"
+      - name: code_commu
+        description: "Commune code"
+      - name: s_geom_cst
+        description: "Geometry constraint surface"
+      - name: hauteur
+        description: "Building height in meters"
+      - name: altitude_s
+        description: "Surface altitude in meters"
+      - name: fictive_ge
+        description: "Fictive geometry indicator"
       - name: geometry
         description: "Geometry in EPSG:4326"
       - name: area_m2
         description: "Area in square meters"
+      - name: srid
+        description: "Spatial reference identifier (4326)"
+      - name: original_is_valid
+        description: "Original geometry validity status"
+      - name: original_validity_reason
+        description: "Original geometry validation reason"
+      - name: is_valid_now
+        description: "Current geometry validity status"
+      - name: geometry_type
+        description: "PostGIS geometry type"
