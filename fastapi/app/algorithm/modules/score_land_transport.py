@@ -51,8 +51,14 @@ def compute_aggregated_score_for_intersections(intersections, levels, all_inters
     for item in intersections:
         grouped_by_legende[item['legende']].append(item)
 
-    reduced_list = sorted([items[0] for items in grouped_by_legende.values() if items[0].get('typeterr') != 'AGGLO'], key=lambda item: item.get('percent_impacted', 0), reverse=True)
-
+    all_items = [items[0] for items in grouped_by_legende.values()]
+    has_infra = any(item.get('typeterr') == 'INFRA' for item in all_items)
+    if has_infra:
+        filtered_items = [item for item in all_items if item.get('typeterr') != 'AGGLO']
+    else:
+        filtered_items = all_items
+    reduced_list = sorted(filtered_items, key=lambda item: item.get('percent_impacted', 0), reverse=True)
+    
     threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
     if len(reduced_list) >= 2:
         p1 = reduced_list[0].get('percent_impacted', 0)
