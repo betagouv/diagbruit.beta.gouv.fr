@@ -1,10 +1,10 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import func, cast
+from sqlalchemy import select, func, cast
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, PebItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, TopoItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -25,6 +25,70 @@ def load_config():
 CONFIG = load_config()
 
 logger = logging.getLogger('uvicorn.error')
+
+
+def query_topo_buildings_between(db: Session, wkt_geometry: str, source_point_geom) -> List[Dict[str, Any]]:
+    """
+    Query topo buildings that are between the land (wkt_geometry) and the road (source_point_geom).
+    Uses ST_MakeLine to create a line between centroids and finds buildings intersecting this corridor.
+    """
+    try:
+        land_geom = func.ST_GeomFromText(wkt_geometry, 4326)
+        land_centroid = func.ST_Centroid(land_geom)
+        
+        line_geom = func.ST_MakeLine(land_centroid, source_point_geom)
+        
+        corridor_geom = func.ST_Buffer(func.ST_Transform(line_geom, 2154), 50)  # 50m buffer in Lambert93
+        corridor_geom_4326 = func.ST_Transform(corridor_geom, 4326)
+
+        stmt = select(
+            func.ST_AsText(land_geom).label("land"),
+            func.ST_AsText(source_point_geom).label("source_point"),
+            func.ST_AsText(corridor_geom_4326).label("corridor")
+        )
+
+        result = db.execute(stmt).first()
+
+
+        print("Land:", result.land)
+        print("Source point:", result.source_point)
+        print("Corridor:", result.corridor)
+
+        stmt = db.query(
+            TopoItem.fid,
+            TopoItem.polygon_id,
+            TopoItem.batiment_c,
+            TopoItem.hauteur,
+            TopoItem.area_m2,
+            cast(func.ST_AsGeoJSON(TopoItem.geometry), Text).label("geometry")
+        ).filter(
+            func.ST_Intersects(TopoItem.geometry, corridor_geom_4326),
+            TopoItem.is_valid_now == 'true'
+        )
+        
+        result = []
+        for r in stmt.all():
+            try:
+                geometry_parsed = json.loads(r.geometry)
+                geometry_coords = geometry_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse topo geometry: {parse_err}")
+                geometry_coords = None
+                
+            result.append({
+                "fid": r.fid,
+                "polygon_id": r.polygon_id,
+                "batiment_c": r.batiment_c,
+                "hauteur": r.hauteur,
+                "area_m2": r.area_m2,
+                "geometry": geometry_coords
+            })
+            
+        return result
+        
+    except Exception as e:
+        logger.error(f"Database error in topo buildings query: {str(e)}")
+        return []
 
 
 def determine_cardinality(safe_centroid, intersection_centroid):
@@ -214,9 +278,15 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             try:
                 geometry_source_point_parsed = json.loads(r.geometry_source_point)
                 geometry_source_point = geometry_source_point_parsed["coordinates"]
+                source_point_geom = func.ST_GeomFromText(f"POINT({geometry_source_point[0]} {geometry_source_point[1]})", 4326)
             except Exception as parse_err:
                 logger.warning(f"Could not parse source_point: {parse_err}")
                 geometry_source_point = None
+                source_point_geom = None
+
+            topo_buildings = []
+            if source_point_geom is not None:
+                topo_buildings = query_topo_buildings_between(db, wkt_geometry, source_point_geom)
 
             result.append({
                 "source": r.source,
@@ -227,6 +297,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "percent_impacted": percent_impacted,
                 "geometry_source_point": geometry_source_point,
                 "geometry_intersection": geometry_intersection,
+                "topo": topo_buildings
             })
 
         return {
