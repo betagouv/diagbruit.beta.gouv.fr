@@ -7,61 +7,25 @@ sources:
       - name: raw_topo
         description: "Raw topographic data imported from shapefiles"
         columns:
-          - name: id
-            description: "Unique identifier"
-          - name: nature
-            description: "Nature of the topographic feature"
-          - name: usage1
-            description: "Primary usage"
-          - name: usage2
-            description: "Secondary usage"
-          - name: leger
-            description: "Light construction indicator"
-          - name: etat
-            description: "State of the feature"
-          - name: date_creat
-            description: "Creation date"
-          - name: date_maj
-            description: "Last update date"
-          - name: date_app
-            description: "Approval date"
-          - name: date_conf
-            description: "Confirmation date"
-          - name: source
-            description: "Data source"
-          - name: id_source
-            description: "Source identifier"
-          - name: acqu_plani
-            description: "Planimetric acquisition method"
-          - name: acqu_alti
-            description: "Altimetric acquisition method"
-          - name: prec_plani
-            description: "Planimetric precision"
-          - name: prec_alti
-            description: "Altimetric precision"
-          - name: nb_logts
-            description: "Number of housing units"
-          - name: nb_etages
-            description: "Number of floors"
-          - name: mat_murs
-            description: "Wall material"
-          - name: mat_toits
-            description: "Roof material"
+          - name: fid
+            description: "Feature identifier (float8)"
+          - name: batiment_c
+            description: "Building classification code (text)"
+          - name: batiment_g
+            description: "Building group identifier (text)"
+          - name: code_depar
+            description: "Department code (text)"
+          - name: code_iris
+            description: "IRIS statistical area code (text)"
+          - name: code_commu
+            description: "Commune code (text)"
+          - name: s_geom_cst
+            description: "Geometry constraint surface (int8)"
           - name: hauteur
-            description: "Height"
-          - name: z_min_sol
-            description: "Minimum ground elevation"
-          - name: z_min_toit
-            description: "Minimum roof elevation"
-          - name: z_max_toit
-            description: "Maximum roof elevation"
-          - name: z_max_sol
-            description: "Maximum ground elevation"
-          - name: origin_bat
-            description: "Building origin"
-          - name: app_ff
-            description: "Application FF"
-          - name: ids_rnb
-            description: "RNB identifiers"
+            description: "Building height in meters (float8)"
+          - name: altitude_s
+            description: "Surface altitude in meters (float8)"
+          - name: fictive_ge
+            description: "Fictive geometry indicator (int4)"
           - name: geometry
-            description: "Geometry data in WKT format"
+            description: "PostGIS geometry data in EPSG:2154"
