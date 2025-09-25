@@ -1,5 +1,6 @@
 from .noisemap import NoiseMapItem
 from .soundclassification import SoundClassificationItem
+from .soundclassification_roads import SoundClassificationRoadsItem
 from .peb import PebItem
 from .result import Result
 from .topo import TopoItem

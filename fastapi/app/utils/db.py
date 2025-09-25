@@ -1,10 +1,10 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, cast
+from sqlalchemy import select, func, cast, case
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, TopoItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem,)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -27,64 +27,108 @@ CONFIG = load_config()
 logger = logging.getLogger('uvicorn.error')
 
 
-def query_topo_buildings_between(db: Session, wkt_geometry: str, source_point_geom) -> List[Dict[str, Any]]:
+def query_topo_buildings_between(db: Session, wkt_geometry: str, source_point_geom, geometry_source) -> List[Dict[str, Any]]:
     """
     Query topo buildings that are between the land (wkt_geometry) and the road (source_point_geom).
     Uses ST_MakeLine to create a line between centroids and finds buildings intersecting this corridor.
     """
     try:
         land_geom = func.ST_GeomFromText(wkt_geometry, 4326)
-        land_centroid = func.ST_Centroid(land_geom)
-        
-        line_geom = func.ST_MakeLine(land_centroid, source_point_geom)
-        
-        corridor_geom = func.ST_Buffer(func.ST_Transform(line_geom, 2154), 50)  # 50m buffer in Lambert93
-        corridor_geom_4326 = func.ST_Transform(corridor_geom, 4326)
+
+        # Géométries d'entrée
+        land_4326 = func.ST_GeomFromText(wkt_geometry, 4326)
+        source_4326 = func.ST_Transform(source_point_geom, 4326)  # PB (point source)
+        road_2154 = func.ST_Transform(geometry_source, 2154)  # ta "droite B" (LINE/MULTILINE) en 2154
+
+        # Reprojeter en 2154 (métrique) pour les calculs
+        land_2154 = func.ST_Transform(land_4326, 2154)
+        src_2154 = func.ST_Transform(source_4326, 2154)
+
+        # Segment A (PA -> PB)
+        closest_seg_2154 = func.ST_ShortestLine(land_2154, src_2154)
+        pa_2154 = func.ST_StartPoint(closest_seg_2154)
+        pb_2154 = func.ST_EndPoint(closest_seg_2154)
+
+        # Angle +5° autour de PA
+        az = func.ST_Azimuth(pa_2154, pb_2154)  # radians
+        dir_rot = az + func.radians(5.0)
+
+        # On fabrique un "point très loin" dans la direction rotée (demi-droite)
+        L = 1_000_000.0
+        far_x = func.ST_X(pa_2154) + L * func.sin(dir_rot)
+        far_y = func.ST_Y(pa_2154) + L * func.cos(dir_rot)
+        far_pt = func.ST_SetSRID(func.ST_MakePoint(far_x, far_y), 2154)
+
+        # Demi-droite C (PA -> far_pt)
+        lineC = func.ST_MakeLine(pa_2154, far_pt)
+
+        # Intersection avec la route B
+        raw_inter = func.ST_Intersection(lineC, road_2154)
+        gtype = func.GeometryType(raw_inter)
+
+        # Q = point d'intersection (robuste si colinéarité)
+        q_2154 = case(
+            (gtype == 'POINT', raw_inter),
+            ((gtype.in_(['LINESTRING', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'])),
+             func.ST_ClosestPoint(raw_inter, pa_2154)),
+            else_=None
+        )
+
+        # Construire le ring sans ARRAY[] : MakeLine(pa,pb) + AddPoint(..., q) + AddPoint(..., pa)
+        ring1 = func.ST_MakeLine(pa_2154, pb_2154)  # PA -> PB
+        ring2 = func.ST_AddPoint(ring1, q_2154)  # PA -> PB -> Q
+        ring3 = func.ST_AddPoint(ring2, pa_2154)  # PA -> PB -> Q -> PA (fermé)
+
+        triangle_2154 = func.ST_MakePolygon(ring3)
+        triangle_4326 = func.ST_Transform(triangle_2154, 4326)
 
         stmt = select(
-            func.ST_AsText(land_geom).label("land"),
-            func.ST_AsText(source_point_geom).label("source_point"),
-            func.ST_AsText(corridor_geom_4326).label("corridor")
+            cast(func.ST_AsText(land_geom), Text).label("land"),
+            cast(func.ST_AsText(geometry_source), Text).label("road"),
+            cast(func.ST_AsText(func.ST_Transform(closest_seg_2154, 4326)), Text).label("closest_line"),
+            cast(func.ST_AsText(triangle_2154), Text).label("triangle_2154_wkt"),
+            cast(func.ST_AsText(triangle_4326), Text).label("triangle_4326_wkt"),
+            func.ST_AsGeoJSON(triangle_4326).label("triangle_geojson")
         )
 
-        result = db.execute(stmt).first()
-
-
-        print("Land:", result.land)
-        print("Source point:", result.source_point)
-        print("Corridor:", result.corridor)
-
-        stmt = db.query(
-            TopoItem.fid,
-            TopoItem.polygon_id,
-            TopoItem.batiment_c,
-            TopoItem.hauteur,
-            TopoItem.area_m2,
-            cast(func.ST_AsGeoJSON(TopoItem.geometry), Text).label("geometry")
-        ).filter(
-            func.ST_Intersects(TopoItem.geometry, corridor_geom_4326),
-            TopoItem.is_valid_now == 'true'
-        )
-        
-        result = []
-        for r in stmt.all():
-            try:
-                geometry_parsed = json.loads(r.geometry)
-                geometry_coords = geometry_parsed["coordinates"]
-            except Exception as parse_err:
-                logger.warning(f"Could not parse topo geometry: {parse_err}")
-                geometry_coords = None
-                
-            result.append({
-                "fid": r.fid,
-                "polygon_id": r.polygon_id,
-                "batiment_c": r.batiment_c,
-                "hauteur": r.hauteur,
-                "area_m2": r.area_m2,
-                "geometry": geometry_coords
-            })
+        row = db.execute(stmt).first()
+        print('Land:', row.land)
+        print('Road:', row.road)
+        print("Closest line (WKT,4326):", row.closest_line)
+        print("Triangle (WKT,2154):", row.triangle_2154_wkt)
+        print("Triangle (WKT,4326):", row.triangle_4326_wkt)
+        print("Triangle (GeoJSON):", row.triangle_geojson)
+        # stmt = db.query(
+        #     TopoItem.fid,
+        #     TopoItem.polygon_id,
+        #     TopoItem.batiment_c,
+        #     TopoItem.hauteur,
+        #     TopoItem.area_m2,
+        #     cast(func.ST_AsGeoJSON(TopoItem.geometry), Text).label("geometry")
+        # ).filter(
+        #     func.ST_Intersects(TopoItem.geometry, corridor_geom_4326),
+        #     TopoItem.is_valid_now == 'true'
+        # )
+        #
+        # result = []
+        # for r in stmt.all():
+        #     try:
+        #         geometry_parsed = json.loads(r.geometry)
+        #         geometry_coords = geometry_parsed["coordinates"]
+        #     except Exception as parse_err:
+        #         logger.warning(f"Could not parse topo geometry: {parse_err}")
+        #         geometry_coords = None
+        #
+        #     result.append({
+        #         "fid": r.fid,
+        #         "polygon_id": r.polygon_id,
+        #         "batiment_c": r.batiment_c,
+        #         "hauteur": r.hauteur,
+        #         "area_m2": r.area_m2,
+        #         "geometry": geometry_coords
+        #     })
             
-        return result
+        return []
         
     except Exception as e:
         logger.error(f"Database error in topo buildings query: {str(e)}")
@@ -236,10 +280,11 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             SoundClassificationItem.typesource,
             SoundClassificationItem.codeinfra,
             SoundClassificationItem.sound_category,
+            cast(func.ST_AsGeoJSON(SoundClassificationRoadsItem.geometry), Text).label("geometry_source"),
             cast(
                 func.ST_AsGeoJSON(
                     func.ST_Transform(
-                        func.ST_ClosestPoint(SoundClassificationItem.source_geometry, geom_2154),
+                        func.ST_ClosestPoint(SoundClassificationRoadsItem.geometry, geom_2154),
                         4326
                     )
                 ),
@@ -247,12 +292,15 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             ).label("geometry_source_point"),
             func.round(
                 func.ST_Distance(
-                    SoundClassificationItem.source_geometry,
+                    SoundClassificationRoadsItem.geometry,
                     geom_2154
                 )
             ).label("distance"),
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area"),
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
+        ).join(
+            SoundClassificationRoadsItem,
+            SoundClassificationItem.codeinfra == SoundClassificationRoadsItem.codeinfra
         ).filter(
             func.ST_Intersects(SoundClassificationItem.geometry, geom_4326)
         ).group_by(
@@ -260,7 +308,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             SoundClassificationItem.typesource,
             SoundClassificationItem.codeinfra,
             SoundClassificationItem.sound_category,
-            SoundClassificationItem.source_geometry,
+            SoundClassificationRoadsItem.geometry,
             intersection_geom
         ).order_by("distance")
 
@@ -286,7 +334,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
             topo_buildings = []
             if source_point_geom is not None:
-                topo_buildings = query_topo_buildings_between(db, wkt_geometry, source_point_geom)
+                topo_buildings = query_topo_buildings_between(db, wkt_geometry, source_point_geom, r.geometry_source)
 
             result.append({
                 "source": r.source,
