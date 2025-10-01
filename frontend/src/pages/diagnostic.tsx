@@ -63,6 +63,7 @@ function DiagnosticPage() {
           findFeatureAsync(map, idu).then((feature) => {
             if (mapMethodsRef.current?.setParcelle) {
               if (mapMethodsRef.current?.setParcelleSiblings) {
+                console.log(feature);
                 const { clickedParcelle, nearbySiblings } =
                   computeParcelleSiblings(
                     map,

@@ -180,7 +180,7 @@ export const findFeatureAsync = (
   map: maplibregl.Map,
   idu: string
 ): Promise<maplibregl.MapGeoJSONFeature | null> => {
-  const maxAttempts = 150;
+  const maxAttempts = 1500;
   let attempts = 0;
 
   return new Promise((resolve) => {
@@ -189,6 +189,8 @@ export const findFeatureAsync = (
         layers: ["parcelles-fill"],
         filter: ["==", ["get", "id"], idu],
       });
+
+      console.log(features);
 
       if (features.length > 0) {
         resolve(features[0]);
