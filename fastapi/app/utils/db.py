@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, cast, case
+from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
@@ -9,9 +9,17 @@ from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
 from ..version import get_api_version
+from .sig import (
+    base_geoms,
+    build_arm_cte,
+    union_arms_to_triangles_cte,
+    intersecting_triangle_groups_cte,
+    angle_view_from_counts,
+    determine_cardinality
+)
+from .acoustic import (correction_from_angle)
 import asyncio
 import logging
-import math
 import yaml
 import json
 from pathlib import Path
@@ -27,141 +35,60 @@ CONFIG = load_config()
 logger = logging.getLogger('uvicorn.error')
 
 
-def query_topo_buildings_between(db: Session, wkt_geometry: str, source_point_geom, geometry_source) -> List[Dict[str, Any]]:
+def get_soundclassification_intersection_correction(
+    db: Session,
+    wkt_geometry: str,
+    source_point_geom,   # POINT 4326 (SQLAlchemy expression)
+    geometry_source      # road/axis geometry (SQLAlchemy expression)
+) -> int:
     """
-    Query topo buildings that are between the land (wkt_geometry) and the road (source_point_geom).
-    Uses ST_MakeLine to create a line between centroids and finds buildings intersecting this corridor.
+    Compute the corrective value (in dB) based on the resulting view angle
+    after masking by TopoItem buildings around the source.
+    Returns an integer (negative dB or 0).
     """
+    FULL_ANGLE = 135.0
+    SUB_ANGLE  = 5.0
+    STEPS = int(FULL_ANGLE / SUB_ANGLE / 2)
+    FAR_LEN = 1_000_000.0
+
     try:
-        land_geom = func.ST_GeomFromText(wkt_geometry, 4326)
-
-        # Géométries d'entrée
-        land_4326 = func.ST_GeomFromText(wkt_geometry, 4326)
-        source_4326 = func.ST_Transform(source_point_geom, 4326)  # PB (point source)
-        road_2154 = func.ST_Transform(geometry_source, 2154)  # ta "droite B" (LINE/MULTILINE) en 2154
-
-        # Reprojeter en 2154 (métrique) pour les calculs
-        land_2154 = func.ST_Transform(land_4326, 2154)
-        src_2154 = func.ST_Transform(source_4326, 2154)
-
-        # Segment A (PA -> PB)
-        closest_seg_2154 = func.ST_ShortestLine(land_2154, src_2154)
-        pa_2154 = func.ST_StartPoint(closest_seg_2154)
-        pb_2154 = func.ST_EndPoint(closest_seg_2154)
-
-        # Angle +5° autour de PA
-        az = func.ST_Azimuth(pa_2154, pb_2154)  # radians
-        dir_rot = az + func.radians(5.0)
-
-        # On fabrique un "point très loin" dans la direction rotée (demi-droite)
-        L = 1_000_000.0
-        far_x = func.ST_X(pa_2154) + L * func.sin(dir_rot)
-        far_y = func.ST_Y(pa_2154) + L * func.cos(dir_rot)
-        far_pt = func.ST_SetSRID(func.ST_MakePoint(far_x, far_y), 2154)
-
-        # Demi-droite C (PA -> far_pt)
-        lineC = func.ST_MakeLine(pa_2154, far_pt)
-
-        # Intersection avec la route B
-        raw_inter = func.ST_Intersection(lineC, road_2154)
-        gtype = func.GeometryType(raw_inter)
-
-        # Q = point d'intersection (robuste si colinéarité)
-        q_2154 = case(
-            (gtype == 'POINT', raw_inter),
-            ((gtype.in_(['LINESTRING', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'])),
-             func.ST_ClosestPoint(raw_inter, pa_2154)),
-            else_=None
+        # Base geometries and reference points (all in SRID 2154 for construction)
+        _, _, road_2154, pa, pb, az0 = base_geoms(
+            wkt_geometry, source_point_geom, geometry_source
         )
 
-        # Construire le ring sans ARRAY[] : MakeLine(pa,pb) + AddPoint(..., q) + AddPoint(..., pa)
-        ring1 = func.ST_MakeLine(pa_2154, pb_2154)  # PA -> PB
-        ring2 = func.ST_AddPoint(ring1, q_2154)  # PA -> PB -> Q
-        ring3 = func.ST_AddPoint(ring2, pa_2154)  # PA -> PB -> Q -> PA (fermé)
-
-        triangle_2154 = func.ST_MakePolygon(ring3)
-        triangle_4326 = func.ST_Transform(triangle_2154, 4326)
-
-        stmt = select(
-            cast(func.ST_AsText(land_geom), Text).label("land"),
-            cast(func.ST_AsText(geometry_source), Text).label("road"),
-            cast(func.ST_AsText(func.ST_Transform(closest_seg_2154, 4326)), Text).label("closest_line"),
-            cast(func.ST_AsText(triangle_2154), Text).label("triangle_2154_wkt"),
-            cast(func.ST_AsText(triangle_4326), Text).label("triangle_4326_wkt"),
-            func.ST_AsGeoJSON(triangle_4326).label("triangle_geojson")
+        # Build recursive CTEs for left and right arms (triangles in 2154)
+        left = build_arm_cte(
+            name="left_tri", steps=STEPS, pa=pa, pb=pb, az0=az0,
+            road_2154=road_2154, subangle_deg=SUB_ANGLE, direction="left", far_length=FAR_LEN
+        )
+        right = build_arm_cte(
+            name="right_tri", steps=STEPS, pa=pa, pb=pb, az0=az0,
+            road_2154=road_2154, subangle_deg=SUB_ANGLE, direction="right", far_length=FAR_LEN
         )
 
-        row = db.execute(stmt).first()
-        print('Land:', row.land)
-        print('Road:', row.road)
-        print("Closest line (WKT,4326):", row.closest_line)
-        print("Triangle (WKT,2154):", row.triangle_2154_wkt)
-        print("Triangle (WKT,4326):", row.triangle_4326_wkt)
-        print("Triangle (GeoJSON):", row.triangle_geojson)
-        # stmt = db.query(
-        #     TopoItem.fid,
-        #     TopoItem.polygon_id,
-        #     TopoItem.batiment_c,
-        #     TopoItem.hauteur,
-        #     TopoItem.area_m2,
-        #     cast(func.ST_AsGeoJSON(TopoItem.geometry), Text).label("geometry")
-        # ).filter(
-        #     func.ST_Intersects(TopoItem.geometry, corridor_geom_4326),
-        #     TopoItem.is_valid_now == 'true'
-        # )
-        #
-        # result = []
-        # for r in stmt.all():
-        #     try:
-        #         geometry_parsed = json.loads(r.geometry)
-        #         geometry_coords = geometry_parsed["coordinates"]
-        #     except Exception as parse_err:
-        #         logger.warning(f"Could not parse topo geometry: {parse_err}")
-        #         geometry_coords = None
-        #
-        #     result.append({
-        #         "fid": r.fid,
-        #         "polygon_id": r.polygon_id,
-        #         "batiment_c": r.batiment_c,
-        #         "hauteur": r.hauteur,
-        #         "area_m2": r.area_m2,
-        #         "geometry": geometry_coords
-        #     })
-            
-        return []
-        
+        # Count total triangles generated (stops early if q becomes NULL)
+        triangles = union_arms_to_triangles_cte(left, right)
+        total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
+
+        # Count triangles that intersect at least one TopoItem and compute
+        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now")
+        intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
+        angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
+
+        # Apply correction scale based on the resulting angle
+        correction_db = correction_from_angle(angle_view)
+
+        logger.debug(
+            f"Triangles: total={total}, hits={intersecting} | "
+            f"view_angle={angle_view:.1f}° -> correction={correction_db} dB"
+        )
+
+        return correction_db
+
     except Exception as e:
-        logger.error(f"Database error in topo buildings query: {str(e)}")
-        return []
-
-
-def determine_cardinality(safe_centroid, intersection_centroid):
-    safe_x, safe_y = safe_centroid
-    int_x, int_y = intersection_centroid
-
-    dx = int_x - safe_x
-    dy = int_y - safe_y
-
-    angle = math.degrees(math.atan2(dy, dx))
-
-    angle = (angle + 360) % 360
-
-    if 22.5 <= angle < 67.5:
-        return "NE"
-    elif 67.5 <= angle < 112.5:
-        return "N"
-    elif 112.5 <= angle < 157.5:
-        return "NW"
-    elif 157.5 <= angle < 202.5:
-        return "W"
-    elif 202.5 <= angle < 247.5:
-        return "SW"
-    elif 247.5 <= angle < 292.5:
-        return "S"
-    elif 292.5 <= angle < 337.5:
-        return "SE"
-    else:
-        return "E"
+        logger.error(f"Error while computing sound correction: {str(e)}")
+        return 0
 
 
 def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedept: str) -> Dict[str, Any]:
@@ -332,9 +259,9 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 geometry_source_point = None
                 source_point_geom = None
 
-            topo_buildings = []
+            correction = None
             if source_point_geom is not None:
-                topo_buildings = query_topo_buildings_between(db, wkt_geometry, source_point_geom, r.geometry_source)
+                correction = get_soundclassification_intersection_correction(db, wkt_geometry, source_point_geom, r.geometry_source)
 
             result.append({
                 "source": r.source,
@@ -345,7 +272,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "percent_impacted": percent_impacted,
                 "geometry_source_point": geometry_source_point,
                 "geometry_intersection": geometry_intersection,
-                "topo": topo_buildings
+                "correction": correction
             })
 
         return {
