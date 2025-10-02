@@ -23,6 +23,9 @@ import logging
 import yaml
 import json
 from pathlib import Path
+from typing import Tuple
+from sqlalchemy import select
+from sqlalchemy.sql.elements import ColumnElement
 
 
 def load_config():
@@ -34,61 +37,87 @@ CONFIG = load_config()
 
 logger = logging.getLogger('uvicorn.error')
 
-
-def get_soundclassification_intersection_correction(
-    db: Session,
+def get_soundclassification_intersection_corrections(
+    db: "Session",
     wkt_geometry: str,
-    source_point_geom,   # POINT 4326 (SQLAlchemy expression)
-    geometry_source      # road/axis geometry (SQLAlchemy expression)
-) -> int:
+    source_point_geom: ColumnElement,
+    geometry_source: ColumnElement
+) -> Tuple[int, int]:
     """
     Compute the corrective value (in dB) based on the resulting view angle
-    after masking by TopoItem buildings around the source.
-    Returns an integer (negative dB or 0).
+    after masking by TopoItem buildings around the source, for:
+      - the SHORTEST connecting segment (closest)
+      - the LONGEST  connecting segment (farthest)
+
+    Returns (closest_correction_db, farthest_correction_db).
     """
+
     FULL_ANGLE = 135.0
     SUB_ANGLE  = 5.0
     STEPS = int(FULL_ANGLE / SUB_ANGLE / 2)
     FAR_LEN = 1_000_000.0
 
-    try:
-        # Base geometries and reference points (all in SRID 2154 for construction)
-        _, _, road_2154, pa, pb, az0 = base_geoms(
-            wkt_geometry, source_point_geom, geometry_source
-        )
-
+    def compute_correction_for(*, pa, pb, az0, name_prefix: str, road_2154) -> int:
         # Build recursive CTEs for left and right arms (triangles in 2154)
         left = build_arm_cte(
-            name="left_tri", steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE, direction="left", far_length=FAR_LEN
+            name=f"{name_prefix}_left_tri",
+            steps=STEPS, pa=pa, pb=pb, az0=az0,
+            road_2154=road_2154, subangle_deg=SUB_ANGLE,
+            direction="left", far_length=FAR_LEN
         )
         right = build_arm_cte(
-            name="right_tri", steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE, direction="right", far_length=FAR_LEN
+            name=f"{name_prefix}_right_tri",
+            steps=STEPS, pa=pa, pb=pb, az0=az0,
+            road_2154=road_2154, subangle_deg=SUB_ANGLE,
+            direction="right", far_length=FAR_LEN
         )
 
         # Count total triangles generated (stops early if q becomes NULL)
         triangles = union_arms_to_triangles_cte(left, right)
         total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
 
-        # Count triangles that intersect at least one TopoItem and compute
+        # Count triangles that intersect at least one TopoItem
         tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now")
         intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
-        angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
 
-        # Apply correction scale based on the resulting angle
+        # Angle and dB correction
+        angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
         correction_db = correction_from_angle(angle_view)
 
         logger.debug(
-            f"Triangles: total={total}, hits={intersecting} | "
+            f"[{name_prefix}] Triangles: total={total}, hits={intersecting} | "
             f"view_angle={angle_view:.1f}° -> correction={correction_db} dB"
         )
-
         return correction_db
 
+    try:
+        # Base geometries and reference points (all in SRID 2154 for construction)
+        _, _, road_2154, closest_values, farthest_values = base_geoms(
+            wkt_geometry, source_point_geom, geometry_source
+        )
+
+        closest_correction_db = compute_correction_for(
+            pa=closest_values['pa'],
+            pb=closest_values['pb'],
+            az0=closest_values['az0'],
+            name_prefix="closest",
+            road_2154=road_2154
+        )
+
+        farthest_correction_db = compute_correction_for(
+            pa=farthest_values['pa'],
+            pb=farthest_values['pb'],
+            az0=farthest_values['az0'],
+            name_prefix="farthest",
+            road_2154=road_2154
+        )
+
+        return (closest_correction_db, farthest_correction_db)
+
     except Exception as e:
-        logger.error(f"Error while computing sound correction: {str(e)}")
-        return 0
+        logger.error(f"Error while computing sound corrections: {str(e)}")
+        return (0, 0)
+
 
 
 def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedept: str) -> Dict[str, Any]:
@@ -259,9 +288,10 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 geometry_source_point = None
                 source_point_geom = None
 
-            correction = None
+            closest_correction = None
+            farthest_correction = None
             if source_point_geom is not None:
-                correction = get_soundclassification_intersection_correction(db, wkt_geometry, source_point_geom, r.geometry_source)
+                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source)
 
             result.append({
                 "source": r.source,
@@ -272,7 +302,8 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "percent_impacted": percent_impacted,
                 "geometry_source_point": geometry_source_point,
                 "geometry_intersection": geometry_intersection,
-                "correction": correction
+                "closest_correction": closest_correction,
+                "farthest_correction": farthest_correction
             })
 
         return {
