@@ -9,11 +9,28 @@ def base_geoms(wkt_geometry: str, source_point_geom: ColumnElement, geometry_sou
     land_2154 = func.ST_Transform(func.ST_GeomFromText(wkt_geometry, 4326), 2154)
     src_2154 = func.ST_Transform(source_point_geom, 2154)
     road_2154 = func.ST_Transform(geometry_source, 2154)
+
+    # Closest values
     closest = func.ST_ShortestLine(land_2154, src_2154)
     pa = func.ST_StartPoint(closest)
     pb = func.ST_EndPoint(closest)
-    az0 = func.ST_Azimuth(pa, pb)
-    return land_2154, src_2154, road_2154, pa, pb, az0
+    closest_values = {
+        'pa': pa,
+        'pb': pb,
+        'az0': func.ST_Azimuth(pa, pb)
+    }
+
+    # Farthest values
+    farthest = func.ST_LongestLine(land_2154, src_2154)
+    pa = func.ST_StartPoint(farthest)
+    pb = func.ST_EndPoint(farthest)
+    farthest_values = {
+        'pa': pa,
+        'pb': pb,
+        'az0': func.ST_Azimuth(pa, pb)
+    }
+
+    return land_2154, src_2154, road_2154, closest_values, farthest_values
 
 
 def triangle_step_expr(
