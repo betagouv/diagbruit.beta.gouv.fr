@@ -3,16 +3,18 @@ import { tss } from "tss-react";
 
 type DiagnosticIsolationBadgeProps = {
   isolation: number;
+  title?: string;
 };
 
 const DiagnosticIsolationBadge = ({
   isolation,
+  title,
 }: DiagnosticIsolationBadgeProps) => {
   const { cx, classes } = useStyles();
 
   return (
     <div className={cx(classes.container)}>
-      <div>Isolement théorique</div>
+      <div>{title || "Isolement théorique"}</div>
       <div className={classes.isolation}>{isolation} dB</div>
     </div>
   );

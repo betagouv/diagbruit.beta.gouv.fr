@@ -469,10 +469,7 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
   };
 };
 
-export const getRecommendationsUtilFlags = (
-  diagnosticItem: DiagnosticItem,
-  land_isolation: number
-) => {
+export const getRecommendationsUtilFlags = (diagnosticItem: DiagnosticItem) => {
   const {
     diagnostic: {
       land_intersections_ld,

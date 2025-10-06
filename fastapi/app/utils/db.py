@@ -231,6 +231,11 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
         intersection_geom = func.ST_Intersection(SoundClassificationItem.geometry, geom_4326)
 
+        closest_point_2154 = func.ST_ClosestPoint(
+            SoundClassificationRoadsItem.geometry,
+            geom_2154
+        )
+
         stmt = db.query(
             SoundClassificationItem.source,
             SoundClassificationItem.typesource,
@@ -239,10 +244,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             cast(func.ST_AsGeoJSON(SoundClassificationRoadsItem.geometry), Text).label("geometry_source"),
             cast(
                 func.ST_AsGeoJSON(
-                    func.ST_Transform(
-                        func.ST_ClosestPoint(SoundClassificationRoadsItem.geometry, geom_2154),
-                        4326
-                    )
+                    func.ST_Transform(closest_point_2154, 4326)
                 ),
                 Text
             ).label("geometry_source_point"),
@@ -251,7 +253,13 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                     SoundClassificationRoadsItem.geometry,
                     geom_2154
                 )
-            ).label("distance"),
+            ).label("min_distance"),
+            func.round(
+                func.ST_MaxDistance(
+                    closest_point_2154,
+                    geom_2154
+                )
+            ).label("max_distance"),
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area"),
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).join(
@@ -266,14 +274,13 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             SoundClassificationItem.sound_category,
             SoundClassificationRoadsItem.geometry,
             intersection_geom
-        ).order_by("distance")
+        ).order_by("min_distance")
 
         result = []
         for r in stmt.all():
             closest_correction = None
             farthest_correction = None
             percent_impacted = round(r.intersection_area / safe_geom_area, 2) if r.intersection_area else 0.0
-
             try:
                 geometry_parsed = json.loads(r.geometry_intersection)
                 geometry_intersection = geometry_parsed["coordinates"]
@@ -298,7 +305,8 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 "typesource": r.typesource,
                 "codeinfra": r.codeinfra,
                 "sound_category": r.sound_category,
-                "distance": r.distance,
+                "min_distance": r.min_distance,
+                "max_distance": r.max_distance,
                 "percent_impacted": percent_impacted,
                 "geometry_source_point": geometry_source_point,
                 "geometry_intersection": geometry_intersection,

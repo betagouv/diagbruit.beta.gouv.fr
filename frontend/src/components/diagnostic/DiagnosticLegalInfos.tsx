@@ -2,8 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { LEGAL_TEXTS } from "../../utils/texts/legal";
 import { DiagnosticItem } from "../../utils/types";
-import DiagnosticInfrastructureNoiseTable from "./DiagnosticInfrastructureNoiseTable";
 import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
+import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -15,12 +15,42 @@ const DiagnosticLegalInfos = ({
   const { cx, classes } = useStyles();
 
   const {
-    diagnostic: { soundclassification_intersections, air_intersections },
+    diagnostic: {
+      soundclassification_intersections,
+      air_intersections,
+      isolation_min,
+      isolation_max,
+    },
   } = diagnosticItem;
 
   return (
     <div>
       <div className={cx(classes.container)}>
+        <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
+          Isolement réglementaire théorique
+        </h4>
+        <div
+          className={cx(
+            classes.isolationGrid,
+            fr.cx("fr-mt-4v", "fr-mb-8v", "fr-grid-row")
+          )}
+        >
+          {isolation_min !== isolation_max ? (
+            <>
+              <DiagnosticIsolationBadge
+                title="Isolement minimal"
+                isolation={isolation_min || 30}
+              />
+              <i className={fr.cx("ri-arrow-right-line")} />
+              <DiagnosticIsolationBadge
+                title="Isolement maximal"
+                isolation={isolation_max || 30}
+              />
+            </>
+          ) : (
+            <DiagnosticIsolationBadge isolation={isolation_min || 30} />
+          )}
+        </div>
         {soundclassification_intersections.length > 0 && (
           <>
             <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
@@ -36,14 +66,6 @@ const DiagnosticLegalInfos = ({
               <p className={fr.cx("fr-text--sm")}>
                 <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
               </p>
-              <div className={fr.cx("fr-mt-4v", "fr-mb-8v")}>
-                <DiagnosticInfrastructureNoiseTable
-                  intersectionsHelper={soundclassification_intersections}
-                  caption={
-                    LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.ISOLATION_TABLE
-                  }
-                />
-              </div>
               <p className={fr.cx("fr-mb-0")}>
                 Références :{" "}
                 <a
@@ -124,6 +146,10 @@ const DiagnosticLegalInfos = ({
 };
 
 const useStyles = tss.create(() => ({
+  isolationGrid: {
+    gap: fr.spacing("4v"),
+    alignItems: "center",
+  },
   container: {
     ul: {
       marginLeft: fr.spacing("4v"),

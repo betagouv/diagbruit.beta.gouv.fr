@@ -19,17 +19,27 @@ const DiagnosticSoundClassificationTable = ({
     "Type de source",
     "Nom de la source",
     "Catégorie",
-    "Distance *",
+    "Distance minimum *",
+    "Distance maximum *",
   ];
 
   const data = intersections
     .sort((a, b) => b.sound_category - a.sound_category)
-    .map(({ typesource, codeinfra, sound_category, distance }) => [
-      getReadableSource(typesource, true),
-      codeinfra || "-",
-      sound_category,
-      `${distance.toString()} mètre${distance > 1 ? "s" : ""} *`,
-    ]);
+    .map(
+      ({
+        typesource,
+        codeinfra,
+        sound_category,
+        min_distance,
+        max_distance,
+      }) => [
+        getReadableSource(typesource, true),
+        codeinfra || "-",
+        sound_category,
+        `${min_distance.toString()} mètre${min_distance > 1 ? "s" : ""} *`,
+        `${max_distance.toString()} mètre${max_distance > 1 ? "s" : ""} *`,
+      ]
+    );
 
   return (
     <Table
