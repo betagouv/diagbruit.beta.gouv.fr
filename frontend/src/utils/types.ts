@@ -25,6 +25,8 @@ export type Diagnostic = {
   score: number;
   max_db_lden: number;
   min_db_lden: number;
+  isolation_min: number | null;
+  isolation_max: number | null;
   flags: DiagnosticFlags;
   land_intersections_ld: LandIntersection[];
   land_intersections_ln: LandIntersection[];
@@ -75,7 +77,8 @@ export type SoundClassificationIntersection = {
   typesource: string;
   codeinfra: string;
   sound_category: number;
-  distance: number;
+  min_distance: number;
+  max_distance: number;
   geometry_intersection: Geometry;
   geometry_source_point: [number, number];
   percent_impacted: number;

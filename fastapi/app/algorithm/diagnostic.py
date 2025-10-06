@@ -2,6 +2,7 @@ import copy
 
 from .modules import (get_land_score_from_sources, get_air_score_from_sources, group_intersections_by_identifier, get_classification_warning, get_zones_from_intersections)
 from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassification_by_codeinfra, get_filtered_land_intersections, get_sound_equivalents, default_diagnostic)
+from ..utils import (get_land_isolations, get_air_isolation, get_computed_isolation)
 
 
 def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, percent_unimpacted, populate):
@@ -88,6 +89,15 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Return the big zones of risks
     diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld']) if populate.zones else []
+
+    # Return the isolation interval
+    diagnostic["isolation_min"] = None
+    diagnostic["isolation_max"] = None
+    if populate.isolation:
+        (land_isolation_min, land_isolation_max) = get_land_isolations(diagnostic["soundclassification_intersections"])
+        air_isolation = get_air_isolation(diagnostic['air_intersections'])
+        diagnostic["isolation_min"] = get_computed_isolation(land_isolation_min, air_isolation)
+        diagnostic["isolation_max"] = get_computed_isolation(land_isolation_max, air_isolation)
 
     # Flags
     diagnostic['flags']['isMultiExposedSources'] = ((1 if len(grouped_ld) > 0 else 0) + (1 if len(diagnostic['air_intersections']) > 0 else 0)) > 1

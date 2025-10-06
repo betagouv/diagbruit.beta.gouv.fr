@@ -16,7 +16,7 @@ type DiagnosticParcelleSvgProps = {
   zones: Zone[];
   width?: number;
   padding?: number;
-  onOptimalUtilsLoaded: (
+  onOptimalUtilsLoaded?: (
     optimalZonePoints: { x: number; y: number }[],
     projectPoint: (point: [number, number]) => { x: number; y: number },
     unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number]
@@ -67,7 +67,9 @@ const DiagnosticParcelleSvg = ({
   useEffect(() => {
     if (!!optimalZonePoints && !!projectPoint && !!unprojectPoint) {
       if (JSON.stringify(optimalZonePoints) !== JSON.stringify(lastOZPSent)) {
-        onOptimalUtilsLoaded(optimalZonePoints, projectPoint, unprojectPoint);
+        if (onOptimalUtilsLoaded) {
+          onOptimalUtilsLoaded(optimalZonePoints, projectPoint, unprojectPoint);
+        }
         setLastOZPSent(optimalZonePoints);
       }
     }
