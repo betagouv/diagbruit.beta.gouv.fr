@@ -216,7 +216,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         raise
 
 
-def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
+def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str, include_isolation: bool) -> Dict[str, Any]:
     """
     Query the database for sound classification features that intersect with the given WKT geometry.
     Includes percent_impacted and geometry_intersection.
@@ -270,6 +270,8 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
         result = []
         for r in stmt.all():
+            closest_correction = None
+            farthest_correction = None
             percent_impacted = round(r.intersection_area / safe_geom_area, 2) if r.intersection_area else 0.0
 
             try:
@@ -288,9 +290,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 geometry_source_point = None
                 source_point_geom = None
 
-            closest_correction = None
-            farthest_correction = None
-            if source_point_geom is not None:
+            if include_isolation and source_point_geom is not None:
                 (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source)
 
             result.append({

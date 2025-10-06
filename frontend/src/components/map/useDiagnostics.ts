@@ -32,6 +32,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
       geometry: parcelle.geometry.coordinates,
       populate: {
         zones: true,
+        isolation: true,
       },
     };
 
@@ -46,6 +47,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
         geometry: sibling.geometry.coordinates,
         populate: {
           zone: false,
+          isolation: false,
         },
       };
     });
