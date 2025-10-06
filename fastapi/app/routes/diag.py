@@ -21,8 +21,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=4)
 
+
 class Populate(BaseModel):
     zones: bool = Field(False, example=False)
+    isolation: bool = Field(False, example=False)
+
 
 class ParcelleRequest(BaseModel):
     code_insee: str = Field(..., example="33063")
@@ -99,7 +102,7 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
     try:
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
         percent_unimpacted = noisemap.get("percent_unimpacted", 0)
-        sound = query_soundclassification_intersecting_features(db, polygon_wkt)
+        sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation)
         peb = query_peb_intersecting_features(db, polygon_wkt)
         return get_parcelle_diagnostic(
             noisemap.get('intersections', []),
