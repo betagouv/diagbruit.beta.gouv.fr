@@ -12,7 +12,7 @@ type PublicLayoutProps = {
   children: React.ReactNode;
 };
 
-const IS_TEST = process.env.NODE_ENV === "test";
+const IS_TEST = process.env.REACT_APP_ENVIRONMENT === "test";
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { cx, classes } = useStyles();
