@@ -12,6 +12,9 @@ type PublicLayoutProps = {
   children: React.ReactNode;
 };
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const IS_TEST = process.env.NODE_ENV === "test";
+
 const PublicLayout = ({ children }: PublicLayoutProps) => {
   const { cx, classes } = useStyles();
   const { pathname } = useLocation();
@@ -48,6 +51,13 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 
   return (
     <main>
+      {IS_TEST && (
+        <Notice
+          title="Vous naviguez actuellement sur la version de test de diagbruit"
+          isClosable
+          onClose={function noRefCheck() {}}
+        />
+      )}
       <Header
         brandTop={
           <>
@@ -83,7 +93,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         id="fr-header-simple-header"
       />
-      {pathname === "/diagnostic" && (
+      {pathname === "/diagnostic" && !IS_TEST && (
         <Notice
           title={
             <>
