@@ -20,6 +20,7 @@ dbt/profiles.yml
 
 # Ingestion
 ingestion/launch-ingestion-prod.sh
+ingestion/launch-ingestion-preprod.sh
 ingestion/inputs/**/AGGLO_*
 !ingestion/inputs/**/AGGLO_033
 ingestion/inputs/**/INFRA_*
