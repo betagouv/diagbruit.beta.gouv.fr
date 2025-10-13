@@ -12,7 +12,6 @@ type PublicLayoutProps = {
   children: React.ReactNode;
 };
 
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const IS_TEST = process.env.NODE_ENV === "test";
 
 const PublicLayout = ({ children }: PublicLayoutProps) => {
@@ -54,8 +53,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       {IS_TEST && (
         <Notice
           title="Vous naviguez actuellement sur la version de test de diagbruit"
-          isClosable
-          onClose={function noRefCheck() {}}
+          severity="warning"
+          className={cx(classes.testNotice)}
         />
       )}
       <Header
@@ -93,7 +92,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         id="fr-header-simple-header"
       />
-      {pathname === "/diagnostic" && !IS_TEST && (
+      {pathname === "/diagnostic" && (
         <Notice
           title={
             <>
@@ -128,6 +127,12 @@ const useStyles = tss.create(() => ({
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,
+  },
+  testNotice: {
+    ".fr-notice__body": {
+      display: "flex",
+      justifyContent: "center",
+    },
   },
   maintenance: {
     display: "flex",
