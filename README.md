@@ -199,37 +199,71 @@ The badge at the top of the README reflects the status of this CI.
 
 ## ☁️ Deploying on Scalingo
 
-Add scalingo remotes
+### Production Environment
+
+Add production scalingo remotes
 
 ```
-git remote add scalingo-fastapi git@ssh.osc-fr1.scalingo.com:diag-bruit-back.git
-git remote add scalingo-frontend git@ssh.osc-fr1.scalingo.com:diag-bruit-front.git
-git remote add scalingo-cms git@ssh.osc-fr1.scalingo.com:diag-bruit-cms.git
+git remote add scalingo-fastapi-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-back-prod.git
+git remote add scalingo-frontend-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-front-prod.git
+git remote add scalingo-cms-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-cms-prod.git
 git remote add scalingo-metabase git@ssh.osc-fr1.scalingo.com:diag-bruit-metabase.git
 ```
 
-Deploy FastAPI last commit
+### Preprod Environment
+
+Add preprod scalingo remotes
 
 ```
-git subtree push --prefix fastapi scalingo-fastapi main
+git remote add scalingo-fastapi-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-back-preprod.git
+git remote add scalingo-frontend-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-front-preprod.git
+git remote add scalingo-cms-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-cms-preprod.git
 ```
 
-Deploy Frontend last commit
+### Deploy to Production
+
+Deploy FastAPI to production
 
 ```
-git subtree push --prefix frontend scalingo-frontend main
+git subtree push --prefix fastapi scalingo-fastapi-prod main
 ```
 
-Deploy Strapi CMS last commit
+Deploy Frontend to production
 
 ```
-git subtree push --prefix cms scalingo-cms main
+git subtree push --prefix frontend scalingo-frontend-prod main
 ```
 
-Deploy Metabase last commit
+Deploy Strapi CMS to production
+
+```
+git subtree push --prefix cms scalingo-cms-prod main
+```
+
+Deploy Metabase (environment agnostic)
 
 ```
 git subtree push --prefix metabase scalingo-metabase main
+```
+
+### Deploy to Preprod
+
+Deploy FastAPI to preprod
+
+```
+git subtree push --prefix fastapi scalingo-fastapi-preprod main
+```
+
+Deploy Frontend to preprod
+
+```
+git subtree push --prefix frontend scalingo-frontend-preprod main
+```
+
+Deploy Strapi CMS to preprod
+
+```
+git subtree push --prefix cms scalingo-cms-preprod main
 ```
 
 ## 🧬 Macro architecture
