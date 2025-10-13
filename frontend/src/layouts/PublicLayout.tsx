@@ -52,7 +52,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     <main>
       {IS_TEST && (
         <Notice
-          title="Vous naviguez actuellement sur la version de test de diagbruit"
+          title="Vous utilisez actuellement l'environnement de test de diagBruit"
           severity="warning"
           className={cx(classes.testNotice)}
         />
