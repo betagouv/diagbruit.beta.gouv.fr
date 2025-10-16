@@ -133,7 +133,7 @@ def get_air_isolation(air_intersections: List) -> int:
     zone_priority = ["A", "B", "C", "D"]
 
     for zone in zone_priority:
-        if any(item.zone == zone for item in air_intersections):
+        if any(item['zone'] == zone for item in air_intersections):
             return air_isolation_values[zone]
 
     return 0
