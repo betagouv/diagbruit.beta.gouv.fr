@@ -121,25 +121,26 @@ const DiagnosticEvaluation = ({
         <ul>
           <li
             dangerouslySetInnerHTML={{
-              __html: flags.isMultiExposedLandDistinctTypeSources
-                ? replacePlaceholders(
-                    EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                      .MULTI_EXPOSURE,
-                    {
-                      sources: Array.from(
-                        new Set(
-                          land_intersections_ld.map(
-                            (intersection) =>
-                              `<b>${getReadableSource(
-                                intersection.typesource
-                              )}</b>`
+              __html:
+                flags.isMultiExposedSources || flags.isMultiExposedLandSources
+                  ? replacePlaceholders(
+                      EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                        .MULTI_EXPOSURE,
+                      {
+                        sources: Array.from(
+                          new Set(
+                            land_intersections_ld.map(
+                              (intersection) =>
+                                `<b>${getReadableSource(
+                                  intersection.typesource
+                                )}</b>`
+                            )
                           )
-                        )
-                      ).join(" et "),
-                    }
-                  )
-                : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                    .NO_MULTI_EXPOSURE,
+                        ).join(" et "),
+                      }
+                    )
+                  : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                      .NO_MULTI_EXPOSURE,
             }}
           />
           {!!land_intersections_ld[0] && (
