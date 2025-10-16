@@ -52,7 +52,7 @@ def get_soundclassification_intersection_corrections(
     Returns (closest_correction_db, farthest_correction_db).
     """
 
-    FULL_ANGLE = 135.0
+    FULL_ANGLE = 140.0
     SUB_ANGLE  = 5.0
     STEPS = int(FULL_ANGLE / SUB_ANGLE / 2)
     FAR_LEN = 1_000_000.0
