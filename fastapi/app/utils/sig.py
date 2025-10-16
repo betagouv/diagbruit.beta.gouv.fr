@@ -47,8 +47,9 @@ def triangle_step_expr(
     gtype = func.GeometryType(raw_inter)
 
     q = case(
+        (func.ST_IsEmpty(raw_inter), None),
         (gtype == 'POINT', raw_inter),
-        ((gtype.in_(['LINESTRING', 'MULTILINESTRING', 'GEOMETRYCOLLECTION'])),
+        (gtype.in_(['MULTIPOINT', 'LINESTRING', 'MULTILINESTRING', 'GEOMETRYCOLLECTION']),
          func.ST_ClosestPoint(raw_inter, pa)),
         else_=None
     )
