@@ -3,7 +3,7 @@ import { tss } from "tss-react/dsfr";
 import { LEGAL_TEXTS } from "../../utils/texts/legal";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
-import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
+import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -29,27 +29,11 @@ const DiagnosticLegalInfos = ({
         <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
           Isolement réglementaire théorique
         </h4>
-        <div
-          className={cx(
-            classes.isolationGrid,
-            fr.cx("fr-mt-4v", "fr-mb-8v", "fr-grid-row")
-          )}
-        >
-          {isolation_min !== isolation_max ? (
-            <>
-              <DiagnosticIsolationBadge
-                title="Isolement minimal"
-                isolation={isolation_min || 30}
-              />
-              <i className={fr.cx("ri-arrow-right-line")} />
-              <DiagnosticIsolationBadge
-                title="Isolement maximal"
-                isolation={isolation_max || 30}
-              />
-            </>
-          ) : (
-            <DiagnosticIsolationBadge isolation={isolation_min || 30} />
-          )}
+        <div className={cx(fr.cx("fr-mt-4v", "fr-mb-8v"))}>
+          <DiagnosticIsolationRange
+            isolation_min={isolation_min}
+            isolation_max={isolation_max}
+          />
         </div>
         {soundclassification_intersections.length > 0 && (
           <>
@@ -146,10 +130,6 @@ const DiagnosticLegalInfos = ({
 };
 
 const useStyles = tss.create(() => ({
-  isolationGrid: {
-    gap: fr.spacing("4v"),
-    alignItems: "center",
-  },
   container: {
     ul: {
       marginLeft: fr.spacing("4v"),
