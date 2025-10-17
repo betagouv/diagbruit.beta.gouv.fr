@@ -16,6 +16,7 @@ import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -34,7 +35,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const diagnosticTabs = [
     {
       tabId: "evaluation",
-      label: "Évaluation du risque",
+      label: "Résumé du diagnostic",
       isDefault: tabId === "evaluation",
       content: (
         <>
@@ -52,18 +53,18 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             light
           />
           <DiagnosticHero diagnosticItem={diagnosticItem} />
-          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+          <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
         </>
       ),
     },
     {
       tabId: "legal",
-      label: "Informations réglementaires",
+      label: "Isolation réglementaires",
       isDefault: tabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="2. Informations réglementaires"
+            title="2. Isolation réglementaires"
             image={{
               src: "/images/document.svg",
               width: 44,
@@ -75,13 +76,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       ),
     },
     {
-      tabId: "recommendations",
-      label: "Préconisations",
-      isDefault: tabId === "recommendations",
+      tabId: "position",
+      label: "Position du bâti",
+      isDefault: tabId === "position",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="3. Préconisations"
+            title="3. Position du bâti"
             image={{
               src: "/images/innovation.svg",
               width: 55,
@@ -89,6 +90,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
+          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
         </>
       ),
     },
