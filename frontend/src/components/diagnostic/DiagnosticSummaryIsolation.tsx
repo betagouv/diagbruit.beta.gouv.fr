@@ -134,7 +134,10 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
           }
           severity="warning"
           title=""
-          className={fr.cx("fr-mt-4v", "fr-mb-6v")}
+          className={cx(
+            classes.classificationWarningNotice,
+            fr.cx("fr-mt-4v", "fr-mb-6v")
+          )}
         />
       )}
       <p className={fr.cx("fr-mt-4v", "fr-mb-2v")}>{getIsolationText()}.</p>
@@ -157,5 +160,10 @@ const useStyles = tss.create(() => ({
   badgeContainer: {
     display: "flex",
     gap: fr.spacing("2v"),
+  },
+  classificationWarningNotice: {
+    ".fr-notice__desc": {
+      color: fr.colors.decisions.text.default.grey.default,
+    },
   },
 }));
