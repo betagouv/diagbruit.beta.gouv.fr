@@ -17,6 +17,7 @@ import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
+import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -54,6 +55,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           />
           <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
+          <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
         </>
       ),
     },
