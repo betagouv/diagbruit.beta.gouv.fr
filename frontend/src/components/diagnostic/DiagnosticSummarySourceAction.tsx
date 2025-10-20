@@ -29,7 +29,7 @@ const DiagnosticSummarySourceAction: React.FC = () => {
         solutions les plus efficaces pour réduire le bruit directement à son
         origine.
       </p>
-      <div className={fr.cx("fr-mt-4v")}>
+      <div className={fr.cx("fr-mt-6v")}>
         <DiagnosticVerificationNotice
           text={
             "Vous pouvez encourager le porteur de projet à se rapprocher du gestionnaire de la source de bruit pour envisager des actions de réduction du risque sonore."

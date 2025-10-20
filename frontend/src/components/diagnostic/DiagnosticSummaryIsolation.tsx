@@ -7,6 +7,7 @@ import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticVerificationNotice from "./DiagnosticVerificationNotice";
 import Notice from "@codegouvfr/react-dsfr/Notice";
+import DiagnosticDecrees from "./DiagnosticDecrees";
 
 type DiagnosticSummaryIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -94,7 +95,7 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
   };
 
   return (
-    <div className={fr.cx("fr-mt-10v")}>
+    <div className={fr.cx("fr-mt-8v")}>
       <DiagnosticSectionTitle
         title="Niveau d'isolation visé"
         image={{
@@ -135,7 +136,10 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
           isolation_max={isolation_max}
         />
       </div>
-      <div className={fr.cx("fr-mt-8v")}>
+      <div className={fr.cx("fr-mt-4v")}>
+        <DiagnosticDecrees />
+      </div>
+      <div className={fr.cx("fr-mt-6v")}>
         <DiagnosticVerificationNotice text={getVerificationText()} />
       </div>
     </div>
