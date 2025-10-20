@@ -1,41 +1,27 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { DiagnosticItem } from "../../utils/types";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
-import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 import {
   getColorFromScore,
   getSummaryTextFromDiagnostic,
 } from "../../utils/tools";
+import { DiagnosticItem } from "../../utils/types";
+import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
 };
 
 const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
-  const { parcelle, diagnostic } = diagnosticItem;
+  const { diagnostic } = diagnosticItem;
 
   const { cx, classes } = useStyles({ score: diagnostic.score });
 
   return (
     <div className={cx(classes.container)}>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
-            <i className={cx(classes.titleIcon, fr.cx("ri-article-fill"))} />{" "}
-            Caractéristiques de votre recherche
-          </h4>
-          <p>
-            <b>Code insee :</b> {parcelle.code_insee}
-            <br />
-            <b>Section :</b> {parcelle.section}
-            <br />
-            <b>Numéro de parcelle :</b> {parcelle.numero}
-          </p>
-          <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
-            <i className={cx(classes.titleIcon, fr.cx("ri-alert-fill"))} />{" "}
-            Évaluation du risque
-          </h4>
+        <div className={fr.cx("fr-col-12", "fr-col-md-4")}>
           <div className={fr.cx("fr-mb-4v")}>
             <DiagnosticNoiseScore
               score={diagnostic.score}
@@ -63,7 +49,7 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
             </>
           )}
         </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+        <div className={fr.cx("fr-col-12", "fr-col-md-8")}>
           <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
             <i
               className={cx(classes.titleIcon, fr.cx("ri-information-fill"))}
@@ -76,6 +62,24 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
               __html: getSummaryTextFromDiagnostic(diagnostic),
             }}
           />
+          <div className={cx(classes.contactButtonsContainer)}>
+            <Button
+              priority="secondary"
+              iconId="ri-mail-line"
+              className={cx(classes.contactButton)}
+              linkProps={{
+                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+              }}
+            >
+              Contacter l'équipe diagBruit
+            </Button>
+            <Button
+              iconId="ri-send-plane-line"
+              className={cx(classes.contactButton)}
+            >
+              Transmettre le diagnostic au porteur de projet
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -103,6 +107,17 @@ const useStyles = tss
     summary: {
       p: {
         marginBottom: fr.spacing("2v"),
+      },
+    },
+    contactButtonsContainer: {
+      display: "flex",
+      gap: fr.spacing("2v"),
+      marginTop: fr.spacing("4v"),
+    },
+    contactButton: {
+      justifyContent: "center",
+      "&:last-of-type": {
+        flexGrow: 1,
       },
     },
   }));
