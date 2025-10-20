@@ -105,22 +105,10 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
         isSecondTitle
       />
       <div className={cx(classes.badgeContainer)}>
-        <Badge noIcon severity="info">
+        <Badge noIcon severity="error">
           RESPECTER LA RÉGLEMENTATION
         </Badge>
-        <Badge noIcon severity="new">
-          OPTIMISER LE PROJET
-        </Badge>
       </div>
-      <p className={fr.cx("fr-mt-4v", "fr-mb-0")}>
-        Une{" "}
-        <strong>
-          isolation du bâtiment adaptée au niveau de risque de bruit
-        </strong>{" "}
-        permet de <strong>limiter l’impact négatif</strong> des bruits
-        extérieurs (trafic, voisinage, activités industrielles) et intérieurs
-        (chocs, voix, équipements).
-      </p>
       {hasClassificationWarning && (
         <Notice
           description={

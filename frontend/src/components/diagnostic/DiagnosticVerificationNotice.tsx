@@ -14,7 +14,13 @@ const DiagnosticVerificationNotice: React.FC<
   return (
     <div className={cx(classes.container)}>
       <i className={fr.cx("ri-chat-check-fill", "fr-mr-1-5v")} />
-      <div>{typeof text === "string" ? <p>{text}</p> : text}</div>
+      <div>
+        {typeof text === "string" ? (
+          <p className={fr.cx("fr-mb-0")}>{text}</p>
+        ) : (
+          text
+        )}
+      </div>
     </div>
   );
 };
