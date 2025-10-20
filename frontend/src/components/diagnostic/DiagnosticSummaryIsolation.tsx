@@ -41,12 +41,9 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
               </strong>
             </li>
             <li>
-              une{" "}
-              <strong>
-                fourchette d'isolation au minimum entre xdb et ydb
-              </strong>
-              , vous pouvez suggérer au porteur de projet de prévoir une
-              isolation située dans cette fourchette.
+              une <strong>isolation au minimum de {isolation_min}dB</strong>,
+              vous pouvez suggérer au porteur de projet de prévoir cette
+              isolation minimale
             </li>
           </ul>
         </>
