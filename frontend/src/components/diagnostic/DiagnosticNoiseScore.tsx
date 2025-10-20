@@ -28,7 +28,8 @@ const useStyles = tss
   }>()
   .create(({ score }) => ({
     container: {
-      display: "inline-block",
+      // display: "inline-block",
+      textAlign: "center",
       backgroundColor: getColorFromScore(score),
       borderRadius: fr.spacing("1v"),
       padding: `${fr.spacing("3v")} ${fr.spacing("2v")}`,
