@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
@@ -8,15 +9,16 @@ import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { DiagnosticItem } from "../../utils/types";
+import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
-import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
-import DiagnosticDocumentation from "./DiagnosticDocumentation";
-import Alert from "@codegouvfr/react-dsfr/Alert";
+import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
+import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
+import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
 import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
 
 type DiagnosticProps = {
@@ -56,6 +58,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
+          <DiagnosticSummarySourceAction />
+          <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
     },
