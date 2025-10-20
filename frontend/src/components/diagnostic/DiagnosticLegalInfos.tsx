@@ -4,6 +4,7 @@ import { LEGAL_TEXTS } from "../../utils/texts/legal";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
 import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
+import DiagnosticDecrees from "./DiagnosticDecrees";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -50,29 +51,7 @@ const DiagnosticLegalInfos = ({
               <p className={fr.cx("fr-text--sm")}>
                 <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
               </p>
-              <p className={fr.cx("fr-mb-0")}>
-                Références :{" "}
-                <a
-                  href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837"
-                  target="_blank"
-                >
-                  Arrêté du 30 mai 1996
-                </a>{" "}
-                |{" "}
-                <a
-                  href="https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290"
-                  target="_blank"
-                >
-                  Arrêté du 23 juillet 2013
-                </a>{" "}
-                |{" "}
-                <a
-                  href="https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533"
-                  target="_blank"
-                >
-                  Arrêté du 3 septembre 2013
-                </a>
-              </p>
+              <DiagnosticDecrees />
             </div>
           </>
         )}

@@ -28,7 +28,7 @@ const DiagnosticSummaryNoiseReductionScreen: React.FC = () => {
         Un projet de construction peut être pensé de façon à{" "}
         <strong>contribuer à la réduction du risque bruit.</strong>
       </p>
-      <div className={fr.cx("fr-mt-4v")}>
+      <div className={fr.cx("fr-mt-6v")}>
         <DiagnosticVerificationNotice
           text={
             <>
