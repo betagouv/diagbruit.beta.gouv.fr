@@ -28,6 +28,14 @@ type DiagnosticProps = {
 
 const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
+
+  const {
+    diagnostic: {
+      flags: { isMultiExposedSources },
+      score,
+    },
+  } = diagnosticItem;
+
   const [searchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
@@ -57,8 +65,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           />
           <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
-          <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
-          <DiagnosticSummarySourceAction />
+          {!isMultiExposedSources && (
+            <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
+          )}
+          {score > 6 && <DiagnosticSummarySourceAction />}
           <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
