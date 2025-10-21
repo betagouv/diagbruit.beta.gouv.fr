@@ -46,7 +46,23 @@ const DiagnosticSummaryPosition: React.FC<DiagnosticSummaryPositionProps> = ({
       <div className={fr.cx("fr-mt-8v")}>
         <DiagnosticVerificationNotice
           text={
-            "Vous pouvez comparer les plans du porteur de projet avec la préconisation ci-dessus."
+            <div>
+              <p className={fr.cx("fr-mb-3v")}>
+                <strong>
+                  Comment vérifier la pertinence de la position du bâti ?
+                </strong>
+              </p>
+              <ul>
+                <li>
+                  Le pétitionnaire a positionné le bâti dans la zone préconisée
+                  par diagBruit.
+                </li>
+                <li>
+                  Le pétitionnaire a positionné les pièces à vivre à l’opposé
+                  des zones les plus risquées de la parcelle.
+                </li>
+              </ul>
+            </div>
           }
         />
       </div>

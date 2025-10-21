@@ -51,14 +51,39 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
     }
 
     return (
-      <>
-        Vérifiez que le porteur de projet prévoit une{" "}
-        <strong>
-          isolation conforme à la réglementation{" "}
-          {hasAnIsolationRange && "située dans cette fourchette"}
-        </strong>
-        .
-      </>
+      <div>
+        <p className={fr.cx("fr-mb-3v")}>
+          <strong>Comment vérifier la validité de l'isolation ?</strong>
+        </p>
+        <ul className={cx(classes.checklist)}>
+          <li>
+            Le pétitionnaire fournit-il une isolation comprise dans la
+            fourchette diagBruit ?
+          </li>
+          <li>
+            Le pétitionnaire fournit-il plusieurs valeurs d'isolation en cas de
+            logement collectif ? <i>(exemple : 1 par étage, 1 par bâtiment)</i>
+          </li>
+          <li>
+            Le pétitionnaire fournit-il un descriptif du calcul mis en oeuvre
+            pour déterminer les isolements ?
+          </li>
+          <ul>
+            <li>
+              Fournit-il une liste de tous les "secteurs affectés" (zone de
+              bruit) qui impactent le bâtiment ?
+            </li>
+            <li>
+              Fournit-il des distances du bâtiment à chaque source de bruit
+              identifiées ?
+            </li>
+            <li>
+              Fournit-il les correctifs d'isolation dus au masquage par d'autre
+              bâtiment ?
+            </li>
+          </ul>
+        </ul>
+      </div>
     );
   };
 
@@ -153,6 +178,12 @@ const useStyles = tss.create(() => ({
   classificationWarningNotice: {
     ".fr-notice__desc": {
       color: fr.colors.decisions.text.default.grey.default,
+    },
+  },
+  checklist: {
+    ul: {
+      margin: 0,
+      listStyleType: "circle",
     },
   },
 }));
