@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
@@ -8,14 +9,17 @@ import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { DiagnosticItem } from "../../utils/types";
+import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
-import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
-import DiagnosticDocumentation from "./DiagnosticDocumentation";
-import Alert from "@codegouvfr/react-dsfr/Alert";
+import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
+import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
+import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
+import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -24,6 +28,14 @@ type DiagnosticProps = {
 
 const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const { cx, classes } = useStyles();
+
+  const {
+    diagnostic: {
+      flags: { isMultiExposedSources },
+      score,
+    },
+  } = diagnosticItem;
+
   const [searchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
@@ -34,7 +46,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const diagnosticTabs = [
     {
       tabId: "evaluation",
-      label: "Évaluation du risque",
+      label: "Résumé du diagnostic",
       isDefault: tabId === "evaluation",
       content: (
         <>
@@ -52,18 +64,23 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             light
           />
           <DiagnosticHero diagnosticItem={diagnosticItem} />
-          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+          <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
+          {!isMultiExposedSources && (
+            <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
+          )}
+          {score > 6 && <DiagnosticSummarySourceAction />}
+          <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
     },
     {
       tabId: "legal",
-      label: "Informations réglementaires",
+      label: "Isolation réglementaires",
       isDefault: tabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="2. Informations réglementaires"
+            title="2. Isolation réglementaires"
             image={{
               src: "/images/document.svg",
               width: 44,
@@ -75,13 +92,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       ),
     },
     {
-      tabId: "recommendations",
-      label: "Préconisations",
-      isDefault: tabId === "recommendations",
+      tabId: "position",
+      label: "Position du bâti",
+      isDefault: tabId === "position",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="3. Préconisations"
+            title="3. Position du bâti"
             image={{
               src: "/images/innovation.svg",
               width: 55,
@@ -89,6 +106,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
+          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
         </>
       ),
     },

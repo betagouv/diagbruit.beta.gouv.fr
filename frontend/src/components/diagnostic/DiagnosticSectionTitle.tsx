@@ -8,11 +8,13 @@ type DiagnosticSectionWrapperProps = {
     width: number;
     height: number;
   };
+  isSecondTitle?: boolean;
 };
 
 const DiagnosticSectionTitle = ({
   title,
   image,
+  isSecondTitle,
 }: DiagnosticSectionWrapperProps) => {
   const { cx, classes } = useStyles();
 
@@ -22,7 +24,11 @@ const DiagnosticSectionTitle = ({
         <img className={cx(classes.mainIcon)} {...image} />
       </div>
       <div className={classes.content}>
-        <h3 className={fr.cx("fr-h5")}>{title}</h3>
+        {isSecondTitle ? (
+          <h4 className={fr.cx("fr-h6")}>{title}</h4>
+        ) : (
+          <h3 className={fr.cx("fr-h5")}>{title}</h3>
+        )}
       </div>
     </div>
   );
@@ -43,7 +49,7 @@ const useStyles = tss.create(() => ({
   content: {
     display: "flex",
     alignItems: "end",
-    h3: {
+    "h3, h4": {
       marginBottom: fr.spacing("2v"),
     },
     [fr.breakpoints.down("md")]: {

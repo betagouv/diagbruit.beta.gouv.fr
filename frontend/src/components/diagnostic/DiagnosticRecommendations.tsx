@@ -3,8 +3,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import { tss } from "tss-react/dsfr";
 import { getRecommendationsUtilFlags } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
-import DiagnosticParcelleSvg from "./DiagnosticParcelleSvg";
-import DiagnosticParcelleSvgNotice from "./DiagnosticParcelleSvgNotice";
+import DiagnosticPosition from "./DiagnosticPosition";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -15,11 +14,6 @@ const DiagnosticRecommendations = ({
 }: DiagnosticRecommendationsProps) => {
   const { cx, classes } = useStyles();
 
-  const {
-    diagnostic: { air_intersections, zones },
-    parcelle: { geometry },
-  } = diagnosticItem;
-
   const utilFlags = getRecommendationsUtilFlags(diagnosticItem);
 
   const displayComputedRecommendation = () => {
@@ -27,9 +21,9 @@ const DiagnosticRecommendations = ({
       return (
         <p className={fr.cx("fr-mb-0")}>
           Actuellement, le service diagBruit ne détermine une zone idéale de
-          position du bâti que pour les parcelles présentant une exposition à
-          une source sonore unique. Cette condition n'étant pas remplie ici, la
-          parcelle ne peut en bénéficier.
+          position du bâti que pour les parcelles ne présentant pas d'exposition
+          à une source sonore aérienne. Cette condition n'étant pas remplie ici,
+          la parcelle ne peut en bénéficier.
         </p>
       );
     }
@@ -80,17 +74,8 @@ const DiagnosticRecommendations = ({
           principalement à alerter le porteur de projet en lui fournissant un
           exemple.
         </p>
-        <div
-          className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-my-10v")}
-        >
-          <div className={fr.cx("fr-col-lg-7")}>
-            <div className={cx(classes.svgContainer)}>
-              <DiagnosticParcelleSvg geometry={geometry} zones={zones} />
-            </div>
-          </div>
-          <div className={cx(classes.notice, fr.cx("fr-col-lg-5"))}>
-            <DiagnosticParcelleSvgNotice zones={zones} />
-          </div>
+        <div className={fr.cx("fr-my-10v")}>
+          <DiagnosticPosition diagnosticItem={diagnosticItem} />
         </div>
       </div>
     );
@@ -137,16 +122,6 @@ const useStyles = tss.create(() => ({
   },
   mainIcon: {
     padding: fr.spacing("1v"),
-  },
-  svgContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "400px",
-  },
-  notice: {
-    display: "flex",
-    alignItems: "center",
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(
