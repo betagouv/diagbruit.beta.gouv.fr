@@ -23,6 +23,13 @@ const DiagnosticDecrees = () => {
         target="_blank"
       >
         Arrêté du 3 septembre 2013
+      </a>{" "}
+      |{" "}
+      <a
+        href="https://www.gironde.gouv.fr/Actions-de-l-Etat/Transports-Navigation-et-securite-fluviale-Securite-routiere/Transports/Bruit-des-infrastructures/Classements-sonores-des-infrastructures-de-transport-terrestre/Le-classement-sonore-en-Gironde"
+        target="_blank"
+      >
+        Arrêté Préfectoral local
       </a>
     </p>
   );
