@@ -24,6 +24,8 @@ SELECT
     CAST(rang AS int) as sound_category,
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
+WHERE rang IS NOT NULL 
+    AND rang ~ '^[0-9]+$'
 
 UNION ALL
 
