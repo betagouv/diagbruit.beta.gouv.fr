@@ -1,5 +1,10 @@
 {{ config(
     materialized='table',
+    post_hook=[
+      "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS pk SERIAL PRIMARY KEY;",
+      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
+      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_codeinfra ON {{ this }} (codeinfra);"
+    ]
 ) }}
 
 SELECT
