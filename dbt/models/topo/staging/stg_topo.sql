@@ -16,7 +16,6 @@ SELECT
     s_geom_cst,
     hauteur,
     altitude_s,
-    fictive_ge,
     geometry
 
 FROM {{ source('public_workspace', 'raw_topo') }}

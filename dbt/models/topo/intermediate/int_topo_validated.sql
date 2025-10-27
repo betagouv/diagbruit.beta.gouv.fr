@@ -14,7 +14,6 @@ WITH exploded_geometries AS (
         s_geom_cst,
         hauteur,
         altitude_s,
-        fictive_ge,
         (ST_Dump(geometry)).geom AS geometry,
         (ST_Dump(geometry)).path[1] AS geom_idx
     FROM {{ ref('stg_topo') }}
@@ -30,7 +29,6 @@ SELECT
     s_geom_cst,
     hauteur,
     altitude_s,
-    fictive_ge,
     geom_idx,
     geometry,
     {{ validate_geometry('geometry') }}

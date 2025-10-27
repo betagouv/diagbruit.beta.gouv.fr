@@ -25,7 +25,5 @@ sources:
             description: "Building height in meters (float8)"
           - name: altitude_s
             description: "Surface altitude in meters (float8)"
-          - name: fictive_ge
-            description: "Fictive geometry indicator (int4)"
           - name: geometry
             description: "PostGIS geometry data in EPSG:2154"

@@ -26,8 +26,6 @@ models:
         description: "Building height in meters"
       - name: altitude_s
         description: "Surface altitude in meters"
-      - name: fictive_ge
-        description: "Fictive geometry indicator"
       - name: geometry
         description: "Geometry in EPSG:4326"
       - name: area_m2
