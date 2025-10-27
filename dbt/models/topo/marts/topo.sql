@@ -18,7 +18,6 @@ SELECT
   s_geom_cst,
   hauteur,
   altitude_s,
-  fictive_ge,
   fid || '_' || geom_idx AS polygon_id,
   geometry,
   area_m2,
