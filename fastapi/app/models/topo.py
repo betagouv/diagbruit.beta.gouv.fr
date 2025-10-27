@@ -18,7 +18,6 @@ class TopoItem(Base):
     s_geom_cst = Column(Float)
     hauteur = Column(Float)
     altitude_s = Column(Float)
-    fictive_ge = Column(String)
     geometry = Column(Geometry("POLYGON", srid=4326))
     area_m2 = Column(Float)
     srid = Column(Integer)

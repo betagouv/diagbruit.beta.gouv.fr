@@ -13,7 +13,6 @@ SELECT
     s_geom_cst,
     hauteur,
     altitude_s,
-    fictive_ge,
     geom_idx,
     {{ transform_to_epsg_4326('geometry') }} AS geometry,
     area_m2,
