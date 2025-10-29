@@ -14,7 +14,9 @@ type DiagnosticHeroProps = {
 const DiagnosticDocumentation = ({ diagnosticItem }: DiagnosticHeroProps) => {
   const { cx, classes } = useStyles();
 
-  const { parcelle, diagnostic } = diagnosticItem;
+  const {
+    diagnostic: { isolation_min, isolation_max },
+  } = diagnosticItem;
 
   const [isLoading, setIsLoading] = useState(true);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -24,10 +26,8 @@ const DiagnosticDocumentation = ({ diagnosticItem }: DiagnosticHeroProps) => {
       .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
         params: {
           populate: "*",
-          filters: getRecommendationsFilterConditionsFromDiagnostic(
-            diagnosticItem,
-            0
-          ),
+          filters:
+            getRecommendationsFilterConditionsFromDiagnostic(diagnosticItem),
         },
       })
       .then((res) => {
@@ -44,13 +44,72 @@ const DiagnosticDocumentation = ({ diagnosticItem }: DiagnosticHeroProps) => {
     (recommendation) => !recommendation.isolation
   );
 
+  const computedIsolationRecommendations = recommendations.filter(
+    (recommendation) => !!recommendation.isolation
+  );
+
   return (
     <div className={cx(classes.container)}>
+      <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
+        Documentation d'isolation
+      </h4>
       <div className={cx(classes.section)}>
         <p className={fr.cx("fr-mb-0")}>
-          Cette médiathèque de préconisations est filtrée en fonction du
-          contexte spécifique de la parcelle, et ce filtrage sera
-          progressivement enrichi et optimisé au fil du temps.
+          Voici les recommandations pour atteindre une isolation acoustique
+          comprise entre <strong>{isolation_min}db</strong> et{" "}
+          <strong>{isolation_max}db</strong>.
+        </p>
+      </div>
+      {!!computedIsolationRecommendations.length && (
+        <div
+          className={cx(
+            classes.accordions,
+            fr.cx("fr-accordions-group", "fr-mt-8v")
+          )}
+        >
+          {computedIsolationRecommendations.map((recommendation, index) => (
+            <Accordion key={index} label={recommendation.title} titleAs="h5">
+              {recommendation.categories.map((category) => (
+                <Tag
+                  key={category.title}
+                  className={fr.cx("fr-mb-4v", "fr-mr-2v")}
+                >
+                  {category.title}
+                </Tag>
+              ))}
+              <div
+                className={cx(classes.recommendationContent)}
+                dangerouslySetInnerHTML={{ __html: recommendation.content }}
+              />
+              {!!recommendation.links.length && (
+                <div className={cx(classes.links)}>
+                  <p className={fr.cx("fr-mb-2v")}>
+                    <b>Liens utiles :</b>
+                  </p>
+                  <ul className={fr.cx("fr-mb-0")}>
+                    {recommendation.links.map((link, index) => (
+                      <li key={index}>
+                        <a href={link.href} target="_blank">
+                          {link.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Accordion>
+          ))}
+        </div>
+      )}
+      <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
+        Médiathèque
+      </h4>
+      <div className={cx(classes.section)}>
+        <p className={fr.cx("fr-mb-0")}>
+          Cette médiathèque de préconisations est actuellement en cours de
+          développement et d'implémentation. Elle sera progressivement enrichie
+          avec de nouveaux contenus, optimisée au fil du temps pour vous offrir
+          des ressources plus pertinentes et complètes.
         </p>
       </div>
       {!!computedCommonRecommendations.length && (
