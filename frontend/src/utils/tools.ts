@@ -372,11 +372,10 @@ export const getNoiseSourceFromDiagnosticItem = (
 };
 
 export const getRecommendationsFilterConditionsFromDiagnostic = (
-  diagnosticItem: DiagnosticItem,
-  isolation: number
+  diagnosticItem: DiagnosticItem
 ) => {
   const {
-    diagnostic: { score },
+    diagnostic: { score, isolation_min, isolation_max },
   } = diagnosticItem;
 
   const noiseSources = getNoiseSourceFromDiagnosticItem(diagnosticItem);
@@ -432,10 +431,10 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
           $or: [
             {
               isolation_gte: {
-                $lte: isolation,
+                $lte: isolation_max,
               },
               isolation_lte: {
-                $null: true,
+                $gte: isolation_min,
               },
             },
             {
@@ -448,18 +447,18 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
             },
             {
               isolation_gte: {
-                $null: true,
+                $lte: isolation_max,
               },
               isolation_lte: {
-                $gte: isolation,
+                $null: true,
               },
             },
             {
               isolation_gte: {
-                $lte: isolation,
+                $null: true,
               },
               isolation_lte: {
-                $gte: isolation,
+                $gte: isolation_min,
               },
             },
           ],
