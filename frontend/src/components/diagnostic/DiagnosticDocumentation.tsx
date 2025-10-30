@@ -44,9 +44,12 @@ const DiagnosticDocumentation = ({ diagnosticItem }: DiagnosticHeroProps) => {
     (recommendation) => !recommendation.isolation
   );
 
-  const computedIsolationRecommendations = recommendations.filter(
-    (recommendation) => !!recommendation.isolation
-  );
+  const computedIsolationRecommendations = recommendations
+    .filter((recommendation) => !!recommendation.isolation)
+    .sort(
+      (a, b) =>
+        (b.conditions.isolation_lte || 0) - (a.conditions.isolation_gte || 0)
+    );
 
   return (
     <div className={cx(classes.container)}>
