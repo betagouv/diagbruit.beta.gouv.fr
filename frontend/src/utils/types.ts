@@ -94,6 +94,10 @@ export type Recommendation = {
   categories: RecommendationCategory[];
   content: string;
   isolation: boolean;
+  conditions: {
+    isolation_gte: number | null;
+    isolation_lte: number | null;
+  };
   links: {
     href: string;
     title: string;
