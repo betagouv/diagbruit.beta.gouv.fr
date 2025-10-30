@@ -87,35 +87,6 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
     );
   };
 
-  const getIsolationText = () => {
-    if (!hasAnIsolationRange && isolation_min === 30) {
-      return (
-        <>
-          Selon les exigences réglementaires, l'isolation à prévoir est de{" "}
-          <strong>30dB</strong>
-        </>
-      );
-    }
-
-    if (!hasAnIsolationRange) {
-      return (
-        <>
-          Selon les exigences réglementaires, diagBruit préconise une isolation
-          de <strong>{isolation_min}dB</strong>
-        </>
-      );
-    }
-    return (
-      <>
-        Selon les exigences réglementaires, diagBruit préconise une isolation
-        comprise entre{" "}
-        <strong>
-          {isolation_min}dB et {isolation_max}dB
-        </strong>
-      </>
-    );
-  };
-
   return (
     <div className={fr.cx("fr-mt-8v")}>
       <DiagnosticSectionTitle
@@ -151,7 +122,6 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
           )}
         />
       )}
-      <p className={fr.cx("fr-mt-4v", "fr-mb-2v")}>{getIsolationText()}.</p>
       <div className={fr.cx("fr-mt-4v")}>
         <DiagnosticIsolationRange
           isolation_min={isolation_min}
