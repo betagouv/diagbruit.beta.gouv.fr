@@ -55,33 +55,37 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
         <p className={fr.cx("fr-mb-3v")}>
           <strong>Comment vérifier la validité de l'isolation ?</strong>
         </p>
+        <p className={fr.cx("fr-mb-0")}>
+          <u>Si le pétitionnaire indique une valeur d’isolation :</u>
+        </p>
         <ul className={cx(classes.checklist)}>
           <li>
-            Le pétitionnaire fournit-il une isolation comprise dans la
-            fourchette diagBruit ?
+            Vérifiez que cette valeur correspond à la fourchette conseillée par
+            diagBruit.
+          </li>
+        </ul>
+        <p className={fr.cx("fr-mb-0")}>
+          <u>Si le pétitionnaire n’indique pas de valeur d’isolation :</u>
+        </p>
+        <ul className={cx(classes.checklist)}>
+          <li>
+            Le pétitionnaire fournit la description des murs extérieurs,
+            précisant les matériaux utilisés (maçonnerie, isolation, doublage).
           </li>
           <li>
-            Le pétitionnaire fournit-il plusieurs valeurs d'isolation en cas de
-            logement collectif ? <i>(exemple : 1 par étage, 1 par bâtiment)</i>
+            Le pétitionnaire fournit la description des menuiseries extérieures,
+            en indiquant le type de fenêtres et le vitrage utilisé.
           </li>
           <li>
-            Le pétitionnaire fournit-il un descriptif du calcul mis en oeuvre
-            pour déterminer les isolements ?
+            Le pétitionnaire fournit la description des portes extérieures, en
+            précisant le type de porte et les matériaux utilisés.
           </li>
-          <ul>
-            <li>
-              Fournit-il une liste de tous les "secteurs affectés" (zone de
-              bruit) qui impactent le bâtiment ?
-            </li>
-            <li>
-              Fournit-il des distances du bâtiment à chaque source de bruit
-              identifiées ?
-            </li>
-            <li>
-              Fournit-il les correctifs d'isolation dus au masquage par d'autre
-              bâtiment ?
-            </li>
-          </ul>
+          <li>
+            Le pétitionnaire fournit la description des dispositifs de
+            ventilation et des conduits techniques, en précisant les
+            aménagements prévus pour limiter la propagation du bruit (conduits,
+            gaines, bouches).
+          </li>
         </ul>
       </div>
     );
@@ -151,9 +155,7 @@ const useStyles = tss.create(() => ({
     },
   },
   checklist: {
-    ul: {
-      margin: 0,
-      listStyleType: "circle",
-    },
+    margin: `${fr.spacing("2v")} 0`,
+    paddingLeft: fr.spacing("8v"),
   },
 }));
