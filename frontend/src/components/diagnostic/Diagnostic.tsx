@@ -111,13 +111,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       ),
     },
     {
-      tabId: "documentation",
-      label: "Documentation",
-      isDefault: tabId === "documentation",
+      tabId: "recommendations",
+      label: "Préconisations",
+      isDefault: tabId === "recommendations",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="4. Documentation"
+            title="4. Préconisations"
             image={{
               src: "/images/document.svg",
               width: 55,
@@ -162,7 +162,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   }, [diagnosticItem]);
 
   return (
-    <div>
+    <div id="diagnostic-section">
       <div className={fr.cx("fr-grid-row")}>
         <div className={fr.cx("fr-col-8")}>
           <h2>Votre diagnostic diagBruit</h2>
