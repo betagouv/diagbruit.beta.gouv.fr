@@ -16,7 +16,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
   const { cx, classes } = useStyles();
 
   return (
-    <div className={cx(classes.container)}>
+    <div>
       {isolation_min !== isolation_max ? (
         <div>
           <p className={fr.cx("fr-mb-2v")}>
@@ -51,8 +51,8 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
         </div>
       )}
       <div className={fr.cx("fr-mt-4v")}>
-        <a
-          href="#diagnostic-section"
+        <p
+          className={cx(classes.fakeLink, fr.cx("fr-mb-0"))}
           onClick={() => {
             (
               document.querySelector(
@@ -62,14 +62,17 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
           }}
         >
           Voir la documentation d'isolation
-        </a>
+        </p>
       </div>
     </div>
   );
 };
 
 const useStyles = tss.create(() => ({
-  container: {},
+  fakeLink: {
+    textDecoration: "underline",
+    cursor: "pointer",
+  },
 }));
 
 export default DiagnosticIsolationRange;
