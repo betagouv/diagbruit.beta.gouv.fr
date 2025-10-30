@@ -43,6 +43,29 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const devMode = searchParams.get("dev") === "true";
   const tabId = searchParams.get("tab") || "evaluation";
 
+  const handleCopyUrl = async (title?: string) => {
+    try {
+      trackMatomoEvent(
+        "Action",
+        title ?? "Copy Diagnostic",
+        `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+      );
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      console.error("Erreur lors de la copie de l'URL :", err);
+    }
+  };
+
+  const replaceSearchParams = (tabId: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tabId);
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, "", newUrl);
+  };
+
   const diagnosticTabs = [
     {
       tabId: "evaluation",
@@ -63,7 +86,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             db={diagnosticItem.diagnostic.max_db_lden}
             light
           />
-          <DiagnosticHero diagnosticItem={diagnosticItem} />
+          <DiagnosticHero
+            diagnosticItem={diagnosticItem}
+            handleCopyUrl={handleCopyUrl}
+          />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
           {!isMultiExposedSources && (
             <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
@@ -130,29 +156,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
   ];
 
-  const handleCopyUrl = async () => {
-    try {
-      trackMatomoEvent(
-        "Action",
-        "Copy Diagnostic",
-        `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
-      );
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    } catch (err) {
-      console.error("Erreur lors de la copie de l'URL :", err);
-    }
-  };
-
-  const replaceSearchParams = (tabId: string) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", tabId);
-
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, "", newUrl);
-  };
-
   useEffect(() => {
     trackMatomoEvent(
       "Action",
@@ -171,7 +174,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <Button
             className={fr.cx("fr-btn--secondary")}
             iconId="ri-file-copy-line"
-            onClick={handleCopyUrl}
+            onClick={() => handleCopyUrl()}
           >
             Copier l'URL du diagnostic
           </Button>
@@ -221,7 +224,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       {copied && (
         <Notice
           severity="info"
-          description="URL copiée dans le presse-papiers"
+          description="URL du diagnostic copiée dans le presse-papiers"
           title=""
           className={cx(classes.alertCopied)}
           onClose={function noRefCheck() {}}
