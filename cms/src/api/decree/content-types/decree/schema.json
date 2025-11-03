@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "decrees",
+  "info": {
+    "singularName": "decree",
+    "pluralName": "decrees",
+    "displayName": "Decree",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "link": {
+      "type": "string"
+    },
+    "codedept": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    }
+  }
+}

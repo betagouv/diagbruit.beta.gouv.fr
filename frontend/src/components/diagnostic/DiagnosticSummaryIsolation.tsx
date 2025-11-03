@@ -133,7 +133,7 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
         />
       </div>
       <div className={fr.cx("fr-mt-4v")}>
-        <DiagnosticDecrees />
+        <DiagnosticDecrees diagnosticItem={diagnosticItem} />
       </div>
       <div className={fr.cx("fr-mt-6v")}>
         <DiagnosticVerificationNotice text={getVerificationText()} />
