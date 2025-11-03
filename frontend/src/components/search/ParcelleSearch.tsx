@@ -79,7 +79,6 @@ const ParcelleSearch = ({
     value: string
   ) => {
     let formattedValue = value;
-    console.log(value);
     if (fieldName === "prefix" || fieldName === "numero") {
       const valueMaxLength = fieldName === "prefix" ? 3 : 4;
       const digits =
