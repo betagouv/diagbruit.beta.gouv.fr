@@ -114,7 +114,7 @@ export function computeParcelleSiblings(
     clickedParcelle,
     mergeCoordinatesByParcelle(siblings),
     distanceMeters
-  ).slice(0, 16);
+  ).slice(0, 1);
 
   return {
     clickedParcelle,
@@ -189,8 +189,6 @@ export const findFeatureAsync = (
         layers: ["parcelles-fill"],
         filter: ["==", ["get", "id"], idu],
       });
-
-      console.log(features);
 
       if (features.length > 0) {
         resolve(features[0]);
