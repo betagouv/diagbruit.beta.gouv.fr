@@ -51,7 +51,7 @@ const DiagnosticLegalInfos = ({
               <p className={fr.cx("fr-text--sm")}>
                 <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
               </p>
-              <DiagnosticDecrees />
+              <DiagnosticDecrees diagnosticItem={diagnosticItem} />
             </div>
           </>
         )}

@@ -443,6 +443,37 @@ export interface ApiChangelogChangelog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
+  collectionName: 'decrees';
+  info: {
+    description: '';
+    displayName: 'Decree';
+    pluralName: 'decrees';
+    singularName: 'decree';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    codedept: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::decree.decree'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRecommendationRecommendation
   extends Struct.CollectionTypeSchema {
   collectionName: 'recommendations';
@@ -1027,6 +1058,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::category.category': ApiCategoryCategory;
       'api::changelog.changelog': ApiChangelogChangelog;
+      'api::decree.decree': ApiDecreeDecree;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;
       'plugin::content-releases.release': PluginContentReleasesRelease;

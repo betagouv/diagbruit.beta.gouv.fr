@@ -104,6 +104,13 @@ export type Recommendation = {
   }[];
 };
 
+export type Decree = {
+  id: number;
+  link: string;
+  codedept: number;
+  title: string;
+};
+
 export type Settings = {
   maintenance: boolean;
 };
