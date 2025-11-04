@@ -41,7 +41,8 @@ def get_soundclassification_intersection_corrections(
     db: "Session",
     wkt_geometry: str,
     source_point_geom: ColumnElement,
-    geometry_source: ColumnElement
+    geometry_source: ColumnElement,
+    codedept: str
 ) -> Tuple[int, int]:
     """
     Compute the corrective value (in dB) based on the resulting view angle
@@ -77,7 +78,7 @@ def get_soundclassification_intersection_corrections(
         total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
 
         # Count triangles that intersect at least one TopoItem
-        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now")
+        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now", codedept=codedept)
         intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
 
         # Angle and dB correction
@@ -216,7 +217,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         raise
 
 
-def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str, include_isolation: bool) -> Dict[str, Any]:
+def query_soundclassification_intersecting_features(db: Session, wkt_geometry: str, include_isolation: bool, codedept: str = None) -> Dict[str, Any]:
     """
     Query the database for sound classification features that intersect with the given WKT geometry.
     Includes percent_impacted and geometry_intersection.
@@ -297,8 +298,8 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 geometry_source_point = None
                 source_point_geom = None
 
-            if include_isolation and source_point_geom is not None:
-                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source)
+            if include_isolation and source_point_geom is not None and codedept is not None:
+                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source, codedept)
 
             result.append({
                 "source": r.source,

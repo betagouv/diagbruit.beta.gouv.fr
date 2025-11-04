@@ -92,16 +92,21 @@ def union_arms_to_triangles_cte(left_cte: CTE, right_cte: CTE) -> CTE:
     return triangles
 
 
-def intersecting_triangle_groups_cte(triangles_cte: CTE, topo_table, valid_col="is_valid_now") -> CTE:
+def intersecting_triangle_groups_cte(triangles_cte: CTE, topo_table, valid_col="is_valid_now", codedept=None) -> CTE:
+    conditions = [
+        getattr(topo_table, valid_col) == True,
+        func.ST_Intersects(topo_table.geometry, triangles_cte.c.geom)
+    ]
+    
+    if codedept is not None:
+        conditions.append(topo_table.code_depar == codedept)
+    
     tri_hits = (
         select(triangles_cte.c.arm, triangles_cte.c.step)
         .select_from(
             triangles_cte.join(
                 topo_table,
-                and_(
-                    getattr(topo_table, valid_col) == True,
-                    func.ST_Intersects(topo_table.geometry, triangles_cte.c.geom)
-                )
+                and_(*conditions)
             )
         )
         .group_by(triangles_cte.c.arm, triangles_cte.c.step)
