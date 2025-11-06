@@ -97,9 +97,12 @@ def intersecting_triangle_groups_cte(triangles_cte: CTE, topo_table, valid_col="
         getattr(topo_table, valid_col) == True,
         func.ST_Intersects(topo_table.geometry, triangles_cte.c.geom)
     ]
-    
+
     if codedept is not None:
-        conditions.append(topo_table.code_depar == codedept)
+        codedept_no_leading_zero = codedept.lstrip('0') if codedept.lstrip('0') else '0'
+        conditions.append(
+            (topo_table.code_depar == codedept_no_leading_zero)
+        )
     
     tri_hits = (
         select(triangles_cte.c.arm, triangles_cte.c.step)
