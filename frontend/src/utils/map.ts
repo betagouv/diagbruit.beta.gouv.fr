@@ -114,7 +114,7 @@ export function computeParcelleSiblings(
     clickedParcelle,
     mergeCoordinatesByParcelle(siblings),
     distanceMeters
-  ).slice(0, 16);
+  ).slice(0, 0);
 
   return {
     clickedParcelle,

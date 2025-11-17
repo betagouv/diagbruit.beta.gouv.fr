@@ -38,6 +38,7 @@ export type Diagnostic = {
 
 export type DiagnosticFlags = {
   hasClassificationWarning: boolean;
+  hasNoisemapWarning: boolean;
   isMultiExposedSources: boolean;
   isMultiExposedLandSources: boolean;
   isMultiExposedLandDistinctTypeSources: boolean;

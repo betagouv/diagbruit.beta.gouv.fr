@@ -30,6 +30,7 @@
         "min_db_lden": 55,
         "flags": {
           "hasClassificationWarning": false,
+          "hasNoisemapWarning": false,
           "isMultiExposedSources": false,
           "isMultiExposedLandDistinctTypeSources": true,
           "isMultiExposedLdenLn": true,
@@ -1050,6 +1051,7 @@
         "min_db_lden": 55,
         "flags": {
           "hasClassificationWarning": false,
+          "hasNoisemapWarning": false,
           "isMultiExposedSources": false,
           "isMultiExposedLandDistinctTypeSources": true,
           "isMultiExposedLdenLn": true,

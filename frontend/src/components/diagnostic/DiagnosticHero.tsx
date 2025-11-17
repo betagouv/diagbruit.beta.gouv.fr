@@ -39,6 +39,7 @@ const DiagnosticHero = ({
             <DiagnosticNoiseScore
               score={diagnostic.score}
               db={diagnostic.max_db_lden}
+              disabled={diagnostic.flags.hasNoisemapWarning}
             />
           </div>
           {diagnostic.equivalent_ambiences.length > 0 && (

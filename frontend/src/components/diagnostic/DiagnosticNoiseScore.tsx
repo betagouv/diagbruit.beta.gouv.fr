@@ -9,10 +9,23 @@ import { fr } from "@codegouvfr/react-dsfr";
 type DiagnosticNoiseScoreProps = {
   score: number;
   db?: number;
+  disabled?: boolean;
 };
 
-const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
-  const { cx, classes } = useStyles({ score });
+const DiagnosticNoiseScore = ({
+  score,
+  db,
+  disabled = false,
+}: DiagnosticNoiseScoreProps) => {
+  const { cx, classes } = useStyles({ score, disabled });
+
+  if (disabled) {
+    return (
+      <div className={cx(classes.container)}>
+        <i className={fr.cx("ri-forbid-fill")} /> RISQUE INDÉFINI
+      </div>
+    );
+  }
 
   return (
     <div className={cx(classes.container)}>
@@ -25,12 +38,14 @@ const DiagnosticNoiseScore = ({ score, db }: DiagnosticNoiseScoreProps) => {
 const useStyles = tss
   .withParams<{
     score: number;
+    disabled: boolean;
   }>()
-  .create(({ score }) => ({
+  .create(({ score, disabled }) => ({
     container: {
-      // display: "inline-block",
       textAlign: "center",
-      backgroundColor: getColorFromScore(score),
+      backgroundColor: disabled
+        ? fr.colors.decisions.text.disabled.grey.default
+        : getColorFromScore(score),
       borderRadius: fr.spacing("1v"),
       padding: `${fr.spacing("3v")} ${fr.spacing("2v")}`,
       fontWeight: "bold",
