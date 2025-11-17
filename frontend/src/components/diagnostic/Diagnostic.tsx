@@ -81,19 +81,23 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               height: 48,
             }}
           />
-          <DiagnosticScoreOnScale
-            score={diagnosticItem.diagnostic.score}
-            db={diagnosticItem.diagnostic.max_db_lden}
-            light
-          />
+          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+            <DiagnosticScoreOnScale
+              score={diagnosticItem.diagnostic.score}
+              db={diagnosticItem.diagnostic.max_db_lden}
+              light
+            />
+          )}
+
           <DiagnosticHero
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
-          {!isMultiExposedSources && (
-            <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
-          )}
+          {!isMultiExposedSources &&
+            !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+              <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
+            )}
           {score > 6 && <DiagnosticSummarySourceAction />}
           <DiagnosticSummaryNoiseReductionScreen />
         </>
@@ -132,7 +136,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
-          <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+            <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
+          )}
         </>
       ),
     },

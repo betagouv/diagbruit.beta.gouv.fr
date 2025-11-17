@@ -10,6 +10,7 @@ default_diagnostic = {
     'min_db_lden': 0,
     'flags': {
         'hasClassificationWarning': False,
+        'hasNoisemapWarning': False,
         'isMultiExposedSources': False,
         'isMultiExposedLandDistinctTypeSources': False,
         'isMultiExposedLdenLn': False,

@@ -12,7 +12,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic = copy.deepcopy(default_diagnostic)
 
     # If no intersection with noisemap return default output
-    if len(noisemap_intersections) == 0 and len(peb_intersections) == 0:
+    if len(noisemap_intersections) == 0 and len(peb_intersections) == 0 and len(soundclassification_intersections) == 0:
         return diagnostic
 
     # Calculate scores on LAND (for LN & LD)
@@ -84,7 +84,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])
 
-    # Return noisemap intersections
+    # Return soundclassification intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
 
     # Return the big zones of risks
@@ -106,5 +106,6 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['flags']['isMultiExposedLdenLn'] = (1 if len(grouped_ld) > 0 else 0) + (1 if len(grouped_ln) > 0 else 0) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
     diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
+    diagnostic['flags']['hasNoisemapWarning'] = len(noisemap_intersections) == 0 and len(soundclassification_intersections) > 0
 
     return diagnostic

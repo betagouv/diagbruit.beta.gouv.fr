@@ -146,4 +146,16 @@ export const SUMMARY_TEXTS = {
   
       <p>Enfin, le priorité devrait etre donnée à une éventuelle surprotection des populations.</p>
     `,
+
+  NOISEMAP_WARNING: `
+      <p>Cette parcelle n’est pas impactée par une carte de bruit stratégique ou un plan d’exposition au bruit, diagBruit ne fournit donc pas de sono-score.</p>
+
+      <p><strong>ATTENTION : cette parcelle est quand même soumise au classement sonore, il est donc nécessaire de calculer et mettre en œuvre une isolation acoustique.</strong></p>
+
+      <p>Pourquoi la parcelle n’est pas impactée ?</p>
+      <ul>
+        <li>soit elle est suffisamment éloignée d’une route ou voie ferrée cartographiée pour que l’impact sonore de celle-ci ne l’atteigne pas.</li>
+        <li>soit la route ou la voie ferrée n’a pas fait l’objet d’une carte de bruit.</li>
+      </ul>
+    `,
 };

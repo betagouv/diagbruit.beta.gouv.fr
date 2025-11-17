@@ -146,6 +146,10 @@ export const getSummaryTextFromDiagnostic = (
     return SUMMARY_TEXTS.CLASSIFICATION_WARNING;
   }
 
+  if (flags.hasNoisemapWarning) {
+    return SUMMARY_TEXTS.NOISEMAP_WARNING;
+  }
+
   if (risk === 0) {
     if (
       hasSoundClassificationIntersections &&

@@ -32,9 +32,9 @@ const DiagnosticRecommendations = ({
       if (!utilFlags.isAffectedByAirIntersections) {
         return (
           <p className={fr.cx("fr-mb-0")}>
-            Cette parcelle n’est impactée ni par les cartes de bruit
-            stratégique, ni par le plan d’exposition au bruit. DiagBruit ne peut
-            fournir de position idéale et de préconisation d’isolement.
+            Cette parcelle n’est pas impactée par les cartes de bruit
+            stratégiques. DiagBruit ne peut fournir de position idéale et de
+            préconisation d’isolement.
           </p>
         );
       }
