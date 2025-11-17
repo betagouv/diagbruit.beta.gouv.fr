@@ -371,3 +371,22 @@ diagbruit/
 ├── setup-dbt.sh
 └── docker-compose.yml
 ```
+
+## 🔧 Troubleshooting
+
+### Force Push to Scalingo
+
+If you encounter issues with git subtree push to Scalingo (e.g., rejected pushes or conflicts), you can force push using the following commands:
+
+**Example for FastAPI preprod:**
+
+```bash
+# Create a temporary branch with only the fastapi folder
+git subtree split --prefix fastapi -b align-preprod
+
+# Force push to Scalingo
+git push -f scalingo-fastapi-preprod align-preprod:main
+
+# Clean up the temporary branch
+git branch -D align-preprod
+```
