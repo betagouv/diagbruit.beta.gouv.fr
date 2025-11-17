@@ -33,7 +33,7 @@ SELECT
     geometry,
     'routier' AS source,
     'R' AS typesource,
-    numero AS codeinfra,
+    TRIM(SPLIT_PART(numero, ':', 1)) AS codeinfra,
     larg_secte AS buffer,
     cat_bruit as sound_category,
     codedept
