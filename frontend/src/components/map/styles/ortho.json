@@ -116,6 +116,19 @@
       }
     },
     {
+      "id": "parcelle-risk-null",
+      "type": "fill",
+      "source": "cadastre",
+      "source-layer": "parcelles",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(153, 153, 153, 1)",
+        "fill-opacity": ["case", ["==", ["feature-state", "risk"], -1], 0.6, 0]
+      }
+    },
+    {
       "id": "parcelle-risk-0",
       "type": "fill",
       "source": "cadastre",
