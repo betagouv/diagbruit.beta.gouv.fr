@@ -235,7 +235,9 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
         if (targetParcelle) {
           const featureState = {
-            risk: getRiskFromScore(item.diagnostic.score),
+            risk: item.diagnostic.flags.hasNoisemapWarning
+              ? -1
+              : getRiskFromScore(item.diagnostic.score),
             ...(targetParcelle.id === parcelle.id
               ? { selected: false, outlinePrimary: true }
               : { outlineSecondary: true }),
