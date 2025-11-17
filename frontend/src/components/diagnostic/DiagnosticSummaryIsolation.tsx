@@ -107,7 +107,7 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
           RESPECTER LA RÉGLEMENTATION
         </Badge>
       </div>
-      {hasClassificationWarning && (
+      {hasClassificationWarning && diagnosticItem.diagnostic.score > 3 && (
         <Notice
           description={
             <>
