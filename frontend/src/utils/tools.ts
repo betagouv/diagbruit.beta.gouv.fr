@@ -435,7 +435,7 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
           $or: [
             {
               isolation_gte: {
-                $lte: isolation_max,
+                $lte: isolation_min,
               },
               isolation_lte: {
                 $gte: isolation_min,
@@ -443,6 +443,14 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
             },
             {
               isolation_gte: {
+                $lte: isolation_max,
+              },
+              isolation_lte: {
+                $gte: isolation_max,
+              },
+            },
+            {
+              isolation_gte: {
                 $null: true,
               },
               isolation_lte: {
@@ -455,6 +463,22 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
               },
               isolation_lte: {
                 $null: true,
+              },
+            },
+            {
+              isolation_gte: {
+                $lte: isolation_min,
+              },
+              isolation_lte: {
+                $null: true,
+              },
+            },
+            {
+              isolation_gte: {
+                $null: true,
+              },
+              isolation_lte: {
+                $gte: isolation_max,
               },
             },
             {
