@@ -379,10 +379,17 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
   diagnosticItem: DiagnosticItem
 ) => {
   const {
-    diagnostic: { score, isolation_min, isolation_max },
+    diagnostic: {
+      score,
+      isolation_min,
+      isolation_max,
+      soundclassification_intersections,
+    },
   } = diagnosticItem;
 
   const noiseSources = getNoiseSourceFromDiagnosticItem(diagnosticItem);
+  const hasSoundClassificationIntersections =
+    !!soundclassification_intersections.length;
 
   return {
     conditions: {
@@ -429,6 +436,9 @@ export const getRecommendationsFilterConditionsFromDiagnostic = (
               source: "all",
             },
             ...noiseSources.map((noiseSource) => ({ source: noiseSource })),
+            ...(hasSoundClassificationIntersections && noiseSources.length === 0
+              ? [{ source: "land" }]
+              : []),
           ],
         },
         {
