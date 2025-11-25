@@ -357,15 +357,17 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
         )
 
         result = []
+        threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
         for r in stmt.all():
             percent_impacted = round(r.intersection_area / safe_geom_area, 2)
-            result.append({
-                "zone": r.zone,
-                "legende": r.legende,
-                "nom": r.nom,
-                "ref_doc": r.ref_doc,
-                "percent_impacted": percent_impacted
-            })
+            if percent_impacted > threshold:
+                result.append({
+                    "zone": r.zone,
+                    "legende": r.legende,
+                    "nom": r.nom,
+                    "ref_doc": r.ref_doc,
+                    "percent_impacted": percent_impacted
+                })
 
         return {
             "intersections": result
