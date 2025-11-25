@@ -127,26 +127,6 @@ export const SUMMARY_TEXTS = {
   NO_ISSUE: `<p>Le bruit des transports n'est pas un enjeu sur cette parcelle.</p>`,
   NO_ISSUE_WITH_ISOLATION: `<p>Le bruit des transports n'est pas un enjeu sur cette parcelle, bien qu'elle soit <b>soumise à une obligation règlementaire d'isolation.</b></p>`,
 
-  CLASSIFICATION_WARNING: `
-      <p>Cette parcelle est soumise à une carte de bruit des grandes infrastructure de transport terrestres (route de plus de 8200 veh/j ou voie ferrée de plus de 82 trains par jours) mais n'est pas soumise au classement sonore.</p>
-  
-      <p>Cette situation traduit soit :
-        <ul>
-          <li>un manque dans le classement sonore et donc un risque de sous protection des populations sur cette parcelle</li>
-          <li>une erreur dans les cartes de bruit et donc une surprotection sur cette parcelle.</li>
-        </ul>
-      </p>
-  
-      <p>Dans le doute, il est conseillé de se rapprocher des services :
-        <ul>
-          <li>en charge de l'élaboration des cartes de bruit et du classement sonore (DDTM)</li>
-          <li>du gestionnaire de l'infrastructure pour connaitre les niveaux de trafic réels</li>
-        </ul>
-      </p>
-  
-      <p>Enfin, le priorité devrait etre donnée à une éventuelle surprotection des populations.</p>
-    `,
-
   NOISEMAP_WARNING: `
       <p>Cette parcelle n’est pas impactée par une carte de bruit stratégique ou un plan d’exposition au bruit, diagBruit ne fournit donc pas de sono-score.</p>
 
