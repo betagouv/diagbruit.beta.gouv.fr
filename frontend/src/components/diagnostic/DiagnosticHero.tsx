@@ -45,7 +45,7 @@ const DiagnosticHero = ({
           {diagnostic.equivalent_ambiences.length > 0 && (
             <>
               <p className={cx(classes.subTitle, fr.cx("fr-mb-2v"))}>
-                Ambiances sonores équivalentes
+                Niveaux sonores équivalents
               </p>
               <div>
                 {diagnostic.equivalent_ambiences.map((ambience, index) => (
