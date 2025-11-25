@@ -142,10 +142,6 @@ export const getSummaryTextFromDiagnostic = (
     flags,
   } = extractDiagnosticInfo(diagnostic);
 
-  if (flags.hasClassificationWarning) {
-    return SUMMARY_TEXTS.CLASSIFICATION_WARNING;
-  }
-
   if (flags.hasNoisemapWarning) {
     return SUMMARY_TEXTS.NOISEMAP_WARNING;
   }
