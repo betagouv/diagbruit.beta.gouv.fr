@@ -93,7 +93,7 @@ const DiagnosticEvaluation = ({
 
     land_intersections_ld.forEach((entry) => {
       if (entry.cbstype === "A") {
-        const key = entry.codeinfra || "null";
+        const key = entry.codeinfra || `null_${entry.typesource}`;
         if (
           !maxLegendeByInfra[key] ||
           entry.legende > maxLegendeByInfra[key].legende
