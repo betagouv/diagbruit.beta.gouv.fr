@@ -26,4 +26,5 @@ SELECT
     geometry
 
 FROM {{ source('public_workspace', 'raw_noisemap') }}
-WHERE CAST(REGEXP_SUBSTR(legende, '\d{2}') AS INTEGER) >= 50
+WHERE (indicetype = 'LN' AND CAST(REGEXP_SUBSTR(legende, '\d{2}') AS INTEGER) >= 50)
+   OR (indicetype = 'LD' AND CAST(REGEXP_SUBSTR(legende, '\d{2}') AS INTEGER) >= 55)
