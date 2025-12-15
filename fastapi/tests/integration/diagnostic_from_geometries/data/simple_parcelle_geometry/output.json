@@ -1026,6 +1026,7 @@
             ]
           }
         ],
+        "noisesource_intersections": [],
         "isolation_min": 30,
         "isolation_max": 33
       }
