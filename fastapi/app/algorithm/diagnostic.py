@@ -5,7 +5,7 @@ from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassifi
 from ..utils import (get_land_isolations, get_air_isolation, get_computed_isolation)
 
 
-def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, percent_unimpacted, populate):
+def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, noisesource_intersections, percent_unimpacted, populate):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
     """
@@ -86,6 +86,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
 
     # Return soundclassification intersections
     diagnostic["soundclassification_intersections"] = filter_soundclassification_by_codeinfra(soundclassification_intersections)
+
+    # Return noissources intersection
+    diagnostic["noisesource_intersections"] = noisesource_intersections
 
     # Return the big zones of risks
     diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld']) if populate.zones else []

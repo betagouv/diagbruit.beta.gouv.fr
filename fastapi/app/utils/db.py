@@ -440,7 +440,6 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
     4. Apply specific buffer per category and filter intersecting features
     """
     try:
-        # 1. Fetch categories from Strapi
         strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
         categories_url = f"{strapi_url}/api/noise-source-categories"
         
@@ -457,21 +456,18 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
             logger.warning("No noise source categories found in Strapi")
             return {"intersections": []}
         
-        # Build category lookup: slug -> buffer
-        category_buffers = {cat["slug"]: cat["buffer"] for cat in categories}
-        max_buffer = max(category_buffers.values())
+        # Build category lookup: slug -> {buffer, name}
+        category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"]} for cat in categories}
+        max_buffer = max(info["buffer"] for info in category_info.values())
         
         logger.debug(f"Loaded {len(categories)} categories, max buffer: {max_buffer}m")
         
-        # 2. Create geometry and buffer zone
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
         geom_2154 = func.ST_Transform(safe_geom, 2154)
         
-        # Buffer in meters (SRID 2154)
         search_buffer = func.ST_Buffer(geom_2154, max_buffer)
         search_buffer_4326 = func.ST_Transform(search_buffer, 4326)
         
-        # 3. Query all noise sources within max buffer
         stmt = db.query(
             NoiseSourceItem.id,
             NoiseSourceItem.label,
@@ -486,23 +482,21 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
         
         result = []
         
-        # 4. For each point, apply specific buffer and check intersection
         for r in stmt.all():
             category_slug = r.category_slug
             
-            # Skip if category not found in reference
-            if category_slug not in category_buffers:
+            if category_slug not in category_info:
                 logger.warning(f"Category slug '{category_slug}' not found in Strapi categories")
                 continue
             
-            buffer_distance = category_buffers[category_slug]
+            category_data = category_info[category_slug]
+            buffer_distance = category_data["buffer"]
+            category_name = category_data["name"]
             
-            # Apply specific buffer to the point (in SRID 2154 for meters)
             point_2154 = func.ST_Transform(NoiseSourceItem.geometry, 2154)
             buffered_point = func.ST_Buffer(point_2154, buffer_distance)
             buffered_point_4326 = func.ST_Transform(buffered_point, 4326)
             
-            # Check if buffered point intersects with original geometry
             intersects = db.query(
                 func.ST_Intersects(buffered_point_4326, safe_geom)
             ).filter(
@@ -517,11 +511,22 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
                     logger.warning(f"Could not parse geometry_point: {parse_err}")
                     geometry_point = None
                 
+                distance = db.query(
+                    func.round(
+                        func.ST_Distance(
+                            func.ST_Transform(safe_geom, 2154),
+                            func.ST_Transform(NoiseSourceItem.geometry, 2154)
+                        )
+                    )
+                ).filter(
+                    NoiseSourceItem.id == r.id
+                ).scalar()
+                
                 result.append({
-                    "id": r.id,
                     "label": r.label,
                     "category_slug": category_slug,
-                    "buffer": buffer_distance,
+                    "category_name": category_name,
+                    "distance": int(distance) if distance else 0,
                     "geometry_point": geometry_point
                 })
         

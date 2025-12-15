@@ -33,6 +33,7 @@ export type Diagnostic = {
   zones: Zone[];
   air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
+  noisesource_intersections: NoiseSourceIntersection[];
   equivalent_ambiences: string[];
 };
 
@@ -83,6 +84,14 @@ export type SoundClassificationIntersection = {
   geometry_intersection: Geometry;
   geometry_source_point: [number, number];
   percent_impacted: number;
+};
+
+export type NoiseSourceIntersection = {
+  label: string;
+  category_slug: string;
+  category_name: string;
+  distance: number;
+  geometry_point: [number, number];
 };
 
 export type RecommendationCategory = {
