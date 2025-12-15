@@ -533,7 +533,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
         logger.debug(f"Found {len(result)} noise sources intersecting with geometry")
         
         return {
-            "intersections": result
+            "intersections": sorted(result, key=lambda x: x["distance"])
         }
     
     except Exception as e:
