@@ -20,6 +20,7 @@ import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
 import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
 import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
 import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -93,6 +94,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
+          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
           {!isMultiExposedSources &&
             !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
