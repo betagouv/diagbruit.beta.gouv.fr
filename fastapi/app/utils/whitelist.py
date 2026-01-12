@@ -1,14 +1,4 @@
 codes_insee_whitelist = [
-    # Bordeaux métropole
-    "33119", "33200", "33063", "33039", "33069", "33318", "33522", "33281", "33192", "33065",
-    "33162", "33273", "33434", "33487", "33449", "33550", "33004", "33312", "33167", "33075",
-    "33519", "33376", "33249", "33013", "33056", "33003", "33032", "33096",
-    
-    # Nantes métropole
-    "44120", "44215", "44143", "44035", "44190", "44162", "44109", "44172", "44114", "44024",
-    "44047", "44020", "44166", "44194", "44094", "44074", "44018", "44009", "44026", "44198",
-    "44204", "44150", "44171", "44101",
-    
     # Marseille bébé
     "13043", "13056", "13047", "13026", "13008", "13069", "13103", "13106", "13028", "13041",
     "13105", "13022", "13099", "13053", "13033", "13078", "13090", "13040", "13016", "13111",
@@ -37,3 +27,20 @@ codes_insee_whitelist = [
     # Lille
     "59350"
 ]
+
+# Departments that are fully whitelisted
+whitelisted_departments = ["33", "44"]
+
+def is_code_insee_allowed(code_insee: str) -> bool:
+    """
+    Check if a code INSEE is allowed.
+    Returns True if:
+    - The code is in the explicit whitelist, OR
+    - The code belongs to a fully whitelisted department (33 or 44)
+    """
+    if code_insee in codes_insee_whitelist:
+        return True
+    
+    # Check if the code belongs to a whitelisted department
+    department = code_insee[:2]
+    return department in whitelisted_departments

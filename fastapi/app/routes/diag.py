@@ -8,7 +8,7 @@ from app.database import SessionLocal
 from app.utils import (
     create_multipolygon_from_coordinates,
     get_parcelle_coordinates,
-    codes_insee_whitelist
+    is_code_insee_allowed
 )
 from app.utils.db import (
     query_noisemap_intersecting_features,
@@ -134,7 +134,7 @@ async def generate_diag_from_parcelles(
                 "error": result["error"]
             }
 
-        if result['parcelle'].code_insee not in codes_insee_whitelist:
+        if not is_code_insee_allowed(result['parcelle'].code_insee):
             raise HTTPException(
                 status_code=404,
                 detail=f"La parcelle {result['parcelle'].dict()} ne fait pas parti des données intégrées"
@@ -179,7 +179,7 @@ async def generate_diag_from_geometry(
     request: GeometryRequest
 ):
     async def process_item(item: GeometryItem):
-        if item.parcelle.code_insee not in codes_insee_whitelist:
+        if not is_code_insee_allowed(item.parcelle.code_insee):
             raise HTTPException(
                 status_code=404,
                 detail=f"La parcelle {item.parcelle.dict()} ne fait pas parti des données intégrées"
