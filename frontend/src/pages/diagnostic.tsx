@@ -224,6 +224,9 @@ function DiagnosticPage() {
         </div>
         <MapComponent
           ref={mapMethodsRef}
+          noisePins={
+            diagnosticsResponses[0]?.diagnostic?.noisesource_intersections || []
+          }
           onDiagnosticsChange={onDiagnosticsChange}
           onLoading={onLoading}
           onReady={() => {

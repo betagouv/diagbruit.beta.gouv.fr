@@ -1,5 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -17,6 +19,7 @@ import Map, {
   MapLayerMouseEvent,
   MapRef,
   MapSourceDataEvent,
+  Marker,
   StyleSpecification,
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
@@ -24,11 +27,16 @@ import usePrevious from "../../hooks/previous";
 import { encode } from "../../utils/compression";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
 import {
+  getIconFromNoiseCategorySlug,
   getRiskFromScore,
   getZoomFromGeometry,
   getZoomFromGouvType,
 } from "../../utils/tools";
-import { DiagnosticItem, DiagnosticResponseError } from "../../utils/types";
+import {
+  DiagnosticItem,
+  DiagnosticResponseError,
+  NoiseSourceIntersection,
+} from "../../utils/types";
 import AddressSearch, { AddressFeature } from "../search/AddressSearch";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
@@ -46,6 +54,11 @@ const defaultViewState = {
   zoom: 12,
 };
 
+const noisePinModal = createModal({
+  id: "noise-pin-modal",
+  isOpenedByDefault: false,
+});
+
 export type HoverInfo = {
   longitude: number;
   latitude: number;
@@ -53,6 +66,7 @@ export type HoverInfo = {
 };
 
 type MapComponentProps = {
+  noisePins: NoiseSourceIntersection[];
   onDiagnosticsChange: (newDiagnostics: DiagnosticItem[]) => void;
   onLoading: (loading: boolean) => void;
   onReady: () => void;
@@ -74,6 +88,7 @@ export interface ExposedMapMethods {
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
   (
     {
+      noisePins,
       onDiagnosticsChange,
       onLoading,
       onReady,
@@ -84,6 +99,8 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
     ref
   ) => {
     const { cx, classes } = useStyles();
+
+    console.log(noisePins);
 
     const addressSearchRef = useRef<{ reset: () => void }>(null);
 
@@ -101,6 +118,9 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
     const [openMapTilesLoaded, setOpenMapTilesLoaded] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [selectedNoisePin, setSelectedNoisePin] =
+      useState<NoiseSourceIntersection | null>(null);
+    const [zoom, setZoom] = useState(defaultViewState.zoom);
 
     const prevHovered = usePrevious(hovered);
     const prevSelected = usePrevious(parcelle);
@@ -269,6 +289,15 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       [map]
     );
 
+    const handleNoisePinClick = useCallback((pin: NoiseSourceIntersection) => {
+      setSelectedNoisePin(pin);
+      noisePinModal.open();
+    }, []);
+
+    const onZoomChange = useCallback((evt: any) => {
+      setZoom(evt.viewState.zoom);
+    }, []);
+
     useEffect(() => {
       onLoading(isLoading || !openMapTilesLoaded);
     }, [isLoading, openMapTilesLoaded]);
@@ -368,12 +397,85 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           onMouseEnter={onHover}
           onMouseLeave={onHover}
           onMouseMove={onHover}
+          onMove={onZoomChange}
           style={{ width: "100%", height: "550px" }}
           mapStyle={orthoStyle as StyleSpecification}
           onSourceData={onMapSourceData}
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
-        />
+        >
+          {zoom >= 16 &&
+            noisePins.map((pin, index) => {
+              const iconClass = getIconFromNoiseCategorySlug(pin.category_slug);
+              return (
+                <Marker
+                  key={`noise-pin-${index}`}
+                  longitude={pin.geometry_point[0]}
+                  latitude={pin.geometry_point[1]}
+                  anchor="center"
+                >
+                  <div
+                    style={{
+                      backgroundColor: "#000091",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      border: "2px solid white",
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    title={`${pin.label} (${pin.category_name}) - ${Math.round(
+                      pin.distance
+                    )}m`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNoisePinClick(pin);
+                    }}
+                  >
+                    <i
+                      className={`${iconClass} fr-icon--sm`}
+                      style={{
+                        color: "white",
+                        fontSize: "16px",
+                      }}
+                    />
+                  </div>
+                </Marker>
+              );
+            })}
+        </Map>
+
+        <noisePinModal.Component title="" size="medium">
+          {selectedNoisePin && (
+            <div className={classes.modalContent}>
+              <span className={fr.cx("fr-mb-2v")}>
+                {selectedNoisePin.label}
+              </span>
+              <div>
+                <Tag className={classes.customTag} small>
+                  à {Math.round(selectedNoisePin.distance)} mètres
+                </Tag>
+                <Tag className={fr.cx("fr-ml-2v")} small>
+                  <i
+                    className={cx(
+                      fr.cx(
+                        getIconFromNoiseCategorySlug(
+                          selectedNoisePin.category_slug
+                        ),
+                        "fr-mr-1v"
+                      ),
+                      classes.smallIcon
+                    )}
+                  />{" "}
+                  {selectedNoisePin.category_name}
+                </Tag>
+              </div>
+            </div>
+          )}
+        </noisePinModal.Component>
       </div>
     );
   }
@@ -410,6 +512,23 @@ const useStyles = tss.create(() => ({
     height: "100vh",
     width: "100vw",
     zIndex: 9999,
+  },
+  modalContent: {
+    padding: fr.spacing("4v"),
+    backgroundColor: fr.colors.decisions.background.default.grey.hover,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "start",
+  },
+  customTag: {
+    backgroundColor:
+      fr.colors.decisions.background.actionLow.blueFrance.default,
+    color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+  },
+  smallIcon: {
+    "&::before": {
+      "--icon-size": "1rem",
+    },
   },
 }));
 
