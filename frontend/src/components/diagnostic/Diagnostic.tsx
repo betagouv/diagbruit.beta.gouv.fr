@@ -75,12 +75,18 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="1. Évaluation du risque selon diagBruit"
+            title={`1. Risques sonores sur la parcelle ${diagnosticItem.parcelle.numero}`}
             image={{
               src: "/images/connection-lost.svg",
               width: 56,
               height: 48,
             }}
+          />
+          <DiagnosticSectionTitle
+            title={`Risques sonores liés aux transports`}
+            icon="ri-car-fill"
+            isSecondTitle
+            hint="Transports routiers, ferroviaires et aériens"
           />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
@@ -89,10 +95,15 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               light
             />
           )}
-
           <DiagnosticHero
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
+          />
+          <DiagnosticSectionTitle
+            title={`Autres sources de bruit`}
+            icon="ri-goblet-fill"
+            isSecondTitle
+            hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />

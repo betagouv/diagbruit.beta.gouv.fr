@@ -18,9 +18,9 @@ export default function DiagnosticLocalNoiseSources({
 
   return (
     <div className={classes.container}>
-      <h3 className={fr.cx("fr-h6", "fr-mb-4v")}>
+      <h4 className={fr.cx("fr-h6", "fr-mb-4v")}>
         ⚠️ Données locales remontées
-      </h3>
+      </h4>
       <ul className={fr.cx("fr-mb-0")}>
         {noisesource_intersections.map((source, index) => (
           <li key={index}>

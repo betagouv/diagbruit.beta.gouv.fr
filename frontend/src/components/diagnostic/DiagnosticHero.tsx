@@ -110,6 +110,7 @@ const useStyles = tss
     container: {
       backgroundColor: fr.colors.decisions.background.contrast.grey.default,
       padding: fr.spacing("6v"),
+      marginBottom: fr.spacing("6v"),
     },
     titleIcon: {
       color: fr.colors.decisions.background.flat.blueFrance.default,
