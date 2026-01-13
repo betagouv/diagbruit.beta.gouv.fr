@@ -88,13 +88,6 @@ const DiagnosticHero = ({
             >
               Contacter l'équipe diagBruit
             </Button>
-            <Button
-              iconId="ri-send-plane-line"
-              className={cx(classes.contactButton)}
-              onClick={() => handleCopyUrl?.("Forward diagnostic")}
-            >
-              Transmettre le diagnostic au porteur de projet
-            </Button>
           </div>
         </div>
       </div>
@@ -128,14 +121,12 @@ const useStyles = tss
     },
     contactButtonsContainer: {
       display: "flex",
+      justifyContent: "end",
       gap: fr.spacing("2v"),
       marginTop: fr.spacing("4v"),
     },
     contactButton: {
       justifyContent: "center",
-      "&:last-of-type": {
-        flexGrow: 1,
-      },
     },
   }));
 
