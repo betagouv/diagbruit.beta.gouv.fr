@@ -97,7 +97,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           <>
             Aidez-nous à améliorer cet outil ! Faites nous part de vos retours
             en remplissant{" "}
-            <a href="#tally-open=1A4kZL&tally-layout=modal&tally-width=500&tally-emoji-text=🙉&tally-emoji-animation=tada">
+            <a href="#tally-open=1A4kZL&tally-layout=modal&tally-width=500">
               ce court formulaire
             </a>
           </>
