@@ -45,8 +45,29 @@ function DiagnosticPage() {
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
       const map = mapMethodsRef.current.map;
-      if ((parcelleFeature as any).bbox) {
-        const [minLng, minLat, maxLng, maxLat] = (parcelleFeature as any).bbox;
+
+      if ((parcelleFeature as any).geometry) {
+        const coords = (parcelleFeature as any).geometry.coordinates;
+        let minLng = Infinity,
+          minLat = Infinity,
+          maxLng = -Infinity,
+          maxLat = -Infinity;
+
+        const flattenCoords = (coordArray: any[]): void => {
+          coordArray.forEach((item) => {
+            if (Array.isArray(item[0])) {
+              flattenCoords(item);
+            } else {
+              const [lng, lat] = item;
+              minLng = Math.min(minLng, lng);
+              minLat = Math.min(minLat, lat);
+              maxLng = Math.max(maxLng, lng);
+              maxLat = Math.max(maxLat, lat);
+            }
+          });
+        };
+
+        flattenCoords(coords);
 
         const centerLng = (minLng + maxLng) / 2;
         const centerLat = (minLat + maxLat) / 2;
@@ -75,8 +96,6 @@ function DiagnosticPage() {
             }
           });
         });
-      } else {
-        setIsLoading(false);
       }
     }
   };
@@ -135,6 +154,7 @@ function DiagnosticPage() {
     if (parcelleParam) {
       try {
         const parcelleFeature = decode(parcelleParam);
+
         if (
           parcelleFeature &&
           typeof parcelleFeature === "object" &&
