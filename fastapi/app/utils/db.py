@@ -92,9 +92,23 @@ def get_soundclassification_intersection_corrections(
         return correction_db
 
     try:
-        # Base geometries and reference points (all in SRID 2154 for construction)
+        # Apply 5-meter buffer to the WKT geometry to avoid scanning geometry's building
+        buffered_wkt_geom = func.ST_AsText(
+            func.ST_Transform(
+                func.ST_Buffer(
+                    func.ST_Transform(
+                        func.ST_GeomFromText(wkt_geometry, 4326),
+                        2154
+                    ),
+                    2
+                ),
+                4326
+            )
+        )
+        buffered_wkt_geometry = db.execute(select(buffered_wkt_geom)).scalar()
+        
         _, _, road_2154, closest_values, farthest_values = base_geoms(
-            wkt_geometry, source_point_geom, geometry_source
+            buffered_wkt_geometry, source_point_geom, geometry_source
         )
 
         closest_correction_db = compute_correction_for(
