@@ -35,10 +35,6 @@ codes_insee_whitelist = [
     "19231","19235","19236","19240","19203","19255","19287",
 
     # Lille
-<<<<<<< Updated upstream
-    "59350"
-]
-=======
     "59350",
 
     # Strasbourg
@@ -64,4 +60,3 @@ def is_code_insee_allowed(code_insee: str) -> bool:
     # Check if the code belongs to a whitelisted department
     department = code_insee[:2]
     return department in whitelisted_departments
->>>>>>> Stashed changes
