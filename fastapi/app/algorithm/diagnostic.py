@@ -5,9 +5,10 @@ from .tools import (filter_land_intersections_by_codeinfra, filter_soundclassifi
 from ..utils import (get_land_isolations, get_air_isolation, get_computed_isolation)
 
 
-def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, noisesource_intersections, percent_unimpacted, populate):
+def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersections, peb_intersections, noisesource_intersections, percent_unimpacted, populate, geom_area_m2=None):
     """
     Calculate the score for a parcel based on the intersections with the noise map.
+    geom_area_m2: Area of the geometry in m² for zone percentage calculation
     """
     diagnostic = copy.deepcopy(default_diagnostic)
 
@@ -91,7 +92,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic["noisesource_intersections"] = noisesource_intersections
 
     # Return the big zones of risks
-    diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld']) if populate.zones else []
+    diagnostic["zones"] = get_zones_from_intersections(diagnostic['land_intersections_ld'], geom_area_m2=geom_area_m2) if populate.zones else []
 
     # Return the isolation interval
     diagnostic["isolation_min"] = None

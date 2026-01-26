@@ -43,11 +43,12 @@ def _area_m2(geom):
     geom_m = transform(project, geom)
     return geom_m.area
 
-def get_zones_from_intersections(intersections, min_area=1.0):
+def get_zones_from_intersections(intersections, min_area=1.0, geom_area_m2=None):
     """
     Produit des 'zones' par niveau de risque.
     - Sortie: geometry = coordonnées uniquement (sans 'type'), en EPSG:4326
     - Filtre les géométries dont l'aire < min_area (m²)
+    - geom_area_m2: aire de la géométrie en m² pour calculer le pourcentage
     """
     levels = load_land_levels('LD')
     grouped = group_intersections_by_identifier(intersections)
@@ -115,10 +116,17 @@ def get_zones_from_intersections(intersections, min_area=1.0):
             cumulative_higher = clipped if cumulative_higher is None else unary_union([cumulative_higher, clipped])
             continue
 
-        zones.append({
+        zone_data = {
             "risk": risk,
             "geometry": valid_coords
-        })
+        }
+        
+        if geom_area_m2 and geom_area_m2 > 0:
+            zone_area_m2 = _area_m2(clipped)
+            percentage = (zone_area_m2 / geom_area_m2)
+            zone_data["percentage_impacted"] = round(percentage, 2)
+        
+        zones.append(zone_data)
 
         cumulative_higher = clipped if cumulative_higher is None else unary_union([cumulative_higher, clipped])
 
