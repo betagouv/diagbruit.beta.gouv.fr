@@ -148,7 +148,6 @@ async def generate_diag_from_parcelles(
             )
 
         try:
-            print(result)
             populate = result["populate"]
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
             codedept = f"0{result['parcelle'].code_insee[:2]}"
