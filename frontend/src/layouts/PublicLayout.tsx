@@ -92,22 +92,20 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }}
         id="fr-header-simple-header"
       />
-      {pathname === "/diagnostic" && (
-        <Notice
-          title={
-            <>
-              Aidez-nous à améliorer cet outil ! Faites nous part de vos retours
-              en remplissant{" "}
-              <a href="https://tally.so/r/3xoeEd" target="_blank">
-                ce court formulaire.
-              </a>
-            </>
-          }
-          isClosable
-          onClose={function noRefCheck() {}}
-          className={cx(classes.betaNotice)}
-        />
-      )}
+      <Notice
+        title={
+          <>
+            Aidez-nous à améliorer cet outil ! Faites nous part de vos retours
+            en remplissant{" "}
+            <a href="#tally-open=1A4kZL&tally-layout=modal&tally-width=500">
+              ce court formulaire
+            </a>
+          </>
+        }
+        isClosable
+        onClose={function noRefCheck() {}}
+        className={cx(classes.betaNotice)}
+      />
       <div
         className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
       >

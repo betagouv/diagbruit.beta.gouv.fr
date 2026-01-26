@@ -8,7 +8,7 @@ from .db import upsert_diagnostic_result
 
 from .cadastre import get_parcelle_coordinates
 
-from .whitelist import codes_insee_whitelist
+from .whitelist import codes_insee_whitelist, is_code_insee_allowed
 
 from .risk import get_risk_from_score
 

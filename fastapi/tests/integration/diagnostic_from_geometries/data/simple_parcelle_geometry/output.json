@@ -790,7 +790,7 @@
                 [-0.555810034, 44.829620075]
               ]
             ],
-            "closest_correction": -9,
+            "closest_correction": 0,
             "farthest_correction": -9
           },
           {
@@ -816,7 +816,7 @@
                 [-0.556515455, 44.829074129]
               ]
             ],
-            "closest_correction": -9,
+            "closest_correction": 0,
             "farthest_correction": -9
           },
           {
@@ -1028,7 +1028,7 @@
         ],
         "noisesource_intersections": [],
         "isolation_min": 30,
-        "isolation_max": 33
+        "isolation_max": 42
       }
     }
   ]

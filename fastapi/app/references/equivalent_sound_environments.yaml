@@ -24,3 +24,9 @@
   value: 70
 - label: "Aboiement"
   value: 70
+- label: "Tondeuse / souffleur"
+  value: 75
+- label: "Salle de classe bruyante"
+  value: 75
+- label: "Aboiement"
+  value: 75
