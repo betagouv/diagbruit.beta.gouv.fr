@@ -32,6 +32,7 @@ function DiagnosticPage() {
   const [isMapReady, setIsMapReady] = useState(false);
   const [parcelleError, setParcelleError] = useState(false);
   const [notIntegrated, setNotIntegrated] = useState(false);
+  const [internalServerError, setInternalServerError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [diagnosticsResponses, setDiagnosticsResponses] = useState<
     DiagnosticItem[]
@@ -88,7 +89,7 @@ function DiagnosticPage() {
                   computeParcelleSiblings(
                     map,
                     feature as MapGeoJSONFeature,
-                    1000
+                    1000,
                   );
                 mapMethodsRef.current.setParcelleSiblings(nearbySiblings);
                 mapMethodsRef.current.setParcelle(clickedParcelle);
@@ -117,6 +118,7 @@ function DiagnosticPage() {
     }
 
     setNotIntegrated(false);
+    setInternalServerError(false);
     setDiagnosticsResponses([]);
     setSearchValues(defaultSearchValues);
   };
@@ -256,6 +258,7 @@ function DiagnosticPage() {
           onErrorChange={(error) => {
             setDiagnosticsResponses([]);
             setNotIntegrated(error?.code === 404);
+            setInternalServerError(error?.code === 500);
           }}
           addressDefaultValue={addressDefaultValue}
         />
@@ -300,6 +303,28 @@ function DiagnosticPage() {
             onClose={function noRefCheck() {}}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
+          />
+        )}
+
+        {internalServerError && (
+          <Alert
+            className={fr.cx("fr-my-4v")}
+            description={
+              <div className={fr.cx("fr-mt-2v")}>
+                Une erreur technique est survenue lors de la génération du
+                diagnostic. Veuillez réessayer ultérieurement.
+                <div className={fr.cx("fr-mt-1v")}>
+                  Si le problème persiste,{" "}
+                  <a href="https://tally.so/r/3xoeEd" target="_blank">
+                    contactez-nous
+                  </a>
+                  .
+                </div>
+              </div>
+            }
+            onClose={function noRefCheck() {}}
+            severity="error"
+            title="Erreur lors de la génération du diagnostic"
           />
         )}
       </div>

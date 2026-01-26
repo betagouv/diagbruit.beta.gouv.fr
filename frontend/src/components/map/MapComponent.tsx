@@ -96,11 +96,9 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       onErrorChange,
       addressDefaultValue,
     },
-    ref
+    ref,
   ) => {
     const { cx, classes } = useStyles();
-
-    console.log(noisePins);
 
     const addressSearchRef = useRef<{ reset: () => void }>(null);
 
@@ -127,7 +125,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
     const { response, error, isLoading } = useDiagnostics(
       parcelle,
-      parcelleSiblings
+      parcelleSiblings,
     );
 
     useImperativeHandle(
@@ -139,7 +137,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         setParcelleSiblings,
         resetAddress: addressSearchRef.current?.reset,
       }),
-      [map, parcelle, setParcelle, setParcelleSiblings]
+      [map, parcelle, setParcelle, setParcelleSiblings],
     );
 
     useHoverFeatureState(map, hovered, prevHovered);
@@ -180,7 +178,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           const { clickedParcelle, nearbySiblings } = computeParcelleSiblings(
             map,
             feature as MapGeoJSONFeature,
-            1000
+            1000,
           );
 
           if (clickedParcelle?.id) {
@@ -193,7 +191,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           setParcelle(null);
         }
       },
-      [map, parcelle]
+      [map, parcelle],
     );
 
     const onHover = (event: MapLayerMouseEvent) => {
@@ -286,7 +284,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
         onReset();
       },
-      [map]
+      [map],
     );
 
     const handleNoisePinClick = useCallback((pin: NoiseSourceIntersection) => {
@@ -428,7 +426,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
                       justifyContent: "center",
                     }}
                     title={`${pin.label} (${pin.category_name}) - ${Math.round(
-                      pin.distance
+                      pin.distance,
                     )}m`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -463,11 +461,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
                     className={cx(
                       fr.cx(
                         getIconFromNoiseCategorySlug(
-                          selectedNoisePin.category_slug
+                          selectedNoisePin.category_slug,
                         ),
-                        "fr-mr-1v"
+                        "fr-mr-1v",
                       ),
-                      classes.smallIcon
+                      classes.smallIcon,
                     )}
                   />{" "}
                   {selectedNoisePin.category_name}
@@ -478,7 +476,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         </noisePinModal.Component>
       </div>
     );
-  }
+  },
 );
 
 const useStyles = tss.create(() => ({
