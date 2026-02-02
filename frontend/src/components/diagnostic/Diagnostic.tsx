@@ -20,6 +20,7 @@ import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
 import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
 import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
 import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -48,7 +49,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       trackMatomoEvent(
         "Action",
         title ?? "Copy Diagnostic",
-        `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+        `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
       );
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
@@ -74,12 +75,18 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="1. Évaluation du risque selon diagBruit"
+            title={`1. Risques sonores sur la parcelle ${diagnosticItem.parcelle.numero}`}
             image={{
               src: "/images/connection-lost.svg",
               width: 56,
               height: 48,
             }}
+          />
+          <DiagnosticSectionTitle
+            title={`Risques sonores liés aux transports`}
+            icon="ri-car-fill"
+            isSecondTitle
+            hint="Transports routiers, ferroviaires et aériens"
           />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
@@ -88,11 +95,17 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               light
             />
           )}
-
           <DiagnosticHero
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
+          <DiagnosticSectionTitle
+            title={`Autres sources de bruit`}
+            icon="ri-goblet-fill"
+            isSecondTitle
+            hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
+          />
+          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
           <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
           {!isMultiExposedSources &&
             !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
@@ -166,7 +179,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     trackMatomoEvent(
       "Action",
       "Generate Diagnostic",
-      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
     );
   }, [diagnosticItem]);
 
@@ -177,11 +190,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <h2>Votre diagnostic diagBruit</h2>
         </div>
         <div className={cx(fr.cx("fr-col-4"), classes.buttonSection)}>
-          <Button
-            className={fr.cx("fr-btn--secondary")}
-            iconId="ri-file-copy-line"
-            onClick={() => handleCopyUrl()}
-          >
+          <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
             Copier l'URL du diagnostic
           </Button>
         </div>
@@ -210,7 +219,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               trackMatomoEvent(
                 "Action",
                 "Tab Change",
-                `Diagnostic Tab - ${tabId}`
+                `Diagnostic Tab - ${tabId}`,
               );
             }}
           />
@@ -220,7 +229,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                 {JSON.stringify(
                   diagnosticItem,
                   (k, v) => (k.startsWith("geometry") ? undefined : v),
-                  2
+                  2,
                 )}
               </pre>
             </Accordion>
@@ -250,7 +259,7 @@ const useStyles = tss.create(() => ({
     marginTop: fr.spacing("2v"),
     ".fr-tabs__panel": {
       padding: `${fr.spacing("6v")} ${fr.spacing("8v")} ${fr.spacing(
-        "8v"
+        "8v",
       )} ${fr.spacing("8v")}`,
     },
   },

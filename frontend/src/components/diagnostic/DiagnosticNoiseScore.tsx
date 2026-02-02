@@ -1,7 +1,7 @@
 import { tss } from "tss-react";
 import {
   getColorFromScore,
-  getIconeFromScore,
+  getIconFromScore,
   getTextFromScore,
 } from "../../utils/tools";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -29,7 +29,7 @@ const DiagnosticNoiseScore = ({
 
   return (
     <div className={cx(classes.container)}>
-      <i className={fr.cx(getIconeFromScore(score))} /> RISQUE{" "}
+      <i className={fr.cx(getIconFromScore(score))} /> RISQUE{" "}
       {getTextFromScore(score)}
     </div>
   );

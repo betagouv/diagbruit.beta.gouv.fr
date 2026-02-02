@@ -55,7 +55,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
     const archivedIds = new Set(archives.map((a) => getParcelleId(a.parcelle)));
 
     const siblingsToRequest = siblings.filter(
-      (item) => !archivedIds.has(getParcelleId(item.parcelle))
+      (item) => !archivedIds.has(getParcelleId(item.parcelle)),
     );
 
     const itemsToRequest = [mainParcelle, ...siblingsToRequest];
@@ -77,20 +77,20 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
             });
             console.error(
               "Erreur lors de la récupération du diagnostic :",
-              apiResponse
+              apiResponse,
             );
           });
         } else {
           res.json().then((apiResponse: DiagnosticResponseOk) => {
             const newDiagnostics = apiResponse.diagnostics;
             const newDiagnosticsIds = new Set(
-              newDiagnostics.map((item) => getParcelleId(item.parcelle))
+              newDiagnostics.map((item) => getParcelleId(item.parcelle)),
             );
 
             const updatedArchives = [
               ...archives.filter(
                 (archive) =>
-                  !newDiagnosticsIds.has(getParcelleId(archive.parcelle))
+                  !newDiagnosticsIds.has(getParcelleId(archive.parcelle)),
               ),
               ...newDiagnostics,
             ];
@@ -99,7 +99,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
               .map((p) => {
                 const id = getParcelleId(p.parcelle);
                 return updatedArchives.find(
-                  (a) => getParcelleId(a.parcelle) === id
+                  (a) => getParcelleId(a.parcelle) === id,
                 );
               })
               .filter(Boolean) as DiagnosticItem[];
@@ -110,7 +110,11 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
         }
       })
       .catch((err) => {
-        console.error("Erreur:", err);
+        console.error("Network or fetch error:", err.message);
+        setError({
+          code: 500,
+          message: err.message || "Network error occurred",
+        });
       })
       .finally(() => {
         setIsLoading(false);

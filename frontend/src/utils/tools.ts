@@ -57,13 +57,26 @@ export const getTextFromRisk = (risk: number, lowercase?: boolean): string => {
   return lowercase ? "faible" : "FAIBLE";
 };
 
-export const getIconeFromScore = (
+export const getIconFromScore = (
   score: number
 ): FrIconClassName | RiIconClassName => {
   if (score > 8) return "ri-close-circle-fill";
   if (score > 6) return "ri-alert-fill";
   if (score > 3) return "ri-information-fill";
   return "ri-checkbox-circle-fill";
+};
+
+export const getIconFromNoiseCategorySlug = (
+  slug: string
+): FrIconClassName | RiIconClassName => {
+  switch (slug) {
+    case "ECO":
+      return "ri-school-fill";
+    case "CAR":
+      return "ri-car-fill";
+  }
+
+  return "ri-goblet-fill";
 };
 
 export const getReadableSource = (

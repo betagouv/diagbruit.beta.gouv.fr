@@ -4,7 +4,7 @@ from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem,)
+from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -22,6 +22,8 @@ import asyncio
 import logging
 import yaml
 import json
+import os
+import httpx
 from pathlib import Path
 from typing import Tuple
 from sqlalchemy import select
@@ -440,3 +442,114 @@ async def upsert_diagnostic_result(
         raise
     finally:
         await loop.run_in_executor(None, db.close)
+
+
+def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
+    """
+    Query the database for noise source features that intersect with the given WKT geometry.
+    
+    1. Fetch noise source categories from Strapi API
+    2. Find the maximum buffer distance
+    3. Query all noise sources within max buffer distance
+    4. Apply specific buffer per category and filter intersecting features
+    """
+    try:
+        strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
+        categories_url = f"{strapi_url}/api/noise-source-categories"
+        
+        try:
+            response = httpx.get(categories_url, timeout=10.0)
+            response.raise_for_status()
+            categories_data = response.json()
+            categories = categories_data.get("data", [])
+        except Exception as e:
+            logger.error(f"Error fetching noise source categories from Strapi: {str(e)}")
+            return {"intersections": []}
+        
+        if not categories:
+            logger.warning("No noise source categories found in Strapi")
+            return {"intersections": []}
+        
+        # Build category lookup: slug -> {buffer, name}
+        category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"]} for cat in categories}
+        max_buffer = max(info["buffer"] for info in category_info.values())
+        
+        logger.debug(f"Loaded {len(categories)} categories, max buffer: {max_buffer}m")
+        
+        safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
+        geom_2154 = func.ST_Transform(safe_geom, 2154)
+        
+        search_buffer = func.ST_Buffer(geom_2154, max_buffer)
+        search_buffer_4326 = func.ST_Transform(search_buffer, 4326)
+        
+        stmt = db.query(
+            NoiseSourceItem.id,
+            NoiseSourceItem.label,
+            NoiseSourceItem.category_slug,
+            cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry_point")
+        ).filter(
+            func.ST_Intersects(
+                NoiseSourceItem.geometry,
+                search_buffer_4326
+            )
+        )
+        
+        result = []
+        
+        for r in stmt.all():
+            category_slug = r.category_slug
+            
+            if category_slug not in category_info:
+                logger.warning(f"Category slug '{category_slug}' not found in Strapi categories")
+                continue
+            
+            category_data = category_info[category_slug]
+            buffer_distance = category_data["buffer"]
+            category_name = category_data["name"]
+            
+            point_2154 = func.ST_Transform(NoiseSourceItem.geometry, 2154)
+            buffered_point = func.ST_Buffer(point_2154, buffer_distance)
+            buffered_point_4326 = func.ST_Transform(buffered_point, 4326)
+            
+            intersects = db.query(
+                func.ST_Intersects(buffered_point_4326, safe_geom)
+            ).filter(
+                NoiseSourceItem.id == r.id
+            ).scalar()
+            
+            if intersects:
+                try:
+                    geometry_parsed = json.loads(r.geometry_point)
+                    geometry_point = geometry_parsed["coordinates"]
+                except Exception as parse_err:
+                    logger.warning(f"Could not parse geometry_point: {parse_err}")
+                    geometry_point = None
+                
+                distance = db.query(
+                    func.round(
+                        func.ST_Distance(
+                            func.ST_Transform(safe_geom, 2154),
+                            func.ST_Transform(NoiseSourceItem.geometry, 2154)
+                        )
+                    )
+                ).filter(
+                    NoiseSourceItem.id == r.id
+                ).scalar()
+                
+                result.append({
+                    "label": r.label,
+                    "category_slug": category_slug,
+                    "category_name": category_name,
+                    "distance": int(distance) if distance else 0,
+                    "geometry_point": geometry_point
+                })
+        
+        logger.debug(f"Found {len(result)} noise sources intersecting with geometry")
+        
+        return {
+            "intersections": sorted(result, key=lambda x: x["distance"])
+        }
+    
+    except Exception as e:
+        logger.error(f"Database error in noise source query: {str(e)}")
+        raise

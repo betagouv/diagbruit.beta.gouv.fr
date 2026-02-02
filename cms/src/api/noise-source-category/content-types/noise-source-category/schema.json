@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "noise_source_categories",
+  "info": {
+    "singularName": "noise-source-category",
+    "pluralName": "noise-source-categories",
+    "displayName": "NoiseSourceCategory",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "buffer": {
+      "type": "integer",
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

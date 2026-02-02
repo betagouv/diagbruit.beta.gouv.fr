@@ -474,6 +474,41 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiNoiseSourceCategoryNoiseSourceCategory
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'noise_source_categories';
+  info: {
+    description: '';
+    displayName: 'NoiseSourceCategory';
+    pluralName: 'noise-source-categories';
+    singularName: 'noise-source-category';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    buffer: Schema.Attribute.Integer & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::noise-source-category.noise-source-category'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRecommendationRecommendation
   extends Struct.CollectionTypeSchema {
   collectionName: 'recommendations';
@@ -1059,6 +1094,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
+      'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;
       'plugin::content-releases.release': PluginContentReleasesRelease;

@@ -24,6 +24,7 @@ def test_get_land_score_from_sources_cases(input_path):
         noisemap_intersections=case["noisemap_intersections"],
         soundclassification_intersections=case["soundclassification_intersections"],
         peb_intersections=case["peb_intersections"],
+        noisesource_intersections=[],
         percent_unimpacted=0,
         populate=Populate(zones=False)
     )

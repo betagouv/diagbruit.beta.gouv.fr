@@ -4,7 +4,8 @@
       "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS pk SERIAL PRIMARY KEY;",
       "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
       "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_batiment_c ON {{ this }} (batiment_c);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_is_valid_now ON {{ this }} (is_valid_now);"
+      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_is_valid_now ON {{ this }} (is_valid_now);",
+      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_code_depar ON {{ this }} (code_depar);"
     ]
 ) }}
 

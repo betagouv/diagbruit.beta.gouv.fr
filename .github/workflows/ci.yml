@@ -2,9 +2,9 @@ name: CI pipeline - ingestion + dbt + tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, preprod]
   push:
-    branches: [main]
+    branches: [main, preprod]
 
 permissions:
   contents: read
