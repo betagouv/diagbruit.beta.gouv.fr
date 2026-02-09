@@ -46,7 +46,7 @@ def compute_intersection_score(intersection, levels, all_intersections):
     return score
 
 
-def compute_aggregated_score_for_intersections(intersections, levels, all_intersections):
+def compute_aggregated_score_for_intersections(intersections, levels, all_intersections, exclude_domination=False):
     grouped_by_legende = defaultdict(list)
     for item in intersections:
         grouped_by_legende[item['legende']].append(item)
@@ -59,12 +59,13 @@ def compute_aggregated_score_for_intersections(intersections, levels, all_inters
         filtered_items = all_items
     reduced_list = sorted(filtered_items, key=lambda item: item.get('percent_impacted', 0), reverse=True)
     
-    threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
-    if len(reduced_list) >= 2:
-        p1 = reduced_list[0].get('percent_impacted', 0)
-        p2 = reduced_list[1].get('percent_impacted', 0)
-        if p1 - p2 >= threshold:
-            return compute_intersection_score(reduced_list[0], levels, all_intersections)
+    if not exclude_domination:
+        threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
+        if len(reduced_list) >= 2:
+            p1 = reduced_list[0].get('percent_impacted', 0)
+            p2 = reduced_list[1].get('percent_impacted', 0)
+            if p1 - p2 >= threshold:
+                return compute_intersection_score(reduced_list[0], levels, all_intersections)
 
     return max([
         compute_intersection_score(intersection, levels, all_intersections) for intersection in intersections
@@ -122,7 +123,7 @@ def group_intersections_by_identifier(intersections):
     return grouped
 
 
-def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype, percent_unimpacted):
+def get_land_score_from_sources(intersections_agglo, intersections_infra, indicetype, percent_unimpacted, exclude_domination=False):
     """
     Returns the final score based on all intersections.
 
@@ -138,15 +139,16 @@ def get_land_score_from_sources(intersections_agglo, intersections_infra, indice
     if not all_intersections:
         return 0
 
-    unimpacted_threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
-    if percent_unimpacted >= unimpacted_threshold:
-        return 3
+    if not exclude_domination:
+        unimpacted_threshold = CONFIG.get("intersection_land_dominating_percentage_difference", 0.5)
+        if percent_unimpacted >= unimpacted_threshold:
+            return 3
 
     levels = load_land_levels(indicetype)
     grouped = group_intersections_by_identifier(all_intersections)
 
     scores = [
-        compute_aggregated_score_for_intersections(group, levels, all_intersections)
+        compute_aggregated_score_for_intersections(group, levels, all_intersections, exclude_domination)
         for group in grouped.values()
     ]
 

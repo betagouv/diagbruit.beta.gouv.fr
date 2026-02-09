@@ -45,7 +45,7 @@
         ]
       ],
       "populate": {
-        "zone": false,
+        "zones": true,
         "isolation": false
       }
     }

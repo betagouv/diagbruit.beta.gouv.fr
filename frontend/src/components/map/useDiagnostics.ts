@@ -46,7 +46,7 @@ export function useDiagnostics(parcelle: any, parcelleSiblings: any[]) {
         },
         geometry: sibling.geometry.coordinates,
         populate: {
-          zone: false,
+          zones: true,
           isolation: false,
         },
       };
