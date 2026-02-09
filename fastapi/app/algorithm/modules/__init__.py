@@ -10,3 +10,5 @@ from .score_air import get_air_score_from_sources
 from .classification_warning import get_classification_warning
 
 from .recommendations import get_recommendations_by_score
+
+from .score_global import get_global_score_from_sources

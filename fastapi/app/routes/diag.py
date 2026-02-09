@@ -8,7 +8,8 @@ from app.database import SessionLocal
 from app.utils import (
     create_multipolygon_from_coordinates,
     get_parcelle_coordinates,
-    is_code_insee_allowed
+    is_code_insee_allowed,
+    get_area_m2_from_wkt
 )
 from app.utils.db import (
     query_noisemap_intersecting_features,
@@ -101,18 +102,21 @@ async def process_parcelle(parcelle: ParcelleRequest, populate: Populate):
 def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Populate):
     db = SessionLocal()
     try:
+        
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
         noisesource = query_noisesource_intersecting_features(db, polygon_wkt)
         percent_unimpacted = noisemap.get("percent_unimpacted", 0)
         sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation, codedept)
         peb = query_peb_intersecting_features(db, polygon_wkt)
+        geom_area_m2 = get_area_m2_from_wkt(polygon_wkt) if polygon_wkt else None
         return get_parcelle_diagnostic(
             noisemap.get('intersections', []),
             sound.get('intersections', []),
             peb.get('intersections', []),
             noisesource.get('intersections', []),
             percent_unimpacted,
-            populate
+            populate,
+            geom_area_m2
         )
     finally:
         db.close()
@@ -144,7 +148,6 @@ async def generate_diag_from_parcelles(
             )
 
         try:
-            print(result)
             populate = result["populate"]
             polygone = create_multipolygon_from_coordinates(result["coordinates"])
             codedept = f"0{result['parcelle'].code_insee[:2]}"

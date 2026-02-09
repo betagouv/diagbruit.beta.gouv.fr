@@ -51,3 +51,28 @@ def create_polygon_from_bbox(bbox):
     ring_str = ', '.join([f"{x} {y}" for x, y in ring])
     wkt = f"POLYGON(({ring_str}))"
     return wkt
+
+
+def get_area_m2_from_wkt(polygon_wkt: str) -> float:
+    """
+    Calculate the area in square meters from a WKT geometry string.
+    Uses UTM projection based on the geometry's centroid location.
+    
+    Args:
+        polygon_wkt: WKT string (POLYGON or MULTIPOLYGON) in EPSG:4326
+        
+    Returns:
+        Area in square meters
+    """
+    from shapely import wkt
+    from shapely.ops import transform
+    import pyproj
+    
+    geom = wkt.loads(polygon_wkt)
+    rep = geom.representative_point()
+    lon, lat = rep.x, rep.y
+    zone = int((lon + 180) // 6) + 1
+    epsg = (32600 if lat >= 0 else 32700) + zone
+    project = pyproj.Transformer.from_crs("EPSG:4326", f"EPSG:{epsg}", always_xy=True).transform
+    geom_m = transform(project, geom)
+    return geom_m.area
