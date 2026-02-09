@@ -110,7 +110,7 @@ FILES_PEB=(
 )
 
 FILES_TOPO=(
-  "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_topo --if-exists replace"
+  "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_topo --if-exists replace --ignore-column fictive_ge"
 )
 
 # Download batiment files from S3 if needed
