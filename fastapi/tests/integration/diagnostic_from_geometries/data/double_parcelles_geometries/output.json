@@ -1032,6 +1032,625 @@
         "isolation_min": 30,
         "isolation_max": 42
       }
+    },
+    {
+      "parcelle": {
+        "code_insee": "33063",
+        "section": "DL",
+        "numero": "0038",
+        "geometry": [
+          [
+            [-0.5560970306396484, 44.82962387899397],
+            [-0.5559977889060974, 44.82957822522573],
+            [-0.5564752221107483, 44.82905700880872],
+            [-0.5565154552459717, 44.829074129130845],
+            [-0.5560970306396484, 44.82962387899397]
+          ]
+        ]
+      },
+      "diagnostic": {
+        "score": 11,
+        "max_db_lden": 70,
+        "min_db_lden": 55,
+        "flags": {
+          "hasClassificationWarning": false,
+          "hasNoisemapWarning": false,
+          "isMultiExposedSources": false,
+          "isMultiExposedLandDistinctTypeSources": true,
+          "isMultiExposedLdenLn": true,
+          "isPriorityZone": true,
+          "isMultiExposedLandSources": true
+        },
+        "equivalent_ambiences": [
+          "Tondeuse / souffleur",
+          "Salle de classe bruyante",
+          "Aboiement"
+        ],
+        "land_intersections_ld": [
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 70,
+            "codeinfra": "R DE SAGET",
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "percent_impacted": 1,
+            "direction": "E"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 70,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [
+                  [-0.556112221, 44.82960323],
+                  [-0.556106672, 44.829513323],
+                  [-0.556103552, 44.829462763],
+                  [-0.556225672, 44.829329444],
+                  [-0.556323456, 44.829326388],
+                  [-0.556097031, 44.829623879],
+                  [-0.556055965, 44.829604988],
+                  [-0.556112221, 44.82960323]
+                ]
+              ],
+              [
+                [
+                  [-0.55634271, 44.829235706],
+                  [-0.556393689, 44.829234113],
+                  [-0.556346443, 44.829296187],
+                  [-0.55634271, 44.829235706]
+                ]
+              ]
+            ],
+            "percent_impacted": 0.48,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "C",
+            "legende": 68,
+            "codeinfra": "R DE SAGET",
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "percent_impacted": 1,
+            "direction": "E"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "C",
+            "legende": 68,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [
+                  [-0.556112221, 44.82960323],
+                  [-0.556103552, 44.829462763],
+                  [-0.556225672, 44.829329445],
+                  [-0.556323456, 44.829326389],
+                  [-0.556097031, 44.829623879],
+                  [-0.556055966, 44.829604988],
+                  [-0.556112221, 44.82960323]
+                ]
+              ],
+              [
+                [
+                  [-0.55634271, 44.829235707],
+                  [-0.556393688, 44.829234114],
+                  [-0.556346443, 44.829296187],
+                  [-0.55634271, 44.829235707]
+                ]
+              ],
+              [
+                [
+                  [-0.556459336, 44.829074351],
+                  [-0.556475222, 44.829057009],
+                  [-0.556515455, 44.829074129],
+                  [-0.556463533, 44.829142347],
+                  [-0.556459336, 44.829074351]
+                ]
+              ]
+            ],
+            "percent_impacted": 0.52,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 65,
+            "codeinfra": "QU DE PALUDATE",
+            "geometry_intersection": [
+              [
+                [-0.556105236, 44.829548625],
+                [-0.556134886, 44.829574143],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225],
+                [-0.556051273, 44.829519837],
+                [-0.556105236, 44.829548625]
+              ]
+            ],
+            "percent_impacted": 0.15,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 65,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [-0.55634271, 44.829235706],
+                [-0.556340742, 44.829203821],
+                [-0.556395562, 44.829143974],
+                [-0.556463502, 44.829141851],
+                [-0.556463533, 44.829142347],
+                [-0.556393689, 44.829234113],
+                [-0.55634271, 44.829235706]
+              ]
+            ],
+            "percent_impacted": 0.12,
+            "direction": "SW"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 65,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [-0.556106672, 44.829513323],
+                [-0.556112221, 44.82960323],
+                [-0.556055965, 44.829604988],
+                [-0.555997789, 44.829578225],
+                [-0.556055782, 44.829514913],
+                [-0.556106672, 44.829513323]
+              ]
+            ],
+            "percent_impacted": 0.14,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "F",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 60,
+            "codeinfra": "570000",
+            "geometry_intersection": [
+              [
+                [-0.556089922, 44.829550763],
+                [-0.556124634, 44.829587613],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225],
+                [-0.55604639, 44.829525167],
+                [-0.556089922, 44.829550763]
+              ]
+            ],
+            "percent_impacted": 0.12,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 60,
+            "codeinfra": "QU DE PALUDATE",
+            "geometry_intersection": [
+              [
+                [-0.55617038, 44.829527509],
+                [-0.556134886, 44.829574143],
+                [-0.556105236, 44.829548625],
+                [-0.556051273, 44.829519837],
+                [-0.55608565, 44.829482307],
+                [-0.55617038, 44.829527509]
+              ]
+            ],
+            "percent_impacted": 0.1,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 60,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [-0.556346443, 44.829296187],
+                [-0.556323456, 44.829326388],
+                [-0.556225672, 44.829329444],
+                [-0.556310617, 44.829236709],
+                [-0.55634271, 44.829235706],
+                [-0.556346443, 44.829296187]
+              ]
+            ],
+            "percent_impacted": 0.13,
+            "direction": "SW"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "F",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 55,
+            "codeinfra": "570000",
+            "geometry_intersection": [
+              [
+                [-0.556089922, 44.829550763],
+                [-0.55604639, 44.829525167],
+                [-0.556081123, 44.829487248],
+                [-0.556163954, 44.829535952],
+                [-0.556124634, 44.829587613],
+                [-0.556089922, 44.829550763]
+              ]
+            ],
+            "percent_impacted": 0.1,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LD",
+            "cbstype": "A",
+            "legende": 55,
+            "codeinfra": "QU DE PALUDATE",
+            "geometry_intersection": [
+              [
+                [-0.5561007, 44.829472669],
+                [-0.556248548, 44.829424807],
+                [-0.55617038, 44.829527509],
+                [-0.55608565, 44.829482307],
+                [-0.55609652, 44.82947044],
+                [-0.5561007, 44.829472669]
+              ]
+            ],
+            "percent_impacted": 0.13,
+            "direction": "NE"
+          }
+        ],
+        "land_intersections_ln": [
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "C",
+            "legende": 62,
+            "codeinfra": "R DE SAGET",
+            "geometry_intersection": [
+              [
+                [-0.556093809, 44.82955022],
+                [-0.556151622, 44.829502561],
+                [-0.556311814, 44.829324423],
+                [-0.556308417, 44.82929863],
+                [-0.556336826, 44.82926772],
+                [-0.556505217, 44.829087581],
+                [-0.556097031, 44.829623879],
+                [-0.55607262, 44.829612649],
+                [-0.556093809, 44.82955022]
+              ]
+            ],
+            "percent_impacted": 0.28,
+            "direction": "N"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 60,
+            "codeinfra": "R DE SAGET",
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "percent_impacted": 1,
+            "direction": "E"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 60,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [-0.556028504, 44.829546057],
+                [-0.556028425, 44.829544779],
+                [-0.556197084, 44.829360654],
+                [-0.556270057, 44.829358374],
+                [-0.556265583, 44.829285873],
+                [-0.556282016, 44.829267933],
+                [-0.556370042, 44.829265182],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225],
+                [-0.556027218, 44.829546097],
+                [-0.556028504, 44.829546057]
+              ]
+            ],
+            "percent_impacted": 0.67,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 55,
+            "codeinfra": "QU DE PALUDATE",
+            "geometry_intersection": [
+              [
+                [-0.556097448, 44.829549712],
+                [-0.556131641, 44.829578406],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225],
+                [-0.556048016, 44.829523392],
+                [-0.556097448, 44.829549712]
+              ]
+            ],
+            "percent_impacted": 0.14,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "AGGLO",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 55,
+            "codeinfra": null,
+            "geometry_intersection": [
+              [
+                [-0.556282016, 44.829267933],
+                [-0.556366949, 44.829175211],
+                [-0.556385285, 44.829174638],
+                [-0.55638416, 44.829156421],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556370042, 44.829265182],
+                [-0.556282016, 44.829267933]
+              ]
+            ],
+            "percent_impacted": 0.27,
+            "direction": "SW"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "F",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 50,
+            "codeinfra": "570000",
+            "geometry_intersection": [
+              [
+                [-0.556023036, 44.829560101],
+                [-0.556017417, 44.829556797],
+                [-0.556071961, 44.829497252],
+                [-0.556148952, 44.829542521],
+                [-0.556154484, 44.829548394],
+                [-0.556097031, 44.829623879],
+                [-0.556072472, 44.829612582],
+                [-0.556023036, 44.829560101]
+              ]
+            ],
+            "percent_impacted": 0.18,
+            "direction": "NE"
+          },
+          {
+            "typeterr": "INFRA",
+            "typesource": "R",
+            "indicetype": "LN",
+            "cbstype": "A",
+            "legende": 50,
+            "codeinfra": "QU DE PALUDATE",
+            "geometry_intersection": [
+              [
+                [-0.556169572, 44.82952857],
+                [-0.556131641, 44.829578406],
+                [-0.556097448, 44.829549712],
+                [-0.556048016, 44.829523392],
+                [-0.556084678, 44.829483367],
+                [-0.556169572, 44.82952857]
+              ]
+            ],
+            "percent_impacted": 0.1,
+            "direction": "NE"
+          }
+        ],
+        "air_intersections": [],
+        "recommendations": [],
+        "soundclassification_intersections": [
+          {
+            "source": "routier",
+            "typesource": "R",
+            "codeinfra": "rue de Saget",
+            "sound_category": 2,
+            "min_distance": 6,
+            "max_distance": 55,
+            "percent_impacted": 1,
+            "geometry_source_point": [-0.556481867, 44.82922871],
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          },
+          {
+            "source": "routier",
+            "typesource": "R",
+            "codeinfra": "quai de Paludate",
+            "sound_category": 3,
+            "min_distance": 24,
+            "max_distance": 93,
+            "percent_impacted": 1,
+            "geometry_source_point": [-0.555934607, 44.829805722],
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          },
+          {
+            "source": "routier",
+            "typesource": "R",
+            "codeinfra": "rue Charles Domercq",
+            "sound_category": 3,
+            "min_distance": 85,
+            "max_distance": 114,
+            "percent_impacted": 1,
+            "geometry_source_point": [-0.555074777, 44.829180675],
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          },
+          {
+            "source": "routier",
+            "typesource": "R",
+            "codeinfra": "pont Saint-Jean",
+            "sound_category": 3,
+            "min_distance": 88,
+            "max_distance": 158,
+            "percent_impacted": 0.22,
+            "geometry_source_point": [-0.555336474, 44.830220476],
+            "geometry_intersection": [
+              [
+                [-0.556154978, 44.829531107],
+                [-0.556163577, 44.829536447],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225],
+                [-0.556077807, 44.829490869],
+                [-0.556154978, 44.829531107]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          },
+          {
+            "source": "fer",
+            "typesource": "F",
+            "codeinfra": "570000",
+            "sound_category": 3,
+            "min_distance": 115,
+            "max_distance": 141,
+            "percent_impacted": 1,
+            "geometry_source_point": [-0.554735945, 44.829060805],
+            "geometry_intersection": [
+              [
+                [-0.555997789, 44.829578225],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556097031, 44.829623879],
+                [-0.555997789, 44.829578225]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          },
+          {
+            "source": "routier",
+            "typesource": "R",
+            "codeinfra": "cours de la Marne",
+            "sound_category": 2,
+            "min_distance": 191,
+            "max_distance": 256,
+            "percent_impacted": 0.14,
+            "geometry_source_point": [-0.556547063, 44.82733851],
+            "geometry_intersection": [
+              [
+                [-0.556378384, 44.829162727],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.556419411, 44.829200317],
+                [-0.556378384, 44.829162727]
+              ]
+            ],
+            "closest_correction": null,
+            "farthest_correction": null
+          }
+        ],
+        "noisesource_intersections": [],
+        "zones": [
+          {
+            "risk": 3,
+            "geometry": [
+              [
+                [-0.556393689, 44.829234113],
+                [-0.556346443, 44.829296187],
+                [-0.5563464429932337, 44.82929618689037],
+                [-0.556097031, 44.829623879],
+                [-0.556055965, 44.829604988],
+                [-0.5560559659546005, 44.82960498797017],
+                [-0.555997789, 44.829578225],
+                [-0.5561035520001497, 44.82946276300243],
+                [-0.556103552, 44.829462763],
+                [-0.556122934723298, 44.82944160278638],
+                [-0.556475222, 44.829057009],
+                [-0.556515455, 44.829074129],
+                [-0.5563936884657562, 44.82923411301669],
+                [-0.556393689, 44.829234113]
+              ]
+            ],
+            "percentage_impacted": 1
+          }
+        ],
+        "isolation_min": null,
+        "isolation_max": null
+      }
     }
   ]
 }
