@@ -4,7 +4,7 @@ from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -552,4 +552,47 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
     
     except Exception as e:
         logger.error(f"Database error in noise source query: {str(e)}")
+        raise
+
+
+def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
+    """
+    Query the database for noise zone features that intersect with the given WKT geometry.
+    Returns intersecting NoiseZoneItem records with their label, alert, and intersection geometry.
+    """
+    try:
+        safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
+
+        intersection_geom = func.ST_Intersection(NoiseZoneItem.geometry, safe_geom)
+
+        stmt = db.query(
+            NoiseZoneItem.id,
+            NoiseZoneItem.label,
+            NoiseZoneItem.alert,
+            cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
+        ).filter(
+            func.ST_Intersects(NoiseZoneItem.geometry, safe_geom)
+        )
+
+        result = []
+        for r in stmt.all():
+            try:
+                geometry_parsed = json.loads(r.geometry_intersection)
+                geometry_intersection = geometry_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse noisezone geometry_intersection: {parse_err}")
+                geometry_intersection = None
+
+            result.append({
+                "label": r.label.value if hasattr(r.label, 'value') else r.label,
+                "alert": r.alert,
+                "geometry": geometry_intersection
+            })
+
+        return {
+            "intersections": result
+        }
+
+    except Exception as e:
+        logger.error(f"Database error in noisezone query: {str(e)}")
         raise

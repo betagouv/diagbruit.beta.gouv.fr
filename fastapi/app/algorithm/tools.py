@@ -22,6 +22,8 @@ default_diagnostic = {
     'air_intersections': [],
     'recommendations': [],
     'soundclassification_intersections': [],
+    'noisesource_intersections': [],
+    'noisezone_intersections': [],
 }
 
 DIRECTION_PRIORITIES = {
