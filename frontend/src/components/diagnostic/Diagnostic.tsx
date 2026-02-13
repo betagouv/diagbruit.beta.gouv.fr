@@ -88,6 +88,22 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             isSecondTitle
             hint="Transports routiers, ferroviaires et aériens"
           />
+          {diagnosticItem.diagnostic.noisezone_intersections.length > 0 && (
+            <Alert
+              severity="info"
+              className={fr.cx("fr-mb-6v")}
+              title={diagnosticItem.diagnostic.noisezone_intersections[0].label}
+              description={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      diagnosticItem.diagnostic.noisezone_intersections[0]
+                        .alert,
+                  }}
+                />
+              }
+            />
+          )}
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
               score={diagnosticItem.diagnostic.score}
