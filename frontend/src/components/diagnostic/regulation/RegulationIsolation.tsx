@@ -12,13 +12,22 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
 
+  const hasPeb = diagnostic.air_intersections.length > 0;
+  const hasCls = diagnostic.soundclassification_intersections.length > 0;
+  const exposureText =
+    hasPeb && hasCls
+      ? "Vous êtes soumis au bruit aérien et au classement sonore"
+      : hasPeb
+        ? "Vous êtes soumis au bruit aérien"
+        : "Vous êtes soumis au classement sonore";
+
   return (
     <>
       {hasIsolation ? (
         diagnostic.isolation_min !== diagnostic.isolation_max ? (
           <p className={fr.cx("fr-text--lg", "fr-mb-2v")}>
-            Vous êtes soumis au bruit aérien et au classement sonore, vous avez
-            une obligation d'isolation réglementaire entre{" "}
+            {exposureText}, vous avez une obligation d'isolation réglementaire
+            entre{" "}
             <strong>
               {diagnostic.isolation_min} et {diagnostic.isolation_max} dB
             </strong>{" "}
@@ -26,9 +35,8 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
           </p>
         ) : (
           <p className={fr.cx("fr-text--lg", "fr-mb-2v")}>
-            Vous êtes soumis au bruit aérien et au classement sonore, vous avez
-            une obligation d'isolation réglementaire de{" "}
-            <strong>{diagnostic.isolation_max} dB</strong>.
+            {exposureText}, vous avez une obligation d'isolation réglementaire
+            de <strong>{diagnostic.isolation_max} dB</strong>.
           </p>
         )
       ) : (
