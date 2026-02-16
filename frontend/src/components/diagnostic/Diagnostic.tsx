@@ -13,15 +13,11 @@ import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
+import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
-import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
-import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
-import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
-import DiagnosticRegulation from "./DiagnosticRegulation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -84,9 +80,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticSectionTitle
-            title={`L'expertise diagBruit`}
+            title={`Risque sonore`}
             isSecondTitle
-            hint="Transports routiers, ferroviaires et aériens"
+            hint="Basé sur les cartes de bruit des transports routiers, ferroviaires et aériens"
           />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale

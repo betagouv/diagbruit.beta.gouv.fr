@@ -2,7 +2,6 @@ import { FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
 import area from "@turf/area";
 import inside from "point-in-polygon";
 import { union } from "polygon-clipping";
-import { SUMMARY_TEXTS } from "./texts/summary";
 import {
   Cardinality,
   Diagnostic,
@@ -42,7 +41,7 @@ export const getColorFromLegende = (legende: number): string => {
 
 export const getTextFromScore = (
   score: number,
-  lowercase?: boolean
+  lowercase?: boolean,
 ): string => {
   if (score > 8) return lowercase ? "extrême" : "EXTRÊME";
   if (score > 6) return lowercase ? "fort" : "FORT";
@@ -58,7 +57,7 @@ export const getTextFromRisk = (risk: number, lowercase?: boolean): string => {
 };
 
 export const getIconFromScore = (
-  score: number
+  score: number,
 ): FrIconClassName | RiIconClassName => {
   if (score > 8) return "ri-close-circle-fill";
   if (score > 6) return "ri-alert-fill";
@@ -67,7 +66,7 @@ export const getIconFromScore = (
 };
 
 export const getIconFromNoiseCategorySlug = (
-  slug: string
+  slug: string,
 ): FrIconClassName | RiIconClassName => {
   switch (slug) {
     case "ECO":
@@ -81,7 +80,7 @@ export const getIconFromNoiseCategorySlug = (
 
 export const getReadableSource = (
   source: string,
-  capitalize?: boolean
+  capitalize?: boolean,
 ): string => {
   switch (source) {
     case "A":
@@ -99,98 +98,26 @@ export const getReadableSource = (
   }
 };
 
-export const extractDiagnosticInfo = (diagnostic: Diagnostic) => {
-  const {
-    score,
-    flags,
-    soundclassification_intersections,
-    land_intersections_ld,
-    land_intersections_ln,
-    air_intersections,
-  } = diagnostic;
-
-  const risk = getRiskFromScore(score);
-
-  const hasSoundClassificationIntersections =
-    soundclassification_intersections.length > 0;
-  const hasLandIntersections =
-    land_intersections_ld.length > 0 || land_intersections_ln.length > 0;
-  const hasAirIntersections = air_intersections.length > 0;
-
-  return {
-    flags,
-    risk,
-    air_intersections,
-    land_intersections_ld,
-    land_intersections_ln,
-    hasSoundClassificationIntersections,
-    hasLandIntersections,
-    hasAirIntersections,
-  };
-};
-
-const getSummaryIntroduction = (risk: IntRange<0, 4>): string => {
-  return SUMMARY_TEXTS.INTRODUCTION[`RISK_${risk}`];
-};
-
-const getSummaryConclusion = (risk: number): string => {
-  if (risk === 0) {
-    return SUMMARY_TEXTS.CONCLUSIONS.RISK_0;
-  } else if (risk === 1) {
-    return SUMMARY_TEXTS.CONCLUSIONS.RISK_1;
-  } else {
-    return SUMMARY_TEXTS.CONCLUSIONS.RISK_HIGH;
-  }
-};
-
 export const getSummaryTextFromDiagnostic = (
-  diagnostic: Diagnostic
+  diagnostic: Diagnostic,
 ): string => {
-  const {
-    air_intersections,
-    hasSoundClassificationIntersections,
-    hasLandIntersections,
-    hasAirIntersections,
-    risk,
-    flags,
-  } = extractDiagnosticInfo(diagnostic);
+  const risk = getRiskFromScore(diagnostic.score);
 
-  if (flags.hasNoisemapWarning) {
-    return SUMMARY_TEXTS.NOISEMAP_WARNING;
+  switch (risk) {
+    case 3:
+      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>.";
+    case 2:
+      return "Votre parcelle est exposée à un <strong>risque fort de nuisance sonore</strong>.";
+    case 1:
+      return "Votre parcelle est exposée à un <strong>risque moyen de nuisance sonore</strong>.";
+    default:
+      return "Votre parcelle est exposée à un <strong>risque faible de nuisance sonore</strong>.";
   }
-
-  if (risk === 0) {
-    if (
-      hasSoundClassificationIntersections &&
-      !hasLandIntersections &&
-      !hasAirIntersections
-    ) {
-      return SUMMARY_TEXTS.NO_ISSUE_WITH_ISOLATION;
-    } else {
-      return SUMMARY_TEXTS.NO_ISSUE;
-    }
-  }
-
-  let content = "";
-
-  if (hasAirIntersections && !hasLandIntersections) {
-    const zone = air_intersections[0].zone || "UNKNOWN";
-    content += SUMMARY_TEXTS.CONTENT.AERIAL.generateContent(zone);
-  } else if (hasLandIntersections && !hasAirIntersections) {
-    content += SUMMARY_TEXTS.CONTENT.LAND.generateContent(
-      risk,
-      flags.isMultiExposedLandSources
-    );
-  } else if (hasLandIntersections && hasAirIntersections) {
-    content += SUMMARY_TEXTS.CONTENT.MULTI.generateContent(risk);
-  }
-
-  return getSummaryIntroduction(risk) + content + getSummaryConclusion(risk);
 };
 
 export function replacePlaceholders(
   text: string,
-  values: Record<string, string | number>
+  values: Record<string, string | number>,
 ): string {
   return text.replace(/{{(.*?)}}/g, (_, key) => {
     const cleanKey = key.trim();
@@ -271,7 +198,7 @@ export const normalizeToRings = (geometry: Geometry): [number, number][][] => {
 };
 
 export const mergeRings = (
-  rings: [number, number][][]
+  rings: [number, number][][],
 ): [number, number][][] => {
   const polygons: [number, number][][][] = rings.map((r) => [r]);
 
@@ -283,7 +210,7 @@ export const mergeRings = (
 export const transparentize = (
   hex: string,
   alpha: number,
-  preserveAlpha = true
+  preserveAlpha = true,
 ): string => {
   if (!/^#([0-9A-F]{6})$/i.test(hex)) {
     throw new Error("Invalid hex color format. Use #RRGGBB.");
@@ -313,22 +240,22 @@ export const transparentize = (
 export const doesOptimalZoneIntersect = (
   optimalZonePoints: { x: number; y: number }[],
   intersectionGeometry: Geometry,
-  projectPoint: (point: [number, number]) => { x: number; y: number }
+  projectPoint: (point: [number, number]) => { x: number; y: number },
 ): boolean => {
   const rings = normalizeToRings(intersectionGeometry);
   const projectedRings = rings.map((ring) =>
-    ring.map(projectPoint).map(({ x, y }) => [x, y] as [number, number])
+    ring.map(projectPoint).map(({ x, y }) => [x, y] as [number, number]),
   );
 
   return optimalZonePoints.some((pt) =>
-    projectedRings.some((ring) => inside([pt.x, pt.y], ring))
+    projectedRings.some((ring) => inside([pt.x, pt.y], ring)),
   );
 };
 
 export const getMinDistanceToSourcePoint = (
   optimalZonePoints: { x: number; y: number }[],
   sourcePoint: [number, number],
-  unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number]
+  unprojectPoint: ({ x, y }: { x: number; y: number }) => [number, number],
 ): number => {
   const toRadians = (deg: number) => (deg * Math.PI) / 180;
   const R = 6371000;
@@ -336,7 +263,7 @@ export const getMinDistanceToSourcePoint = (
   const [lon1, lat1] = sourcePoint.map(toRadians);
 
   const optimalZoneUnprojected = optimalZonePoints.map((point) =>
-    unprojectPoint(point)
+    unprojectPoint(point),
   );
 
   const distances = optimalZoneUnprojected.map(([lon2Deg, lat2Deg]) => {
@@ -357,7 +284,7 @@ export const getMinDistanceToSourcePoint = (
 };
 
 export const getNoiseSourceFromDiagnosticItem = (
-  diagnosticItem: DiagnosticItem
+  diagnosticItem: DiagnosticItem,
 ) => {
   const {
     diagnostic: {
@@ -368,7 +295,7 @@ export const getNoiseSourceFromDiagnosticItem = (
   } = diagnosticItem;
 
   const land_intersections = land_intersections_ld.concat(
-    land_intersections_ln
+    land_intersections_ln,
   );
 
   const noiseSources = [];
@@ -385,7 +312,7 @@ export const getNoiseSourceFromDiagnosticItem = (
 };
 
 export const getRecommendationsFilterConditionsFromDiagnostic = (
-  diagnosticItem: DiagnosticItem
+  diagnosticItem: DiagnosticItem,
 ) => {
   const {
     diagnostic: {
@@ -527,7 +454,7 @@ export const getRecommendationsUtilFlags = (diagnosticItem: DiagnosticItem) => {
 
   const hasDominatingAirIntersection =
     Math.max(
-      ...air_intersections.map((intersection) => intersection.percent_impacted)
+      ...air_intersections.map((intersection) => intersection.percent_impacted),
     ) > 0.8;
 
   return {
@@ -544,13 +471,13 @@ export const getRecommendationsUtilFlags = (diagnosticItem: DiagnosticItem) => {
 };
 
 export const getMaxIsolationFromSoundClassificationAffectedHelper = (
-  optimalZoneSoundClassificationHelper: SoundClassificationIntersectionAffectedHelper[]
+  optimalZoneSoundClassificationHelper: SoundClassificationIntersectionAffectedHelper[],
 ) => {
   return !!optimalZoneSoundClassificationHelper.length
     ? Math.max(
         ...optimalZoneSoundClassificationHelper.map(
-          (helper) => helper.isolation
-        )
+          (helper) => helper.isolation,
+        ),
       )
     : 0;
 };
