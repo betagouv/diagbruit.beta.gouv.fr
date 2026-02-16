@@ -21,6 +21,7 @@ import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReduc
 import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
 import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
 import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
+import DiagnosticRegulation from "./DiagnosticRegulation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -83,27 +84,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticSectionTitle
-            title={`Risques sonores liés aux transports`}
-            icon="ri-car-fill"
+            title={`L'expertise diagBruit`}
             isSecondTitle
             hint="Transports routiers, ferroviaires et aériens"
           />
-          {diagnosticItem.diagnostic.noisezone_intersections.length > 0 && (
-            <Alert
-              severity="info"
-              className={fr.cx("fr-mb-6v")}
-              title={diagnosticItem.diagnostic.noisezone_intersections[0].label}
-              description={
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      diagnosticItem.diagnostic.noisezone_intersections[0]
-                        .alert,
-                  }}
-                />
-              }
-            />
-          )}
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
               score={diagnosticItem.diagnostic.score}
@@ -115,20 +99,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
+          <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
+          <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle
-            title={`Autres sources de bruit`}
-            icon="ri-goblet-fill"
+            title={`Autres sources de bruit à proximité`}
             isSecondTitle
             hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-          <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
-          {!isMultiExposedSources &&
-            !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-              <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
-            )}
-          {score > 6 && <DiagnosticSummarySourceAction />}
-          <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
     },
