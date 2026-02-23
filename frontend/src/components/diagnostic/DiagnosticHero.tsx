@@ -34,7 +34,7 @@ const DiagnosticHero = ({
   return (
     <div className={cx(classes.container)}>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-md-8")}>
+        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
           <div
             className={classes.summary}
             dangerouslySetInnerHTML={{
@@ -42,7 +42,7 @@ const DiagnosticHero = ({
             }}
           />
         </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-4")}>
+        <div className={fr.cx("fr-col-12", "fr-col-md-7")}>
           <div className={fr.cx("fr-mb-4v")}>
             <DiagnosticNoiseScore
               score={diagnostic.score}

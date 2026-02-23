@@ -56,6 +56,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     }
   };
 
+  const handleContactClick = () => {
+    trackMatomoEvent(
+      "Diagnostic",
+      "Contact",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
+    );
+  };
+
   const replaceSearchParams = (tabId: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabId);
@@ -224,6 +232,21 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <div className={cx(classes.buttonSection)}>
+            <Button
+              priority="secondary"
+              iconId="ri-mail-line"
+              linkProps={{
+                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+                onClick: handleContactClick,
+              }}
+            >
+              Contacter l'équipe diagBruit
+            </Button>
+            <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
+              Copier l'URL du diagnostic
+            </Button>
+          </div>
         </div>
       )}
       {copied && (
@@ -263,6 +286,9 @@ const useStyles = tss.create(() => ({
   },
   buttonSection: {
     textAlign: "right",
+    "& > *:not(:last-child)": {
+      marginRight: fr.spacing("2v"),
+    },
   },
 }));
 
