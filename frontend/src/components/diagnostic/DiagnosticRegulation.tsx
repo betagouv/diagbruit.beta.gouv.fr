@@ -3,6 +3,7 @@ import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
 import { DiagnosticItem } from "../../utils/types";
+import useDecrees from "../../hooks/useDecrees";
 import DiagnosticDecreesBox from "./DiagnosticDecreesBox";
 import RegulationCls from "./regulation/RegulationCls";
 import RegulationIsolation from "./regulation/RegulationIsolation";
@@ -27,6 +28,18 @@ const DiagnosticRegulation = ({
   const { cx, classes } = useStyles();
   const { diagnostic } = diagnosticItem;
 
+  const codedept = parseInt(
+    diagnosticItem.parcelle.code_insee.substring(0, 2),
+  );
+  const { decrees } = useDecrees(codedept);
+
+  const terrestreLinks = [
+    { label: "Arrêté du 30 mai 1996", url: "https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837" },
+    { label: "Arrêté du 23 juillet 2013", url: "https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290" },
+    { label: "Arrêté du 3 septembre 2013", url: "https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf;jsessionid=7E0C81517851C74F3F89CE11CC665533" },
+    ...decrees.map((d) => ({ label: "Arrêté Préfectoral local", url: d.link })),
+  ];
+
   const accordions: AccordionConfig[] = [
     {
       icon: "ri-plane-line",
@@ -34,8 +47,8 @@ const DiagnosticRegulation = ({
       isAffected: diagnostic.air_intersections.length > 0,
       content: <RegulationPeb diagnosticItem={diagnosticItem} />,
       links: [
-        { label: "Test", url: "https://google.com/" },
-        { label: "Test2", url: "https://google1.com/" },
+        { label: "Récapitulatif des règles d’urbanismes applicables au zones PEB", url: "https://www.ecologie.gouv.fr/sites/default/files/documents/prescriptions_urbanisme_applicables_zones_bruits_aerodromes.pdf" },
+        { label: "Informations sur le PEB", url: "https://www.ecologie.gouv.fr/politiques-publiques/bruit-organiser-lurbanisation-autour-aeroports" },
       ],
     },
     {
@@ -43,10 +56,7 @@ const DiagnosticRegulation = ({
       label: "Nationale Terrestre (Classement sonore)",
       isAffected: diagnostic.soundclassification_intersections.length > 0,
       content: <RegulationCls diagnosticItem={diagnosticItem} />,
-      links: [
-        { label: "Test", url: "https://google.com/" },
-        { label: "Test2", url: "https://google1.com/" },
-      ],
+      links: terrestreLinks,
     },
     {
       icon: "ri-building-line",

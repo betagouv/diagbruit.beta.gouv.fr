@@ -1,43 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Decree, DiagnosticItem } from "../../utils/types";
+import { DiagnosticItem } from "../../utils/types";
+import useDecrees from "../../hooks/useDecrees";
 
 type DiagnosticDecreesProps = {
   diagnosticItem: DiagnosticItem;
 };
 
 const DiagnosticDecrees = ({ diagnosticItem }: DiagnosticDecreesProps) => {
-  const [decrees, setDecrees] = useState<Decree[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const {
     parcelle: { code_insee },
   } = diagnosticItem;
 
   const codedept = parseInt(code_insee.substring(0, 2));
-
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_CMS_URL}/api/decrees`, {
-        params: {
-          filters: {
-            codedept: {
-              $eq: codedept,
-            },
-          },
-        },
-      })
-      .then((res) => {
-        setDecrees(res.data.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [codedept]);
+  const { decrees, isLoading } = useDecrees(codedept);
 
   if (isLoading) {
     return <></>;
