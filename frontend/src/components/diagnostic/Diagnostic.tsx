@@ -13,14 +13,11 @@ import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
+import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
-import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
-import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
-import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -59,6 +56,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     }
   };
 
+  const handleContactClick = () => {
+    trackMatomoEvent(
+      "Diagnostic",
+      "Contact",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
+    );
+  };
+
   const replaceSearchParams = (tabId: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabId);
@@ -83,27 +88,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticSectionTitle
-            title={`Risques sonores liés aux transports`}
-            icon="ri-car-fill"
+            title={`Risque sonore`}
             isSecondTitle
-            hint="Transports routiers, ferroviaires et aériens"
+            hint="Basé sur les cartes de bruit des transports routiers, ferroviaires et aériens"
           />
-          {diagnosticItem.diagnostic.noisezone_intersections.length > 0 && (
-            <Alert
-              severity="info"
-              className={fr.cx("fr-mb-6v")}
-              title={diagnosticItem.diagnostic.noisezone_intersections[0].label}
-              description={
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      diagnosticItem.diagnostic.noisezone_intersections[0]
-                        .alert,
-                  }}
-                />
-              }
-            />
-          )}
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
               score={diagnosticItem.diagnostic.score}
@@ -115,20 +103,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
+          <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
+          <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle
-            title={`Autres sources de bruit`}
-            icon="ri-goblet-fill"
+            title={`Autres sources de bruit à proximité`}
             isSecondTitle
             hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-          <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
-          {!isMultiExposedSources &&
-            !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-              <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
-            )}
-          {score > 6 && <DiagnosticSummarySourceAction />}
-          <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
     },
@@ -250,6 +232,21 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <div className={cx(classes.buttonSection)}>
+            <Button
+              priority="secondary"
+              iconId="ri-mail-line"
+              linkProps={{
+                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+                onClick: handleContactClick,
+              }}
+            >
+              Contacter l'équipe diagBruit
+            </Button>
+            <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
+              Copier l'URL du diagnostic
+            </Button>
+          </div>
         </div>
       )}
       {copied && (
@@ -289,6 +286,9 @@ const useStyles = tss.create(() => ({
   },
   buttonSection: {
     textAlign: "right",
+    "& > *:not(:last-child)": {
+      marginRight: fr.spacing("2v"),
+    },
   },
 }));
 
