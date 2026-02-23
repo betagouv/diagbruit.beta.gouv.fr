@@ -113,6 +113,9 @@ const useStyles = tss.create(() => ({
     ".fr-collapse--expanded": {
       padding: `${fr.spacing("4v")} ${fr.spacing("2v")}`,
     },
+    ".fr-accordion__btn": {
+      ...fr.typography[20].style,
+    },
     ".fr-accordion__btn::after": {
       marginLeft: fr.spacing("2v"),
     },
