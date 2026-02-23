@@ -93,6 +93,7 @@ const useStyles = tss
       backgroundColor: getColorFromScore(score),
     },
     summary: {
+      ...fr.typography[21].style,
       p: {
         marginBottom: fr.spacing("2v"),
       },
