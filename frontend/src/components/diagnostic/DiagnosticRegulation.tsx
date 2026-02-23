@@ -72,6 +72,7 @@ const DiagnosticRegulation = ({
       {accordions.map((accordion, index) => (
         <Accordion
           key={index}
+          titleAs="h5"
           label={
             <>
               <i className={fr.cx(accordion.icon as any, "fr-mr-1v")} />{" "}
