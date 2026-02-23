@@ -13,14 +13,11 @@ import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
+import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import DiagnosticSummaryIsolation from "./DiagnosticSummaryIsolation";
-import DiagnosticSummaryNoiseReductionScreen from "./DiagnosticSummaryNoiseReductionScreen";
-import DiagnosticSummarySourceAction from "./DiagnosticSummarySourceAction";
-import DiagnosticSummaryPosition from "./DiagnsoticSummaryPosition";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -59,6 +56,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     }
   };
 
+  const handleContactClick = () => {
+    trackMatomoEvent(
+      "Diagnostic",
+      "Contact",
+      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
+    );
+  };
+
   const replaceSearchParams = (tabId: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabId);
@@ -83,10 +88,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             }}
           />
           <DiagnosticSectionTitle
-            title={`Risques sonores liés aux transports`}
-            icon="ri-car-fill"
+            title={`Risque sonore`}
             isSecondTitle
-            hint="Transports routiers, ferroviaires et aériens"
+            hint="Basé sur les cartes de bruit des transports routiers, ferroviaires et aériens"
           />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
             <DiagnosticScoreOnScale
@@ -99,20 +103,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             diagnosticItem={diagnosticItem}
             handleCopyUrl={handleCopyUrl}
           />
+          <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
+          <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle
-            title={`Autres sources de bruit`}
-            icon="ri-goblet-fill"
+            title={`Autres sources de bruit à proximité`}
             isSecondTitle
             hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-          <DiagnosticSummaryIsolation diagnosticItem={diagnosticItem} />
-          {!isMultiExposedSources &&
-            !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-              <DiagnosticSummaryPosition diagnosticItem={diagnosticItem} />
-            )}
-          {score > 6 && <DiagnosticSummarySourceAction />}
-          <DiagnosticSummaryNoiseReductionScreen />
         </>
       ),
     },
@@ -183,6 +181,34 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     );
   }, [diagnosticItem]);
 
+  useEffect(() => {
+    const w = "https://tally.so/widgets/embed.js";
+    const loadEmbeds = () => {
+      if (typeof (window as any).Tally !== "undefined") {
+        (window as any).Tally.loadEmbeds();
+      } else {
+        document
+          .querySelectorAll("iframe[data-tally-src]:not([src])")
+          .forEach((e) => {
+            (e as HTMLIFrameElement).src =
+              (e as HTMLIFrameElement).dataset.tallySrc || "";
+          });
+      }
+    };
+
+    if (typeof (window as any).Tally !== "undefined") {
+      loadEmbeds();
+    } else if (!document.querySelector(`script[src="${w}"]`)) {
+      const s = document.createElement("script");
+      s.src = w;
+      s.onload = loadEmbeds;
+      s.onerror = loadEmbeds;
+      document.body.appendChild(s);
+    } else {
+      loadEmbeds();
+    }
+  }, []);
+
   return (
     <div id="diagnostic-section">
       <div className={fr.cx("fr-grid-row")}>
@@ -234,6 +260,33 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <div className={fr.cx("fr-card", "fr-p-4v")}>
+            <iframe
+              data-tally-src="https://tally.so/embed/1A4kZL?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height={275}
+              frameBorder="0"
+              marginHeight={0}
+              marginWidth={0}
+              title="Votre avis sur diagBruit"
+            />
+          </div>
+          <div className={cx(classes.buttonSection)}>
+            <Button
+              priority="secondary"
+              iconId="ri-mail-line"
+              linkProps={{
+                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+                onClick: handleContactClick,
+              }}
+            >
+              Contacter l'équipe diagBruit
+            </Button>
+            <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
+              Copier l'URL du diagnostic
+            </Button>
+          </div>
         </div>
       )}
       {copied && (
@@ -273,6 +326,9 @@ const useStyles = tss.create(() => ({
   },
   buttonSection: {
     textAlign: "right",
+    "& > *:not(:last-child)": {
+      marginRight: fr.spacing("2v"),
+    },
   },
 }));
 

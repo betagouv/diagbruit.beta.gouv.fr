@@ -34,6 +34,7 @@ export type Diagnostic = {
   air_intersections: AirIntersection[];
   soundclassification_intersections: SoundClassificationIntersection[];
   noisesource_intersections: NoiseSourceIntersection[];
+  noisezone_intersections: NoiseZoneIntersection[];
   equivalent_ambiences: string[];
 };
 
@@ -91,7 +92,14 @@ export type NoiseSourceIntersection = {
   category_slug: string;
   category_name: string;
   distance: number;
+  geometry: Geometry | [number, number];
   geometry_point: [number, number];
+};
+
+export type NoiseZoneIntersection = {
+  label: "Zone de calme" | "Zone soumise au bruit";
+  alert: string;
+  geometry: Geometry;
 };
 
 export type RecommendationCategory = {
@@ -134,7 +142,7 @@ export type Changelog = {
 
 type Enumerate<
   N extends number,
-  Acc extends number[] = []
+  Acc extends number[] = [],
 > = Acc["length"] extends N
   ? Acc[number]
   : Enumerate<N, [...Acc, Acc["length"]]>;

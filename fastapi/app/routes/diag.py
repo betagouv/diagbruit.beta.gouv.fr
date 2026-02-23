@@ -14,6 +14,7 @@ from app.utils import (
 from app.utils.db import (
     query_noisemap_intersecting_features,
     query_noisesource_intersecting_features,
+    query_noisezone_intersecting_features,
     query_soundclassification_intersecting_features,
     query_peb_intersecting_features,
     upsert_diagnostic_result
@@ -105,6 +106,7 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
         
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
         noisesource = query_noisesource_intersecting_features(db, polygon_wkt)
+        noisezone = query_noisezone_intersecting_features(db, polygon_wkt)
         percent_unimpacted = noisemap.get("percent_unimpacted", 0)
         sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation, codedept)
         peb = query_peb_intersecting_features(db, polygon_wkt)
@@ -114,6 +116,7 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
             sound.get('intersections', []),
             peb.get('intersections', []),
             noisesource.get('intersections', []),
+            noisezone.get('intersections', []),
             percent_unimpacted,
             populate,
             geom_area_m2

@@ -5,6 +5,7 @@ from .geometry import get_area_m2_from_wkt
 from .db import query_noisemap_intersecting_features
 from .db import query_soundclassification_intersecting_features
 from .db import query_peb_intersecting_features
+from .db import query_noisezone_intersecting_features
 from .db import upsert_diagnostic_result
 
 from .cadastre import get_parcelle_coordinates
