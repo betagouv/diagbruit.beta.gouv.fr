@@ -64,8 +64,6 @@ const DiagnosticRegulation = ({
       isAffected: diagnostic.noisezone_intersections.length > 0,
       content: <RegulationPlu diagnosticItem={diagnosticItem} />,
       links: [
-        { label: "Test", url: "https://google.com/" },
-        { label: "Test2", url: "https://google1.com/" },
       ],
     },
     {
