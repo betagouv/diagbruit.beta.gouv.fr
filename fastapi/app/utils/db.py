@@ -486,7 +486,8 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
             NoiseSourceItem.id,
             NoiseSourceItem.label,
             NoiseSourceItem.category_slug,
-            cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry_point")
+            cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry"),
+            cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point")
         ).filter(
             func.ST_Intersects(
                 NoiseSourceItem.geometry,
@@ -519,8 +520,15 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
             
             if intersects:
                 try:
-                    geometry_parsed = json.loads(r.geometry_point)
-                    geometry_point = geometry_parsed["coordinates"]
+                    geometry_parsed = json.loads(r.geometry)
+                    geometry = geometry_parsed["coordinates"]
+                except Exception as parse_err:
+                    logger.warning(f"Could not parse geometry: {parse_err}")
+                    geometry = None
+
+                try:
+                    geometry_point_parsed = json.loads(r.geometry_point)
+                    geometry_point = geometry_point_parsed["coordinates"]
                 except Exception as parse_err:
                     logger.warning(f"Could not parse geometry_point: {parse_err}")
                     geometry_point = None
@@ -541,6 +549,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
                     "category_slug": category_slug,
                     "category_name": category_name,
                     "distance": int(distance) if distance else 0,
+                    "geometry": geometry,
                     "geometry_point": geometry_point
                 })
         
