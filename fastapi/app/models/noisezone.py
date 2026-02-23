@@ -8,6 +8,7 @@ class ZoneLabel(str, enum.Enum):
     """Enum for noise zone labels"""
     QUIET_ZONE = "Zone de calme"
     NOISE_ZONE = "Zone soumise au bruit"
+    CONCERN_ZONE = "Zone à enjeu"
 
 
 class NoiseZoneItem(Base):
