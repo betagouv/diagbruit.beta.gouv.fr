@@ -12,7 +12,8 @@
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "heroku-cleanup": "rm -rf .cache .tmp src"
   },
   "dependencies": {
     "@_sh/strapi-plugin-ckeditor": "^6.0.1",
@@ -42,5 +43,6 @@
   },
   "resolutions": {
     "@types/minimatch": "5.1.2"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }
