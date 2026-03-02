@@ -40,13 +40,10 @@
     "zod": "^3.24.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-dsfr update-icons && react-scripts start",
+    "build": "react-dsfr copy-static-assets && react-dsfr update-icons && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "react-dsfr copy-static-assets",
-    "prestart": "react-dsfr update-icons",
-    "prebuild": "react-dsfr update-icons"
+    "eject": "react-scripts eject"
   },
   "jest": {
     "transformIgnorePatterns": [
