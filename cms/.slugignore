@@ -7,5 +7,4 @@ LICENSE
 .yarn
 .cache
 .tmp
-tsconfig.json
 src/admin
