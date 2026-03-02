@@ -4,3 +4,8 @@ LICENSE
 .github
 .vscode
 .idea
+.yarn
+.cache
+.tmp
+tsconfig.json
+src/admin
