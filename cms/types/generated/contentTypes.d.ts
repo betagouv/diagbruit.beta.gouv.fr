@@ -474,6 +474,42 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLocalDocumentationLocalDocumentation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'local_documentations';
+  info: {
+    description: '';
+    displayName: 'LocalDocumentation';
+    pluralName: 'local-documentations';
+    singularName: 'local-documentation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    codeinsees: Schema.Attribute.Component<
+      'global.local-documentation-code-insee',
+      true
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::local-documentation.local-documentation'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNoiseSourceCategoryNoiseSourceCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'noise_source_categories';
@@ -1094,6 +1130,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
+      'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;

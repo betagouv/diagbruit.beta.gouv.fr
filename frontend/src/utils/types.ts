@@ -129,6 +129,15 @@ export type Decree = {
   title: string;
 };
 
+export type LocalDocumentation = {
+  id: number;
+  documentId: string;
+  name: string;
+  link: string;
+  priority: number;
+  codeinsees: { id: number; codeinsee: string }[];
+};
+
 export type Settings = {
   maintenance: boolean;
 };
