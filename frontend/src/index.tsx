@@ -7,6 +7,7 @@ import Diagnostic from "./pages/diagnostic";
 import Changelogs from "./pages/changelogs";
 import Stats from "./pages/stats";
 import Maintenance from "./pages/maintenance";
+import CmsPage from "./pages/cms-page";
 import reportWebVitals from "./reportWebVitals";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import PublicLayout from "./layouts/PublicLayout";
@@ -29,20 +30,32 @@ const App = () => {
         <Route path="/changelogs" element={<Changelogs />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route
+          path="/accessibility"
+          element={<CmsPage slug="accessibility" />}
+        />
+        <Route
+          path="/legal-mentions"
+          element={<CmsPage slug="legal-mention" />}
+        />
+        <Route
+          path="/privacy-policy"
+          element={<CmsPage slug="privacy-policy" />}
+        />
       </Routes>
     </PublicLayout>
   );
 };
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 root.render(
   <React.StrictMode>
     <Router>
       <App />
     </Router>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 reportWebVitals();

@@ -1,0 +1,7 @@
+/**
+ * legal-mention router
+ */
+
+import { factories } from '@strapi/strapi';
+
+export default factories.createCoreRouter('api::legal-mention.legal-mention');
