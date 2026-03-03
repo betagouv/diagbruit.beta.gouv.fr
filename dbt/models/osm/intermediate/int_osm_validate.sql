@@ -22,10 +22,11 @@ WITH osm_filtered AS (
 stras AS (
     SELECT
         name,
+        geometry,
         regexp_replace(
             regexp_replace(
                 lower(unaccent(name)),
-                '(^|\s)(le|la|les)(\s|$)',
+                '(^|\s)(le|la|les|au)(\s|$)',
                 '',
                 'gi'
             ),
@@ -46,5 +47,14 @@ WHERE o.name IS NOT NULL
 AND NOT EXISTS (
     SELECT 1
     FROM stras s
-    WHERE o.meta_code_dep = '67' AND similarity(o.name_clean, s.name_clean) > 0.40 
+    WHERE ST_DWithin(
+            s.geometry::geography,
+            o.geometry::geography,
+            20
+        )
+   AND (
+            o.name_clean LIKE '%' || s.name_clean || '%'
+         OR s.name_clean LIKE '%' || o.name_clean || '%'
+         OR similarity(o.name_clean, s.name_clean) > 0.40
+      )
 )
