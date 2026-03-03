@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: int_stras_slug
+    description: "Data with specialized slug"
+    columns:
+      - name: label
+        description: "label of the establishment"
+      - name: type
+        description: "Type of the establishment either 'restaurants' 'bar' 'pub'"
+      - name: meta_code_dep
+        description: "Department code"
+      - name: geometry
+        description: "Geometry in EPSG:4326, type POINT"
+      - name: category_slug
+        description: "Category slug for the source, either 'REST' or 'BAR'"
