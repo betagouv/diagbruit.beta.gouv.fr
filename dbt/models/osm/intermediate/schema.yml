@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_osm_filter
+    description: "Data with only restaurants, bars and pubs"
+  - name: int_osm_validate
+    description: "Validated data with Strasbourg data"
+  - name: int_osm_slug
+    description: "Data with added slugs"
+  - name: int_osm_merge
+    description: "Merged data with Strasbourg data"
