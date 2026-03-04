@@ -8,7 +8,7 @@ run_ingest() {
   echo '--------------------------------------------------------------------------'
 }
 
-run_ingest_stras_osm() {
+run_ingest_geojson() {
   echo "→ $1"
   python ingest_geojson.py "$@"
   echo "✅ Done: $1"
