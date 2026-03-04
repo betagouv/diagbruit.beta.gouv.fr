@@ -1,5 +1,6 @@
 {{ config(
     materialized='table',
+    post_hook="ALTER TABLE {{ this }} ADD COLUMN id serial4 PRIMARY KEY;"
 ) }}
 
 SELECT
