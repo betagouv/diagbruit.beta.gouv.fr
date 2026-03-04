@@ -2,6 +2,9 @@
     schema='workspace',
 ) }}
 
+CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 WITH osm_filtered AS (
     SELECT
         name,
