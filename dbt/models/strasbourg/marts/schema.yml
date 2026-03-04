@@ -1,9 +1,11 @@
 version: 2
 
 models:
-  - name: noisesource
-    description: "Regional noise sources from Strasbourg"
+  - name: noisesource_stras
+    description: "Regional noise sources from Strasbourg terrasses data"
     columns:
+      - name: label
+        description: "Label of the establishment (name | address)"
       - name: name
         description: "Name of the establishment"
       - name: geometry

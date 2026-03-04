@@ -2,14 +2,12 @@ version: 2
 
 models:
   - name: int_stras_slug
-    description: "Data with specialized slug"
+    description: "Strasbourg data with label and category slug"
     columns:
       - name: label
-        description: "label of the establishment"
-      - name: type
-        description: "Type of the establishment either 'restaurants' 'bar' 'pub'"
-      - name: meta_code_dep
-        description: "Department code"
+        description: "Label of the establishment (name | address)"
+      - name: name
+        description: "Name of the establishment"
       - name: geometry
         description: "Geometry in EPSG:4326, type POINT"
       - name: category_slug

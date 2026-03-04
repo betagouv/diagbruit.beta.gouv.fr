@@ -32,7 +32,7 @@ stras AS (
             ),
             '[^a-z0-9]', '', 'g'
         ) AS name_clean
-    FROM {{ ref('stg_stras') }}
+    FROM {{ ref('noisesource_stras') }}
 )
 
 SELECT
