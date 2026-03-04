@@ -22,6 +22,10 @@ clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+on-run-start:
+  - "CREATE EXTENSION IF NOT EXISTS unaccent"
+  - "CREATE EXTENSION IF NOT EXISTS pg_trgm"
+
 models:
   diagbruit:
     noisemap:
