@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import Notice from "@codegouvfr/react-dsfr/Notice";
 import { tss } from "tss-react/dsfr";
 import { getRecommendationsUtilFlags } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticPosition from "./DiagnosticPosition";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -70,22 +70,14 @@ const DiagnosticRecommendations = ({
         <div className={fr.cx("fr-my-10v")}>
           <DiagnosticPosition diagnosticItem={diagnosticItem} />
           {utilFlags.isAffectedByAirIntersections && (
-            <Notice
+            <Alert
               severity="warning"
-              title=""
-              description={
-                <>
-                  <strong>Important : parcelle exposée au bruit aérien</strong>
-                  <br />
-                  <span className={cx(classes.noticeContent)}>
-                    L'implantation dans la zone idéale réduit l'exposition aux
+              title="Parcelle exposée au bruit aérien"
+              description="L'implantation dans la zone idéale réduit l'exposition aux
                     bruits des routes et voie ferrées, mais ne protège pas du
                     bruit aérien (avions, hélicoptères). Prévoyez une isolation
                     acoustique adaptée sur l'ensemble du bâtiment (toiture et
-                    façade).
-                  </span>
-                </>
-              }
+                    façade)."
             />
           )}
         </div>
