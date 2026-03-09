@@ -87,15 +87,6 @@ const DiagnosticRecommendations = ({
 
   return (
     <div>
-      <div
-        style={{
-          position: "absolute",
-          top: "1rem",
-          right: "1rem",
-        }}
-      >
-        <Badge severity="info">Work in progress</Badge>
-      </div>
       <div className={cx(classes.container)}>
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
