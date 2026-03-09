@@ -4,6 +4,7 @@ import { tss } from "tss-react/dsfr";
 import { getRecommendationsUtilFlags } from "../../utils/tools";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticPosition from "./DiagnosticPosition";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;
@@ -17,17 +18,6 @@ const DiagnosticRecommendations = ({
   const utilFlags = getRecommendationsUtilFlags(diagnosticItem);
 
   const displayComputedRecommendation = () => {
-    if (!utilFlags.isMonoExposed) {
-      return (
-        <p className={fr.cx("fr-mb-0")}>
-          Actuellement, le service diagBruit ne détermine une zone idéale de
-          position du bâti que pour les parcelles ne présentant pas d'exposition
-          à une source sonore aérienne. Cette condition n'étant pas remplie ici,
-          la parcelle ne peut en bénéficier.
-        </p>
-      );
-    }
-
     if (!utilFlags.isAffectedByNoisemapIntersections) {
       if (!utilFlags.isAffectedByAirIntersections) {
         return (
@@ -66,16 +56,30 @@ const DiagnosticRecommendations = ({
 
     return (
       <div>
+        <p className={fr.cx("fr-mb-2v")}>
+          Nous vous recommandons de <strong>positionner</strong> votre bâtiment
+          résidentiel <strong>dans la zone idéale</strong> identifiée par
+          diagbruit.
+        </p>
         <p className={fr.cx("fr-mb-0")}>
-          Attention ! La zone idéale est issue des cartes de bruit stratégique,
-          dont l’objectif n’est pas de prévoir le bruit à l’échelle d’un
-          bâtiment, mais plutôt d’une zone de quelques km². L’utilisation de ces
-          cartes pour un objectif aussi précis n’est pas réaliste, et vise
-          principalement à alerter le porteur de projet en lui fournissant un
-          exemple.
+          Ce diagnostic s'appuie sur les cartes de bruit réglementaires. Pour
+          affiner ces résultats et obtenir des mesures acoustiques précises,
+          consultez un acousticien certifié ou un bureau d'études spécialisé
+          avant le dépôt de permis.
         </p>
         <div className={fr.cx("fr-my-10v")}>
           <DiagnosticPosition diagnosticItem={diagnosticItem} />
+          {utilFlags.isAffectedByAirIntersections && (
+            <Alert
+              severity="warning"
+              title="Parcelle exposée au bruit aérien"
+              description="L'implantation dans la zone idéale réduit l'exposition aux
+                    bruits des routes et voie ferrées, mais ne protège pas du
+                    bruit aérien (avions, hélicoptères). Prévoyez une isolation
+                    acoustique adaptée sur l'ensemble du bâtiment (toiture et
+                    façade)."
+            />
+          )}
         </div>
       </div>
     );
@@ -95,8 +99,8 @@ const DiagnosticRecommendations = ({
       <div className={cx(classes.container)}>
         <div>
           <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
-            Préconisation d’une zone de bâti selon les caractéristiques de la
-            parcelle
+            Implantation du bâti : privilégiez la zone à faible exposition
+            sonore
           </h4>
           {displayComputedRecommendation()}
         </div>
@@ -125,7 +129,7 @@ const useStyles = tss.create(() => ({
   },
   section: {
     padding: `${fr.spacing("2v")} ${fr.spacing("2v")} ${fr.spacing(
-      "2v"
+      "2v",
     )} ${fr.spacing("10v")}`,
     marginLeft: fr.spacing("6v"),
     borderLeft: `4px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
@@ -149,6 +153,10 @@ const useStyles = tss.create(() => ({
   },
   subtitle: {
     textDecoration: "underline",
+  },
+  noticeContent: {
+    display: "block",
+    paddingLeft: "2.3rem",
   },
 }));
 
