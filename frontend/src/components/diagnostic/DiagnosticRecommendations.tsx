@@ -18,17 +18,40 @@ const DiagnosticRecommendations = ({
   const utilFlags = getRecommendationsUtilFlags(diagnosticItem);
 
   const displayComputedRecommendation = () => {
-    if (
-      !utilFlags.isAffectedByNoisemapIntersections &&
-      !utilFlags.isAffectedByAirIntersections
-    ) {
-      return (
-        <p className={fr.cx("fr-mb-0")}>
-          Cette parcelle n’est pas impactée par les cartes de bruit
-          stratégiques. DiagBruit ne peut fournir de position idéale et de
-          préconisation d’isolement.
-        </p>
-      );
+    if (!utilFlags.isAffectedByNoisemapIntersections) {
+      if (!utilFlags.isAffectedByAirIntersections) {
+        return (
+          <p className={fr.cx("fr-mb-0")}>
+            Cette parcelle n’est pas impactée par les cartes de bruit
+            stratégiques. DiagBruit ne peut fournir de position idéale et de
+            préconisation d’isolement.
+          </p>
+        );
+      }
+
+      if (!utilFlags.isAffectedBySeveralAirIntersections) {
+        return (
+          <p className={fr.cx("fr-mb-0")}>
+            Le calcul de la zone idéale de construction selon diagBruit repose
+            actuellement sur les cartes de bruit route et fer. Cette parcelle
+            est impactée par une zone d’un Plan d’Exposition au Bruit. diagBruit
+            ne préconise pas de position préférentielle pour le moment.
+          </p>
+        );
+      } else {
+        return (
+          <p className={fr.cx("fr-mb-0")}>
+            Le calcul de la zone idéale de construction selon diagBruit repose
+            actuellement sur les cartes de bruit route et fer. Cette parcelle
+            est impactée par plusieurs zones d’un Plan d’Exposition au Bruit.
+            diagBruit ne préconise pas de position préférentielle pour le
+            moment, mais utilisera dans le futur la zone présentant le risque le
+            plus élevé comme référence. Se référer à la documentation pour des
+            exemples de calcul d’isolement et prévoir une étude acoustique
+            spécifique.
+          </p>
+        );
+      }
     }
 
     return (
