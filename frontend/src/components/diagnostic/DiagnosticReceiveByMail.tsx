@@ -12,6 +12,19 @@ const modal = createModal({
     isOpenedByDefault: true,
 });
 
+
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const selectOptions = [
+    { value: "architecte", label: "Architecte" },
+    { value: "charge-de-mission-bruit", label: "Chargé de mission bruit" },
+    { value: "instructeur", label: "Instructeur ADS" },
+    { value: "particulier", label: "Particulier" },
+    { value: "promoteur", label: "Promoteur" },
+    { value: "service-amenagement", label: "Service aménagement" },
+    { value: "autre", label: "Autre" },
+];
+
 export default function DiagnosticReceiveByMail() {
 
     const { cx, classes } = useStyles();
@@ -20,24 +33,40 @@ export default function DiagnosticReceiveByMail() {
     const [email, setEmail] = useState("");
     const [profileError, setProfileError] = useState(false);
     const [emailError, setEmailError] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    useEffect(() => {
+        setTimeout(() => {
+            modal.open();
+        }, 5000);
+    }, [])
+
+    const submitEmail = async () => {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/diag/email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, profile: value }),
+        });
+        if (!response.ok) {
+            throw new Error(`Erreur lors de l'envoi : ${response.status}`);
+        }
+    };
 
     const handleValidate = () => {
         const hasProfileError = !value;
         const hasEmailError = !email || !isValidEmail(email);
         setProfileError(hasProfileError);
         setEmailError(hasEmailError);
-        if (!hasProfileError && !hasEmailError) {
-            modal.close();
-        }
+        if (hasProfileError || hasEmailError) return;
+
+        setIsSubmitting(true);
+        submitEmail()
+            .then(() => { modal.close(); })
+            .catch((err) => { console.error(err); })
+            .finally(() => { setIsSubmitting(false); });
     };
 
-    const CheckText = ({
-        text,
-    }: {
-        text: string;
-    }) => {
+    const CheckText = ({ text }: { text: string; }) => {
         return (
             <>
                 <i className={cx(classes.checkIcon, "ri-check-line")}></i><p>{text}</p>
@@ -53,7 +82,6 @@ export default function DiagnosticReceiveByMail() {
                 </div>
                 <div className={cx("fr-grid-row")}>
                     <CheckText text="Partagez rapidement l’anlyse avec vos interlocuteurs" />
-
                 </div>
                 <div className={cx("fr-grid-row")}>
                     <CheckText text="Accédez aux préconisations à tout moment" />
@@ -62,17 +90,11 @@ export default function DiagnosticReceiveByMail() {
         )
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-            modal.open();
-        }, 5000);
-    }, [])
-
     return (
         <>
             <div className={cx(classes.container, "fr-grid-row")}>
                 <div className={cx(classes.tileTitle, "fr-col-4")}>
-                    <DocumentDownload />
+                    <img src="/images/document-download.svg" />
                     <h4 className={fr.cx("fr-h6")}>Recevoir mon diagnostic par email</h4>
                 </div>
                 <div className={cx(classes.tileContent, "fr-col-8")}>
@@ -88,10 +110,10 @@ export default function DiagnosticReceiveByMail() {
                 </div>
                 <modal.Component title="Recevoir mon diagnostic par email" size="large">
                     <div className={cx(classes.container, "fr-grid-row")}>
-                        <div className={cx(classes.tileTitle, "fr-col-1")}>
-                            <DocumentDownload />
+                        <div className={cx(classes.tileTitle, "fr-col-2")}>
+                            <img src="/images/document-download.svg" />
                         </div>
-                        <div className={cx(classes.tileContent, "fr-col-11")}>
+                        <div className={cx(classes.tileContent, "fr-col-10")}>
                             {textContent()}
                         </div>
                     </div>
@@ -105,13 +127,9 @@ export default function DiagnosticReceiveByMail() {
                         }}
                     >
                         <option value="" disabled hidden>Selectionnez un profil</option>
-                        <option value="architecte">Architecte</option>
-                        <option value="charge-de-mission-bruit">Chargé de mission bruit</option>
-                        <option value="instructeur">Instructeur ADS</option>
-                        <option value="particulier">Particulier</option>
-                        <option value="promoteur">Promoteur</option>
-                        <option value="service-amenagement">Service aménagement</option>
-                        <option value="autre">Autre</option>
+                        {selectOptions.map(option => (
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
                     </Select>
                     <Input
                         label="Adresse email"
@@ -126,13 +144,16 @@ export default function DiagnosticReceiveByMail() {
                             onChange: event => { setEmail(event.target.value); setEmailError(false); }
                         }}
                     />
-                    <Button
-                        priority="primary"
-                        iconId="ri-check-line"
-                        onClick={handleValidate}
-                    >
-                        Valider
-                    </Button>
+                    <div className={classes.actions}>
+                        <Button
+                            priority="primary"
+                            iconId="ri-check-line"
+                            onClick={handleValidate}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Envoi en cours..." : "Valider"}
+                        </Button>
+                    </div>
                 </modal.Component>
             </div>
         </>
@@ -147,15 +168,27 @@ const useStyles = tss.create(() => ({
     tileTitle: {
         borderRight: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
         background: fr.colors.decisions.background.alt.blueFrance.default,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        h4: {
+            margin: 0,
+        }
     },
     tileContent: {
         padding: fr.spacing("4v"),
+        marginTop: fr.spacing("2v"),
         p: {
             margin: `0 0 0 ${fr.spacing("1v")} `,
         }
     },
     checkIcon: {
         color: fr.colors.decisions.background.flat.blueFrance.default,
+    },
+    actions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        marginTop: fr.spacing("3v"),
     }
 
 }));
