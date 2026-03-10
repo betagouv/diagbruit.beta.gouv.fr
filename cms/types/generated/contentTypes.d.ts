@@ -511,8 +511,7 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
 export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   collectionName: 'emails';
   info: {
-    description: '';
-    displayName: 'Email';
+    displayName: 'email';
     pluralName: 'emails';
     singularName: 'email';
   };
@@ -529,13 +528,13 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     profile: Schema.Attribute.Enumeration<
       [
-        'particulier',
-        'promoteur',
-        'service-amenagement',
-        'autre',
-        'instructeur',
-        'charge-de-mission-bruit',
         'architecte',
+        'charge-de-mission-bruit',
+        'instructeur',
+        'autre',
+        'service-amenagement',
+        'promoteur',
+        'particulier',
       ]
     >;
     publishedAt: Schema.Attribute.DateTime;

@@ -5,7 +5,7 @@ from ..database import Base
 
 class DiagnosticEmail(Base):
     """Model for storing email subscriptions with user profile"""
-    __tablename__ = "diagnostic_email"
+    __tablename__ = "emails"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email = Column(String, nullable=False)

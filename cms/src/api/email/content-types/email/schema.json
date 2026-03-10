@@ -4,8 +4,7 @@
   "info": {
     "singularName": "email",
     "pluralName": "emails",
-    "displayName": "Email",
-    "description": ""
+    "displayName": "email"
   },
   "options": {
     "draftAndPublish": true
@@ -17,13 +16,13 @@
     "profile": {
       "type": "enumeration",
       "enum": [
-        "particulier",
-        "promoteur",
-        "service-amenagement",
-        "autre",
-        "instructeur",
+        "architecte",
         "charge-de-mission-bruit",
-        "architecte"
+        "instructeur",
+        "autre",
+        "service-amenagement",
+        "promoteur",
+        "particulier"
       ]
     }
   }
