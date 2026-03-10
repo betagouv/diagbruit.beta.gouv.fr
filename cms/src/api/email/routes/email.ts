@@ -2,6 +2,15 @@
  * email router
  */
 
-import { factories } from '@strapi/strapi';
-
-export default factories.createCoreRouter('api::email.email');
+export default {
+  routes: [
+    {
+      method: 'POST',
+      path: '/email/send',
+      handler: 'email.send',
+      config: {
+        auth: false,
+      },
+    },
+  ],
+};

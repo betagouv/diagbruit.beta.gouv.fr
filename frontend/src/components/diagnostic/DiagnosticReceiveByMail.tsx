@@ -49,7 +49,16 @@ export default function DiagnosticReceiveByMail() {
             body: JSON.stringify({ email, profile: value }),
         });
         if (!response.ok) {
-            throw new Error(`Erreur lors de l'envoi : ${response.status}`);
+            throw new Error(`Erreur lors de l'enregistrement : ${response.status}`);
+        }
+
+        const mailResponse = await fetch(`${process.env.REACT_APP_CMS_URL}/api/email/send`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ to: email }),
+        });
+        if (!mailResponse.ok) {
+            throw new Error(`Erreur lors de l'envoi de l'email : ${mailResponse.status}`);
         }
     };
 
