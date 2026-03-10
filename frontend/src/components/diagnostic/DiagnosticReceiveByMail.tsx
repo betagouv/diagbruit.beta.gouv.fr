@@ -171,6 +171,7 @@ const useStyles = tss.create(() => ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        padding: fr.spacing("4v"),
         h4: {
             margin: 0,
         }
