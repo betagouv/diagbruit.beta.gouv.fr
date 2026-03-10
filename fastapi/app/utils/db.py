@@ -6,6 +6,7 @@ from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
 from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
+from ..models.email import DiagnosticEmail
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
 from ..version import get_api_version
@@ -562,6 +563,18 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
     except Exception as e:
         logger.error(f"Database error in noise source query: {str(e)}")
         raise
+
+
+def save_email_subscription(db: Session, email: str, profile: str) -> DiagnosticEmail:
+    """Save an email and profile to the diagnostic_email table, only if the email does not already exist."""
+    existing = db.query(DiagnosticEmail).filter(DiagnosticEmail.email == email).first()
+    if existing:
+        return existing
+    entry = DiagnosticEmail(email=email, profile=profile)
+    db.add(entry)
+    db.commit()
+    db.refresh(entry)
+    return entry
 
 
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:

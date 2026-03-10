@@ -6,5 +6,6 @@ from .soundclassification_roads import SoundClassificationRoadsItem
 from .peb import PebItem
 from .result import Result
 from .topo import TopoItem
+from .email import DiagnosticEmail
 
 from ..database import Base
