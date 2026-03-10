@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@_sh/strapi-plugin-ckeditor": "^6.0.1",
+    "@react-email/components": "^1.0.8",
+    "@react-email/render": "^2.0.4",
     "@strapi/plugin-cloud": "5.13.0",
     "@strapi/plugin-users-permissions": "5.13.0",
     "@strapi/provider-email-nodemailer": "^5.38.0",

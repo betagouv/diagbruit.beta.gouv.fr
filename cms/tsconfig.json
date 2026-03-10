@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "noEmitOnError": true,
     "noImplicitThis": true,
+    "jsx": "react-jsx",
     "outDir": "dist",
     "rootDir": "."
   },
@@ -20,6 +21,7 @@
     "./",
     // Include all ts files
     "./**/*.ts",
+    "./**/*.tsx", 
     // Include all js files
     "./**/*.js",
     // Force the JSON files in the src folder to be included
