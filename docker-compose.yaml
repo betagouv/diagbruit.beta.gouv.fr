@@ -14,5 +14,16 @@ services:
       - "5433:5432"
     restart: unless-stopped
 
+  maildev:
+    image: maildev/maildev:latest
+    restart: always
+    ports:
+      - "1080:1080" # Web interface
+      - "1025:1025" # SMTP server
+    environment:
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+
 volumes:
   diagbruit_postgres_data:
+

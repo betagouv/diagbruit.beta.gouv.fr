@@ -5773,6 +5773,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@strapi/provider-email-nodemailer@npm:^5.38.0":
+  version: 5.38.0
+  resolution: "@strapi/provider-email-nodemailer@npm:5.38.0"
+  dependencies:
+    nodemailer: "npm:8.0.1"
+  checksum: 10c0/3c6e9cfdc8cdf654305487f326533450817c5ddbb9bc7285225a04bf68d2113eee57f23dfaceb61f3398f73f50322761d7a84ee0af4efa987cbefaaaf6beead2
+  languageName: node
+  linkType: hard
+
 "@strapi/provider-email-sendmail@npm:5.13.0":
   version: 5.13.0
   resolution: "@strapi/provider-email-sendmail@npm:5.13.0"
@@ -13069,6 +13078,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodemailer@npm:8.0.1":
+  version: 8.0.1
+  resolution: "nodemailer@npm:8.0.1"
+  checksum: 10c0/c63aa734e41b8a920964f79ade0bd6dd7e6f960bdb4d5ed00712cf1fd52a2facf69d09773b3a8494c844383743f2b7ae832914dead5dcfd1b876b1a9b807b3b0
+  languageName: node
+  linkType: hard
+
 "nodemon@npm:3.0.2":
   version: 3.0.2
   resolution: "nodemon@npm:3.0.2"
@@ -15761,6 +15777,7 @@ __metadata:
     "@_sh/strapi-plugin-ckeditor": "npm:^6.0.1"
     "@strapi/plugin-cloud": "npm:5.13.0"
     "@strapi/plugin-users-permissions": "npm:5.13.0"
+    "@strapi/provider-email-nodemailer": "npm:^5.38.0"
     "@strapi/provider-upload-aws-s3": "npm:^5.13.1"
     "@strapi/strapi": "npm:5.13.0"
     "@types/node": "npm:^20"
