@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "emails",
+  "info": {
+    "singularName": "email",
+    "pluralName": "emails",
+    "displayName": "Email",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "email": {
+      "type": "string"
+    },
+    "profile": {
+      "type": "enumeration",
+      "enum": [
+        "particulier",
+        "promoteur",
+        "service-amenagement",
+        "autre",
+        "instructeur",
+        "charge-de-mission-bruit",
+        "architecte"
+      ]
+    }
+  }
+}
