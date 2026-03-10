@@ -1,11 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { tss } from "tss-react/dsfr";
-import DocumentDownload from "@codegouvfr/react-dsfr/picto/DocumentDownload";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useEffect, useState } from "react";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 const modal = createModal({
     id: "diagnostic-receive-by-mail-modal",
@@ -34,6 +34,7 @@ export default function DiagnosticReceiveByMail() {
     const [profileError, setProfileError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -60,9 +61,10 @@ export default function DiagnosticReceiveByMail() {
         if (hasProfileError || hasEmailError) return;
 
         setIsSubmitting(true);
+        setSubmitStatus(null);
         submitEmail()
-            .then(() => { modal.close(); })
-            .catch((err) => { console.error(err); })
+            .then(() => { setSubmitStatus("success"); })
+            .catch((err) => { console.error(err); setSubmitStatus("error"); })
             .finally(() => { setIsSubmitting(false); });
     };
 
@@ -109,6 +111,18 @@ export default function DiagnosticReceiveByMail() {
                     </Button>
                 </div>
                 <modal.Component title="Recevoir mon diagnostic par email" size="large">
+                    {submitStatus && (
+                        <Alert
+                            closable
+                            severity={submitStatus}
+                            title={submitStatus === "success" ? "Email enregistré avec succès" : "Une erreur est survenue"}
+                            description={submitStatus === "success"
+                                ? "Vous recevrez votre diagnostic par email prochainement."
+                                : "Impossible d'enregistrer votre email. Veuillez réessayer."}
+                            onClose={() => setSubmitStatus(null)}
+                            className={fr.cx("fr-mb-4v")}
+                        />
+                    )}
                     <div className={cx(classes.container, "fr-grid-row")}>
                         <div className={cx(classes.tileTitle, "fr-col-2")}>
                             <img src="/images/document-download.svg" />
@@ -154,6 +168,7 @@ export default function DiagnosticReceiveByMail() {
                             {isSubmitting ? "Envoi en cours..." : "Valider"}
                         </Button>
                     </div>
+
                 </modal.Component>
             </div>
         </>
