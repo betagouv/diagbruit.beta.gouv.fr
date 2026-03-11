@@ -25,7 +25,7 @@ export default function DiagnosticEmail({
                             Vous avez demandé à recevoir le diagnostic acoustique de votre parcelle.
                         </Text>
                     </Section>
-                    <Button href={diagLink} target="_blank" style={button}>
+                    <Button href={`${diagLink}&mtm_campaign=recevoirmondiag`} target="_blank" style={button}>
                         <Row>
                             <Column style={{ width: "20px", verticalAlign: "middle" }}>
                                 <Img
