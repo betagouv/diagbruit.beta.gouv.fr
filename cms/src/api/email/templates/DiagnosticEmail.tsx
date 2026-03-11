@@ -6,7 +6,7 @@ interface WelcomeEmailProps {
 }
 
 export default function DiagnosticEmail({
-    diagLink = 'https://example.com/diagnostic',
+    diagLink = 'https://diagbruit.fr',
 }: WelcomeEmailProps) {
     const previewText = `Vous avez demandé à recevoir le diagnostic acoustique de votre parcelle.`;
 
