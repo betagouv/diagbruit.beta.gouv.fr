@@ -159,9 +159,8 @@ export default function DiagnosticReceiveByMail() {
                         state={emailError ? "error" : "info"}
                         stateRelatedMessage={emailError ? (!email ? "Veuillez saisir une adresse email" :
                             "Veuillez saisir une adresse email valide") :
-                            `Votre adresse email sera utilisée uniquement pour vous transmettre votre diagnostic
-                             et vous accompagner avec des conseils adaptés à votre projet.
-                             Voir nos engagements`}
+                            <>Votre adresse email sera utilisée uniquement pour vous transmettre votre diagnostic
+                            et vous accompagner avec des conseils adaptés à votre projet. <a href="/privacy-policy">Voir nos engagements</a></>}
                         nativeInputProps={{
                             value: email,
                             onChange: event => { setEmail(event.target.value); setEmailError(false); }
