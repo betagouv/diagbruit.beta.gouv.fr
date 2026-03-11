@@ -565,21 +565,6 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
         raise
 
 
-def save_email_subscription(db: Session, email: str, profile: str) -> DiagnosticEmail:
-    """Save an email and profile to the diagnostic_email table, only if the email does not already exist."""
-    existing = db.query(DiagnosticEmail).filter(DiagnosticEmail.email == email).first()
-    if existing:
-        existing.count = (existing.count or 0) + 1
-        db.commit()
-        db.refresh(existing)
-        return existing
-    entry = DiagnosticEmail(email=email, profile=profile, count=1)
-    db.add(entry)
-    db.commit()
-    db.refresh(entry)
-    return entry
-
-
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for noise zone features that intersect with the given WKT geometry.

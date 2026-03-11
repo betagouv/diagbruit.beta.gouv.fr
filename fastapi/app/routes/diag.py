@@ -18,7 +18,6 @@ from app.utils.db import (
     query_soundclassification_intersecting_features,
     query_peb_intersecting_features,
     upsert_diagnostic_result,
-    save_email_subscription
 )
 from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
@@ -223,18 +222,3 @@ async def generate_diag_from_geometry(
     except HTTPException as e:
         raise e
 
-class EmailRequest(BaseModel):
-    email: str
-    profile: str
-
-
-@router.post("/email")
-def add_email(request: EmailRequest):
-    db = SessionLocal()
-    try:
-        entry = save_email_subscription(db, email=request.email, profile=request.profile)
-        return {"id": entry.id, "email": entry.email, "profile": entry.profile}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        db.close()
