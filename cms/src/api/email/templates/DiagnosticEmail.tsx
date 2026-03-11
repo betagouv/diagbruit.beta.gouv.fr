@@ -1,13 +1,13 @@
-import { Body, Button, Container, Head, Heading, Html, Img, Link, Preview, Row, Column, Section, Tailwind, Text } from '@react-email/components';
+import { Body, Button, Container, Head, Html, Img, Link, Preview, Row, Column, Section, Text } from '@react-email/components';
 
 
-interface WelcomeEmailProps {
+interface EmailProps {
     diagLink?: string;
 }
 
 export default function DiagnosticEmail({
     diagLink = 'https://diagbruit.fr',
-}: WelcomeEmailProps) {
+}: EmailProps) {
     const previewText = `Vous avez demandé à recevoir le diagnostic acoustique de votre parcelle.`;
 
     return (
