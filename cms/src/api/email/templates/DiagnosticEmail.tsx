@@ -55,7 +55,7 @@ export default function DiagnosticEmail({
                         <Text style={paragraph}>
                             <strong>Votre avis nous intéresse ! </strong>
                             Aidez-nous à améliorer diagBruit en partageant votre retour d'expérience.
-                            <Link href={diagLink} target="_blank" style={linkStyle}>
+                            <Link href={'https://tally.so/popup/1A4kZL'} target="_blank" style={linkStyle}>
                                 Donner mon avis (1 min)
                             </Link>
                         </Text>
