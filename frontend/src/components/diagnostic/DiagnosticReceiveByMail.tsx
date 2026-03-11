@@ -55,7 +55,7 @@ export default function DiagnosticReceiveByMail() {
         const mailResponse = await fetch(`${process.env.REACT_APP_CMS_URL}/api/email/send`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ to: email }),
+            body: JSON.stringify({ to: email, link: window.location.href }),
         });
         if (!mailResponse.ok) {
             throw new Error(`Erreur lors de l'envoi de l'email : ${mailResponse.status}`);
