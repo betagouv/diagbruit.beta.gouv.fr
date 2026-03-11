@@ -74,6 +74,8 @@ export default function DiagnosticEmail({
                                 <Text style={footerText}>
                                     Cordialement,<br />
                                     L'équipe diagBruit
+                                    <br />
+                                    <Link style={{ color: '#000091' }}>contact@diagbruit.fr</Link>
                                 </Text>
                                 <Text style={footerText}>
                                     <em>
