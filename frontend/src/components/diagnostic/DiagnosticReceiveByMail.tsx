@@ -15,6 +15,24 @@ const modal = createModal({
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+const submitAlertMessages: Record<"success" | "error" | "rate-limit", { severity: "success" | "error"; title: string; description: string }> = {
+    success: {
+        severity: "success",
+        title: "Email enregistré avec succès",
+        description: "Vous recevrez votre diagnostic par email prochainement.",
+    },
+    "rate-limit": {
+        severity: "error",
+        title: "Trop de demandes",
+        description: "Vous avez effectué trop de demandes. Veuillez patienter quelques instants avant de réessayer.",
+    },
+    error: {
+        severity: "error",
+        title: "Une erreur est survenue",
+        description: "Impossible d'enregistrer votre email. Veuillez réessayer.",
+    },
+};
+
 const selectOptions = [
     { value: "architecte", label: "Architecte" },
     { value: "charge-de-mission-bruit", label: "Chargé de mission bruit" },
@@ -34,7 +52,7 @@ export default function DiagnosticReceiveByMail() {
     const [profileError, setProfileError] = useState(false);
     const [emailError, setEmailError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+    const [submitStatus, setSubmitStatus] = useState<"success" | "error" | "rate-limit" | null>(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -49,6 +67,9 @@ export default function DiagnosticReceiveByMail() {
             body: JSON.stringify({ email, profile: value }),
         });
         if (!subscribeResponse.ok) {
+            if (subscribeResponse.status === 429) {
+                throw new Error("rate-limit");
+            }
             throw new Error(`Erreur lors de l'enregistrement : ${subscribeResponse.status}`);
         }
 
@@ -58,6 +79,9 @@ export default function DiagnosticReceiveByMail() {
             body: JSON.stringify({ to: email, link: window.location.href }),
         });
         if (!mailResponse.ok) {
+            if (mailResponse.status === 429) {
+                throw new Error("rate-limit");
+            }
             throw new Error(`Erreur lors de l'envoi de l'email : ${mailResponse.status}`);
         }
     };
@@ -73,7 +97,10 @@ export default function DiagnosticReceiveByMail() {
         setSubmitStatus(null);
         submitEmail()
             .then(() => { setSubmitStatus("success"); })
-            .catch((err) => { console.error(err); setSubmitStatus("error"); })
+            .catch((err) => {
+                console.error(err);
+                setSubmitStatus(err.message === "rate-limit" ? "rate-limit" : "error");
+            })
             .finally(() => { setIsSubmitting(false); });
     };
 
@@ -123,11 +150,7 @@ export default function DiagnosticReceiveByMail() {
                     {submitStatus && (
                         <Alert
                             closable
-                            severity={submitStatus}
-                            title={submitStatus === "success" ? "Email enregistré avec succès" : "Une erreur est survenue"}
-                            description={submitStatus === "success"
-                                ? "Vous recevrez votre diagnostic par email prochainement."
-                                : "Impossible d'enregistrer votre email. Veuillez réessayer."}
+                            {...submitAlertMessages[submitStatus]}
                             onClose={() => setSubmitStatus(null)}
                             className={fr.cx("fr-mb-4v")}
                         />

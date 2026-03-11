@@ -10,6 +10,9 @@ export default {
       handler: 'email.subscribe',
       config: {
         auth: false,
+        middlewares: [
+          { name: 'global::rate-limit', config: { maxRequests: 5, windowMs: 60_000 } },
+        ],
       },
     },
     {
@@ -18,6 +21,9 @@ export default {
       handler: 'email.send',
       config: {
         auth: false,
+        middlewares: [
+          { name: 'global::rate-limit', config: { maxRequests: 3, windowMs: 60_000 } },
+        ],
       },
     },
   ],
