@@ -4,7 +4,8 @@
   "info": {
     "singularName": "email",
     "pluralName": "emails",
-    "displayName": "email"
+    "displayName": "email",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -24,6 +25,9 @@
         "promoteur",
         "particulier"
       ]
+    },
+    "count": {
+      "type": "integer"
     }
   }
 }

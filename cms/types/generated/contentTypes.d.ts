@@ -511,6 +511,7 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
 export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   collectionName: 'emails';
   info: {
+    description: '';
     displayName: 'email';
     pluralName: 'emails';
     singularName: 'email';
@@ -519,6 +520,7 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    count: Schema.Attribute.Integer;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
