@@ -6,7 +6,6 @@ from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
 from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
-from ..models.email import DiagnosticEmail
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
 from ..version import get_api_version
