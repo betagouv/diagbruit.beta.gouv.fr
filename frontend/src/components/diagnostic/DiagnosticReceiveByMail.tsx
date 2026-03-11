@@ -43,13 +43,13 @@ export default function DiagnosticReceiveByMail() {
     }, [])
 
     const submitEmail = async () => {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/diag/email`, {
+        const subscribeResponse = await fetch(`${process.env.REACT_APP_CMS_URL}/api/email/subscribe`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, profile: value }),
         });
-        if (!response.ok) {
-            throw new Error(`Erreur lors de l'enregistrement : ${response.status}`);
+        if (!subscribeResponse.ok) {
+            throw new Error(`Erreur lors de l'enregistrement : ${subscribeResponse.status}`);
         }
 
         const mailResponse = await fetch(`${process.env.REACT_APP_CMS_URL}/api/email/send`, {
@@ -140,32 +140,33 @@ export default function DiagnosticReceiveByMail() {
                             {textContent()}
                         </div>
                     </div>
-                    <Select
-                        label="Mon Profil"
-                        state={profileError ? "error" : "default"}
-                        stateRelatedMessage={profileError ? "Veuillez sélectionner un profil" : undefined}
-                        nativeSelectProps={{
-                            onChange: event => { setValue(event.target.value); setProfileError(false); },
-                            value
-                        }}
-                    >
-                        <option value="" disabled hidden>Selectionnez un profil</option>
-                        {selectOptions.map(option => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                    </Select>
-                    <Input
-                        label="Adresse email"
-                        state={emailError ? "error" : "info"}
-                        stateRelatedMessage={emailError ? (!email ? "Veuillez saisir une adresse email" :
-                            "Veuillez saisir une adresse email valide") :
-                            <>Votre adresse email sera utilisée uniquement pour vous transmettre votre diagnostic
-                            et vous accompagner avec des conseils adaptés à votre projet. <a href="/privacy-policy">Voir nos engagements</a></>}
-                        nativeInputProps={{
-                            value: email,
-                            onChange: event => { setEmail(event.target.value); setEmailError(false); }
-                        }}
-                    />
+                    <div className={classes.formInputContainer}>
+                        <Select
+                            label="Mon Profil"
+                            state={profileError ? "error" : "default"}
+                            stateRelatedMessage={profileError ? "Veuillez sélectionner un profil" : undefined}
+                            nativeSelectProps={{
+                                onChange: event => { setValue(event.target.value); setProfileError(false); },
+                                value
+                            }}
+                        >
+                            <option value="" disabled hidden>Selectionnez un profil</option>
+                            {selectOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </Select>
+                        <Input
+                            label="Adresse email"
+                            state={emailError ? "error" : "info"}
+                            stateRelatedMessage={emailError ? (!email ? "Veuillez saisir une adresse email" :
+                                "Veuillez saisir une adresse email valide") :
+                                <span>{"Votre adresse email sera utilisée uniquement pour vous transmettre votre diagnostic et vous accompagner avec des conseils adaptés à votre projet. "}<a href="/privacy-policy">Voir nos engagements</a></span>}
+                            nativeInputProps={{
+                                value: email,
+                                onChange: event => { setEmail(event.target.value); setEmailError(false); }
+                            }}
+                        />
+                    </div>
                     <div className={classes.actions}>
                         <Button
                             priority="primary"
@@ -185,7 +186,7 @@ export default function DiagnosticReceiveByMail() {
 
 const useStyles = tss.create(() => ({
     container: {
-        marginBottom: fr.spacing("4v"),
+        marginTop: fr.spacing("4v"),
         border: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
     },
     tileTitle: {
@@ -198,6 +199,9 @@ const useStyles = tss.create(() => ({
         h4: {
             margin: 0,
         }
+    },
+    formInputContainer: {
+        marginTop: fr.spacing("4v"),
     },
     tileContent: {
         padding: fr.spacing("4v"),
