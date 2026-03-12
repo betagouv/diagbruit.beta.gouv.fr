@@ -113,6 +113,19 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
       </div>
       <Footer
         accessibility="non compliant"
+        accessibilityLinkProps={{
+          href: "/accessibility",
+        }}
+        bottomItems={[
+          {
+            text: "Mentions légales",
+            linkProps: { href: "/legal-mentions" },
+          },
+          {
+            text: "Politique de confidentialité",
+            linkProps: { href: "/privacy-policy" },
+          },
+        ]}
         contentDescription="diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
       />
     </main>

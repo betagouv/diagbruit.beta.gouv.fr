@@ -17,7 +17,7 @@ from app.utils.db import (
     query_noisezone_intersecting_features,
     query_soundclassification_intersecting_features,
     query_peb_intersecting_features,
-    upsert_diagnostic_result
+    upsert_diagnostic_result,
 )
 from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
@@ -221,3 +221,4 @@ async def generate_diag_from_geometry(
         return {"diagnostics": diagnostics}
     except HTTPException as e:
         raise e
+

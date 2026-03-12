@@ -31,11 +31,25 @@ export interface GlobalLink extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalLocalDocumentationCodeInsee
+  extends Struct.ComponentSchema {
+  collectionName: 'components_global_local_documentation_code_insees';
+  info: {
+    description: '';
+    displayName: 'LocalDocumentationCodeInsee';
+    icon: 'pinMap';
+  };
+  attributes: {
+    codeinsee: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'global.conditions': GlobalConditions;
       'global.link': GlobalLink;
+      'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
     }
   }
 }

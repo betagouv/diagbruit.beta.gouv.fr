@@ -18,6 +18,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -111,6 +112,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
+          <DiagnosticReceiveByMail />
         </>
       ),
     },

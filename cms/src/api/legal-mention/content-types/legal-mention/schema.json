@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "legal_mentions",
+  "info": {
+    "singularName": "legal-mention",
+    "pluralName": "legal-mentions",
+    "displayName": "LegalMentions"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "content": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    }
+  }
+}

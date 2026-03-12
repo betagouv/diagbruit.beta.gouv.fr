@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "local_documentations",
+  "info": {
+    "singularName": "local-documentation",
+    "pluralName": "local-documentations",
+    "displayName": "LocalDocumentation",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "link": {
+      "type": "string"
+    },
+    "codeinsees": {
+      "displayName": "LocalDocumentationCodeInsee",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.local-documentation-code-insee"
+    },
+    "priority": {
+      "default": 0,
+      "type": "integer"
+    }
+  }
+}

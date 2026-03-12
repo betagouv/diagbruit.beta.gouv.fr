@@ -373,6 +373,40 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAccessibilityAccessibility extends Struct.SingleTypeSchema {
+  collectionName: 'accessibilities';
+  info: {
+    displayName: 'Accessibility';
+    pluralName: 'accessibilities';
+    singularName: 'accessibility';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::accessibility.accessibility'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -474,6 +508,114 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
+  collectionName: 'emails';
+  info: {
+    description: '';
+    displayName: 'email';
+    pluralName: 'emails';
+    singularName: 'email';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    count: Schema.Attribute.Integer;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::email.email'> &
+      Schema.Attribute.Private;
+    profile: Schema.Attribute.Enumeration<
+      [
+        'architecte',
+        'charge-de-mission-bruit',
+        'instructeur',
+        'autre',
+        'service-amenagement',
+        'promoteur',
+        'particulier',
+      ]
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLegalMentionLegalMention extends Struct.SingleTypeSchema {
+  collectionName: 'legal_mentions';
+  info: {
+    displayName: 'LegalMentions';
+    pluralName: 'legal-mentions';
+    singularName: 'legal-mention';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::legal-mention.legal-mention'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLocalDocumentationLocalDocumentation
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'local_documentations';
+  info: {
+    description: '';
+    displayName: 'LocalDocumentation';
+    pluralName: 'local-documentations';
+    singularName: 'local-documentation';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    codeinsees: Schema.Attribute.Component<
+      'global.local-documentation-code-insee',
+      true
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::local-documentation.local-documentation'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiNoiseSourceCategoryNoiseSourceCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'noise_source_categories';
@@ -503,6 +645,40 @@ export interface ApiNoiseSourceCategoryNoiseSourceCategory
     slug: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPrivacyPolicyPrivacyPolicy extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_policies';
+  info: {
+    displayName: 'PrivacyPolicy';
+    pluralName: 'privacy-policies';
+    singularName: 'privacy-policy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-policy.privacy-policy'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1091,10 +1267,15 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::accessibility.accessibility': ApiAccessibilityAccessibility;
       'api::category.category': ApiCategoryCategory;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
+      'api::email.email': ApiEmailEmail;
+      'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
+      'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
+      'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;
       'plugin::content-releases.release': PluginContentReleasesRelease;

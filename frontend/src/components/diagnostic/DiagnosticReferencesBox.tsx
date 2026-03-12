@@ -6,15 +6,15 @@ type LinkItem = {
   label: string;
 };
 
-type DiagnosticDecreesBoxProps = {
+type DiagnosticReferencesBoxProps = {
   links: LinkItem[];
   title?: string;
 };
 
-const DiagnosticDecreesBox = ({
+const DiagnosticReferencesBox = ({
   links,
   title = "Références",
-}: DiagnosticDecreesBoxProps) => {
+}: DiagnosticReferencesBoxProps) => {
   const { cx, classes } = useStyles();
 
   if (!links.length) return null;
@@ -48,4 +48,4 @@ const useStyles = tss.create(() => ({
   },
 }));
 
-export default DiagnosticDecreesBox;
+export default DiagnosticReferencesBox;

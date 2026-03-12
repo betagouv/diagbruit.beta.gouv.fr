@@ -1,0 +1,10 @@
+*.md
+LICENSE
+.git
+.github
+.vscode
+.idea
+.yarn
+.cache
+.tmp
+src/admin

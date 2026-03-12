@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_global_local_documentation_code_insees",
+  "info": {
+    "displayName": "LocalDocumentationCodeInsee",
+    "icon": "pinMap",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "codeinsee": {
+      "type": "string"
+    }
+  }
+}

@@ -11,22 +11,36 @@ module.exports = ({ env }) => {
     upload: {
       config: isUsingAws
         ? {
-            provider: "aws-s3",
-            providerOptions: {
-              accessKeyId: env("AWS_ACCESS_KEY_ID"),
-              secretAccessKey: env("AWS_SECRET_ACCESS_KEY"),
-              region: env("AWS_REGION"),
-              params: {
-                Bucket: env("AWS_BUCKET"),
-              },
-            },
-          }
-        : {
-            provider: "local",
-            providerOptions: {
-              sizeLimit: 1000000,
+          provider: "aws-s3",
+          providerOptions: {
+            accessKeyId: env("AWS_ACCESS_KEY_ID"),
+            secretAccessKey: env("AWS_SECRET_ACCESS_KEY"),
+            region: env("AWS_REGION"),
+            params: {
+              Bucket: env("AWS_BUCKET"),
             },
           },
+        }
+        : {
+          provider: "local",
+          providerOptions: {
+            sizeLimit: 1000000,
+          },
+        },
+    },
+    email: {
+      config: {
+        provider: 'nodemailer',
+        providerOptions: {
+          host: env('NODEMAILER_HOST'),
+          port: env.int('NODEMAILER_PORT', 587),
+          secure: false,
+        },
+        settings: {
+          defaultFrom: env('NODEMAILER_FROM'),
+          defaultReplyTo: 'support@example.com',
+        },
+      },
     },
   };
 };

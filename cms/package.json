@@ -12,12 +12,16 @@
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "heroku-cleanup": "rm -rf .cache .tmp src/admin .yarn"
   },
   "dependencies": {
     "@_sh/strapi-plugin-ckeditor": "^6.0.1",
+    "@react-email/components": "^1.0.8",
+    "@react-email/render": "^2.0.4",
     "@strapi/plugin-cloud": "5.13.0",
     "@strapi/plugin-users-permissions": "5.13.0",
+    "@strapi/provider-email-nodemailer": "^5.38.0",
     "@strapi/provider-upload-aws-s3": "^5.13.1",
     "@strapi/strapi": "5.13.0",
     "pg": "8.8.0",
@@ -33,8 +37,7 @@
     "typescript": "^5"
   },
   "engines": {
-    "node": ">=22.0.0 <23",
-    "npm": ">=11.0.0 <12"
+    "node": ">=22.0.0 <23"
   },
   "strapi": {
     "uuid": "26b15607-5434-41a7-a589-8a89c3cd9c37",
@@ -42,5 +45,6 @@
   },
   "resolutions": {
     "@types/minimatch": "5.1.2"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }
