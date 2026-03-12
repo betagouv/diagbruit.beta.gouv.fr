@@ -1,7 +1,6 @@
-import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
+import type React from "react";
 import { tss } from "tss-react/dsfr";
-import { useSearchParams } from "react-router-dom";
 import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
 
 type DiagnosticIsolationRangeProps = {

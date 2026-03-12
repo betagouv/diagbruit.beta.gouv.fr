@@ -1,11 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { tss } from "tss-react/dsfr";
-import { DiagnosticItem, NoiseSourceIntersection } from "../../utils/types";
-import { getIconFromNoiseCategorySlug } from "../../utils/tools";
-import { useState } from "react";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import { useState } from "react";
+import { tss } from "tss-react/dsfr";
+import { getIconFromNoiseCategorySlug } from "../../utils/tools";
+import type { DiagnosticItem, NoiseSourceIntersection } from "../../utils/types";
 
 const modal = createModal({
   id: "noise-sources-modal",

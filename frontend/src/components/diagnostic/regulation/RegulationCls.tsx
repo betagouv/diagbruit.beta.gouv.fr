@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
-import { DiagnosticItem } from "../../../utils/types";
+import type { DiagnosticItem } from "../../../utils/types";
 import DiagnosticRegulationBox from "../DiagnosticRegulationBox";
 
 type RegulationClsProps = {

@@ -5,7 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
-  Dispatch,
+  type Dispatch,
   forwardRef,
   useCallback,
   useEffect,
@@ -13,14 +13,10 @@ import {
   useRef,
   useState,
 } from "react";
+import type { MapGeoJSONFeature, MapInstance, MapLayerMouseEvent, MapRef, MapSourceDataEvent } from "react-map-gl/maplibre";
 import Map, {
-  MapGeoJSONFeature,
-  MapInstance,
-  MapLayerMouseEvent,
-  MapRef,
-  MapSourceDataEvent,
   Marker,
-  StyleSpecification,
+  type StyleSpecification,
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
 import usePrevious from "../../hooks/previous";
@@ -32,12 +28,12 @@ import {
   getZoomFromGeometry,
   getZoomFromGouvType,
 } from "../../utils/tools";
-import {
+import type {
   DiagnosticItem,
   DiagnosticResponseError,
   NoiseSourceIntersection,
 } from "../../utils/types";
-import AddressSearch, { AddressFeature } from "../search/AddressSearch";
+import AddressSearch, { type AddressFeature } from "../search/AddressSearch";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
 import {

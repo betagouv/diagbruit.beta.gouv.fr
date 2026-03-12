@@ -9,7 +9,7 @@ type LoaderProps = {
 
 export const Loader = (props: LoaderProps) => {
   const { text, size, white } = props;
-  const { cx, classes } = useStyles({ size, white });
+  const { classes } = useStyles({ size, white });
 
   return (
     <div className={classes.loaderContainer}>
@@ -33,7 +33,7 @@ const useStyles = tss.withParams<LoaderProps>().create(({ size, white }) => ({
       color: white
         ? fr.colors.decisions.background.default.grey.default
         : fr.colors.decisions.background.actionHigh.blueFrance.default,
-      ["&::before"]: {
+      "&::before": {
         "--icon-size": size === "sm" ? "1.5rem" : "3rem",
       },
     },

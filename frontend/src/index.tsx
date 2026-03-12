@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./index.css";
-import Home from "./pages/home";
-import Diagnostic from "./pages/diagnostic";
-import Changelogs from "./pages/changelogs";
-import Stats from "./pages/stats";
-import Maintenance from "./pages/maintenance";
-import CmsPage from "./pages/cms-page";
-import reportWebVitals from "./reportWebVitals";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-import PublicLayout from "./layouts/PublicLayout";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import { useMatomo } from "./hooks/useMatomo";
+import PublicLayout from "./layouts/PublicLayout";
+import Changelogs from "./pages/changelogs";
+import CmsPage from "./pages/cms-page";
+import Diagnostic from "./pages/diagnostic";
+import Home from "./pages/home";
+import Maintenance from "./pages/maintenance";
+import Stats from "./pages/stats";
+import reportWebVitals from "./reportWebVitals";
 
 startReactDsfr({ defaultColorScheme: "light" });
 

@@ -1,33 +1,33 @@
 {
-  "kind": "collectionType",
-  "collectionName": "emails",
-  "info": {
-    "singularName": "email",
-    "pluralName": "emails",
-    "displayName": "email",
-    "description": ""
-  },
-  "options": {
-    "draftAndPublish": true
-  },
-  "attributes": {
-    "email": {
-      "type": "string"
-    },
-    "profile": {
-      "type": "enumeration",
-      "enum": [
-        "architecte",
-        "charge-de-mission-bruit",
-        "instructeur",
-        "autre",
-        "service-amenagement",
-        "promoteur",
-        "particulier"
-      ]
-    },
-    "count": {
-      "type": "integer"
-    }
-  }
+	"kind": "collectionType",
+	"collectionName": "emails",
+	"info": {
+		"singularName": "email",
+		"pluralName": "emails",
+		"displayName": "email",
+		"description": ""
+	},
+	"options": {
+		"draftAndPublish": true
+	},
+	"attributes": {
+		"email": {
+			"type": "string"
+		},
+		"profile": {
+			"type": "enumeration",
+			"enum": [
+				"architecte",
+				"charge-de-mission-bruit",
+				"instructeur",
+				"autre",
+				"service-amenagement",
+				"promoteur",
+				"particulier"
+			]
+		},
+		"count": {
+			"type": "integer"
+		}
+	}
 }

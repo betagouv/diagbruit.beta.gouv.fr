@@ -4,9 +4,9 @@ import Header from "@codegouvfr/react-dsfr/Header";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { tss } from "tss-react/dsfr";
-import { Settings } from "../utils/types";
 import { useLocation, useNavigate } from "react-router-dom";
+import { tss } from "tss-react/dsfr";
+import type { Settings } from "../utils/types";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -103,7 +103,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </>
         }
         isClosable
-        onClose={function noRefCheck() {}}
+        onClose={function noRefCheck() { }}
         className={cx(classes.betaNotice)}
       />
       <div
