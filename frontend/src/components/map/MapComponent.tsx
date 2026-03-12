@@ -1,7 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -34,6 +32,7 @@ import type {
   NoiseSourceIntersection,
 } from "../../utils/types";
 import AddressSearch, { type AddressFeature } from "../search/AddressSearch";
+import NoisePinModal, { noisePinModal } from "./NoisePinModal";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
 import {
@@ -50,10 +49,6 @@ const defaultViewState = {
   zoom: 12,
 };
 
-const noisePinModal = createModal({
-  id: "noise-pin-modal",
-  isOpenedByDefault: false,
-});
 
 export type HoverInfo = {
   longitude: number;
@@ -442,34 +437,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
             })}
         </Map>
 
-        <noisePinModal.Component title="" size="medium">
-          {selectedNoisePin && (
-            <div className={classes.modalContent}>
-              <span className={fr.cx("fr-mb-2v")}>
-                {selectedNoisePin.label}
-              </span>
-              <div>
-                <Tag className={classes.customTag} small>
-                  à {Math.round(selectedNoisePin.distance)} mètres
-                </Tag>
-                <Tag className={fr.cx("fr-ml-2v")} small>
-                  <i
-                    className={cx(
-                      fr.cx(
-                        getIconFromNoiseCategorySlug(
-                          selectedNoisePin.category_slug,
-                        ),
-                        "fr-mr-1v",
-                      ),
-                      classes.smallIcon,
-                    )}
-                  />{" "}
-                  {selectedNoisePin.category_name}
-                </Tag>
-              </div>
-            </div>
-          )}
-        </noisePinModal.Component>
+        <NoisePinModal selectedNoisePin={selectedNoisePin} />
       </div>
     );
   },
@@ -506,23 +474,6 @@ const useStyles = tss.create(() => ({
     height: "100vh",
     width: "100vw",
     zIndex: 9999,
-  },
-  modalContent: {
-    padding: fr.spacing("4v"),
-    backgroundColor: fr.colors.decisions.background.default.grey.hover,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "start",
-  },
-  customTag: {
-    backgroundColor:
-      fr.colors.decisions.background.actionLow.blueFrance.default,
-    color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-  },
-  smallIcon: {
-    "&::before": {
-      "--icon-size": "1rem",
-    },
   },
 }));
 

@@ -1,16 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 import { useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { getIconFromNoiseCategorySlug } from "../../utils/tools";
 import type { DiagnosticItem, NoiseSourceIntersection } from "../../utils/types";
-
-const modal = createModal({
-  id: "noise-sources-modal",
-  isOpenedByDefault: false,
-});
+import NoiseSourcesModal, { modal, type SelectedCategory } from "./NoiseSourcesModal";
 
 interface DiagnosticLocalNoiseSourcesProps {
   diagnosticItem: DiagnosticItem;
@@ -21,11 +15,7 @@ export default function DiagnosticLocalNoiseSources({
 }: DiagnosticLocalNoiseSourcesProps) {
   const { classes, cx } = useStyles();
   const { noisesource_intersections } = diagnosticItem.diagnostic;
-  const [selectedCategory, setSelectedCategory] = useState<{
-    categoryName: string;
-    categorySlug: string;
-    sources: NoiseSourceIntersection[];
-  } | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<SelectedCategory | null>(null);
 
   const handleCategoryClick = (
     categoryName: string,
@@ -43,8 +33,8 @@ export default function DiagnosticLocalNoiseSources({
           Aucune information pour le moment
         </h4>
         <p className={fr.cx("fr-mb-0")}>
-          À ce jour, aucune source de nuisance sonore n’a été identifiée à
-          proximité de votre parcelle. Cela n’exclut pas l’existence de
+          À ce jour, aucune source de nuisance sonore n'a été identifiée à
+          proximité de votre parcelle. Cela n'exclut pas l'existence de
           nuisances non référencées. Une visite sur place reste le meilleur
           moyen de vous faire votre propre avis.
         </p>
@@ -98,42 +88,12 @@ export default function DiagnosticLocalNoiseSources({
           Ces établissements et équipements, situés à proximité de votre
           parcelle, peuvent générer une gêne sonore, notamment la nuit lorsque
           le niveau de bruit ambiant diminue. Nous vous recommandons de vous
-          rendre sur place afin d’évaluer la situation selon vos propres usages
+          rendre sur place afin d'évaluer la situation selon vos propres usages
           et sensibilités.
         </p>
       </div>
 
-      <modal.Component
-        title={
-          selectedCategory ? (
-            <>
-              <i
-                className={fr.cx(
-                  getIconFromNoiseCategorySlug(selectedCategory.categorySlug),
-                  "fr-mr-2v"
-                )}
-              />
-              {`${selectedCategory.categoryName} à proximité`}
-            </>
-          ) : (
-            ""
-          )
-        }
-        size="medium"
-      >
-        {selectedCategory && (
-          <ul className={classes.modalList}>
-            {selectedCategory.sources.map((source, index) => (
-              <li key={index} className={classes.modalListItem}>
-                <span className={fr.cx("fr-mb-2v")}>{source.label}</span>
-                <Tag className={classes.customTag} small>
-                  à {source.distance} mètres
-                </Tag>
-              </li>
-            ))}
-          </ul>
-        )}
-      </modal.Component>
+      <NoiseSourcesModal selectedCategory={selectedCategory} />
     </>
   );
 }
@@ -164,25 +124,5 @@ const useStyles = tss.withName(DiagnosticLocalNoiseSources.name).create({
       "--icon-size": "1rem",
       marginRight: fr.spacing("2v"),
     },
-  },
-  modalList: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-  },
-  modalListItem: {
-    padding: fr.spacing("4v"),
-    backgroundColor: fr.colors.decisions.background.default.grey.hover,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "start",
-    "&:not(:last-of-type)": {
-      marginBottom: fr.spacing("2v"),
-    },
-  },
-  customTag: {
-    backgroundColor:
-      fr.colors.decisions.background.actionLow.blueFrance.default,
-    color: fr.colors.decisions.text.actionHigh.blueFrance.default,
   },
 });
