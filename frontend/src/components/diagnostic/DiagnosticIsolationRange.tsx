@@ -50,7 +50,8 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
         </div>
       )}
       <div className={fr.cx("fr-mt-4v")}>
-        <p
+        <button
+          type="button"
           className={cx(classes.fakeLink, fr.cx("fr-mb-0"))}
           onClick={() => {
             (
@@ -61,7 +62,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
           }}
         >
           Voir la documentation d'isolation
-        </p>
+        </button>
       </div>
     </div>
   );
@@ -71,6 +72,12 @@ const useStyles = tss.create(() => ({
   fakeLink: {
     textDecoration: "underline",
     cursor: "pointer",
+    padding: 0,
+    ":hover": {
+      backgroundColor: "white",
+      backgroundImage: "none",
+      "--hover-tint": "transparent",
+    },
   },
 }));
 
