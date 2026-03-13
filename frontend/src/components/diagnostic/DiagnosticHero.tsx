@@ -12,24 +12,12 @@ import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
-  handleCopyUrl?: (title?: string) => void;
 };
 
-const DiagnosticHero = ({
-  diagnosticItem,
-  handleCopyUrl,
-}: DiagnosticHeroProps) => {
+const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
   const { diagnostic } = diagnosticItem;
 
   const { cx, classes } = useStyles({ score: diagnostic.score });
-
-  const handleContactClick = () => {
-    trackMatomoEvent(
-      "Diagnostic",
-      "Contact",
-      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
-    );
-  };
 
   return (
     <div className={cx(classes.container)}>

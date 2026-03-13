@@ -100,10 +100,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               light
             />
           )}
-          <DiagnosticHero
-            diagnosticItem={diagnosticItem}
-            handleCopyUrl={handleCopyUrl}
-          />
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle
@@ -218,8 +215,15 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <h2>Votre diagnostic diagBruit</h2>
         </div>
         <div className={cx(fr.cx("fr-col-4"), classes.buttonSection)}>
-          <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
-            Copier l'URL du diagnostic
+          <Button
+            priority="secondary"
+            iconId="ri-mail-line"
+            linkProps={{
+              href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+              onClick: handleContactClick,
+            }}
+          >
+            Contacter l'équipe diagBruit
           </Button>
         </div>
       </div>
@@ -273,21 +277,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               marginWidth={0}
               title="Votre avis sur diagBruit"
             />
-          </div>
-          <div className={cx(classes.buttonSection)}>
-            <Button
-              priority="secondary"
-              iconId="ri-mail-line"
-              linkProps={{
-                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
-                onClick: handleContactClick,
-              }}
-            >
-              Contacter l'équipe diagBruit
-            </Button>
-            <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
-              Copier l'URL du diagnostic
-            </Button>
           </div>
         </div>
       )}
