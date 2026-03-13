@@ -206,7 +206,7 @@ export default function DiagnosticEmailForm({
                 !email ? (
                   "Veuillez saisir une adresse email"
                 ) : (
-                  "Veuillez saisir une adresse email valide"
+                  "Veuillez saisir une adresse email valide (exemple: exemple@exemple.com)"
                 )
               ) : (
                 <span>
