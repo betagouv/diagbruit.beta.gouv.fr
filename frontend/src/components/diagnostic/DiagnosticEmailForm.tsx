@@ -21,7 +21,7 @@ const submitAlertMessages: Record<
 > = {
   success: {
     severity: "success",
-    title: "Email enregistré avec succès",
+    title: "Demande enregistrée avec succès",
     description: "Vous recevrez votre diagnostic par email prochainement.",
   },
   "rate-limit": {
@@ -61,7 +61,8 @@ export default function DiagnosticEmailForm({
     if (!modalElement) return;
     const handleConceal = () => onClose?.();
     modalElement.addEventListener("dsfr.conceal", handleConceal);
-    return () => modalElement.removeEventListener("dsfr.conceal", handleConceal);
+    return () =>
+      modalElement.removeEventListener("dsfr.conceal", handleConceal);
   }, [onClose]);
 
   const [value, setValue] = useState("");
