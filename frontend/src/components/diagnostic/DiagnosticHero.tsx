@@ -1,12 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Button from "@codegouvfr/react-dsfr/Button";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import {
   getColorFromScore,
   getSummaryTextFromDiagnostic,
 } from "../../utils/tools";
-import { trackMatomoEvent } from "../../utils/matomo";
 import { DiagnosticItem } from "../../utils/types";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
