@@ -10,6 +10,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ALLOWED_LINK_ORIGINS = [
   "https://diagbruit.beta.gouv.fr",
   "https://diagbruit.fr",
+  "https://preprod.diagbruit.fr",
   "http://localhost:3000",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
