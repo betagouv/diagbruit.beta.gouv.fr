@@ -34,10 +34,12 @@ module.exports = ({ env }) => {
         providerOptions: {
           host: env("NODEMAILER_HOST"),
           port: env.int("NODEMAILER_PORT", 587),
-          secure: false,
+          secure: env("NODEMAILER_SECURE") === "true",
+          requireTLS: env("NODEMAILER_TLS") === "true",
           ...(env("NODEMAILER_USER") && env("NODEMAILER_PASS")
             ? {
                 auth: {
+                  type: "LOGIN",
                   user: env("NODEMAILER_USER"),
                   pass: env("NODEMAILER_PASS"),
                 },
@@ -46,7 +48,7 @@ module.exports = ({ env }) => {
         },
         settings: {
           defaultFrom: env("NODEMAILER_FROM"),
-          defaultReplyTo: "support@example.com",
+          defaultReplyTo: env("NODEMAILER_FROM"),
         },
       },
     },
