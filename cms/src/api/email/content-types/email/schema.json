@@ -4,11 +4,11 @@
   "info": {
     "singularName": "email",
     "pluralName": "emails",
-    "displayName": "email",
+    "displayName": "EmailReceivedDiag",
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "email": {
