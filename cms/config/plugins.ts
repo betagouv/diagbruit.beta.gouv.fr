@@ -39,7 +39,6 @@ module.exports = ({ env }) => {
           ...(env("NODEMAILER_USER") && env("NODEMAILER_PASS")
             ? {
                 auth: {
-                  type: "LOGIN",
                   user: env("NODEMAILER_USER"),
                   pass: env("NODEMAILER_PASS"),
                 },
