@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { trackMatomoEvent } from "../../utils/matomo";
 import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
 
 const MODAL_DISMISSED_COOKIE = "diagbruit_modal_dismissed";
@@ -25,6 +26,7 @@ export default function DiagnosticReceiveByMail() {
   useEffect(() => {
     if (isModalDismissed()) return;
     const timer = setTimeout(() => {
+      trackMatomoEvent("Action", "Open Email Modal", "Auto");
       modal.open();
     }, 5000);
     return () => clearTimeout(timer);
@@ -63,6 +65,7 @@ export default function DiagnosticReceiveByMail() {
           priority="primary"
           iconId="ri-mail-line"
           onClick={() => {
+            trackMatomoEvent("Action", "Open Email Modal", "Manual");
             modal.open();
           }}
           className={fr.cx("fr-mt-4v")}
