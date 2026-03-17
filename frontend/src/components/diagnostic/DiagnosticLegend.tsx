@@ -1,8 +1,8 @@
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { DiagnosticItem } from "../../utils/types";
-import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
-import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import { tss } from "tss-react/dsfr";
+import type { DiagnosticItem } from "../../utils/types";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticLegendProps = {
   diagnosticItem: DiagnosticItem;

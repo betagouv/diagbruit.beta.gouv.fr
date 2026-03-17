@@ -2,8 +2,8 @@
  * email controller
  */
 
-import { factories } from "@strapi/strapi";
 import { render } from "@react-email/render";
+import { factories } from "@strapi/strapi";
 import DiagnosticEmail from "../templates/DiagnosticEmail";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -81,7 +81,7 @@ export default factories.createCoreController("api::email.email", () => ({
 
     const html = await render(<DiagnosticEmail diagLink={link} />);
 
-    await strapi.plugins["email"].services.email.send({
+    await strapi.plugins.email.services.email.send({
       to,
       subject: "Votre diagnostic acoustique diagBruit",
       html,

@@ -1,17 +1,5 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Row,
-  Column,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Body, Button, Column, Container, Head, Html, Img, Link, Preview, Row, Section, Text } from '@react-email/components';
+
 
 interface EmailProps {
   diagLink?: string;

@@ -8,17 +8,17 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
-import { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
+import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -235,7 +235,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           </h3>
           <Alert
             description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="info"
             title=""
           />
@@ -286,7 +286,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           description="URL du diagnostic copiée dans le presse-papiers"
           title=""
           className={cx(classes.alertCopied)}
-          onClose={function noRefCheck() {}}
+          onClose={function noRefCheck() { }}
           isClosable
         />
       )}

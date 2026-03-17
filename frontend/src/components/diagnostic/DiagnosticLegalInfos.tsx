@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { LEGAL_TEXTS } from "../../utils/texts/legal";
-import { DiagnosticItem } from "../../utils/types";
-import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
-import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticDecrees from "./DiagnosticDecrees";
+import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
+import DiagnosticSoundClassificationTable from "./DiagnosticSoundClassificationTable";
 
 type DiagnosticLegalInfosProps = {
   diagnosticItem: DiagnosticItem;
@@ -89,7 +89,7 @@ const DiagnosticLegalInfos = ({
                 Code de l’urbanisme dédié au PEB :{" "}
                 <a
                   href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210273"
-                  target="_blank"
+                  target="_blank" rel="noopener"
                 >
                   article L112-10 du code de l’urbanisme
                 </a>

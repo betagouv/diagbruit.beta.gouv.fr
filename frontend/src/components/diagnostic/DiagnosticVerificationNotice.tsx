@@ -1,5 +1,5 @@
-import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
+import type React from "react";
 import { tss } from "tss-react/dsfr";
 
 type DiagnosticVerificationNoticeProps = {

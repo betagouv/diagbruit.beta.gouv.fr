@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-import { Decree } from "../utils/types";
+import { useEffect, useState } from "react";
+import type { Decree } from "../utils/types";
 
 const useDecrees = (codedept: number) => {
   const [decrees, setDecrees] = useState<Decree[]>([]);

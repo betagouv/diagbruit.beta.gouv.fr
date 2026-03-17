@@ -5,14 +5,16 @@ import {
   getColorFromScore,
   getSummaryTextFromDiagnostic,
 } from "../../utils/tools";
-import { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
 };
 
-const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
+const DiagnosticHero = ({
+  diagnosticItem,
+}: DiagnosticHeroProps) => {
   const { diagnostic } = diagnosticItem;
 
   const { cx, classes } = useStyles({ score: diagnostic.score });
@@ -42,9 +44,9 @@ const DiagnosticHero = ({ diagnosticItem }: DiagnosticHeroProps) => {
                 Niveaux sonores équivalents :
               </p>
               <div>
-                {diagnostic.equivalent_ambiences.map((ambience, index) => (
+                {diagnostic.equivalent_ambiences.map((ambience) => (
                   <Tag
-                    key={index}
+                    key={ambience}
                     className={cx(
                       classes.ambienceTag,
                       fr.cx("fr-mr-2v", "fr-mb-2v"),

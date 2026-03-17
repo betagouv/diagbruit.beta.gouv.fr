@@ -1,8 +1,8 @@
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { getReadableSource } from "../../utils/tools";
-import { SoundClassificationIntersection } from "../../utils/types";
-import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Table } from "@codegouvfr/react-dsfr/Table";
+import { tss } from "tss-react/dsfr";
+import { getReadableSource } from "../../utils/tools";
+import type { SoundClassificationIntersection } from "../../utils/types";
 
 type DiagnosticSoundClassificationTableProps = {
   intersections: SoundClassificationIntersection[];
@@ -33,12 +33,12 @@ const DiagnosticSoundClassificationTable = ({
         min_distance,
         max_distance,
       }) => [
-        getReadableSource(typesource, true),
-        codeinfra || "-",
-        sound_category,
-        `${min_distance.toString()} mètre${min_distance > 1 ? "s" : ""} *`,
-        `${max_distance.toString()} mètre${max_distance > 1 ? "s" : ""} *`,
-      ]
+          getReadableSource(typesource, true),
+          codeinfra || "-",
+          sound_category,
+          `${min_distance.toString()} mètre${min_distance > 1 ? "s" : ""} *`,
+          `${max_distance.toString()} mètre${max_distance > 1 ? "s" : ""} *`,
+        ]
     );
 
   return (

@@ -1,7 +1,7 @@
 import inside from "point-in-polygon";
 import { useMemo } from "react";
 import { normalizeToRings } from "../utils/tools";
-import { Zone } from "../utils/types";
+import type { Zone } from "../utils/types";
 
 type ProjectedPoint = { x: number; y: number };
 type UseOptimalZoneOptions = {

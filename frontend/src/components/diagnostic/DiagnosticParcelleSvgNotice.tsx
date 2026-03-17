@@ -6,7 +6,7 @@ import {
   getTextFromRisk,
   transparentize,
 } from "../../utils/tools";
-import { Zone } from "../../utils/types";
+import type { Zone } from "../../utils/types";
 
 type DiagnosticParcelleSvgNoticeProps = {
   zones: Zone[];

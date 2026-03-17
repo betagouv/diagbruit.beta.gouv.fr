@@ -1,20 +1,20 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
-import { MapGeoJSONFeature } from "react-map-gl/maplibre";
+import type { MapGeoJSONFeature } from "react-map-gl/maplibre";
+import { useLocation } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
-  ExposedMapMethods,
+  type ExposedMapMethods,
 } from "../components/map/MapComponent";
+import type { AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
-import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
-import { DiagnosticItem } from "../utils/types";
-import { useLocation } from "react-router-dom";
-import { getZoomFromGouvType } from "../utils/tools";
-import { AddressFeature } from "../components/search/AddressSearch";
 import { decode } from "../utils/compression";
+import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
+import { getZoomFromGouvType } from "../utils/tools";
+import type { DiagnosticItem } from "../utils/types";
 
 const defaultSearchValues = {
   codeInsee: "",
@@ -218,7 +218,7 @@ function DiagnosticPage() {
           <Alert
             className={fr.cx("fr-my-4v")}
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
@@ -262,7 +262,7 @@ function DiagnosticPage() {
           }}
           addressDefaultValue={addressDefaultValue}
         />
-        {diagnosticsResponses && diagnosticsResponses[0] && (
+        {diagnosticsResponses?.[0] && (
           <div className={fr.cx("fr-mt-6v")}>
             <Diagnostic
               diagnosticItem={diagnosticsResponses[0]}
@@ -276,7 +276,7 @@ function DiagnosticPage() {
             <Alert
               className={fr.cx("fr-mt-6v")}
               description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() {}}
+              onClose={function noRefCheck() { }}
               severity="info"
               title={
                 parcelleError
@@ -294,13 +294,13 @@ function DiagnosticPage() {
                 Malheureusement, cette parcelle ne figure pas dans les données
                 actuellement disponibles.
                 <div className={fr.cx("fr-mt-1v")}>
-                  <a href="https://tally.so/r/3xoeEd" target="_blank">
+                  <a href="https://tally.so/r/3xoeEd" target="_blank" rel="noopener">
                     Vous jugez cela dommage 😞 ? Dites le nous.
                   </a>
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
           />
@@ -315,14 +315,14 @@ function DiagnosticPage() {
                 diagnostic. Veuillez réessayer ultérieurement.
                 <div className={fr.cx("fr-mt-1v")}>
                   Si le problème persiste,{" "}
-                  <a href="https://tally.so/r/3xoeEd" target="_blank">
+                  <a href="https://tally.so/r/3xoeEd" target="_blank" rel="noopener">
                     contactez-nous
                   </a>
                   .
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Erreur lors de la génération du diagnostic"
           />
