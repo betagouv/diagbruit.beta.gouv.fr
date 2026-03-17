@@ -6,6 +6,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { CheckTexts } from "../utils/CheckTexts";
 
 export const modal = createModal({
 	id: "diagnostic-receive-by-mail-modal",
@@ -104,29 +105,9 @@ export default function DiagnosticEmailForm() {
 			});
 	};
 
-	const CheckText = ({ text }: { text: string }) => (
-		<>
-			<i className={cx(classes.checkIcon, "ri-check-line")} />
-			<p>{text}</p>
-		</>
-	);
-
-	const textContent = (
-		<>
-			<div className={cx("fr-grid-row")}>
-				<CheckText text="Retrouver facilement les réglementations en vigueurs" />
-			</div>
-			<div className={cx("fr-grid-row")}>
-				<CheckText text="Partagez rapidement l'anlyse avec vos interlocuteurs" />
-			</div>
-			<div className={cx("fr-grid-row")}>
-				<CheckText text="Accédez aux préconisations à tout moment" />
-			</div>
-		</>
-	);
 
 	return (
-		<modal.Component title="Recevoir mon diagnostic par email" size="large">
+		<modal.Component title="Recevoir le diagnostic par email" size="large">
 			{submitStatus && (
 				<Alert
 					closable
@@ -139,7 +120,7 @@ export default function DiagnosticEmailForm() {
 				<div className={cx(classes.tileTitle, "fr-col-2")}>
 					<img src="/images/document-download.svg" alt="" />
 				</div>
-				<div className={cx(classes.tileContent, "fr-col-10")}>{textContent}</div>
+				<div className={cx(classes.tileContent, "fr-col-10")}>{<CheckTexts />}</div>
 			</div>
 			<div className={classes.formInputContainer}>
 				<Select
@@ -224,9 +205,6 @@ const useStyles = tss.create(() => ({
 		p: {
 			margin: `0 0 0 ${fr.spacing("1v")} `,
 		},
-	},
-	checkIcon: {
-		color: fr.colors.decisions.background.flat.blueFrance.default,
 	},
 	formInputContainer: {
 		marginTop: fr.spacing("4v"),
