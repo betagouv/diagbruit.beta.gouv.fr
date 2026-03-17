@@ -4,6 +4,7 @@ import Notice from "@codegouvfr/react-dsfr/Notice";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
+import { CheckTexts } from "../utils/CheckTexts";
 import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
 
 const MODAL_DISMISSED_COOKIE = "diagbruit_modal_dismissed";
@@ -32,27 +33,6 @@ export default function DiagnosticReceiveByMail() {
         return () => clearTimeout(timer);
     }, []);
 
-    const CheckText = ({ text }: { text: string }) => (
-        <>
-            <i className={cx(classes.checkIcon, "ri-check-line")} />
-            <p>{text}</p>
-        </>
-    );
-
-    const textContent = (
-        <>
-            <div className={cx("fr-grid-row")}>
-                <CheckText text="Retrouver facilement les réglementations en vigueurs" />
-            </div>
-            <div className={cx("fr-grid-row")}>
-                <CheckText text="Partagez rapidement l'anlyse avec vos interlocuteurs" />
-            </div>
-            <div className={cx("fr-grid-row")}>
-                <CheckText text="Accédez aux préconisations à tout moment" />
-            </div>
-        </>
-    );
-
     return (
         <div className={cx(classes.container, "fr-grid-row")}>
             <div className={cx(classes.tileTitle, "fr-col-4")}>
@@ -60,7 +40,7 @@ export default function DiagnosticReceiveByMail() {
                 <h4 className={fr.cx("fr-h6")}>Recevoir mon diagnostic par email</h4>
             </div>
             <div className={cx(classes.tileContent, "fr-col-8")}>
-                {textContent}
+                {<CheckTexts />}
                 <Button
                     priority="primary"
                     iconId="ri-mail-line"
