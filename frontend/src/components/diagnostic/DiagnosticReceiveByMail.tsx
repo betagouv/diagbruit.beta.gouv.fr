@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Notice from "@codegouvfr/react-dsfr/Notice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { CheckTexts } from "../utils/CheckTexts";
@@ -23,18 +23,34 @@ function isModalDismissed(): boolean {
 export default function DiagnosticReceiveByMail({ parcelNumber }: { parcelNumber?: string }) {
     const { cx, classes } = useStyles();
     const [showSuccess, setShowSuccess] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isModalDismissed()) return;
-        const timer = setTimeout(() => {
-            trackMatomoEvent("Action", "Open Email Modal", "Auto");
-            modal.open();
-        }, 5000);
-        return () => clearTimeout(timer);
+        const el = containerRef.current;
+        if (!el) return;
+        let timer: ReturnType<typeof setTimeout>;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    observer.disconnect();
+                    timer = setTimeout(() => {
+                        trackMatomoEvent("Action", "Open Email Modal", "Auto");
+                        modal.open();
+                    }, 2000);
+                }
+            },
+            { threshold: 0.5 },
+        );
+        observer.observe(el);
+        return () => {
+            observer.disconnect();
+            clearTimeout(timer);
+        };
     }, []);
 
     return (
-        <div className={cx(classes.container, "fr-grid-row")}>
+        <div ref={containerRef} className={cx(classes.container, "fr-grid-row")}>
             <div className={cx(classes.tileTitle, "fr-col-4")}>
                 <img src="/images/document-download.svg" alt="" />
                 <h4 className={fr.cx("fr-h6")}>Recevoir le diagnostic par email</h4>
