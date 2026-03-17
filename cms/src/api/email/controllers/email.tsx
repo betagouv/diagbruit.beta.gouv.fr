@@ -65,7 +65,7 @@ export default factories.createCoreController("api::email.email", () => ({
   },
 
   async send(ctx) {
-    const { to, link } = ctx.request.body;
+    const { to, link, parcelNumber } = ctx.request.body;
 
     if (!to) {
       return ctx.badRequest('Missing "to" field');
@@ -83,7 +83,7 @@ export default factories.createCoreController("api::email.email", () => ({
 
     await strapi.plugins.email.services.email.send({
       to,
-      subject: "Votre diagnostic acoustique diagBruit",
+      subject: `Votre diagnostic acoustique diagBruit - Parcelle ${parcelNumber}`,
       html,
     });
 
