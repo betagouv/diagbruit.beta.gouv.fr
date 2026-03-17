@@ -5,7 +5,7 @@ import { tss } from "tss-react/dsfr";
 import { CheckTexts } from "../utils/CheckTexts";
 import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
 
-export default function DiagnosticReceiveByMail() {
+export default function DiagnosticReceiveByMail({ parcelNumber }: { parcelNumber: string }) {
     const { cx, classes } = useStyles();
 
     useEffect(() => {
@@ -34,14 +34,13 @@ export default function DiagnosticReceiveByMail() {
                     Recevoir le diagnostic
                 </Button>
             </div>
-            <DiagnosticEmailForm />
+            <DiagnosticEmailForm parcelNumber={parcelNumber} />
         </div>
     );
 }
 
 const useStyles = tss.create(() => ({
     container: {
-        marginTop: fr.spacing("4v"),
         border: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
     },
     tileTitle: {
