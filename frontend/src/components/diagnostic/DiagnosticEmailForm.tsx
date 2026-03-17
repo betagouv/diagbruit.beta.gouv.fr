@@ -51,9 +51,11 @@ const selectOptions = [
 export default function DiagnosticEmailForm({
 	onSuccess,
 	onClose,
+	parcelNumber
 }: {
 	onSuccess?: () => void;
 	onClose?: () => void;
+	parcelNumber?: string;
 }) {
 	const { cx, classes } = useStyles();
 
@@ -98,7 +100,7 @@ export default function DiagnosticEmailForm({
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ to: email, link: window.location.href }),
+				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber }),
 			},
 		);
 		if (!mailResponse.ok) {

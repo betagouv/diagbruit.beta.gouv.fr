@@ -20,7 +20,7 @@ function isModalDismissed(): boolean {
         .some((c) => c.startsWith(`${MODAL_DISMISSED_COOKIE}=`));
 }
 
-export default function DiagnosticReceiveByMail() {
+export default function DiagnosticReceiveByMail({ parcelNumber }: { parcelNumber?: string }) {
     const { cx, classes } = useStyles();
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -62,6 +62,7 @@ export default function DiagnosticReceiveByMail() {
                 onClose={() => {
                     setModalDismissedCookie();
                 }}
+                parcelNumber={parcelNumber}
             />
             {showSuccess && (
                 <Notice
