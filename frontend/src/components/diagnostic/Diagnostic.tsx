@@ -109,7 +109,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-          <DiagnosticReceiveByMail />
         </>
       ),
     },
@@ -266,6 +265,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <DiagnosticReceiveByMail />
           <div className={fr.cx("fr-card", "fr-p-4v")}>
             <iframe
               data-tally-src="https://tally.so/embed/1A4kZL?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
