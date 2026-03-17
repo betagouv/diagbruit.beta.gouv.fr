@@ -17,7 +17,7 @@ export const CheckTexts = () => {
                 <CheckText text="Retrouver facilement les réglementations en vigueurs" />
             </div>
             <div className={cx("fr-grid-row")}>
-                <CheckText text="Partagez rapidement l'anlyse avec vos interlocuteurs" />
+                <CheckText text="Partagez rapidement l'analyse avec vos interlocuteurs" />
             </div>
             <div className={cx("fr-grid-row")}>
                 <CheckText text="Accédez aux préconisations à tout moment" />

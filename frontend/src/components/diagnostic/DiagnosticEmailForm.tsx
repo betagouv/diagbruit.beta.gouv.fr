@@ -138,7 +138,7 @@ export default function DiagnosticEmailForm({
 
 
 	return (
-		<modal.Component title="Recevoir mon diagnostic par email" size="large">
+		<modal.Component title="Recevoir le diagnostic par email" size="large">
 			{submitStatus && (
 				<Alert
 					closable

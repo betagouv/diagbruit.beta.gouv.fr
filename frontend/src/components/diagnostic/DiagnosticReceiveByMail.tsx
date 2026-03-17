@@ -37,7 +37,7 @@ export default function DiagnosticReceiveByMail() {
         <div className={cx(classes.container, "fr-grid-row")}>
             <div className={cx(classes.tileTitle, "fr-col-4")}>
                 <img src="/images/document-download.svg" alt="" />
-                <h4 className={fr.cx("fr-h6")}>Recevoir mon diagnostic par email</h4>
+                <h4 className={fr.cx("fr-h6")}>Recevoir le diagnostic par email</h4>
             </div>
             <div className={cx(classes.tileContent, "fr-col-8")}>
                 {<CheckTexts />}
@@ -50,7 +50,7 @@ export default function DiagnosticReceiveByMail() {
                     }}
                     className={fr.cx("fr-mt-4v")}
                 >
-                    Recevoir mon diagnostic
+                    Recevoir le diagnostic
                 </Button>
             </div>
             <DiagnosticEmailForm
