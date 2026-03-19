@@ -43,6 +43,8 @@ fastapi/colorizer
 
 # VS Code / PyCharm / IDEs
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 
 # dotenv

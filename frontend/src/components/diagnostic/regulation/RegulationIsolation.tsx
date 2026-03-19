@@ -1,13 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { tss } from "tss-react/dsfr";
-import { DiagnosticItem } from "../../../utils/types";
+import type { DiagnosticItem } from "../../../utils/types";
+import FakeLinkComponent from "../../ui/FakeLinkComponent";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
 };
 
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
-  const { cx, classes } = useStyles();
   const { diagnostic } = diagnosticItem;
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
@@ -46,42 +45,26 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
           obligatoire selon la réglementation en vigueur.
         </p>
       )}
-      <p
-        className={cx(classes.fakeLink, fr.cx("fr-mb-0"))}
-        onClick={() => {
-          (
-            document.querySelector('[id^="tabpanel-"][id$="-1"]') as HTMLElement
-          )?.click();
-        }}
-      >
+
+      <FakeLinkComponent onClick={() => {
+        (
+          document.querySelector('[id^="tabpanel-"][id$="-1"]') as HTMLElement
+        )?.click();
+      }}>
         Voir le détail du classement sonore{" "}
         <i className={fr.cx("ri-arrow-right-line")} />
-      </p>
-      <p
-        className={cx(classes.fakeLink, fr.cx("fr-mb-0"))}
-        onClick={() => {
-          (
-            document.querySelector('[id^="tabpanel-"][id$="-2"]') as HTMLElement
-          )?.click();
-        }}
-      >
+      </FakeLinkComponent>
+      <FakeLinkComponent onClick={() => {
+        (
+          document.querySelector('[id^="tabpanel-"][id$="-2"]') as HTMLElement
+        )?.click();
+      }}>
         Voir la répartition sonore sur la parcelle{" "}
         <i className={fr.cx("ri-arrow-right-line")} />
-      </p>
+      </FakeLinkComponent>
     </>
   );
 };
 
-const useStyles = tss.create(() => ({
-  fakeLink: {
-    ...fr.typography[19].style,
-    textDecoration: "underline",
-    cursor: "pointer",
-    color: fr.colors.decisions.background.flat.blueFrance.default,
-    "i::before": {
-      "--icon-size": fr.typography[19].style.fontSize,
-    },
-  },
-}));
 
 export default RegulationIsolation;

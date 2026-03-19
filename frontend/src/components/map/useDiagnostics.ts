@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import {
+import type {
   DiagnosticItem,
-  DiagnosticResponseOk,
   DiagnosticResponseError,
+  DiagnosticResponseOk,
 } from "../../utils/types";
 
 function getParcelleId(parcelle: any) {

@@ -1,10 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Badge from "@codegouvfr/react-dsfr/Badge";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import { tss } from "tss-react/dsfr";
 import { getRecommendationsUtilFlags } from "../../utils/tools";
-import { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticPosition from "./DiagnosticPosition";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 
 type DiagnosticRecommendationsProps = {
   diagnosticItem: DiagnosticItem;

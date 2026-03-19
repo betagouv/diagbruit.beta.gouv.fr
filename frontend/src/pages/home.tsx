@@ -1,18 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import HomeHero from "../components/home/HomeHero";
-import ParcelleSearch from "../components/search/ParcelleSearch";
-import { useNavigate } from "react-router-dom";
 import AddressSearch, {
-  AddressFeature,
+  type AddressFeature,
 } from "../components/search/AddressSearch";
+import ParcelleSearch from "../components/search/ParcelleSearch";
 import { encode } from "../utils/compression";
 
 function HomePage() {
   const { cx, classes } = useStyles();
   const navigate = useNavigate();
 
-  let formValues;
+  let formValues: any;
 
   if (process.env.NODE_ENV === "development") {
     formValues = {
@@ -27,7 +27,7 @@ function HomePage() {
     <div className={fr.cx("fr-my-10v")}>
       <HomeHero />
       <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
-        <img src="/images/search.svg" />
+        <img src="/images/search.svg" alt="search icon" />
         <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
       </div>
       <p className={cx(fr.cx("fr-mt-10v"), classes.searchText)}>

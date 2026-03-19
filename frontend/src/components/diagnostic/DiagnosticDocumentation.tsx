@@ -1,11 +1,11 @@
-import { tss } from "tss-react/dsfr";
-import { DiagnosticItem, Recommendation } from "../../utils/types";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { getRecommendationsFilterConditionsFromDiagnostic } from "../../utils/tools";
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { tss } from "tss-react/dsfr";
+import { getRecommendationsFilterConditionsFromDiagnostic } from "../../utils/tools";
+import type { DiagnosticItem, Recommendation } from "../../utils/types";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;

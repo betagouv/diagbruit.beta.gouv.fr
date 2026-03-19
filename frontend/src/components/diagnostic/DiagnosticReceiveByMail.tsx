@@ -1,9 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Notice from "@codegouvfr/react-dsfr/Notice";
-import { useEffect, useState } from "react";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
+import { CheckTexts } from "../utils/CheckTexts";
 import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
 
 const MODAL_DISMISSED_COOKIE = "diagbruit_modal_dismissed";
@@ -19,48 +20,47 @@ function isModalDismissed(): boolean {
     .some((c) => c.startsWith(`${MODAL_DISMISSED_COOKIE}=`));
 }
 
-export default function DiagnosticReceiveByMail() {
+export default function DiagnosticReceiveByMail({
+  parcelNumber,
+}: {
+  parcelNumber?: string;
+}) {
   const { cx, classes } = useStyles();
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [successEmail, setSuccessEmail] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isModalDismissed()) return;
-    const timer = setTimeout(() => {
-      trackMatomoEvent("Action", "Open Email Modal", "Auto");
-      modal.open();
-    }, 5000);
-    return () => clearTimeout(timer);
+    const el = containerRef.current;
+    if (!el) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+          timer = setTimeout(() => {
+            trackMatomoEvent("Action", "Open Email Modal", "Auto");
+            modal.open();
+          }, 2000);
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, []);
 
-  const CheckText = ({ text }: { text: string }) => (
-    <>
-      <i className={cx(classes.checkIcon, "ri-check-line")} />
-      <p>{text}</p>
-    </>
-  );
-
-  const textContent = (
-    <>
-      <div className={cx("fr-grid-row")}>
-        <CheckText text="Retrouver facilement les réglementations en vigueurs" />
-      </div>
-      <div className={cx("fr-grid-row")}>
-        <CheckText text="Partagez rapidement l'anlyse avec vos interlocuteurs" />
-      </div>
-      <div className={cx("fr-grid-row")}>
-        <CheckText text="Accédez aux préconisations à tout moment" />
-      </div>
-    </>
-  );
-
   return (
-    <div className={cx(classes.container, "fr-grid-row")}>
+    <div ref={containerRef} className={cx(classes.container, "fr-grid-row")}>
       <div className={cx(classes.tileTitle, "fr-col-4")}>
         <img src="/images/document-download.svg" alt="" />
-        <h4 className={fr.cx("fr-h6")}>Recevoir mon diagnostic par email</h4>
+        <h4 className={fr.cx("fr-h6")}>Recevoir le diagnostic par email</h4>
       </div>
       <div className={cx(classes.tileContent, "fr-col-8")}>
-        {textContent}
+        {<CheckTexts />}
         <Button
           priority="primary"
           iconId="ri-mail-line"
@@ -70,25 +70,27 @@ export default function DiagnosticReceiveByMail() {
           }}
           className={fr.cx("fr-mt-4v")}
         >
-          Recevoir mon diagnostic
+          Recevoir le diagnostic
         </Button>
       </div>
       <DiagnosticEmailForm
-        onSuccess={() => {
+        onSuccess={(email) => {
           setModalDismissedCookie();
-          setShowSuccess(true);
-          setTimeout(() => setShowSuccess(false), 5000);
+          setSuccessEmail(email);
+          setTimeout(() => setSuccessEmail(null), 5000);
         }}
         onClose={() => {
           setModalDismissedCookie();
         }}
+        parcelNumber={parcelNumber}
       />
-      {showSuccess && (
-        <Notice
-          severity="info"
-          title="Votre diagnostic a été envoyé par email avec succès"
-          isClosable
-          onClose={() => setShowSuccess(false)}
+      {successEmail && (
+        <Alert
+          severity="success"
+          title="Diagnostic envoyé !"
+          description={`Vous avez dû recevoir un email à ${successEmail}`}
+          closable
+          onClose={() => setSuccessEmail(null)}
           className={classes.successNotice}
         />
       )}
@@ -126,6 +128,7 @@ const useStyles = tss.create(() => ({
     position: "fixed" as const,
     bottom: fr.spacing("4v"),
     left: fr.spacing("4v"),
+    backgroundColor: fr.colors.decisions.background.default.grey.default,
     zIndex: 1000,
   },
 }));

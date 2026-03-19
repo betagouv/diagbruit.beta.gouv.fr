@@ -1,4 +1,9 @@
-import React, {
+import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import type React from "react";
+import {
   forwardRef,
   memo,
   useEffect,
@@ -6,12 +11,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
 import { tss } from "tss-react/dsfr";
-import { fr } from "@codegouvfr/react-dsfr";
 import { getReadbleGeoGouvType } from "../../utils/tools";
-import Button from "@codegouvfr/react-dsfr/Button";
 
 export type AddressFeature = {
   properties: {
@@ -98,7 +99,7 @@ const AddressSearch = forwardRef(
     const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
       null
     );
-    const { options, loading, fetchAddresses } = useAddressSearch(limit);
+    const { options, fetchAddresses } = useAddressSearch(limit);
 
     const ignoreInputChange = useRef(false);
 

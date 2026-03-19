@@ -1,4 +1,4 @@
-import { fr, FrIconClassName, RiIconClassName } from "@codegouvfr/react-dsfr";
+import { type FrIconClassName, fr, type RiIconClassName } from "@codegouvfr/react-dsfr";
 import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 import { tss } from "tss-react/dsfr";
 
@@ -24,7 +24,7 @@ const DiagnosticSectionTitle = ({
   const { cx, classes } = useStyles();
 
   const iconElement = image ? (
-    <img className={cx(classes.mainImage)} {...image} />
+    <img className={cx(classes.mainImage)} {...image} alt="title icon" />
   ) : icon ? (
     <i className={cx(fr.cx(icon), classes.mainIcon)} />
   ) : null;
