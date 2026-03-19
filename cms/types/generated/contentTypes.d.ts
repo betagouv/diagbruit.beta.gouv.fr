@@ -512,12 +512,12 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   collectionName: 'emails';
   info: {
     description: '';
-    displayName: 'email';
+    displayName: 'EmailReceivedDiag';
     pluralName: 'emails';
     singularName: 'email';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     count: Schema.Attribute.Integer;
