@@ -1,35 +1,23 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import Button from "@codegouvfr/react-dsfr/Button";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import {
   getColorFromScore,
   getSummaryTextFromDiagnostic,
 } from "../../utils/tools";
-import { trackMatomoEvent } from "../../utils/matomo";
-import { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
-  handleCopyUrl?: (title?: string) => void;
 };
 
 const DiagnosticHero = ({
   diagnosticItem,
-  handleCopyUrl,
 }: DiagnosticHeroProps) => {
   const { diagnostic } = diagnosticItem;
 
   const { cx, classes } = useStyles({ score: diagnostic.score });
-
-  const handleContactClick = () => {
-    trackMatomoEvent(
-      "Diagnostic",
-      "Contact",
-      `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`,
-    );
-  };
 
   return (
     <div className={cx(classes.container)}>
@@ -56,9 +44,9 @@ const DiagnosticHero = ({
                 Niveaux sonores équivalents :
               </p>
               <div>
-                {diagnostic.equivalent_ambiences.map((ambience, index) => (
+                {diagnostic.equivalent_ambiences.map((ambience) => (
                   <Tag
-                    key={index}
+                    key={ambience}
                     className={cx(
                       classes.ambienceTag,
                       fr.cx("fr-mr-2v", "fr-mb-2v"),

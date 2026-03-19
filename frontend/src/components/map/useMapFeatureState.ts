@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
-import { HoverInfo } from "./MapComponent";
+import type { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
+import type { HoverInfo } from "./MapComponent";
 
 export function useHoverFeatureState(
   map: MapInstance | undefined,

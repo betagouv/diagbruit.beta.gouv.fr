@@ -1,7 +1,7 @@
-import { tss } from "tss-react/dsfr";
-import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 import { fr } from "@codegouvfr/react-dsfr";
+import { tss } from "tss-react/dsfr";
 import { getColorFromScore } from "../../utils/tools";
+import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
 
 type DiagnosticScoreOnScaleProps = {
   score: number;
@@ -13,7 +13,6 @@ const SCORES = [1, 4, 7, 9];
 
 const DiagnosticScoreOnScale = ({
   score,
-  db,
   light,
 }: DiagnosticScoreOnScaleProps) => {
   const { cx, classes } = useStyles();
@@ -41,8 +40,8 @@ const DiagnosticScoreOnScale = ({
             {(index + 1 === score ||
               (score === 0 && index === 0) ||
               (index === 9 && score > 10)) && (
-              <span className={classes.cursor} />
-            )}
+                <span className={classes.cursor} />
+              )}
           </div>
         ))}
       </div>

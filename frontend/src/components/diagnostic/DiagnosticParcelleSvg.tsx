@@ -3,13 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useOptimalZone } from "../../hooks/useOptimalZone";
 import { getProjectionUtils, smoothPolygon } from "../../utils/draw";
 import {
-  getColorFromLegende,
   getColorFromRisk,
   mergeRings,
   normalizeToRings,
   transparentize,
 } from "../../utils/tools";
-import { Geometry, Zone } from "../../utils/types";
+import type { Geometry, Zone } from "../../utils/types";
 
 type DiagnosticParcelleSvgProps = {
   geometry: Geometry;
@@ -54,7 +53,7 @@ const DiagnosticParcelleSvg = ({
     padding
   );
 
-  const { optimalZonePoints, bestPoint } = useOptimalZone({
+  const { optimalZonePoints } = useOptimalZone({
     rings,
     zones,
     projectPoint,

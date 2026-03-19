@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import React from "react";
+import type React from "react";
 import { tss } from "tss-react/dsfr";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticVerificationNotice from "./DiagnosticVerificationNotice";

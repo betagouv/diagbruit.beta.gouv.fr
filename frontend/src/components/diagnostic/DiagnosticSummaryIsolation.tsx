@@ -1,13 +1,13 @@
-import React from "react";
-import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { tss } from "tss-react/dsfr";
-import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
-import { DiagnosticItem } from "../../utils/types";
-import DiagnosticVerificationNotice from "./DiagnosticVerificationNotice";
 import Notice from "@codegouvfr/react-dsfr/Notice";
+import type React from "react";
+import { tss } from "tss-react/dsfr";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticDecrees from "./DiagnosticDecrees";
+import DiagnosticIsolationRange from "./DiagnosticIsolationRange";
+import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticVerificationNotice from "./DiagnosticVerificationNotice";
 
 type DiagnosticSummaryIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -25,8 +25,6 @@ const DiagnosticSummaryIsolation: React.FC<DiagnosticSummaryIsolationProps> = ({
       flags: { hasClassificationWarning },
     },
   } = diagnosticItem;
-
-  const hasAnIsolationRange = isolation_min !== isolation_max;
 
   const getVerificationText = () => {
     if (hasClassificationWarning) {

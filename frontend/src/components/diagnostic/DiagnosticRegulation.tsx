@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
-import { DiagnosticItem } from "../../utils/types";
 import useDecrees from "../../hooks/useDecrees";
 import useLocalDocumentation from "../../hooks/useLocalDocumentation";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticReferencesBox from "./DiagnosticReferencesBox";
 import RegulationCls from "./regulation/RegulationCls";
 import RegulationIsolation from "./regulation/RegulationIsolation";
@@ -29,7 +29,7 @@ const DiagnosticRegulation = ({
   const { cx, classes } = useStyles();
   const { diagnostic } = diagnosticItem;
 
-  const codedept = parseInt(diagnosticItem.parcelle.code_insee.substring(0, 2));
+  const codedept = parseInt(diagnosticItem.parcelle.code_insee.substring(0, 2), 10);
   const { decrees } = useDecrees(codedept);
   const { localDocumentations } = useLocalDocumentation(
     diagnosticItem.parcelle.code_insee,

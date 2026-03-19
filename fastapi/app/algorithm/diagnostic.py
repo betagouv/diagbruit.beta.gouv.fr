@@ -100,6 +100,6 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['flags']['isMultiExposedLdenLn'] = (1 if len(grouped_ld) > 0 else 0) + (1 if len(grouped_ln) > 0 else 0) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
     diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
-    diagnostic['flags']['hasNoisemapWarning'] = len(noisemap_intersections) == 0 and len(soundclassification_intersections) > 0
+    diagnostic['flags']['hasNoisemapWarning'] = len(noisemap_intersections) == 0 and len(soundclassification_intersections) > 0 and len(peb_intersections) == 0
 
     return diagnostic

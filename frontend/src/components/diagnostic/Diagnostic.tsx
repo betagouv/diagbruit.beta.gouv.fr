@@ -2,18 +2,18 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
-import { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
+import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
@@ -99,10 +99,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               light
             />
           )}
-          <DiagnosticHero
-            diagnosticItem={diagnosticItem}
-            handleCopyUrl={handleCopyUrl}
-          />
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticSectionTitle
@@ -216,8 +213,15 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <h2>Votre diagnostic diagBruit</h2>
         </div>
         <div className={cx(fr.cx("fr-col-4"), classes.buttonSection)}>
-          <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
-            Copier l'URL du diagnostic
+          <Button
+            priority="secondary"
+            iconId="ri-mail-line"
+            linkProps={{
+              href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
+              onClick: handleContactClick,
+            }}
+          >
+            Contacter l'équipe diagBruit
           </Button>
         </div>
       </div>
@@ -260,6 +264,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <DiagnosticReceiveByMail
+            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          />
           <div className={fr.cx("fr-card", "fr-p-4v")}>
             <iframe
               data-tally-src="https://tally.so/embed/1A4kZL?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
@@ -272,31 +279,16 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               title="Votre avis sur diagBruit"
             />
           </div>
-          <div className={cx(classes.buttonSection)}>
-            <Button
-              priority="secondary"
-              iconId="ri-mail-line"
-              linkProps={{
-                href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
-                onClick: handleContactClick,
-              }}
-            >
-              Contacter l'équipe diagBruit
-            </Button>
-            <Button iconId="ri-file-copy-line" onClick={() => handleCopyUrl()}>
-              Copier l'URL du diagnostic
-            </Button>
-          </div>
         </div>
       )}
       {copied && (
-        <Notice
-          severity="info"
+        <Alert
+          severity="success"
           description="URL du diagnostic copiée dans le presse-papiers"
-          title=""
+          title="URL copiée"
           className={cx(classes.alertCopied)}
-          onClose={function noRefCheck() {}}
-          isClosable
+          onClose={() => setCopied(false)}
+          closable
         />
       )}
     </div>
@@ -323,6 +315,7 @@ const useStyles = tss.create(() => ({
     position: "fixed",
     bottom: fr.spacing("4v"),
     left: fr.spacing("4v"),
+    backgroundColor: fr.colors.decisions.background.default.grey.default,
   },
   buttonSection: {
     textAlign: "right",
