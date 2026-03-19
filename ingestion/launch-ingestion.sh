@@ -8,6 +8,13 @@ run_ingest() {
   echo '--------------------------------------------------------------------------'
 }
 
+run_ingest_geojson() {
+  echo "→ $1"
+  python ingest_geojson.py "$@"
+  echo "✅ Done: $1"
+  echo '--------------------------------------------------------------------------'
+}
+
 download_batiment_files() {
   local target_dir="inputs/topo/DEPT_033/batiment"
   local base_url="https://diagbruit.s3.eu-west-3.amazonaws.com/data/topo/DEPT_033/batiment"
@@ -113,6 +120,14 @@ FILES_TOPO=(
   "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_topo --if-exists replace --ignore-column fictive_ge"
 )
 
+FILES_STRAS=(
+  "inputs/strasbourg/strasbourg-terrasses-autorisees-2025.geojson raw_full_stras_data --if-exists replace"
+)
+
+FILES_OSM=(
+  "inputs/osm/osm_food_service_bordeaux_strasbourg.geojson raw_full_osm_data --if-exists replace"
+)
+
 # Download batiment files from S3 if needed
 download_batiment_files
 
@@ -126,3 +141,6 @@ for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_TOPO[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_STRAS[@]}"; do run_ingest_geojson $cmd; done
+for cmd in "${FILES_OSM[@]}"; do run_ingest_geojson $cmd; done
+

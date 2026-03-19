@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_full_stras_data
+        description: "Raw data imported from strasbourg data"
+        columns:
+          - name: name
+            description: "Name identifier"
+          - name: address
+            description: "Address of the establishment"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"
