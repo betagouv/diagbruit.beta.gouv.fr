@@ -1,10 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { CheckTexts } from "../utils/CheckTexts";
 
@@ -68,6 +67,7 @@ export default function DiagnosticEmailForm({
 			modalElement.removeEventListener("dsfr.conceal", handleConceal);
 	}, [onClose]);
 
+	const formRef = useRef<HTMLFormElement>(null);
 	const [value, setValue] = useState("");
 	const [email, setEmail] = useState("");
 	const [profileError, setProfileError] = useState(false);
@@ -140,7 +140,20 @@ export default function DiagnosticEmailForm({
 
 
 	return (
-		<modal.Component title="Recevoir le diagnostic par email" size="large">
+		<modal.Component
+			title="Recevoir le diagnostic par email"
+			size="large"
+			buttons={[
+				{
+					children: isSubmitting ? "Envoi en cours..." : "Valider",
+					priority: "primary",
+					iconId: "ri-check-line",
+					disabled: isSubmitting,
+					doClosesModal: false,
+					onClick: () => formRef.current?.requestSubmit(),
+				},
+			]}
+		>
 			{submitStatus && (
 				<Alert
 					closable
@@ -157,7 +170,7 @@ export default function DiagnosticEmailForm({
 					{<CheckTexts />}
 				</div>
 			</div>
-			<form onSubmit={handleSubmit}>
+			<form ref={formRef} onSubmit={handleSubmit}>
 				<div className={classes.formInputContainer}>
 					<Select
 						label="Mon Profil"
@@ -197,7 +210,7 @@ export default function DiagnosticEmailForm({
 									{
 										"Votre adresse email sera utilisée uniquement pour vous transmettre votre diagnostic et vous accompagner avec des conseils adaptés à votre projet. "
 									}
-									<a href="/privacy-policy">Voir nos engagements</a>
+									<a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Voir nos engagements</a>
 								</span>
 							)
 						}
@@ -209,16 +222,6 @@ export default function DiagnosticEmailForm({
 							},
 						}}
 					/>
-				</div>
-				<div className={classes.actions}>
-					<Button
-						type="submit"
-						priority="primary"
-						iconId="ri-check-line"
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? "Envoi en cours..." : "Valider"}
-					</Button>
 				</div>
 			</form>
 		</modal.Component>
@@ -247,10 +250,5 @@ const useStyles = tss.create(() => ({
 	},
 	formInputContainer: {
 		marginTop: fr.spacing("4v"),
-	},
-	actions: {
-		display: "flex",
-		justifyContent: "flex-end",
-		marginTop: fr.spacing("3v"),
 	},
 }));
