@@ -3,7 +3,7 @@ name: 🚀 Deploy Frontend → preprod
 on:
   push:
     branches:
-      - develop
+      - preprod
     paths:
       - "frontend/**"
 
