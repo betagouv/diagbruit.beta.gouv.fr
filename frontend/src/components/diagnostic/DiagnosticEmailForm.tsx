@@ -52,7 +52,7 @@ export default function DiagnosticEmailForm({
 	onClose,
 	parcelNumber
 }: {
-	onSuccess?: () => void;
+	onSuccess?: (email: string) => void;
 	onClose?: () => void;
 	parcelNumber?: string;
 }) {
@@ -126,7 +126,7 @@ export default function DiagnosticEmailForm({
 		submitEmail()
 			.then(() => {
 				modal.close();
-				onSuccess?.();
+				onSuccess?.(email);
 			})
 			.catch((err) => {
 				console.error(err);

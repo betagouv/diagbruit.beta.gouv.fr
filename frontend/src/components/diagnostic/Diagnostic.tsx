@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -234,7 +233,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           </h3>
           <Alert
             description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
-            onClose={function noRefCheck() { }}
+            onClose={function noRefCheck() {}}
             severity="info"
             title=""
           />
@@ -265,7 +264,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-          <DiagnosticReceiveByMail parcelNumber={diagnosticItem.parcelle.numero} />
+          <DiagnosticReceiveByMail
+            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          />
           <div className={fr.cx("fr-card", "fr-p-4v")}>
             <iframe
               data-tally-src="https://tally.so/embed/1A4kZL?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
@@ -281,13 +282,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       )}
       {copied && (
-        <Notice
-          severity="info"
+        <Alert
+          severity="success"
           description="URL du diagnostic copiée dans le presse-papiers"
-          title=""
+          title="URL copiée"
           className={cx(classes.alertCopied)}
-          onClose={function noRefCheck() { }}
-          isClosable
+          onClose={() => setCopied(false)}
+          closable
         />
       )}
     </div>
@@ -314,6 +315,7 @@ const useStyles = tss.create(() => ({
     position: "fixed",
     bottom: fr.spacing("4v"),
     left: fr.spacing("4v"),
+    backgroundColor: fr.colors.decisions.background.default.grey.default,
   },
   buttonSection: {
     textAlign: "right",
