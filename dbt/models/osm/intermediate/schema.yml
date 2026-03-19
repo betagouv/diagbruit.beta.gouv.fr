@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: int_osm_filter
+    description: "Data with only restaurants, bars and pubs"
+  - name: int_osm_validate
+    description: "OSM data deduplicated against noisesource_stras"
+  - name: int_osm_slug
+    description: "Data with added category slugs"
