@@ -197,74 +197,28 @@ This CI pipeline performs the following steps:
 
 The badge at the top of the README reflects the status of this CI.
 
-## ☁️ Deploying on Scalingo
+## ☁️ Deployment (Scalingo via GitHub Actions)
 
-### Production Environment
+Deployments are fully automated via GitHub Actions. Each component (FastAPI, Frontend, CMS, Metabase) has its own workflow that triggers automatically on push when files in its directory change.
 
-Add production scalingo remotes
+### Production
 
-```
-git remote add scalingo-fastapi-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-back-prod.git
-git remote add scalingo-frontend-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-front-prod.git
-git remote add scalingo-cms-prod git@ssh.osc-fr1.scalingo.com:diag-bruit-cms-prod.git
-git remote add scalingo-metabase git@ssh.osc-fr1.scalingo.com:diag-bruit-metabase.git
-```
+Push to the `main` branch automatically deploys changed components to production:
+- `fastapi/**` → diag-bruit-back-prod
+- `frontend/**` → diag-bruit-front-prod
+- `cms/**` → diag-bruit-cms-prod
+- `metabase/**` → diag-bruit-metabase
 
-### Preprod Environment
+### Preprod
 
-Add preprod scalingo remotes
+Push to the `preprod` branch automatically deploys changed components to preprod:
+- `fastapi/**` → diag-bruit-back-preprod
+- `frontend/**` → diag-bruit-front-preprod
+- `cms/**` → diag-bruit-cms-preprod
 
-```
-git remote add scalingo-fastapi-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-back-preprod.git
-git remote add scalingo-frontend-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-front-preprod.git
-git remote add scalingo-cms-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-cms-preprod.git
-```
+### Configuration
 
-### Deploy to Production
-
-Deploy FastAPI to production
-
-```
-git subtree push --prefix fastapi scalingo-fastapi-prod main
-```
-
-Deploy Frontend to production
-
-```
-git subtree push --prefix frontend scalingo-frontend-prod main
-```
-
-Deploy Strapi CMS to production
-
-```
-git subtree push --prefix cms scalingo-cms-prod main
-```
-
-Deploy Metabase (environment agnostic)
-
-```
-git subtree push --prefix metabase scalingo-metabase main
-```
-
-### Deploy to Preprod
-
-Deploy FastAPI to preprod
-
-```
-git subtree push --prefix fastapi scalingo-fastapi-preprod main
-```
-
-Deploy Frontend to preprod
-
-```
-git subtree push --prefix frontend scalingo-frontend-preprod main
-```
-
-Deploy Strapi CMS to preprod
-
-```
-git subtree push --prefix cms scalingo-cms-preprod main
-```
+The GitHub Actions workflows require the `SCALINGO_SSH_PRIVATE_KEY` secret to be configured in the repository settings. The workflow files are located in `.github/workflows/deploy-*.yml`.
 
 ## 🧬 Macro architecture
 
@@ -376,17 +330,21 @@ diagbruit/
 
 ### Force Push to Scalingo
 
-If you encounter issues with git subtree push to Scalingo (e.g., rejected pushes or conflicts), you can force push using the following commands:
+If the automated deployment fails due to git history issues (e.g., rejected pushes or conflicts), you can manually force push. You will need to add the Scalingo remote temporarily:
 
 **Example for FastAPI preprod:**
 
 ```bash
+# Add the Scalingo remote
+git remote add scalingo-fastapi-preprod git@ssh.osc-fr1.scalingo.com:diag-bruit-back-preprod.git
+
 # Create a temporary branch with only the fastapi folder
 git subtree split --prefix fastapi -b align-preprod
 
 # Force push to Scalingo
 git push -f scalingo-fastapi-preprod align-preprod:main
 
-# Clean up the temporary branch
+# Clean up
 git branch -D align-preprod
+git remote remove scalingo-fastapi-preprod
 ```
