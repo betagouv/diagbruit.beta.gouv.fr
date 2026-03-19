@@ -3,7 +3,7 @@ name: 🚀 Deploy CMS → preprod
 on:
   push:
     branches:
-      - develop
+      - preprod
     paths:
       - "cms/**"
 

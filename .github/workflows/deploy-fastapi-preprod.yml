@@ -3,7 +3,7 @@ name: 🚀 Deploy FastAPI → preprod
 on:
   push:
     branches:
-      - develop
+      - preprod
     paths:
       - "fastapi/**"
 
