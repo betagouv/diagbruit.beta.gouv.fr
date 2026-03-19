@@ -7,6 +7,9 @@ on:
     paths:
       - "metabase/**"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy Metabase

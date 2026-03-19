@@ -7,6 +7,9 @@ on:
     paths:
       - "fastapi/**"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy FastAPI to production

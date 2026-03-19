@@ -7,6 +7,9 @@ on:
     paths:
       - "cms/**"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy Strapi CMS to production
