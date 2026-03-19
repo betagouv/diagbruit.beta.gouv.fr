@@ -30,6 +30,7 @@ function StatsPage() {
     <div className={cx(classes.container, fr.cx("fr-mb-10v"))}>
       {IFrameUrl && (
         <iframe
+          title="stats"
           src={IFrameUrl}
           width={"100%"}
           height={1700}

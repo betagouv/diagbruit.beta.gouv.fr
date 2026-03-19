@@ -1,0 +1,33 @@
+name: 🚀 Deploy FastAPI → preprod
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "fastapi/**"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy FastAPI to preprod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SCALINGO_SSH_PRIVATE_KEY }}
+
+      - name: Add Scalingo to known_hosts
+        run: ssh-keyscan -p 22 ssh.osc-fr1.scalingo.com >> ~/.ssh/known_hosts
+
+      - name: Deploy via git subtree
+        run: |
+          git remote add scalingo git@ssh.osc-fr1.scalingo.com:diag-bruit-back-preprod.git
+          git subtree push --prefix fastapi scalingo develop

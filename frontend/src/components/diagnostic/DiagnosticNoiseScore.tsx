@@ -1,10 +1,10 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 import {
   getColorFromScore,
   getIconFromScore,
   getTextFromScore,
 } from "../../utils/tools";
-import { fr } from "@codegouvfr/react-dsfr";
 
 type DiagnosticNoiseScoreProps = {
   score: number;
@@ -14,7 +14,6 @@ type DiagnosticNoiseScoreProps = {
 
 const DiagnosticNoiseScore = ({
   score,
-  db,
   disabled = false,
 }: DiagnosticNoiseScoreProps) => {
   const { cx, classes } = useStyles({ score, disabled });

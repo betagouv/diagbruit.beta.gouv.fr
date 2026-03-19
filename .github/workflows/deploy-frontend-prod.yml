@@ -1,0 +1,34 @@
+name: 🚀 Deploy Frontend → prod
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy Frontend to production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SCALINGO_SSH_PRIVATE_KEY }}
+
+      - name: Add Scalingo to known_hosts
+        run: ssh-keyscan -p 22 ssh.osc-fr1.scalingo.com >> ~/.ssh/known_hosts
+
+      - name: Deploy via git subtree
+        run: |
+          git remote add scalingo git@ssh.osc-fr1.scalingo.com:diag-bruit-front-prod.git
+          git subtree push --prefix frontend scalingo main

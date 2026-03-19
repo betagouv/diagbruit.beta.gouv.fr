@@ -1,21 +1,21 @@
 {
-  "kind": "singleType",
-  "collectionName": "accessibilities",
-  "info": {
-    "singularName": "accessibility",
-    "pluralName": "accessibilities",
-    "displayName": "Accessibility"
-  },
-  "options": {
-    "draftAndPublish": true
-  },
-  "attributes": {
-    "content": {
-      "type": "customField",
-      "options": {
-        "preset": "defaultHtml"
-      },
-      "customField": "plugin::ckeditor5.CKEditor"
-    }
-  }
+	"kind": "singleType",
+	"collectionName": "accessibilities",
+	"info": {
+		"singularName": "accessibility",
+		"pluralName": "accessibilities",
+		"displayName": "Accessibility"
+	},
+	"options": {
+		"draftAndPublish": true
+	},
+	"attributes": {
+		"content": {
+			"type": "customField",
+			"options": {
+				"preset": "defaultHtml"
+			},
+			"customField": "plugin::ckeditor5.CKEditor"
+		}
+	}
 }

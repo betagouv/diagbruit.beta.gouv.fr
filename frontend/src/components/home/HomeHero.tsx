@@ -1,6 +1,6 @@
-import { tss } from "tss-react/dsfr";
-import { Notice } from "@codegouvfr/react-dsfr/Notice";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Notice } from "@codegouvfr/react-dsfr/Notice";
+import { tss } from "tss-react/dsfr";
 
 const HomeHero = () => {
   const { cx, classes } = useStyles();
@@ -47,7 +47,7 @@ const HomeHero = () => {
             }
             iconDisplayed
             isClosable
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="info"
             title=""
           />

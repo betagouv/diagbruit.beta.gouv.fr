@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
-import { LocalDocumentation } from "../utils/types";
+import { useEffect, useState } from "react";
+import type { LocalDocumentation } from "../utils/types";
 
 const useLocalDocumentation = (codeinsee: string) => {
   const [localDocumentations, setLocalDocumentations] = useState<

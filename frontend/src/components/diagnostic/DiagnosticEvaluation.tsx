@@ -7,7 +7,7 @@ import {
   getReadableSource,
   replacePlaceholders,
 } from "../../utils/tools";
-import { DiagnosticItem, LandIntersection } from "../../utils/types";
+import type { DiagnosticItem, LandIntersection } from "../../utils/types";
 
 type DiagnosticEvaluationProps = {
   diagnosticItem: DiagnosticItem;
@@ -84,8 +84,8 @@ const DiagnosticEvaluation = ({
     return computedPercentImpacted === 0.99
       ? 1
       : computedPercentImpacted > 1
-      ? 1
-      : computedPercentImpacted;
+        ? 1
+        : computedPercentImpacted;
   };
 
   const getUniqueIntersectionsByCodeInfra = () => {
@@ -124,23 +124,23 @@ const DiagnosticEvaluation = ({
               __html:
                 flags.isMultiExposedSources || flags.isMultiExposedLandSources
                   ? replacePlaceholders(
-                      EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                        .MULTI_EXPOSURE,
-                      {
-                        sources: Array.from(
-                          new Set(
-                            land_intersections_ld.map(
-                              (intersection) =>
-                                `<b>${getReadableSource(
-                                  intersection.typesource
-                                )}</b>`
-                            )
+                    EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                      .MULTI_EXPOSURE,
+                    {
+                      sources: Array.from(
+                        new Set(
+                          land_intersections_ld.map(
+                            (intersection) =>
+                              `<b>${getReadableSource(
+                                intersection.typesource
+                              )}</b>`
                           )
-                        ).join(" et "),
-                      }
-                    )
+                        )
+                      ).join(" et "),
+                    }
+                  )
                   : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                      .NO_MULTI_EXPOSURE,
+                    .NO_MULTI_EXPOSURE,
             }}
           />
           {!!land_intersections_ld[0] && (
@@ -149,27 +149,27 @@ const DiagnosticEvaluation = ({
                 __html:
                   land_intersections_ld[0].typeterr === "INFRA"
                     ? replacePlaceholders(
-                        EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                          .MAIN_SOURCE_INFRA,
-                        {
-                          typesource: getReadableSource(
-                            land_intersections_ld[0].typesource
-                          ),
-                          codinfra:
-                            land_intersections_ld[0].codeinfra || "nom inconnu",
-                          percent_impacted: Math.round(
-                            getPercentImpactedFromCodeInfra(
-                              land_intersections_ld,
-                              land_intersections_ld[0].codeinfra
-                            ) * 100
-                          ),
-                          direction: getReadableCardinality(
-                            land_intersections_ld[0].direction
-                          ),
-                        }
-                      )
+                      EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
+                        .MAIN_SOURCE_INFRA,
+                      {
+                        typesource: getReadableSource(
+                          land_intersections_ld[0].typesource
+                        ),
+                        codinfra:
+                          land_intersections_ld[0].codeinfra || "nom inconnu",
+                        percent_impacted: Math.round(
+                          getPercentImpactedFromCodeInfra(
+                            land_intersections_ld,
+                            land_intersections_ld[0].codeinfra
+                          ) * 100
+                        ),
+                        direction: getReadableCardinality(
+                          land_intersections_ld[0].direction
+                        ),
+                      }
+                    )
                     : EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
-                        .MAIN_SOURCE_AGGLO,
+                      .MAIN_SOURCE_AGGLO,
               }}
             />
           )}
@@ -199,7 +199,7 @@ const DiagnosticEvaluation = ({
               __html: flags.isPriorityZone
                 ? EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE.IN_PRIORITY_ZONE
                 : EVALUATION_TEXTS.INFORMATIONS.PRIORITY_ZONE
-                    .NOT_IN_PRIORITY_ZONE,
+                  .NOT_IN_PRIORITY_ZONE,
             }}
           />
         </ul>
@@ -207,37 +207,37 @@ const DiagnosticEvaluation = ({
       <div className={cx(classes.sourcesTable)}>
         {(!!land_intersections_ld_unique_display.length ||
           !!air_intersections.length) && (
-          <Table
-            caption="Tableau de synthèse des niveaux de bruit par source"
-            noCaption
-            bordered
-            data={land_intersections_ld_unique_display
-              .filter((intersection) => intersection.cbstype === "A")
-              .map((intersection) => [
-                getReadableSource(intersection.typesource, true),
-                intersection.typeterr === "INFRA" ? "État" : "Agglomération",
-                intersection.codeinfra || "Non connu",
-                intersection.legende + " dB",
-                getLnCodeInfraLegende(intersection.codeinfra),
-              ])
-              .concat(
-                air_intersections.map((intersection) => [
-                  "Aérien",
-                  "État",
-                  intersection.nom || "Non connu",
+            <Table
+              caption="Tableau de synthèse des niveaux de bruit par source"
+              noCaption
+              bordered
+              data={land_intersections_ld_unique_display
+                .filter((intersection) => intersection.cbstype === "A")
+                .map((intersection) => [
+                  getReadableSource(intersection.typesource, true),
+                  intersection.typeterr === "INFRA" ? "État" : "Agglomération",
+                  intersection.codeinfra || "Non connu",
                   intersection.legende + " dB",
-                  "-",
+                  getLnCodeInfraLegende(intersection.codeinfra),
                 ])
-              )}
-            headers={[
-              "Type de source",
-              "Producteur",
-              "Nom de la source",
-              "Niveau de bruit (jour)",
-              "Niveau de bruit (nuit)",
-            ]}
-          />
-        )}
+                .concat(
+                  air_intersections.map((intersection) => [
+                    "Aérien",
+                    "État",
+                    intersection.nom || "Non connu",
+                    intersection.legende + " dB",
+                    "-",
+                  ])
+                )}
+              headers={[
+                "Type de source",
+                "Producteur",
+                "Nom de la source",
+                "Niveau de bruit (jour)",
+                "Niveau de bruit (nuit)",
+              ]}
+            />
+          )}
       </div>
     </div>
   );
