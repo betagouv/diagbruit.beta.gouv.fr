@@ -218,7 +218,7 @@ function DiagnosticPage() {
           <Alert
             className={fr.cx("fr-my-4v")}
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
-            onClose={function noRefCheck() { }}
+            onClose={function noRefCheck() {}}
             severity="error"
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
@@ -276,7 +276,7 @@ function DiagnosticPage() {
             <Alert
               className={fr.cx("fr-mt-6v")}
               description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() { }}
+              onClose={function noRefCheck() {}}
               severity="info"
               title={
                 parcelleError
@@ -294,13 +294,17 @@ function DiagnosticPage() {
                 Malheureusement, cette parcelle ne figure pas dans les données
                 actuellement disponibles.
                 <div className={fr.cx("fr-mt-1v")}>
-                  <a href="https://tally.so/r/3xoeEd" target="_blank" rel="noopener">
+                  <a
+                    href="https://tally.so/popup/1A4kZL"
+                    target="_blank"
+                    rel="noopener"
+                  >
                     Vous jugez cela dommage 😞 ? Dites le nous.
                   </a>
                 </div>
               </div>
             }
-            onClose={function noRefCheck() { }}
+            onClose={function noRefCheck() {}}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
           />
@@ -315,14 +319,18 @@ function DiagnosticPage() {
                 diagnostic. Veuillez réessayer ultérieurement.
                 <div className={fr.cx("fr-mt-1v")}>
                   Si le problème persiste,{" "}
-                  <a href="https://tally.so/r/3xoeEd" target="_blank" rel="noopener">
+                  <a
+                    href="https://tally.so/popup/1A4kZL"
+                    target="_blank"
+                    rel="noopener"
+                  >
                     contactez-nous
                   </a>
                   .
                 </div>
               </div>
             }
-            onClose={function noRefCheck() { }}
+            onClose={function noRefCheck() {}}
             severity="error"
             title="Erreur lors de la génération du diagnostic"
           />

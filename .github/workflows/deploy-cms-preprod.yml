@@ -3,9 +3,12 @@ name: 🚀 Deploy CMS → preprod
 on:
   push:
     branches:
-      - develop
+      - preprod
     paths:
       - "cms/**"
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -27,4 +30,4 @@ jobs:
       - name: Deploy via git subtree
         run: |
           git remote add scalingo git@ssh.osc-fr1.scalingo.com:diag-bruit-cms-preprod.git
-          git subtree push --prefix cms scalingo develop
+          git subtree push --prefix cms scalingo main

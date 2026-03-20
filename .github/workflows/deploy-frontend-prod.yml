@@ -7,10 +7,14 @@ on:
     paths:
       - "frontend/**"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy Frontend to production
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
         with:

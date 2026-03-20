@@ -7,10 +7,14 @@ on:
     paths:
       - "fastapi/**"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy FastAPI to production
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
         with:

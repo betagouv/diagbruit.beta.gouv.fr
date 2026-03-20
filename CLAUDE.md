@@ -42,17 +42,13 @@ Default DB credentials: `user` / `password` / `diagbruit`.
 
 A PostGIS service container is available throughout the pipeline.
 
-## Deployment (Scalingo)
+## Deployment (Scalingo via GitHub Actions)
 
-Each component is deployed as a separate Scalingo app via git subtree push:
+Deployments are automated via GitHub Actions (`.github/workflows/deploy-*.yml`). Each component auto-deploys to Scalingo when its files change:
+- Push to `main` → deploys to production
+- Push to `preprod` → deploys to preprod
 
-```bash
-git subtree push --prefix fastapi  scalingo-fastapi-prod  main
-git subtree push --prefix frontend scalingo-frontend-prod main
-git subtree push --prefix cms      scalingo-cms-prod      main
-```
-
-Separate remotes exist for `preprod` (e.g. `scalingo-fastapi-preprod`).
+Path filters ensure only the affected component is deployed (e.g. changes in `fastapi/**` trigger only the FastAPI deployment).
 
 ## Component CLAUDE.md Files
 
