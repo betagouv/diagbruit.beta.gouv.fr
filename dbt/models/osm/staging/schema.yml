@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_full_osm_data
+        description: "Raw data imported from osm"
+        columns:
+          - name: name
+            description: "Name identifier"
+          - name: type
+            description: "Type of establishment"
+          - name: meta_code_dep
+            description: "Department code of establishment"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"
