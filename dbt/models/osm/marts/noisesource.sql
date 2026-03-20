@@ -9,7 +9,7 @@
 SELECT
     label,
     geometry,
-    meta_code_dep,
+    meta_code_dep AS codeDept,
     category_slug
 FROM {{ ref('noisesource_stras') }}
 

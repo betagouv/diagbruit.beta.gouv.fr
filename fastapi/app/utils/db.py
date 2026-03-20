@@ -20,7 +20,6 @@ from .sig import (
 from .acoustic import (correction_from_angle)
 import asyncio
 import logging
-import time
 import yaml
 import json
 import os
@@ -180,10 +179,7 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
 
         result = []
         threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
-        _t0 = time.perf_counter()
-        _stmt_rows = stmt.all()
-        logger.info(f"[query_noisemap] stmt.all() took {time.perf_counter() - _t0:.3f}s")
-        for r in _stmt_rows:
+        for r in stmt.all():
             percent_impacted = round((r.total_intersection_area_m2 or 0) / safe_geom_area, 2)
             geometry_parsed = json.loads(r.geometry_intersection)
             geometry_intersection = geometry_parsed["coordinates"]
@@ -218,14 +214,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             )
         )
 
-        _t0 = time.perf_counter()
         rest_row = db.query(
             func.ST_Area(func.Geography(rest_expr)).label("rest_area_m2")
         ).filter(
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
         ).one()
-        logger.info(f"[query_noisemap] rest_row.one() took {time.perf_counter() - _t0:.3f}s")
 
         percent_unimpacted = round((rest_row.rest_area_m2 or 0) / safe_geom_area, 2)
 
@@ -300,10 +294,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
         ).order_by("min_distance")
 
         result = []
-        _t0 = time.perf_counter()
-        _stmt_rows = stmt.all()
-        logger.info(f"[query_soundclassification] stmt.all() took {time.perf_counter() - _t0:.3f}s")
-        for r in _stmt_rows:
+        for r in stmt.all():
             closest_correction = None
             farthest_correction = None
             percent_impacted = round(r.intersection_area / safe_geom_area, 2) if r.intersection_area else 0.0
@@ -383,10 +374,7 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
 
         result = []
         threshold = CONFIG.get("intersection_minimum_percentage_required", 0.05)
-        _t0 = time.perf_counter()
-        _stmt_rows = stmt.all()
-        logger.info(f"[query_peb] stmt.all() took {time.perf_counter() - _t0:.3f}s")
-        for r in _stmt_rows:
+        for r in stmt.all():
             percent_impacted = round(r.intersection_area / safe_geom_area, 2)
             if percent_impacted > threshold:
                 result.append({
@@ -445,9 +433,7 @@ async def upsert_diagnostic_result(
             }
         )
         
-        _t0 = time.perf_counter()
         await loop.run_in_executor(None, lambda: db.execute(stmt))
-        logger.info(f"[upsert_diagnostic_result] db.execute(stmt) took {time.perf_counter() - _t0:.3f}s")
         await loop.run_in_executor(None, db.commit)
         
     except Exception as e:
@@ -509,10 +495,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         ).filter(*dept_filter)
         
         result = []
-        _t0 = time.perf_counter()
-        _stmt_rows = stmt.all()
-        logger.info(f"[query_noisesource] stmt.all() took {time.perf_counter() - _t0:.3f}s")
-        for r in _stmt_rows:
+        for r in stmt.all():
             category_slug = r.category_slug
             
             if category_slug not in category_info:
@@ -599,10 +582,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         )
 
         result = []
-        _t0 = time.perf_counter()
-        _stmt_rows = stmt.all()
-        logger.info(f"[query_noisezone] stmt.all() took {time.perf_counter() - _t0:.3f}s")
-        for r in _stmt_rows:
+        for r in stmt.all():
             try:
                 geometry_parsed = json.loads(r.geometry_intersection)
                 geometry_intersection = geometry_parsed["coordinates"]
