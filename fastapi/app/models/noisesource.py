@@ -11,3 +11,4 @@ class NoiseSourceItem(Base):
     label = Column(Text)
     geometry = Column(Geometry('GEOMETRY', srid=4326))
     category_slug = Column(Text, index=True)
+    codedept = Column(String(3), index=True)

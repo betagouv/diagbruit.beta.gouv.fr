@@ -1,5 +1,7 @@
 import asyncio
 import copy
+import logging
+import time
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
@@ -23,6 +25,8 @@ from app.algorithm import get_parcelle_diagnostic
 from concurrent.futures import ThreadPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=4)
+
+logger = logging.getLogger('uvicorn.error')
 
 
 class Populate(BaseModel):
@@ -103,15 +107,32 @@ async def process_parcelle(parcelle: ParcelleRequest, populate: Populate):
 def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Populate):
     db = SessionLocal()
     try:
-        
+        _t = time.perf_counter()
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
-        noisesource = query_noisesource_intersecting_features(db, polygon_wkt)
+        logger.info(f"[diag] query_noisemap_intersecting_features: {time.perf_counter() - _t:.3f}s")
+
+        _t = time.perf_counter()
+        noisesource = query_noisesource_intersecting_features(db, polygon_wkt, codedept)
+        logger.info(f"[diag] query_noisesource_intersecting_features: {time.perf_counter() - _t:.3f}s")
+
+        _t = time.perf_counter()
         noisezone = query_noisezone_intersecting_features(db, polygon_wkt)
+        logger.info(f"[diag] query_noisezone_intersecting_features: {time.perf_counter() - _t:.3f}s")
+
         percent_unimpacted = noisemap.get("percent_unimpacted", 0)
+
+        _t = time.perf_counter()
         sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation, codedept)
+        logger.info(f"[diag] query_soundclassification_intersecting_features: {time.perf_counter() - _t:.3f}s")
+
+        _t = time.perf_counter()
         peb = query_peb_intersecting_features(db, polygon_wkt)
+        logger.info(f"[diag] query_peb_intersecting_features: {time.perf_counter() - _t:.3f}s")
+
         geom_area_m2 = get_area_m2_from_wkt(polygon_wkt) if polygon_wkt else None
-        return get_parcelle_diagnostic(
+
+        _t = time.perf_counter()
+        result = get_parcelle_diagnostic(
             noisemap.get('intersections', []),
             sound.get('intersections', []),
             peb.get('intersections', []),
@@ -121,6 +142,8 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
             populate,
             geom_area_m2
         )
+        logger.info(f"[diag] get_parcelle_diagnostic: {time.perf_counter() - _t:.3f}s")
+        return result
     finally:
         db.close()
 
