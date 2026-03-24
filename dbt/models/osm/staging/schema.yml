@@ -15,3 +15,14 @@ sources:
             description: "Department code of establishment"
           - name: geometry
             description: "PostGIS geometry data in EPSG:2154"
+      - name: raw_full_schools_data
+        description: "Raw data imported from schools dataset"
+        columns:
+          - name: amenity
+            description: "Type of amenity"
+          - name: name
+            description: "Name of the school"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"
+
+      
