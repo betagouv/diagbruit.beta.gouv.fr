@@ -12,9 +12,11 @@ export const CardPreco = ({ title, imageUrl }: CardPrecoProps) => {
             <Card
                 enlargeLink
                 imageAlt="texte alternatif de l’image"
-                imageUrl={"https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"}
+                imageUrl={imageUrl ?? "https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"}
                 linkProps={{
-                    href: '#'
+                    href: '/test',
+                    target: "_blank",
+
                 }}
                 size="medium"
                 title={title}
