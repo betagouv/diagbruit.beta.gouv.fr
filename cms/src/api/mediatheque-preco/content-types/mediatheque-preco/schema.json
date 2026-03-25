@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mediatheque_precos",
+  "info": {
+    "singularName": "mediatheque-preco",
+    "pluralName": "mediatheque-precos",
+    "displayName": "MediathequePreco",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Content": {
+      "type": "blocks",
+      "required": true
+    },
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "ImageThumbnail": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "ARetenir": {
+      "displayName": "text-array",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.text-array"
+    },
+    "KeyPoints": {
+      "displayName": "title-text-array",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.title-text-array"
+    },
+    "ImageBanner": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

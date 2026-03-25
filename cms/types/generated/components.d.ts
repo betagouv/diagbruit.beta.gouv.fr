@@ -1,5 +1,15 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface GlobalArray extends Struct.ComponentSchema {
+  collectionName: 'components_global_arrays';
+  info: {
+    description: '';
+    displayName: 'Array';
+    icon: 'apps';
+  };
+  attributes: {};
+}
+
 export interface GlobalConditions extends Struct.ComponentSchema {
   collectionName: 'components_global_conditions';
   info: {
@@ -44,12 +54,38 @@ export interface GlobalLocalDocumentationCodeInsee
   };
 }
 
+export interface GlobalTextArray extends Struct.ComponentSchema {
+  collectionName: 'components_global_text_arrays';
+  info: {
+    displayName: 'text-array';
+    icon: 'apps';
+  };
+  attributes: {
+    Text: Schema.Attribute.Text;
+  };
+}
+
+export interface GlobalTitleTextArray extends Struct.ComponentSchema {
+  collectionName: 'components_global_title_text_arrays';
+  info: {
+    displayName: 'title-text-array';
+    icon: 'apps';
+  };
+  attributes: {
+    Text: Schema.Attribute.Text;
+    Title: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'global.array': GlobalArray;
       'global.conditions': GlobalConditions;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
+      'global.text-array': GlobalTextArray;
+      'global.title-text-array': GlobalTitleTextArray;
     }
   }
 }

@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_global_title_text_arrays",
+  "info": {
+    "displayName": "title-text-array",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Text": {
+      "type": "text"
+    }
+  }
+}
