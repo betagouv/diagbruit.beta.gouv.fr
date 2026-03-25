@@ -52,6 +52,11 @@
         "videos",
         "audios"
       ]
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Title",
+      "required": true
     }
   }
 }

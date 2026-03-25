@@ -54,6 +54,14 @@ export interface GlobalLocalDocumentationCodeInsee
   };
 }
 
+export interface GlobalTest extends Struct.ComponentSchema {
+  collectionName: 'components_global_tests';
+  info: {
+    displayName: 'test';
+  };
+  attributes: {};
+}
+
 export interface GlobalTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_text_arrays';
   info: {
@@ -84,6 +92,7 @@ declare module '@strapi/strapi' {
       'global.conditions': GlobalConditions;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
+      'global.test': GlobalTest;
       'global.text-array': GlobalTextArray;
       'global.title-text-array': GlobalTitleTextArray;
     }
