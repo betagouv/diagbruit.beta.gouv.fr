@@ -27,5 +27,6 @@ UNION ALL
 SELECT
     name AS label,
     geometry,
+    codedept,
     category_slug
 FROM {{ ref('int_schools_slug') }}
