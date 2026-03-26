@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Summary } from "@codegouvfr/react-dsfr/Summary";
 import { BlocksRenderer } from "@strapi/blocks-react-renderer";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { Loader } from "../components/ui/Loader";
 import useMediathequePreco from "../hooks/useMediathequePreco";
@@ -35,10 +36,7 @@ export const MediathequePage = () => {
         .filter((block: any) => block.type === "heading" && block.level === 2)
         .map((block: any) => {
             const text = block.children.map((c: any) => c.text).join("");
-            return {
-                text,
-                linkProps: { href: `#${toAnchorId(text)}` },
-            };
+            return { text, linkProps: { href: `#${toAnchorId(text)}` } };
         });
 
     return (
@@ -60,9 +58,23 @@ export const MediathequePage = () => {
                             <Summary links={h2Links} />
                         )}
                     </div>
+
                     <div className="fr-col-9">
                         <BlocksRenderer
                             content={preco.content}
+                            blocks={{
+                                heading: ({ children, level }) => {
+                                    const Tag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+                                    const id = level === 2
+                                        ? toAnchorId(
+                                            React.Children.toArray(children)
+                                                .map((c: any) => c.props?.text ?? "")
+                                                .join("")
+                                        )
+                                        : undefined;
+                                    return <Tag id={id}>{children}</Tag>;
+                                },
+                            }}
                         />
                     </div>
                 </div>
