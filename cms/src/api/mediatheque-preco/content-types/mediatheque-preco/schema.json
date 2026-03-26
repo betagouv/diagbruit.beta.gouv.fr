@@ -11,15 +11,15 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "Content": {
+    "content": {
       "type": "blocks",
       "required": true
     },
-    "Title": {
+    "title": {
       "type": "string",
       "required": true
     },
-    "ImageThumbnail": {
+    "imageThumbnail": {
       "type": "media",
       "multiple": false,
       "required": false,
@@ -30,19 +30,19 @@
         "audios"
       ]
     },
-    "ARetenir": {
+    "aRetenir": {
       "displayName": "text-array",
       "type": "component",
       "repeatable": true,
       "component": "global.text-array"
     },
-    "KeyPoints": {
+    "keyPoints": {
       "displayName": "title-text-array",
       "type": "component",
       "repeatable": true,
       "component": "global.title-text-array"
     },
-    "ImageBanner": {
+    "imageBanner": {
       "type": "media",
       "multiple": false,
       "required": false,
@@ -55,7 +55,6 @@
     },
     "slug": {
       "type": "uid",
-      "targetField": "Title",
       "required": true
     }
   }

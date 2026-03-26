@@ -629,18 +629,18 @@ export interface ApiMediathequePrecoMediathequePreco
     draftAndPublish: true;
   };
   attributes: {
-    ARetenir: Schema.Attribute.Component<'global.text-array', true>;
-    Content: Schema.Attribute.Blocks & Schema.Attribute.Required;
+    aRetenir: Schema.Attribute.Component<'global.text-array', true>;
+    content: Schema.Attribute.Blocks & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ImageBanner: Schema.Attribute.Media<
+    imageBanner: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    ImageThumbnail: Schema.Attribute.Media<
+    imageThumbnail: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    KeyPoints: Schema.Attribute.Component<'global.title-text-array', true>;
+    keyPoints: Schema.Attribute.Component<'global.title-text-array', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -648,8 +648,8 @@ export interface ApiMediathequePrecoMediathequePreco
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'Title'> & Schema.Attribute.Required;
-    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    slug: Schema.Attribute.UID & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

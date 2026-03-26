@@ -2,14 +2,15 @@
   "collectionName": "components_global_title_text_arrays",
   "info": {
     "displayName": "title-text-array",
-    "icon": "apps"
+    "icon": "apps",
+    "description": ""
   },
   "options": {},
   "attributes": {
-    "Title": {
+    "title": {
       "type": "string"
     },
-    "Text": {
+    "text": {
       "type": "text"
     }
   }

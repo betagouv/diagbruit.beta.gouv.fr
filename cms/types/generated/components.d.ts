@@ -65,23 +65,25 @@ export interface GlobalTest extends Struct.ComponentSchema {
 export interface GlobalTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_text_arrays';
   info: {
+    description: '';
     displayName: 'text-array';
     icon: 'apps';
   };
   attributes: {
-    Text: Schema.Attribute.Text;
+    text: Schema.Attribute.Text;
   };
 }
 
 export interface GlobalTitleTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_title_text_arrays';
   info: {
+    description: '';
     displayName: 'title-text-array';
     icon: 'apps';
   };
   attributes: {
-    Text: Schema.Attribute.Text;
-    Title: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+    title: Schema.Attribute.String;
   };
 }
 
