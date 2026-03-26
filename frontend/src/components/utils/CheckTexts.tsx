@@ -1,15 +1,20 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react";
 
-export const CheckTexts = () => {
+export const CheckText = ({ text }: { text: string }) => {
     const { cx, classes } = useStyles();
 
-    const CheckText = ({ text }: { text: string }) => (
+    return (
         <>
             <i className={cx(classes.checkIcon, "ri-check-line")} />
             <p>{text}</p>
         </>
-    );
+    )
+};
+
+export const CheckTexts = () => {
+    const { cx } = useStyles();
+
 
     return (
         <>
