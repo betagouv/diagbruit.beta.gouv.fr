@@ -3,10 +3,10 @@ import { Card } from "@codegouvfr/react-dsfr/Card";
 export interface CardPrecoProps {
     title: string,
     imageUrl: string,
-
+    slug: string
 }
 
-export const CardPreco = ({ title, imageUrl }: CardPrecoProps) => {
+export const CardPreco = ({ title, imageUrl, slug }: CardPrecoProps) => {
     return (
         <div className="fr-col-4">
             <Card
@@ -14,7 +14,7 @@ export const CardPreco = ({ title, imageUrl }: CardPrecoProps) => {
                 imageAlt="texte alternatif de l’image"
                 imageUrl={imageUrl ?? "https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"}
                 linkProps={{
-                    href: '/test',
+                    href: `/mediatheque/${slug}`,
                     target: "_blank",
 
                 }}

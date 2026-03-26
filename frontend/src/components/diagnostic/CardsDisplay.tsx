@@ -16,10 +16,11 @@ export const CardsDisplay = () => {
             })
             .then((res) => {
                 const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
-                    title: item.Title,
-                    imageUrl: item.ImageThumbnail?.url
-                        ? `${process.env.REACT_APP_CMS_URL}${item.ImageThumbnail.url}`
+                    title: item.title,
+                    imageUrl: item.imageThumbnail?.url
+                        ? `${process.env.REACT_APP_CMS_URL}${item.imageThumbnail.url}`
                         : "",
+                    slug: item.slug,
                 }));
                 setCards(items);
             })
@@ -31,7 +32,7 @@ export const CardsDisplay = () => {
     return (
         <div className={cx(classes.cardContainer)}>
             {cards.map((c) => (
-                <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} />
+                <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
             ))}
         </div>
     );
