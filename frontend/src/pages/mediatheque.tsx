@@ -6,6 +6,10 @@ import { useParams } from "react-router-dom";
 import { Loader } from "../components/ui/Loader";
 import useMediathequePreco from "../hooks/useMediathequePreco";
 import { tss } from "tss-react/dsfr";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import { CheckText, CheckTexts } from "../components/utils/CheckTexts";
+import Card from "@codegouvfr/react-dsfr/Card";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 const toAnchorId = (text: string) =>
     text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
@@ -60,6 +64,39 @@ export const MediathequePage = () => {
                     </div>
 
                     <div className="fr-col-9">
+                        {preco.aRetenir && (
+                            <Alert
+                                className={fr.cx("fr-mb-4v")}
+                                title="À retenir"
+                                description={
+                                    preco.aRetenir.map((e) => (
+                                        <div className={cx("fr-grid-row")}>
+                                            <CheckText text={e.text} />
+                                        </div>
+                                    ))
+                                }
+                                onClose={function noRefCheck() { }}
+                                severity="info"
+                                small
+                            />
+                        )}
+                        {preco.keyPoints && (
+                            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
+                                {preco.keyPoints.map((k, index) => (
+                                    <div className={fr.cx("fr-col-4")}>
+                                        <Card
+                                            border
+                                            desc={k.text}
+                                            size="medium"
+                                            title={k.title}
+                                            titleAs="h3"
+                                            start={<ul className="fr-badges-group"><li><Badge>Point n°{index + 1}</Badge></li></ul>}
+
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <BlocksRenderer
                             content={preco.content}
                             blocks={{
