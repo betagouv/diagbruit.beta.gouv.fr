@@ -36,12 +36,19 @@ export const MediathequePage = () => {
         );
     }
 
-    const h2Links = preco.content
-        .filter((block: any) => block.type === "heading" && block.level === 2)
-        .map((block: any) => {
-            const text = block.children.map((c: any) => c.text).join("");
-            return { text, linkProps: { href: `#${toAnchorId(text)}` } };
-        });
+    const keyPointsTitle = "1. Les 4 points clés avant installation";
+
+    const h2Links = [
+        ...(preco.keyPoints?.length > 0
+            ? [{ text: keyPointsTitle, linkProps: { href: `#${toAnchorId(keyPointsTitle)}` } }]
+            : []),
+        ...preco.content
+            .filter((block: any) => block.type === "heading" && block.level === 2)
+            .map((block: any) => {
+                const text = block.children.map((c: any) => c.text).join("");
+                return { text, linkProps: { href: `#${toAnchorId(text)}` } };
+            }),
+    ];
 
     return (
         <>
@@ -81,21 +88,23 @@ export const MediathequePage = () => {
                             />
                         )}
                         {preco.keyPoints && (
-                            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
-                                {preco.keyPoints.map((k, index) => (
-                                    <div className={fr.cx("fr-col-4")}>
-                                        <Card
-                                            border
-                                            desc={k.text}
-                                            size="medium"
-                                            title={k.title}
-                                            titleAs="h3"
-                                            start={<ul className="fr-badges-group"><li><Badge>Point n°{index + 1}</Badge></li></ul>}
+                            <>
+                                <h2 id={toAnchorId(keyPointsTitle)}>{keyPointsTitle}</h2>
+                                <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
+                                    {preco.keyPoints.map((k, index) => (
+                                        <div className={fr.cx("fr-col-4")}>
+                                            <Card
+                                                border
+                                                desc={k.text}
+                                                size="medium"
+                                                title={k.title}
+                                                titleAs="h3"
+                                                start={<ul className="fr-badges-group"><li><Badge>Point n°{index + 1}</Badge></li></ul>}
 
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                                            />
+                                        </div>
+                                    ))}
+                                </div></>
                         )}
                         <BlocksRenderer
                             content={preco.content}
