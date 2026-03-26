@@ -11,6 +11,7 @@ import CmsPage from "./pages/cms-page";
 import Diagnostic from "./pages/diagnostic";
 import Home from "./pages/home";
 import Maintenance from "./pages/maintenance";
+import MediathequePage from "./pages/mediatheque";
 import Stats from "./pages/stats";
 import reportWebVitals from "./reportWebVitals";
 
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/changelogs" element={<Changelogs />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/mediatheque/:slug" element={<MediathequePage />} />
         <Route
           path="/accessibility"
           element={<CmsPage slug="accessibility" />}
