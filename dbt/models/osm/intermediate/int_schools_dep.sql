@@ -24,4 +24,4 @@ SELECT
     d.code AS codedept
 FROM full_schools_filtered s
 JOIN departments d
-    ON ST_Within(s.geometry, d.geometry)
+    ON ST_Within(ST_Transform(s.geometry, 2154), d.geometry)
