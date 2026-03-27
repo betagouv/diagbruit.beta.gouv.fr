@@ -129,7 +129,7 @@ FILES_OSM=(
 )
 
 FILES_SCHOOLS=(
-  "inputs/osm/schools_datagouv/schools_pointPoint.shp raw_full_schools_data --if-exists replace"
+  "inputs/osm/osm_schools_bordeaux_strasbourg.geojson raw_full_schools_data --if-exists replace"
 )
 
 # Download batiment files from S3 if needed
@@ -147,5 +147,5 @@ for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_TOPO[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_STRAS[@]}"; do run_ingest_geojson $cmd; done
 for cmd in "${FILES_OSM[@]}"; do run_ingest_geojson $cmd; done
-for cmd in "${FILES_SCHOOLS[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_SCHOOLS[@]}"; do run_ingest_geojson $cmd; done
 
