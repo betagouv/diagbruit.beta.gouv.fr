@@ -7,7 +7,7 @@ export interface MediathequePreco {
     documentId: string;
     title: string;
     slug: string;
-    content: RootNode[];
+    content: string;
     imageThumbnail: { url: string; alternativeText: string | null } | null;
     imageBanner: { url: string; alternativeText: string | null } | null;
     aRetenir: { id: number; text: string }[];
@@ -25,7 +25,7 @@ const useMediathequePreco = (slug: string) => {
         setIsLoading(true);
         setNotFound(false);
         axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/mediatheque-precos`, {
+            .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
                 params: {
                     populate: "*",
                     filters: { slug: { $eq: slug } },

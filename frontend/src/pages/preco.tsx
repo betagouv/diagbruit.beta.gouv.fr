@@ -1,20 +1,18 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Summary } from "@codegouvfr/react-dsfr/Summary";
-import { BlocksRenderer } from "@strapi/blocks-react-renderer";
-import React from "react";
 import { useParams } from "react-router-dom";
 import { Loader } from "../components/ui/Loader";
 import useMediathequePreco from "../hooks/useMediathequePreco";
 import { tss } from "tss-react/dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import { CheckText, CheckTexts } from "../components/utils/CheckTexts";
+import { CheckText } from "../components/utils/CheckTexts";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import Summary from "@codegouvfr/react-dsfr/Summary";
 
 const toAnchorId = (text: string) =>
     text.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
-export const MediathequePage = () => {
+export const PrecoPage = () => {
     const { classes, cx } = useStyles();
 
     const { slug } = useParams<{ slug: string }>();
@@ -36,18 +34,19 @@ export const MediathequePage = () => {
         );
     }
 
-    const keyPointsTitle = "1. Les 4 points clés avant installation";
+    const keyPointsTitle = "Les 4 points clés avant installation";
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(preco.content, "text/html");
+    const h2Elements = Array.from(doc.querySelectorAll("h2"));
+    h2Elements.forEach((h2) => {
+        h2.id = toAnchorId(h2.textContent ?? "");
+    });
+    const enrichedContent = doc.body.innerHTML;
 
     const h2Links = [
-        ...(preco.keyPoints?.length > 0
-            ? [{ text: keyPointsTitle, linkProps: { href: `#${toAnchorId(keyPointsTitle)}` } }]
-            : []),
-        ...preco.content
-            .filter((block: any) => block.type === "heading" && block.level === 2)
-            .map((block: any) => {
-                const text = block.children.map((c: any) => c.text).join("");
-                return { text, linkProps: { href: `#${toAnchorId(text)}` } };
-            }),
+        ...(preco.keyPoints ? [{ id: toAnchorId(keyPointsTitle), label: keyPointsTitle }] : []),
+        ...h2Elements.map((h2) => ({ id: h2.id, label: h2.textContent ?? "" })),
     ];
 
     return (
@@ -65,9 +64,12 @@ export const MediathequePage = () => {
 
                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                     <div className="fr-col-3">
-                        {h2Links.length > 0 && (
-                            <Summary links={h2Links} />
-                        )}
+                        <Summary
+                            links={h2Links.map((link) => ({
+                                text: link.label,
+                                linkProps: { href: `#${link.id}` },
+                            }))}
+                        />
                     </div>
 
                     <div className="fr-col-9">
@@ -106,21 +108,9 @@ export const MediathequePage = () => {
                                     ))}
                                 </div></>
                         )}
-                        <BlocksRenderer
-                            content={preco.content}
-                            blocks={{
-                                heading: ({ children, level }) => {
-                                    const Tag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-                                    const id = level === 2
-                                        ? toAnchorId(
-                                            React.Children.toArray(children)
-                                                .map((c: any) => c.props?.text ?? "")
-                                                .join("")
-                                        )
-                                        : undefined;
-                                    return <Tag id={id}>{children}</Tag>;
-                                },
-                            }}
+                        <div
+                            className={cx(classes.recommendationContent)}
+                            dangerouslySetInnerHTML={{ __html: enrichedContent }}
                         />
                     </div>
                 </div>
@@ -129,13 +119,19 @@ export const MediathequePage = () => {
     );
 };
 
-const useStyles = tss.withName(MediathequePage.name).create(() => ({
+const useStyles = tss.withName(PrecoPage.name).create(() => ({
     imageBanner: {
         width: "100%",
         height: "240px",
         objectFit: "cover",
         display: "block",
     },
+    recommendationContent: {
+        img: {
+            height: "auto",
+            aspectRatio: "auto",
+        },
+    },
 }));
 
-export default MediathequePage;
+export default PrecoPage;
