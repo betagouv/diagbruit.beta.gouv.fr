@@ -612,46 +612,6 @@ export interface ApiLocalDocumentationLocalDocumentation
   };
 }
 
-export interface ApiMediathequePrecoMediathequePreco
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'mediatheque_precos';
-  info: {
-    description: '';
-    displayName: 'MediathequePreco';
-    pluralName: 'mediatheque-precos';
-    singularName: 'mediatheque-preco';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    aRetenir: Schema.Attribute.Component<'global.text-array', true>;
-    content: Schema.Attribute.Blocks & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    imageThumbnail: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    keyPoints: Schema.Attribute.Component<'global.title-text-array', true>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::mediatheque-preco.mediatheque-preco'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID & Schema.Attribute.Required;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiNoiseSourceCategoryNoiseSourceCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'noise_source_categories';
@@ -1317,7 +1277,6 @@ declare module '@strapi/strapi' {
       'api::email.email': ApiEmailEmail;
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
       'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
-      'api::mediatheque-preco.mediatheque-preco': ApiMediathequePrecoMediathequePreco;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
