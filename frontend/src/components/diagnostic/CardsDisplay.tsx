@@ -3,35 +3,17 @@ import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
 import CardPreco, { CardPrecoProps } from "../ui/CardPreco";
+import useGetPrecosCards from "../../hooks/useGetPrecosCards";
 
 
 export const CardsDisplay = () => {
     const { cx, classes } = useStyles();
-    const [cards, setCards] = useState<CardPrecoProps[]>([]);
 
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
-                params: {
-                    "fields[0]": "title",
-                    "fields[1]": "slug",
-                    "populate[imageThumbnail][fields][0]": "url",
-                },
-            })
-            .then((res) => {
-                const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
-                    title: item.title,
-                    imageUrl: item.imageThumbnail?.url
-                        ? `${process.env.REACT_APP_CMS_URL}${item.imageThumbnail.url}`
-                        : "",
-                    slug: item.slug,
-                }));
-                setCards(items);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }, []);
+    const { precos: cards } = useGetPrecosCards({
+        "fields[0]": "title",
+        "fields[1]": "slug",
+        "populate[imageThumbnail][fields][0]": "url",
+    });
 
     return (
         <div className={cx(classes.cardContainer)}>

@@ -1,39 +1,17 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
-import CardPreco, { CardPrecoProps } from "../ui/CardPreco";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import CardPreco from "../ui/CardPreco";
+import useGetPrecosCards from "../../hooks/useGetPrecosCards";
 
 export const MostRecentPreco = () => {
     const { cx, classes } = useStyles();
-    const [cards, setCards] = useState<CardPrecoProps[]>([]);
-
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
-                params: {
-                    "fields[0]": "title",
-                    "fields[1]": "slug",
-                    "populate[imageThumbnail][fields][0]": "url",
-                    "sort[0]": "createdAt:desc",
-                    "pagination[pageSize]": 3,
-                },
-
-            })
-            .then((res) => {
-                const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
-                    title: item.title,
-                    imageUrl: item.imageThumbnail?.url
-                        ? `${process.env.REACT_APP_CMS_URL}${item.imageThumbnail.url}`
-                        : "",
-                    slug: item.slug,
-                }));
-                setCards(items);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }, []);
+    const { precos: cards } = useGetPrecosCards({
+        "fields[0]": "title",
+        "fields[1]": "slug",
+        "populate[imageThumbnail][fields][0]": "url",
+        "sort[0]": "createdAt:desc",
+        "pagination[pageSize]": 3,
+    });
 
     return (
         <div className={cx(classes.contentContainer)}>
@@ -46,7 +24,9 @@ export const MostRecentPreco = () => {
                     <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
                 ))}
             </div>
-            <a href="/preco" className={fr.cx("fr-link")}>Consulter nos préconisations pour se protéger du bruit </a>
+            <a href="/preco" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right",)}>
+                Consulter nos préconisations pour se protéger du bruit
+            </a>
         </div>
     );
 }
