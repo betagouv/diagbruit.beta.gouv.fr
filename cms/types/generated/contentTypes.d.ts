@@ -734,6 +734,13 @@ export interface ApiRecommendationRecommendation
     draftAndPublish: true;
   };
   attributes: {
+    aRetenir: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     content: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',
