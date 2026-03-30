@@ -14,6 +14,7 @@ import Maintenance from "./pages/maintenance";
 import PrecoPage from "./pages/preco";
 import Stats from "./pages/stats";
 import reportWebVitals from "./reportWebVitals";
+import SearchPrecoPage from "./pages/searchPreco";
 
 startReactDsfr({ defaultColorScheme: "light" });
 
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/stats" element={<Stats />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/preco/:slug" element={<PrecoPage />} />
+        <Route path="/preco" element={<SearchPrecoPage />} />
         <Route
           path="/accessibility"
           element={<CmsPage slug="accessibility" />}
