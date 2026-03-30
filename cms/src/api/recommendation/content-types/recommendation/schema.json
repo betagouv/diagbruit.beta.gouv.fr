@@ -15,19 +15,6 @@
       "type": "string",
       "required": true
     },
-    "conditions": {
-      "displayName": "conditions",
-      "type": "component",
-      "repeatable": false,
-      "component": "global.conditions",
-      "required": true
-    },
-    "categories": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::category.category",
-      "mappedBy": "recommendations"
-    },
     "content": {
       "type": "customField",
       "options": {
@@ -35,16 +22,36 @@
       },
       "customField": "plugin::ckeditor5.CKEditor"
     },
-    "links": {
-      "displayName": "link",
+    "keyPoints": {
       "type": "component",
       "repeatable": true,
-      "component": "global.link",
-      "required": false
+      "component": "global.title-text-array"
     },
-    "isolation": {
-      "type": "boolean",
-      "default": false
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "imageBanner": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "imageThumbnail": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

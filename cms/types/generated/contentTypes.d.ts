@@ -428,10 +428,6 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    recommendations: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::recommendation.recommendation'
-    >;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -738,12 +734,6 @@ export interface ApiRecommendationRecommendation
     draftAndPublish: true;
   };
   attributes: {
-    categories: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::category.category'
-    >;
-    conditions: Schema.Attribute.Component<'global.conditions', false> &
-      Schema.Attribute.Required;
     content: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',
@@ -754,8 +744,13 @@ export interface ApiRecommendationRecommendation
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    isolation: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    links: Schema.Attribute.Component<'global.link', true>;
+    imageBanner: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    imageThumbnail: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    keyPoints: Schema.Attribute.Component<'global.title-text-array', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -763,6 +758,7 @@ export interface ApiRecommendationRecommendation
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
