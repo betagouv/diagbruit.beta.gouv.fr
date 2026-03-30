@@ -8,6 +8,7 @@ import AddressSearch, {
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { encode } from "../utils/compression";
 import { MostRecentPreco } from "../components/home/MostRecentPreco";
+import { AvailabilityMap } from "../components/home/AvailabilityMap";
 
 function HomePage() {
   const { cx, classes } = useStyles();
@@ -25,7 +26,7 @@ function HomePage() {
   }
 
   return (
-    <div className={fr.cx("fr-my-10v", "fr-container", "fr-py-10v")}>
+    <div>
       <HomeHero />
       <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
         <img src="/images/search.svg" alt="search icon" />
@@ -69,6 +70,7 @@ function HomePage() {
         />
       </div>
       <MostRecentPreco />
+      <AvailabilityMap />
     </div>
   );
 }

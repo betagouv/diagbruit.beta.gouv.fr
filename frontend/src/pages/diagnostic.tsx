@@ -206,7 +206,7 @@ function DiagnosticPage() {
   }, [location.search, isMapReady]);
 
   return (
-    <div className={fr.cx("fr-container", "fr-py-10v")}>
+    <div>
       {isLoading && (
         <div className={cx(classes.loaderContainer)}>
           <Loader text="Nous générons votre diagnostic..." />

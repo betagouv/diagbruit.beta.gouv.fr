@@ -132,7 +132,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         onClose={function noRefCheck() { }}
         className={cx(classes.betaNotice)}
       />
-      <div>
+      <div
+        className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
+      >
         {children}
       </div>
       <Footer
