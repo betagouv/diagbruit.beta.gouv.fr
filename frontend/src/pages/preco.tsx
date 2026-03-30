@@ -94,7 +94,7 @@ export const PrecoPage = () => {
                                 <h2 id={toAnchorId(keyPointsTitle)}>{keyPointsTitle}</h2>
                                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
                                     {preco.keyPoints.map((k, index) => (
-                                        <div className={fr.cx("fr-col-4")}>
+                                        <div className={fr.cx(`fr-col-${Math.max(4, Math.min(12, 12 / preco.keyPoints!.length))}` as any)}>
                                             <Card
                                                 border
                                                 desc={k.text}
