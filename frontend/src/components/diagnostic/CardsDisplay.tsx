@@ -11,7 +11,7 @@ export const CardsDisplay = () => {
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/mediatheque-precos`, {
+            .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
                 params: { populate: "*" },
             })
             .then((res) => {

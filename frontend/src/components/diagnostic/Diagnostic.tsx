@@ -157,29 +157,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: tabId === "recommendations",
       content: (
         <>
-          <DiagnosticSectionTitle
-            title="4. Préconisations"
-            image={{
-              src: "/images/document.svg",
-              width: 55,
-              height: 60,
-            }}
-          />
-          <DiagnosticDocumentation diagnosticItem={diagnosticItem} />
+          <div className={"fr-container"}>
+            <CardsDisplay />
+
+          </div>
         </>
       ),
     },
-    {
-      tabId: "recommendations",
-      label: "Médiathèque de préconisations",
-      isDefault: tabId === "recommendations",
-      content: (
-        <div className={"fr-container"}>
-          <CardsDisplay />
 
-        </div>
-      ),
-    },
   ];
 
   useEffect(() => {
