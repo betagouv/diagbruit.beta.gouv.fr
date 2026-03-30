@@ -7,3 +7,9 @@ models:
     description: "OSM data deduplicated against noisesource_stras"
   - name: int_osm_slug
     description: "Data with added category slugs"
+  - name: int_schools_filter
+    description: "Data with only named schools"
+  - name: int_schools_dep
+    description: "Data with added department code and name columns"
+  - name: int_schools_slug
+    description: "Data with added category_slug 'SCH' column"
