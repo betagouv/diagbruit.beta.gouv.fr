@@ -40,8 +40,7 @@ const useStyles = tss.withName(MostRecentPreco.name).create(() => ({
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),
-        borderTop: "0.5px solid #DDDDDD",
-        borderBottom: "0.5px solid #DDDDDD",
+        borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
         marginLeft: "calc(-50vw + 50%)",
         marginRight: "calc(-50vw + 50%)",
         paddingLeft: "calc(50vw - 50%)",
