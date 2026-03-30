@@ -206,7 +206,7 @@ function DiagnosticPage() {
   }, [location.search, isMapReady]);
 
   return (
-    <div>
+    <div className={fr.cx("fr-container", "fr-py-10v")}>
       {isLoading && (
         <div className={cx(classes.loaderContainer)}>
           <Loader text="Nous générons votre diagnostic..." />
@@ -218,7 +218,7 @@ function DiagnosticPage() {
           <Alert
             className={fr.cx("fr-my-4v")}
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
@@ -276,7 +276,7 @@ function DiagnosticPage() {
             <Alert
               className={fr.cx("fr-mt-6v")}
               description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() {}}
+              onClose={function noRefCheck() { }}
               severity="info"
               title={
                 parcelleError
@@ -304,7 +304,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
           />
@@ -330,7 +330,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Erreur lors de la génération du diagnostic"
           />

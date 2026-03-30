@@ -90,6 +90,32 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           href: "/",
           title: "Accueil - diagBruit",
         }}
+        navigation={[
+          {
+            isActive: pathname === "/",
+            linkProps: {
+              href: '/',
+              target: '_self'
+            },
+            text: 'Accueil'
+          },
+          {
+            isActive: pathname === "/diagnostic",
+            linkProps: {
+              href: '/diagnostic',
+              target: '_self'
+            },
+            text: 'Diagnostiquer une parcelle'
+          },
+          {
+            isActive: pathname === "/preco",
+            linkProps: {
+              href: '/preco',
+              target: '_self'
+            },
+            text: 'Se protéger du bruit'
+          }
+        ]}
         id="fr-header-simple-header"
       />
       <Notice
@@ -106,9 +132,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         onClose={function noRefCheck() { }}
         className={cx(classes.betaNotice)}
       />
-      <div
-        className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
-      >
+      <div>
         {children}
       </div>
       <Footer
