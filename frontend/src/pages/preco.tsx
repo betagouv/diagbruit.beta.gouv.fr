@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { useParams } from "react-router-dom";
 import { Loader } from "../components/ui/Loader";
-import useMediathequePreco from "../hooks/useMediathequePreco";
+import usePreco from "../hooks/usePreco";
 import { tss } from "tss-react/dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { CheckText } from "../components/utils/CheckTexts";
@@ -16,7 +16,7 @@ export const PrecoPage = () => {
     const { classes, cx } = useStyles();
 
     const { slug } = useParams<{ slug: string }>();
-    const { preco, isLoading, notFound } = useMediathequePreco(slug ?? "");
+    const { preco, isLoading, notFound } = usePreco(slug ?? "");
 
     if (isLoading) {
         return (

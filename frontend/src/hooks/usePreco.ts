@@ -2,7 +2,7 @@ import { RootNode } from "@strapi/blocks-react-renderer/dist/BlocksRenderer";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export interface MediathequePreco {
+export interface PrecoProps {
     id: number;
     documentId: string;
     title: string;
@@ -16,8 +16,8 @@ export interface MediathequePreco {
     updatedAt: string;
 }
 
-const useMediathequePreco = (slug: string) => {
-    const [preco, setPreco] = useState<MediathequePreco | null>(null);
+const usePreco = (slug: string) => {
+    const [preco, setPreco] = useState<PrecoProps | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
 
@@ -50,4 +50,4 @@ const useMediathequePreco = (slug: string) => {
     return { preco, isLoading, notFound };
 };
 
-export default useMediathequePreco;
+export default usePreco;
