@@ -10,7 +10,7 @@ export interface PrecoProps {
     content: string;
     imageThumbnail: { url: string; alternativeText: string | null } | null;
     imageBanner: { url: string; alternativeText: string | null } | null;
-    aRetenir: { id: number; text: string }[];
+    aRetenir: string;
     keyPoints: { id: number; title: string; text: string }[];
     createdAt: string;
     updatedAt: string;

@@ -1,10 +1,9 @@
-import { fr } from "@codegouvfr/react-dsfr";
+import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import { useParams } from "react-router-dom";
 import { Loader } from "../components/ui/Loader";
 import usePreco from "../hooks/usePreco";
 import { tss } from "tss-react/dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import { CheckText } from "../components/utils/CheckTexts";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
@@ -37,12 +36,14 @@ export const PrecoPage = () => {
     const keyPointsTitle = "Les 4 points clés avant installation";
 
     const parser = new DOMParser();
-    const doc = parser.parseFromString(preco.content, "text/html");
-    const h2Elements = Array.from(doc.querySelectorAll("h2"));
+    const aRetenirDoc = parser.parseFromString(preco.aRetenir, "text/html");
+    const contentDoc = parser.parseFromString(preco.content, "text/html");
+    const h2Elements = Array.from(contentDoc.querySelectorAll("h2"));
     h2Elements.forEach((h2) => {
         h2.id = toAnchorId(h2.textContent ?? "");
     });
-    const enrichedContent = doc.body.innerHTML;
+    const enrichedContent = contentDoc.body.innerHTML;
+    const enrichedARetenir = aRetenirDoc.body.innerHTML;
 
     const h2Links = [
         ...(preco.keyPoints ? [{ id: toAnchorId(keyPointsTitle), label: keyPointsTitle }] : []),
@@ -78,11 +79,10 @@ export const PrecoPage = () => {
                                 className={fr.cx("fr-mb-4v")}
                                 title="À retenir"
                                 description={
-                                    preco.aRetenir.map((e) => (
-                                        <div className={cx("fr-grid-row")}>
-                                            <CheckText text={e.text} />
-                                        </div>
-                                    ))
+                                    <div
+                                        className={cx(classes.recommendationContent)}
+                                        dangerouslySetInnerHTML={{ __html: enrichedARetenir }}
+                                    />
                                 }
                                 onClose={function noRefCheck() { }}
                                 severity="info"
@@ -94,7 +94,8 @@ export const PrecoPage = () => {
                                 <h2 id={toAnchorId(keyPointsTitle)}>{keyPointsTitle}</h2>
                                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
                                     {preco.keyPoints.map((k, index) => (
-                                        <div className={fr.cx(`fr-col-${Math.max(4, Math.min(12, 12 / preco.keyPoints!.length))}` as any)}>
+                                        <div className={fr.cx(`fr-col-${Math.max(4, Math.min(12, 12 / preco.keyPoints!.length))}` as FrCxArg)}
+                                            key={`keyPoint-${k.title}-${index}`}>
                                             <Card
                                                 border
                                                 desc={k.text}
