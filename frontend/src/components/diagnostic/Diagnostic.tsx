@@ -157,10 +157,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: tabId === "recommendations",
       content: (
         <>
-          <div className={"fr-container"}>
-            <CardsDisplay />
+          <CardsDisplay />
 
-          </div>
         </>
       ),
     },

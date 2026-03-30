@@ -12,7 +12,11 @@ export const CardsDisplay = () => {
     useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
-                params: { populate: "*" },
+                params: {
+                    "fields[0]": "title",
+                    "fields[1]": "slug",
+                    "populate[imageThumbnail][fields][0]": "url",
+                },
             })
             .then((res) => {
                 const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
