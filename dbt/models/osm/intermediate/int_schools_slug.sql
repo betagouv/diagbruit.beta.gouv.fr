@@ -15,6 +15,6 @@ SELECT
     name,
     amenity,
     codedept,
-    'SCH' as category_slug,
+    'ECO' as category_slug,
     geometry
 FROM full_schools_dep

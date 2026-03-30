@@ -26,9 +26,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=4)
 
-logger = logging.getLogger('uvicorn.error')
-
-
 class Populate(BaseModel):
     zones: bool = Field(False, example=False)
     isolation: bool = Field(False, example=False)
@@ -109,25 +106,20 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
     try:
         _t = time.perf_counter()
         noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
-        logger.info(f"[diag] query_noisemap_intersecting_features: {time.perf_counter() - _t:.3f}s")
 
         _t = time.perf_counter()
         noisesource = query_noisesource_intersecting_features(db, polygon_wkt, codedept)
-        logger.info(f"[diag] query_noisesource_intersecting_features: {time.perf_counter() - _t:.3f}s")
 
         _t = time.perf_counter()
         noisezone = query_noisezone_intersecting_features(db, polygon_wkt)
-        logger.info(f"[diag] query_noisezone_intersecting_features: {time.perf_counter() - _t:.3f}s")
 
         percent_unimpacted = noisemap.get("percent_unimpacted", 0)
 
         _t = time.perf_counter()
         sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation, codedept)
-        logger.info(f"[diag] query_soundclassification_intersecting_features: {time.perf_counter() - _t:.3f}s")
 
         _t = time.perf_counter()
         peb = query_peb_intersecting_features(db, polygon_wkt)
-        logger.info(f"[diag] query_peb_intersecting_features: {time.perf_counter() - _t:.3f}s")
 
         geom_area_m2 = get_area_m2_from_wkt(polygon_wkt) if polygon_wkt else None
 
@@ -142,7 +134,6 @@ def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Pop
             populate,
             geom_area_m2
         )
-        logger.info(f"[diag] get_parcelle_diagnostic: {time.perf_counter() - _t:.3f}s")
         return result
     finally:
         db.close()
