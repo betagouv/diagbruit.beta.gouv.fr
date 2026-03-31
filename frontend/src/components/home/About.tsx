@@ -2,9 +2,25 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { Quote } from "@codegouvfr/react-dsfr/Quote";
 
+export interface AboutHomePageProps {
+    id: number;
+    textContent: string;
+    author: string;
+    description: string;
+    source: string;
+}
+export interface PartnersProps {
+    id: number;
+    title: string;
+    description: string
+}
 
-export const About = () => {
+export const About = ({ content, partners }: { content: AboutHomePageProps, partners: PartnersProps }) => {
     const { cx, classes } = useStyles();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content.textContent, "text/html");
+    const text = doc.body.innerHTML;
 
     return (
         <div className={cx(classes.contentContainer)}>
@@ -13,25 +29,23 @@ export const About = () => {
                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-col-12")}>
                     <div className="fr-col-6">
                         <Quote
-                            author="Martin Schoreisz"
+                            author={content.author}
                             imageUrl="//www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.1x1.png"
                             size="xlarge"
-                            source={"Chargé d'étude trafic et bruit chez Cerema"}
-                            text="Notre ambission, rendre le cadre de vie des populations plus sain en les protégeant des risques sonores."
+                            source={content.source}
+                            text={content.description}
                         />
                     </div>
                     <div className={cx("fr-col-6", classes.textContainer)}>
-                        <p
-                        ><strong>
-                                diagBruit</strong> est un <strong>service public de diagnostic bruit non opposable</strong> (à titre informatif),
-                            co-construit avec les acteurs du terrain.
-                            Il croise <strong>données nationales</strong> (classement sonore, PEB et dispositifs locaux CBS, PLU) pour <strong>évaluer l'environnement sonore</strong> de n'importe quelle parcelle.</p>
+                        <div
+                            dangerouslySetInnerHTML={{ __html: text }}
+                        />
                     </div>
                 </div>
             </div>
             <div className={cx(classes.partnersContainer)}>
-                <p className={cx("fr-text--xl", "fr-text--bold")}>Merci à nos partenaires</p>
-                <p className={cx("fr-text--lg")}>Cerema, DINUM, ANCT, DGPR, Nantes Métropole, Ville de Lille, Euro-Métropole de Strasbourg, Bordeaux métropole</p>
+                <p className={cx("fr-text--xl", "fr-text--bold")}>{partners.title}</p>
+                <p className={cx("fr-text--lg")}>{partners.description}</p>
             </div>
         </div>
     )
