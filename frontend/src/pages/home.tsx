@@ -9,6 +9,7 @@ import ParcelleSearch from "../components/search/ParcelleSearch";
 import { encode } from "../utils/compression";
 import { MostRecentPreco } from "../components/home/MostRecentPreco";
 import { AvailabilityMap } from "../components/home/AvailabilityMap";
+import About from "../components/home/About";
 
 function HomePage() {
   const { cx, classes } = useStyles();
@@ -71,6 +72,7 @@ function HomePage() {
       </div>
       <MostRecentPreco />
       <AvailabilityMap />
+      <About />
     </div>
   );
 }
