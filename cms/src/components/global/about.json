@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_global_abouts",
+  "info": {
+    "displayName": "about",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "author": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "source": {
+      "type": "string"
+    },
+    "textContent": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    }
+  }
+}

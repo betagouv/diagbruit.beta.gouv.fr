@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_global_most_recent_precos",
+  "info": {
+    "displayName": "mostRecentPreco"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

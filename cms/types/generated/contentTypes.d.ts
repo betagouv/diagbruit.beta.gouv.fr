@@ -542,6 +542,49 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiHomePageContentHomePageContent
+  extends Struct.SingleTypeSchema {
+  collectionName: 'home_page_contents';
+  info: {
+    description: '';
+    displayName: 'HomePageContent';
+    pluralName: 'home-page-contents';
+    singularName: 'home-page-content';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    abouthomePage: Schema.Attribute.Component<'global.about', false> &
+      Schema.Attribute.Required;
+    availabilityMapContent: Schema.Attribute.Component<
+      'global.availability-map',
+      false
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::home-page-content.home-page-content'
+    > &
+      Schema.Attribute.Private;
+    mostRecentPreco: Schema.Attribute.Component<
+      'global.most-recent-preco',
+      false
+    > &
+      Schema.Attribute.Required;
+    partners: Schema.Attribute.Component<'global.partners', false> &
+      Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLegalMentionLegalMention extends Struct.SingleTypeSchema {
   collectionName: 'legal_mentions';
   info: {
@@ -1275,6 +1318,7 @@ declare module '@strapi/strapi' {
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;
+      'api::home-page-content.home-page-content': ApiHomePageContentHomePageContent;
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
       'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
