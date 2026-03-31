@@ -1,8 +1,6 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { fr } from "@codegouvfr/react-dsfr";
-import CardPreco, { CardPrecoProps } from "../ui/CardPreco";
+import CardPreco from "../ui/CardPreco";
 import useGetPrecosCards from "../../hooks/useGetPrecosCards";
 
 
@@ -18,7 +16,7 @@ export const CardsDisplay = () => {
     return (
         <div className={cx(classes.cardContainer)}>
             {cards.map((c) => (
-                <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
+                <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} target />
             ))}
         </div>
     );
