@@ -20,7 +20,7 @@ SELECT
     geometry,
     category_slug,
     meta_code_dep AS codedept
-FROM {{ ref('int_osm_slug') }}
+FROM {{ ref('int_foods_slug') }}
 
 UNION ALL
 

@@ -21,7 +21,7 @@ SELECT
     s.name,
     s.amenity,
     s.geometry,
-    d.code AS codedept
+    LPAD(d.code, 3, '0') AS codedept
 FROM full_schools_filtered s
 JOIN departments d
     ON ST_Within(ST_Transform(s.geometry, 2154), d.geometry)

@@ -5,7 +5,7 @@ sources:
     schema: public_workspace
     tables:
       - name: raw_full_osm_foods_data
-        description: "Raw data imported from osm"
+        description: "Raw data imported from foods dataset"
         columns:
           - name: name
             description: "Name identifier"

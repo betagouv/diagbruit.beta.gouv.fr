@@ -17,7 +17,7 @@ WITH osm_filtered AS (
             ),
             '[^a-z0-9]', '', 'g'
         ) AS name_clean
-    FROM {{ ref('int_osm_filter') }}
+    FROM {{ ref('int_foods_filter') }}
 ),
 stras AS (
     SELECT
@@ -45,7 +45,7 @@ SELECT
 FROM osm_filtered o
 WHERE o.name IS NOT NULL
 AND (
-    o.meta_code_dep != '67'
+    o.meta_code_dep != '067'
     OR NOT EXISTS (
         SELECT 1
         FROM stras s

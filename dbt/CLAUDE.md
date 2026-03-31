@@ -37,14 +37,15 @@ The `noisesource` table (final mart in `osm/`) aggregates noise-emitting establi
 ```
 stg_stras → int_stras_slug → noisesource_stras (table)
                                     ↓ (dedup reference)
-stg_osm → int_osm_filter → int_osm_validate → int_osm_slug
+stg_foods → int_foods_filter → int_foods_validate → int_foods_slug
+stg_schools → int_schools_filter → int_schools_dep → int_schools_slug
                                     ↓
-                              noisesource (UNION ALL of noisesource_stras + int_osm_slug)
+                              noisesource (UNION ALL of noisesource_stras + int_foods_slug + int_schools_slug)
 ```
 
-**Rule:** `noisesource_stras` must be built before any OSM intermediate model — dbt enforces this via the `{{ ref('noisesource_stras') }}` dependency in `int_osm_validate`.
+**Rule:** `noisesource_stras` must be built before any foods intermediate model — dbt enforces this via the `{{ ref('noisesource_stras') }}` dependency in `int_foods_validate`.
 
-OSM deduplication (`int_osm_validate`) uses `pg_trgm` similarity + `ST_DWithin` to exclude OSM establishments already present in Strasbourg data. Both extensions are created on-run-start in `dbt_project.yml`.
+Foods deduplication (`int_foods_validate`) uses `pg_trgm` similarity + `ST_DWithin` to exclude foods establishments already present in Strasbourg data. Both extensions are created on-run-start in `dbt_project.yml`.
 
 ## Extensions Required
 
