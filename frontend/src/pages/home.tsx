@@ -21,6 +21,19 @@ interface HomePageContent {
   partners: PartnersProps;
 }
 
+const params = {
+  "populate[aboutHomePage][populate][profilePicture][fields][0]": "alternativeText",
+  "populate[aboutHomePage][populate][profilePicture][fields][1]": "height",
+  "populate[aboutHomePage][populate][profilePicture][fields][2]": "width",
+  "populate[aboutHomePage][populate][profilePicture][fields][3]": "url",
+  "populate[partners][populate][partnersLogos][fields][0]": "alternativeText",
+  "populate[partners][populate][partnersLogos][fields][1]": "height",
+  "populate[partners][populate][partnersLogos][fields][2]": "width",
+  "populate[partners][populate][partnersLogos][fields][3]": "url",
+  "populate[availabilityMapContent][populate]": "*",
+  "populate[mostRecentPreco][populate]": "*",
+}
+
 function HomePage() {
   const { cx, classes } = useStyles();
   const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
@@ -33,9 +46,7 @@ function HomePage() {
     setNotFound(false);
     axios
       .get(`${process.env.REACT_APP_CMS_URL}/api/home-page-content`, {
-        params: {
-          populate: "*",
-        },
+        params
       })
       .then((res) => {
         const item = res.data.data ?? null;
