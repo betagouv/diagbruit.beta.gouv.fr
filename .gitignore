@@ -25,6 +25,7 @@ ingestion/inputs/**/AGGLO_*
 !ingestion/inputs/**/AGGLO_033
 ingestion/inputs/**/INFRA_*
 ingestion/inputs/topo
+ingestion/inputs/osm/*/
 !ingestion/inputs/**/INFRA_033
 !ingestion/inputs/**/INFRA_FASTLINES_033
 
