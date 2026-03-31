@@ -21,6 +21,15 @@
         "preset": "defaultHtml"
       },
       "customField": "plugin::ckeditor5.CKEditor"
+    },
+    "profilePicture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
     }
   }
 }

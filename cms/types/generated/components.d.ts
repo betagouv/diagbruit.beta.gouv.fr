@@ -9,6 +9,7 @@ export interface GlobalAbout extends Struct.ComponentSchema {
   attributes: {
     author: Schema.Attribute.String;
     description: Schema.Attribute.Text;
+    profilePicture: Schema.Attribute.Media<'images' | 'files'>;
     source: Schema.Attribute.String;
     textContent: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
@@ -105,14 +106,12 @@ export interface GlobalMostRecentPreco extends Struct.ComponentSchema {
 export interface GlobalPartners extends Struct.ComponentSchema {
   collectionName: 'components_global_partners';
   info: {
+    description: '';
     displayName: 'partners';
   };
   attributes: {
     description: Schema.Attribute.Text;
-    partnersLogos: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    partnersLogos: Schema.Attribute.Media<'images' | 'files', true>;
     title: Schema.Attribute.String;
   };
 }
