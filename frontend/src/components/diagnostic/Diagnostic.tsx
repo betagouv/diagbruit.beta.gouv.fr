@@ -2,13 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import type { DiagnosticItem } from "../../utils/types";
-import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -19,7 +17,6 @@ import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import CardsDisplay from "./CardsDisplay";
-import TallyForm from "./TallyForm";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -39,9 +36,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
+  const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "evaluation");
 
   const devMode = searchParams.get("dev") === "true";
-  const tabId = searchParams.get("tab") || "evaluation";
 
   const handleCopyUrl = async (title?: string) => {
     try {
@@ -78,7 +75,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "evaluation",
       label: "Résumé du diagnostic",
-      isDefault: tabId === "evaluation",
+      isDefault: activeTabId === "evaluation",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -116,7 +113,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "legal",
       label: "Isolation réglementaires",
-      isDefault: tabId === "legal",
+      isDefault: activeTabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -134,7 +131,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "position",
       label: "Position du bâti",
-      isDefault: tabId === "position",
+      isDefault: activeTabId === "position",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -154,12 +151,11 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "recommendations",
-      label: "Préconisations",
-      isDefault: tabId === "recommendations",
+      label: "Recommendations",
+      isDefault: activeTabId === "recommendations",
       content: (
         <>
           <CardsDisplay />
-
         </>
       ),
     },
@@ -236,19 +232,30 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       ) : (
         <div className={cx(classes.container)}>
-          <Tabs
-            key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-            tabs={diagnosticTabs}
-            onTabChange={(tabItem) => {
-              const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
-              replaceSearchParams(tabId);
-              trackMatomoEvent(
-                "Action",
-                "Tab Change",
-                `Diagnostic Tab - ${tabId}`,
-              );
-            }}
-          />
+          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <div className={fr.cx("fr-col-3")}>
+              <nav>
+                <ul className={cx(classes.selectorList)}>
+                  {diagnosticTabs.map((tab) => (
+                    <li
+                      key={tab.tabId}
+                      className={cx(classes.selectorItem, tab.tabId === activeTabId && classes.selectorItemActive)}
+                      onClick={() => {
+                        setActiveTabId(tab.tabId);
+                        replaceSearchParams(tab.tabId);
+                        trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
+                      }}
+                    >
+                      {tab.label}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+            <div className={fr.cx("fr-col-9")}>
+              {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
+            </div>
+          </div>
           {devMode && (
             <Accordion label="Voir le retour de l'API" titleAs="h2">
               <pre>
@@ -306,6 +313,30 @@ const useStyles = tss.create(() => ({
     "& > *:not(:last-child)": {
       marginRight: fr.spacing("2v"),
     },
+  },
+  selectorList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: fr.spacing("1v"),
+    borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+  },
+  selectorItem: {
+    padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+    cursor: "pointer",
+    borderLeft: `3px solid transparent`,
+    fontWeight: 700,
+    color: fr.colors.decisions.text.default.grey.default,
+    "&:hover": {
+      borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
+      color: fr.colors.decisions.text.active.blueFrance.default,
+    },
+  },
+  selectorItemActive: {
+    borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
+    color: fr.colors.decisions.text.active.blueFrance.default,
   },
 }));
 
