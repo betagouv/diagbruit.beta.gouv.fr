@@ -4,7 +4,7 @@ sources:
   - name: public_workspace
     schema: public_workspace
     tables:
-      - name: raw_full_osm_data
+      - name: raw_full_osm_foods_data
         description: "Raw data imported from osm"
         columns:
           - name: name
@@ -15,7 +15,7 @@ sources:
             description: "Department code of establishment"
           - name: geometry
             description: "PostGIS geometry data in EPSG:2154"
-      - name: raw_full_schools_data
+      - name: raw_full_osm_schools_data
         description: "Raw data imported from schools dataset"
         columns:
           - name: amenity
@@ -24,5 +24,3 @@ sources:
             description: "Name of the school"
           - name: geometry
             description: "PostGIS geometry data in EPSG:2154"
-
-      

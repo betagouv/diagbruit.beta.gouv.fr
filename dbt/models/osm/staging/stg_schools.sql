@@ -8,4 +8,4 @@ SELECT
     name,
     geometry
 
-FROM {{ source('public_workspace', 'raw_full_schools_data') }}
+FROM {{ source('public_workspace', 'raw_full_osm_schools_data') }}
