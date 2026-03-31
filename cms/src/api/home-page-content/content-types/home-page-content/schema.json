@@ -11,7 +11,7 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "abouthomePage": {
+    "aboutHomePage": {
       "displayName": "about",
       "type": "component",
       "repeatable": false,
