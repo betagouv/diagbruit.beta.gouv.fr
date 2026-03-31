@@ -3,7 +3,14 @@ import { tss } from "tss-react/dsfr";
 import CardPreco from "../ui/CardPreco";
 import useGetPrecosCards from "../../hooks/useGetPrecosCards";
 
-export const MostRecentPreco = () => {
+export interface MostRecentPrecoProps {
+    id: number;
+    title: string;
+    description: string
+}
+
+
+export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) => {
     const { cx, classes } = useStyles();
     const { precos: cards } = useGetPrecosCards({
         "fields[0]": "title",
@@ -15,10 +22,8 @@ export const MostRecentPreco = () => {
 
     return (
         <div className={cx(classes.contentContainer)}>
-            <h1>Des solutions pour se protéger du bruit</h1>
-            <p>Conseils, informations techniques et bonnes pratiques vulgarisées :
-                notre médiathèque de préconisations vous aide à anticiper les risques sonores et à
-                protéger la santé des futurs résidents dès la phase de conception.</p>
+            <h1>{content.title}</h1>
+            <p>{content.description}</p>
             <div className={cx(classes.cardContainer)}>
                 {cards.map((c) => (
                     <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />

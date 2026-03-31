@@ -7,13 +7,51 @@ import AddressSearch, {
 } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { encode } from "../utils/compression";
-import { MostRecentPreco } from "../components/home/MostRecentPreco";
-import { AvailabilityMap } from "../components/home/AvailabilityMap";
-import About from "../components/home/About";
+import { MostRecentPreco, MostRecentPrecoProps } from "../components/home/MostRecentPreco";
+import { AvailabilityMapProps, AvailabilityMap } from "../components/home/AvailabilityMap";
+import About, { AboutHomePageProps, PartnersProps } from "../components/home/About";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Loader } from "../components/ui/Loader";
+
+interface HomePageContent {
+  availabilityMapContent: AvailabilityMapProps;
+  aboutHomePage: AboutHomePageProps;
+  mostRecentPreco: MostRecentPrecoProps;
+  partners: PartnersProps;
+}
 
 function HomePage() {
   const { cx, classes } = useStyles();
+  const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsLoading(true);
+    setNotFound(false);
+    axios
+      .get(`${process.env.REACT_APP_CMS_URL}/api/home-page-content`, {
+        params: {
+          populate: "*",
+        },
+      })
+      .then((res) => {
+        const item = res.data.data ?? null;
+        if (!item) {
+          setNotFound(true);
+        } else {
+          setHomeContent(item);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   let formValues: any;
 
@@ -28,6 +66,11 @@ function HomePage() {
 
   return (
     <div>
+      {isLoading && (
+        <div className={cx(classes.loaderContainer)}>
+          <Loader text="Chargement..." />
+        </div>
+      )}
       <HomeHero />
       <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
         <img src="/images/search.svg" alt="search icon" />
@@ -70,9 +113,15 @@ function HomePage() {
           limit={3}
         />
       </div>
-      <MostRecentPreco />
-      <AvailabilityMap />
-      <About />
+      {homeContent?.mostRecentPreco && (
+        <MostRecentPreco content={homeContent.mostRecentPreco} />
+      )}
+      {homeContent?.availabilityMapContent && (
+        <AvailabilityMap content={homeContent.availabilityMapContent} />
+      )}
+      {homeContent?.aboutHomePage && homeContent?.partners && (
+        <About content={homeContent.aboutHomePage} partners={homeContent.partners} />
+      )}
     </div>
   );
 }
@@ -96,6 +145,18 @@ const useStyles = tss.create(() => ({
     [fr.breakpoints.down("md")]: {
       width: "100%",
     },
+  },
+  loaderContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    display: "flex",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+    zIndex: 9999,
   },
 }));
 
