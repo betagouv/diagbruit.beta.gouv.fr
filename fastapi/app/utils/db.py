@@ -513,7 +513,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
             intersects = db.query(
                 func.ST_Intersects(buffered_point_4326, safe_geom)
             ).filter(
-                NoiseSourceItem.pk == r.id
+                NoiseSourceItem.pk == r.pk
             ).scalar()
             
             if intersects:
@@ -539,7 +539,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
                         )
                     )
                 ).filter(
-                    NoiseSourceItem.pk == r.id
+                    NoiseSourceItem.pk == r.pk
                 ).scalar()
                 
                 result.append({
