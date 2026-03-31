@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import type { Settings } from "../utils/types";
+import TallyForm from "../components/diagnostic/TallyForm";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -136,6 +137,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
       >
         {children}
+        <TallyForm />
       </div>
       <Footer
         accessibility="non compliant"
