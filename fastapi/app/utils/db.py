@@ -493,8 +493,6 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
             cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry"),
             cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point")
         ).filter(*dept_filter)
-
-        print(codedept)
         
         result = []
         for r in stmt.all():
