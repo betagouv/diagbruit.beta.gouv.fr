@@ -555,7 +555,7 @@ export interface ApiHomePageContentHomePageContent
     draftAndPublish: true;
   };
   attributes: {
-    abouthomePage: Schema.Attribute.Component<'global.about', false> &
+    aboutHomePage: Schema.Attribute.Component<'global.about', false> &
       Schema.Attribute.Required;
     availabilityMapContent: Schema.Attribute.Component<
       'global.availability-map',
