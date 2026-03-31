@@ -38,7 +38,7 @@ const useStyles = tss.withName(AvailabilityMap.name).create(() => ({
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),
-        borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        borderBottom: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
         marginLeft: "calc(-50vw + 50%)",
         marginRight: "calc(-50vw + 50%)",
         paddingLeft: "calc(50vw - 50%)",
