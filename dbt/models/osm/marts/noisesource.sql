@@ -9,7 +9,8 @@
 SELECT
     label,
     geometry,
-    category_slug
+    category_slug,
+    meta_code_dep AS codedept
 FROM {{ ref('noisesource_stras') }}
 
 UNION ALL
@@ -17,7 +18,8 @@ UNION ALL
 SELECT
     name AS label,
     geometry,
-    category_slug
+    category_slug,
+    meta_code_dep AS codedept
 FROM {{ ref('int_osm_slug') }}
 
 UNION ALL
@@ -25,5 +27,6 @@ UNION ALL
 SELECT
     name AS label,
     geometry,
-    category_slug
+    category_slug,
+    codedept
 FROM {{ ref('int_schools_slug') }}
