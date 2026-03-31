@@ -17,6 +17,7 @@ import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import CardsDisplay from "./CardsDisplay";
+import SelectorContent from "./SelectorContent";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -232,30 +233,15 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       ) : (
         <div className={cx(classes.container)}>
-          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-            <div className={fr.cx("fr-col-3")}>
-              <nav>
-                <ul className={cx(classes.selectorList)}>
-                  {diagnosticTabs.map((tab) => (
-                    <li
-                      key={tab.tabId}
-                      className={cx(classes.selectorItem, tab.tabId === activeTabId && classes.selectorItemActive)}
-                      onClick={() => {
-                        setActiveTabId(tab.tabId);
-                        replaceSearchParams(tab.tabId);
-                        trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
-                      }}
-                    >
-                      {tab.label}
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-            <div className={fr.cx("fr-col-9")}>
-              {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
-            </div>
-          </div>
+          <SelectorContent
+            tabs={diagnosticTabs}
+            activeTabId={activeTabId}
+            onTabChange={(tabId) => {
+              setActiveTabId(tabId);
+              replaceSearchParams(tabId);
+              trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tabId}`);
+            }}
+          />
           {devMode && (
             <Accordion label="Voir le retour de l'API" titleAs="h2">
               <pre>
@@ -313,30 +299,6 @@ const useStyles = tss.create(() => ({
     "& > *:not(:last-child)": {
       marginRight: fr.spacing("2v"),
     },
-  },
-  selectorList: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-    display: "flex",
-    flexDirection: "column",
-    gap: fr.spacing("1v"),
-    borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-  },
-  selectorItem: {
-    padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
-    cursor: "pointer",
-    borderLeft: `3px solid transparent`,
-    fontWeight: 700,
-    color: fr.colors.decisions.text.default.grey.default,
-    "&:hover": {
-      borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
-      color: fr.colors.decisions.text.active.blueFrance.default,
-    },
-  },
-  selectorItemActive: {
-    borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
-    color: fr.colors.decisions.text.active.blueFrance.default,
   },
 }));
 
