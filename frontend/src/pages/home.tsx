@@ -13,6 +13,7 @@ import About, { AboutHomePageProps, PartnersProps } from "../components/home/Abo
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
+import DiagPreview from "../components/home/DiagPreview";
 
 interface HomePageContent {
   availabilityMapContent: AvailabilityMapProps;
@@ -124,6 +125,7 @@ function HomePage() {
           limit={3}
         />
       </div>
+      <DiagPreview />
       {homeContent?.mostRecentPreco && (
         <MostRecentPreco content={homeContent.mostRecentPreco} />
       )}
