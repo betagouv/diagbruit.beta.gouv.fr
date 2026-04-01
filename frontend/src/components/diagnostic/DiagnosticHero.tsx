@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import {
   getColorFromScore,
@@ -7,6 +6,7 @@ import {
 } from "../../utils/tools";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
+import DiagnosticTag from "./DiagnosticTag";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
@@ -45,15 +45,11 @@ const DiagnosticHero = ({
               </p>
               <div>
                 {diagnostic.equivalent_ambiences.map((ambience) => (
-                  <Tag
+                  <DiagnosticTag
                     key={ambience}
-                    className={cx(
-                      classes.ambienceTag,
-                      fr.cx("fr-mr-2v", "fr-mb-2v"),
-                    )}
-                  >
-                    {ambience}
-                  </Tag>
+                    ambience={ambience}
+                    className={cx(classes.ambienceTag, fr.cx("fr-mr-2v", "fr-mb-2v"))}
+                  />
                 ))}
               </div>
             </>
