@@ -13,7 +13,7 @@ const SonoScorePreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
     const { cx, classes } = useStyles();
 
     return (
-        <div className={cx(classes.sonoscoreContainer)}>
+        <div className={cx(classes.sonoscoreContainer, "fr-col-8")}>
             <img src="/images/sonoscorePreview.png" alt="Légende du Sonoscore" className={cx(classes.image)} />
             <DiagnosticScoreOnScale score={diagnosticItem.diagnostic.score} db={diagnosticItem.diagnostic.max_db_lden} light />
             <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>
@@ -45,7 +45,7 @@ const SonoScorePreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
 const useStyles = tss.withName(SonoScorePreview.name).create(() => ({
     sonoscoreContainer: {
         padding: fr.spacing("4v"),
-        margin: fr.spacing("10w"),
+        margin: `${fr.spacing("6w")} auto`,
         backgroundColor: fr.colors.decisions.background.default.grey.default,
     },
     redAmbienceTag: {
