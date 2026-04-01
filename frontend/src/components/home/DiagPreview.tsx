@@ -3,21 +3,39 @@ import { useSearchParams } from "react-router-dom";
 import SelectorContent from "../diagnostic/SelectorContent";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
-import type { DiagnosticItem } from "../../utils/types";
+import type { DiagnosticItem, Geometry } from "../../utils/types";
 import SonoScorePreview from "./SonoScorePreview";
 import RegulationPreview from "./RegulationPreview";
+import SolutionPreview from "./SolutionPreview";
+
+const parcelRing = [
+    [-0.5731920897960663, 44.81322138712943],
+    [-0.5731411278247833, 44.81333935942152],
+    [-0.5730418860912323, 44.81335267885870],
+    [-0.5730016529560089, 44.81335743579979],
+    [-0.5729909241199493, 44.81335838718795],
+    [-0.5729842185974121, 44.81336504690475],
+    [-0.5729144811630249, 44.81337360939662],
+    [-0.5728407204151154, 44.81337741494815],
+    [-0.5728340148925781, 44.81332794275863],
+    [-0.5728246271610260, 44.81323470659384],
+    [-0.5728983879089355, 44.81323090103291],
+    [-0.5729882419109344, 44.81322519269099],
+    [-0.5731800198554993, 44.81321472739606],
+    [-0.5731920897960663, 44.81322138712943],
+];
 
 const dummyDiagnosticItem: DiagnosticItem = {
     parcelle: {
         code_insee: "33063",
         section: "DL",
         numero: "0039",
-        geometry: [[[0, 0]]],
+        geometry: [parcelRing] as unknown as Geometry,
     },
     diagnostic: {
         score: 10,
         max_db_lden: 75,
-        min_db_lden: 70,
+        min_db_lden: 65,
         isolation_min: 30,
         isolation_max: 38,
         flags: {
@@ -29,7 +47,41 @@ const dummyDiagnosticItem: DiagnosticItem = {
             isMultiExposedLdenLn: false,
             isPriorityZone: false,
         },
-        land_intersections_ld: [],
+        land_intersections_ld: [
+            {
+                typeterr: "RD",
+                typesource: "R",
+                indicetype: "Lden",
+                codeinfra: "A630",
+                legende: 75,
+                cbstype: "CBS_A",
+                geometry_intersection: [parcelRing] as unknown as Geometry,
+                percent_impacted: 60,
+                direction: "N",
+            },
+            {
+                typeterr: "RD",
+                typesource: "R",
+                indicetype: "Lden",
+                codeinfra: "A630",
+                legende: 70,
+                cbstype: "CBS_A",
+                geometry_intersection: [parcelRing] as unknown as Geometry,
+                percent_impacted: 30,
+                direction: "NE",
+            },
+            {
+                typeterr: "FERRE",
+                typesource: "F",
+                indicetype: "Lden",
+                codeinfra: "LGV_SEA",
+                legende: 65,
+                cbstype: "CBS_F",
+                geometry_intersection: [parcelRing] as unknown as Geometry,
+                percent_impacted: 10,
+                direction: "E",
+            },
+        ],
         land_intersections_ln: [],
         zones: [],
         air_intersections: [],
@@ -77,9 +129,9 @@ export const DiagPreview = () => {
             description: "Analyse de la position du bâti au regard des risques sonores, avec des préconisations concrètes d'isolation et d'aménagement.",
             isDefault: activeTabId === "solutions",
             content: (
-                <>
-                    Tab3
-                </>
+                <div className={cx(classes.solutionPreviewContainer, fr.cx("fr-p-10v"))}>
+                    <SolutionPreview diagnosticItem={dummyDiagnosticItem} />
+                </div>
             ),
         },
     ];
@@ -113,6 +165,9 @@ const useStyles = tss.create(() => ({
         backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
         width: "100%",
     },
+    solutionPreviewContainer: {
+        backgroundColor: fr.colors.decisions.background.alt.grey.default,
+        width: "100%",
     }
 
 
