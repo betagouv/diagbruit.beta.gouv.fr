@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import type { DiagnosticItem } from "../../utils/types";
 import SonoScorePreview from "./SonoScorePreview";
+import RegulationPreview from "./RegulationPreview";
 
 const dummyDiagnosticItem: DiagnosticItem = {
     parcelle: {
@@ -54,7 +55,7 @@ export const DiagPreview = () => {
             description: "Niveau d'exposition sonore de la parcelle, calculé à partir des données certifiées sur le bruit routier, ferroviaire et aérien.",
             isDefault: activeTabId === "sonoscore",
             content: (
-                <div className={cx(classes.diagPreviewContainer, fr.cx("fr-p-10v"))}>
+                <div className={cx(classes.sonoscorePreviewContainer, fr.cx("fr-p-10v"))}>
                     <SonoScorePreview diagnosticItem={dummyDiagnosticItem} />
                 </div>
             ),
@@ -65,9 +66,9 @@ export const DiagPreview = () => {
             description: "Résumé clair des réglementations applicables sur la parcelle (classement sonore, PEB, PLU, PPBE, et isolation réglementaire).",
             isDefault: activeTabId === "reglementation",
             content: (
-                <>
-                    Tab2
-                </>
+                <div className={cx(classes.regulationPreviewContainer, fr.cx("fr-p-10v"))}>
+                    <RegulationPreview diagnosticItem={dummyDiagnosticItem} />
+                </div>
             ),
         },
         {
@@ -104,10 +105,16 @@ export const DiagPreview = () => {
 }
 
 const useStyles = tss.create(() => ({
-    diagPreviewContainer: {
+    sonoscorePreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
         width: "100%",
+    },
+    regulationPreviewContainer: {
+        backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
+        width: "100%",
+    },
     }
+
 
 }));
 
