@@ -12,11 +12,12 @@ export interface SelectorTab {
 interface SelectorContentProps {
     tabs: SelectorTab[];
     activeTabId: string;
+    border?: boolean;
     onTabChange: (tabId: string) => void;
 }
 
-const SelectorContent = ({ tabs, activeTabId, onTabChange }: SelectorContentProps) => {
-    const { cx, classes } = useStyles();
+const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: SelectorContentProps) => {
+    const { cx, classes } = useStyles({ border });
 
     return (
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
@@ -45,7 +46,7 @@ const SelectorContent = ({ tabs, activeTabId, onTabChange }: SelectorContentProp
     );
 };
 
-const useStyles = tss.withName(SelectorContent.name).create(() => ({
+const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolean }>().create(({ border }) => ({
     selectorList: {
         listStyle: "none",
         padding: 0,
@@ -53,7 +54,7 @@ const useStyles = tss.withName(SelectorContent.name).create(() => ({
         display: "flex",
         flexDirection: "column",
         gap: fr.spacing("1v"),
-        borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        borderRight: `${border ? `1px solid ${fr.colors.decisions.border.default.grey.default}` : "none"}`,
     },
     selectorItem: {
         padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,

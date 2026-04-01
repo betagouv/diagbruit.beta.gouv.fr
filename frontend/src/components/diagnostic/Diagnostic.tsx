@@ -236,6 +236,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <SelectorContent
             tabs={diagnosticTabs}
             activeTabId={activeTabId}
+            border
             onTabChange={(tabId) => {
               setActiveTabId(tabId);
               replaceSearchParams(tabId);
