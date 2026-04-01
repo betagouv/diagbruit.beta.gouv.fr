@@ -59,22 +59,22 @@ const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolea
     selectorItem: {
         padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
         cursor: "pointer",
-        borderLeft: `3px solid transparent`,
+        borderLeft: `2px solid transparent`,
         fontWeight: 700,
         color: fr.colors.decisions.text.default.grey.default,
         "&:hover": {
-            borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
-            color: fr.colors.decisions.text.active.blueFrance.default,
+            borderLeftColor: fr.colors.decisions.background.flat.blueFrance.default,
+            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
             "& span": {
-                color: fr.colors.decisions.text.active.blueFrance.default,
+                color: fr.colors.decisions.text.actionHigh.blueFrance.default,
             },
         },
     },
     selectorItemActive: {
-        borderLeftColor: fr.colors.decisions.border.default.blueFrance.default,
-        color: fr.colors.decisions.text.active.blueFrance.default,
+        borderLeftColor: fr.colors.decisions.background.flat.blueFrance.default,
+        color: fr.colors.decisions.text.actionHigh.blueFrance.default,
         "& span": {
-            color: fr.colors.decisions.text.active.blueFrance.default,
+            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
         },
     },
     selectorItemDescription: {
