@@ -2,12 +2,9 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectorContent from "../diagnostic/SelectorContent";
 import { fr } from "@codegouvfr/react-dsfr";
-import DiagnosticScoreOnScale from "../diagnostic/DiagnosticScoreOnScale";
-import DiagnosticHero from "../diagnostic/DiagnosticHero";
 import { tss } from "tss-react/dsfr";
 import type { DiagnosticItem } from "../../utils/types";
-import DiagnosticTag from "../diagnostic/DiagnosticTag";
-import DiagnosticNoiseScore from "../diagnostic/DiagnosticNoiseScore";
+import SonoScorePreview from "./SonoScorePreview";
 
 const dummyDiagnosticItem: DiagnosticItem = {
     parcelle: {
@@ -58,32 +55,7 @@ export const DiagPreview = () => {
             isDefault: activeTabId === "sonoscore",
             content: (
                 <div className={cx(classes.diagPreviewContainer, fr.cx("fr-p-10v"))}>
-                    <div className={cx(classes.sonoscoreContainer)}>
-                        <img src="/images/sonoscorePreview.png" alt="Légende du Sonoscore" className={cx(classes.image)} />
-                        <DiagnosticScoreOnScale score={10} db={70} light />
-                        <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>
-                            Source de bruit réglementée (aérien, route et ferroviaire)
-                        </p>
-                        <div className="fr-col-md-7">
-                            <div className="fr-mb-2v">
-                                <DiagnosticNoiseScore
-                                    score={dummyDiagnosticItem.diagnostic.score}
-                                    db={dummyDiagnosticItem.diagnostic.max_db_lden}
-                                    disabled={dummyDiagnosticItem.diagnostic.flags.hasNoisemapWarning}
-                                />
-                            </div>
-                            <p className={cx(fr.cx("fr-mb-2v"))}>
-                                Niveaux sonores équivalents :
-                            </p>
-                            {dummyDiagnosticItem.diagnostic.equivalent_ambiences.map((ambience) => (
-                                <DiagnosticTag
-                                    key={ambience}
-                                    ambience={ambience}
-                                    className={cx(classes.ambienceTag, fr.cx("fr-mr-2v", "fr-mb-2v"))}
-                                />
-                            ))}
-                        </div>
-                    </div>
+                    <SonoScorePreview diagnosticItem={dummyDiagnosticItem} />
                 </div>
             ),
         },
@@ -135,21 +107,6 @@ const useStyles = tss.create(() => ({
     diagPreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
         width: "100%",
-    },
-    sonoscoreContainer: {
-        padding: fr.spacing("4v"),
-        margin: fr.spacing("10w"),
-        backgroundColor: fr.colors.decisions.background.default.grey.default
-    },
-    ambienceTag: {
-        backgroundColor: fr.colors.decisions.background.actionHigh.redMarianne.active,
-    },
-    image: {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        display: "block",
-        marginBottom: fr.spacing("4v"),
     }
 
 }));
