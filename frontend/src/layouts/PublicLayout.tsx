@@ -49,7 +49,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   }
 
   return (
-    <main style={{ overflowX: "hidden" }}>
+    <main style={{ overflowX: "clip" }}>
       {IS_TEST && (
         <Notice
           title="Vous utilisez actuellement l'environnement de test de diagBruit"

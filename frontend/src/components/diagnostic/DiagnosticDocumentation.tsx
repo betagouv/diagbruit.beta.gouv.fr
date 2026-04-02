@@ -11,7 +11,7 @@ export interface CardPrecoProps {
   slug: string;
 }
 
-export const CardsDisplay = () => {
+export const DiagnosticDocumentation = () => {
   const { cx, classes } = useStyles();
   const [cards, setCards] = useState<CardPrecoProps[]>([]);
   const [search, setSearch] = useState("");
@@ -103,7 +103,7 @@ export const CardsDisplay = () => {
   );
 };
 
-const useStyles = tss.withName(CardsDisplay.name).create(() => ({
+const useStyles = tss.withName(DiagnosticDocumentation.name).create(() => ({
   searchContainer: {
     marginBottom: fr.spacing("3w"),
     maxWidth: 350,
@@ -123,4 +123,4 @@ const useStyles = tss.withName(CardsDisplay.name).create(() => ({
   },
 }));
 
-export default CardsDisplay;
+export default DiagnosticDocumentation;
