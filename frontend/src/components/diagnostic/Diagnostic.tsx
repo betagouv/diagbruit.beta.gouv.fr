@@ -18,7 +18,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import CardsDisplay from "./CardsDisplay";
+import DiagnosticCardsDisplay from "./DiagnosticCardsDisplay";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -157,12 +157,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: tabId === "recommendations",
       content: (
         <>
-          <CardsDisplay />
-
+          <DiagnosticCardsDisplay />
         </>
       ),
     },
-
   ];
 
   useEffect(() => {
@@ -228,7 +226,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           </h3>
           <Alert
             description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
-            onClose={function noRefCheck() { }}
+            onClose={function noRefCheck() {}}
             severity="info"
             title=""
           />
