@@ -1,21 +1,13 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
-export interface GlobalConditions extends Struct.ComponentSchema {
-  collectionName: 'components_global_conditions';
+export interface GlobalArray extends Struct.ComponentSchema {
+  collectionName: 'components_global_arrays';
   info: {
     description: '';
-    displayName: 'conditions';
-    icon: 'oneToMany';
+    displayName: 'Array';
+    icon: 'apps';
   };
-  attributes: {
-    isolation_gte: Schema.Attribute.Integer;
-    isolation_lte: Schema.Attribute.Integer;
-    score_gte: Schema.Attribute.Integer;
-    score_lte: Schema.Attribute.Integer;
-    source: Schema.Attribute.Enumeration<['all', 'land', 'air', 'multi']> &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'all'>;
-  };
+  attributes: {};
 }
 
 export interface GlobalLink extends Struct.ComponentSchema {
@@ -44,12 +36,26 @@ export interface GlobalLocalDocumentationCodeInsee
   };
 }
 
+export interface GlobalTitleTextArray extends Struct.ComponentSchema {
+  collectionName: 'components_global_title_text_arrays';
+  info: {
+    description: '';
+    displayName: 'title-text-array';
+    icon: 'apps';
+  };
+  attributes: {
+    text: Schema.Attribute.Text;
+    title: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
-      'global.conditions': GlobalConditions;
+      'global.array': GlobalArray;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
+      'global.title-text-array': GlobalTitleTextArray;
     }
   }
 }
