@@ -444,7 +444,7 @@ async def upsert_diagnostic_result(
         await loop.run_in_executor(None, db.close)
 
 
-def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
+def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, codedept: str = None) -> Dict[str, Any]:
     """
     Query the database for noise source features that intersect with the given WKT geometry.
     
@@ -482,23 +482,22 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
         search_buffer = func.ST_Buffer(geom_2154, max_buffer)
         search_buffer_4326 = func.ST_Transform(search_buffer, 4326)
         
+        dept_filter = [func.ST_Intersects(NoiseSourceItem.geometry, search_buffer_4326)]
+        if codedept is not None:
+            dept_filter.append(NoiseSourceItem.codedept == codedept)
+
         stmt = db.query(
-            NoiseSourceItem.id,
+            NoiseSourceItem.pk,
             NoiseSourceItem.label,
             NoiseSourceItem.category_slug,
             cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry"),
             cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point")
-        ).filter(
-            func.ST_Intersects(
-                NoiseSourceItem.geometry,
-                search_buffer_4326
-            )
-        )
+        ).filter(*dept_filter)
         
         result = []
-        
         for r in stmt.all():
             category_slug = r.category_slug
+            print(r)
             
             if category_slug not in category_info:
                 logger.warning(f"Category slug '{category_slug}' not found in Strapi categories")
@@ -515,7 +514,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
             intersects = db.query(
                 func.ST_Intersects(buffered_point_4326, safe_geom)
             ).filter(
-                NoiseSourceItem.id == r.id
+                NoiseSourceItem.pk == r.pk
             ).scalar()
             
             if intersects:
@@ -541,7 +540,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str) -> D
                         )
                     )
                 ).filter(
-                    NoiseSourceItem.id == r.id
+                    NoiseSourceItem.pk == r.pk
                 ).scalar()
                 
                 result.append({

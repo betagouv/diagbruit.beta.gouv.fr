@@ -8,7 +8,7 @@ WITH osm_validated AS (
         type,
         meta_code_dep,
         geometry
-    FROM {{ ref('int_osm_validate') }}
+    FROM {{ ref('int_foods_validate') }}
 )
 
 SELECT

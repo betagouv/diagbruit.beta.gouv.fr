@@ -22,21 +22,23 @@ Copy `.env.example` to `.env`: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_P
 ## Architecture
 
 **Two ingestion scripts:**
+
 - `ingest_shapefiles.py` — reads shapefiles via GeoPandas, supports `--ignore-column`, column renaming, drops Z-coordinates
 - `ingest_geojson.py` — reads GeoJSON via GeoPandas; if CRS is missing, defaults to EPSG:4326; supports `--if-exists skip` to avoid re-ingesting
 
 Both write to the `public_workspace` schema as `raw_*` tables, which are the sources for dbt staging models.
 
 **`launch-ingestion.sh`** orchestrates all ingestion in order:
+
 1. `geo_departements` — department boundaries
 2. `raw_noisemap_*` — noise maps (INFRA, AGGLO, FASTLINES variants)
 3. `raw_soundclassification_*` — road/rail/tram sound classifications
 4. `raw_peb` — protected zone data
 5. `raw_topo` — BDNB building data (downloaded from S3 if missing)
 6. `raw_full_stras_data` — Strasbourg licensed terraces (GeoJSON)
-7. `raw_full_osm_data` — OSM food service POIs for Bordeaux & Strasbourg (GeoJSON)
+7. `raw_full_osm_foods_data` — OSM food service POIs for Bordeaux & Strasbourg (GeoJSON)
 
-**Order matters:** Strasbourg data (`raw_full_stras_data`) must be ingested before OSM data (`raw_full_osm_data`) to match the dbt pipeline dependency.
+**Order matters:** Strasbourg data (`raw_full_stras_data`) must be ingested before OSM data (`raw_full_osm_foods_data`) to match the dbt pipeline dependency.
 
 ## Adding New Data Sources
 

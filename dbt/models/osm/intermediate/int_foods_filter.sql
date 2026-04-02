@@ -8,7 +8,7 @@ WITH full_osm AS (
         type,
         meta_code_dep,
         geometry
-    FROM {{ ref('stg_osm') }}
+    FROM {{ ref('stg_foods') }}
 )
 
 SELECT

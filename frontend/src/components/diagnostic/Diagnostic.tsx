@@ -16,8 +16,9 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import CardsDisplay from "./CardsDisplay";
+import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 import SelectorContent from "./SelectorContent";
+
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -156,11 +157,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: activeTabId === "recommendations",
       content: (
         <>
-          <CardsDisplay />
+          <DiagnosticCardsDisplay />
         </>
       ),
     },
-
   ];
 
   useEffect(() => {

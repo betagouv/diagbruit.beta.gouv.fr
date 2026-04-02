@@ -124,8 +124,12 @@ FILES_STRAS=(
   "inputs/strasbourg/strasbourg-terrasses-autorisees-2025.geojson raw_full_stras_data --if-exists replace"
 )
 
-FILES_OSM=(
-  "inputs/osm/osm_food_service_bordeaux_strasbourg.geojson raw_full_osm_data --if-exists replace"
+FILES_OSM_FOODS=(
+  "inputs/osm/osm_food_service_bordeaux_strasbourg.geojson raw_full_osm_foods_data --if-exists replace"
+)
+
+FILES_OSM_SCHOOLS=(
+  "inputs/osm/osm_schools_bordeaux_strasbourg.geojson raw_full_osm_schools_data --if-exists replace"
 )
 
 # Download batiment files from S3 if needed
@@ -142,5 +146,6 @@ for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_TOPO[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_STRAS[@]}"; do run_ingest_geojson $cmd; done
-for cmd in "${FILES_OSM[@]}"; do run_ingest_geojson $cmd; done
+for cmd in "${FILES_OSM_FOODS[@]}"; do run_ingest_geojson $cmd; done
+for cmd in "${FILES_OSM_SCHOOLS[@]}"; do run_ingest_geojson $cmd; done
 

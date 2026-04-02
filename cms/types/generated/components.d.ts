@@ -12,12 +12,12 @@ export interface GlobalAbout extends Struct.ComponentSchema {
     profilePicture: Schema.Attribute.Media<'images' | 'files'>;
     source: Schema.Attribute.String;
     textContent: Schema.Attribute.RichText &
-      Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
-        {
-          preset: 'defaultHtml';
-        }
-      >;
+    Schema.Attribute.CustomField<
+      'plugin::ckeditor5.CKEditor',
+      {
+        preset: 'defaultHtml';
+      }
+    >;
   };
 }
 
@@ -28,12 +28,12 @@ export interface GlobalAccordion extends Struct.ComponentSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText &
-      Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
-        {
-          preset: 'defaultHtml';
-        }
-      >;
+    Schema.Attribute.CustomField<
+      'plugin::ckeditor5.CKEditor',
+      {
+        preset: 'defaultHtml';
+      }
+    >;
     title: Schema.Attribute.String;
   };
 }
@@ -55,12 +55,12 @@ export interface GlobalAvailabilityMap extends Struct.ComponentSchema {
   };
   attributes: {
     textContent: Schema.Attribute.RichText &
-      Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
-        {
-          preset: 'defaultHtml';
-        }
-      >;
+    Schema.Attribute.CustomField<
+      'plugin::ckeditor5.CKEditor',
+      {
+        preset: 'defaultHtml';
+      }
+    >;
     title: Schema.Attribute.String;
   };
 }
@@ -78,8 +78,8 @@ export interface GlobalConditions extends Struct.ComponentSchema {
     score_gte: Schema.Attribute.Integer;
     score_lte: Schema.Attribute.Integer;
     source: Schema.Attribute.Enumeration<['all', 'land', 'air', 'multi']> &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'all'>;
+    Schema.Attribute.Required &
+    Schema.Attribute.DefaultTo<'all'>;
   };
 }
 
@@ -92,12 +92,12 @@ export interface GlobalHomeSearch extends Struct.ComponentSchema {
   attributes: {
     banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     description: Schema.Attribute.RichText &
-      Schema.Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
-        {
-          preset: 'defaultHtml';
-        }
-      >;
+    Schema.Attribute.CustomField<
+      'plugin::ckeditor5.CKEditor',
+      {
+        preset: 'defaultHtml';
+      }
+    >;
     title: Schema.Attribute.String;
   };
 }
@@ -177,26 +177,6 @@ export interface GlobalStatsAndQuiz extends Struct.ComponentSchema {
   };
 }
 
-export interface GlobalTest extends Struct.ComponentSchema {
-  collectionName: 'components_global_tests';
-  info: {
-    displayName: 'test';
-  };
-  attributes: {};
-}
-
-export interface GlobalTextArray extends Struct.ComponentSchema {
-  collectionName: 'components_global_text_arrays';
-  info: {
-    description: '';
-    displayName: 'text-array';
-    icon: 'apps';
-  };
-  attributes: {
-    text: Schema.Attribute.Text;
-  };
-}
-
 export interface GlobalTitleTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_title_text_arrays';
   info: {
@@ -225,8 +205,6 @@ declare module '@strapi/strapi' {
       'global.partners': GlobalPartners;
       'global.stats': GlobalStats;
       'global.stats-and-quiz': GlobalStatsAndQuiz;
-      'global.test': GlobalTest;
-      'global.text-array': GlobalTextArray;
       'global.title-text-array': GlobalTitleTextArray;
     }
   }

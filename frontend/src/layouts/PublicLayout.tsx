@@ -50,7 +50,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   }
 
   return (
-    <main>
+    <main style={{ overflowX: "hidden" }}>
       {IS_TEST && (
         <Notice
           title="Vous utilisez actuellement l'environnement de test de diagBruit"
@@ -84,7 +84,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }
         operatorLogo={{
           alt: "Cerema, climat et territoires de demain",
-          imgUrl: "images/cerema.svg",
+          imgUrl: "/images/cerema.svg",
           orientation: "horizontal",
         }}
         homeLinkProps={{
@@ -129,8 +129,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             </a>
           </>
         }
-        isClosable
-        onClose={function noRefCheck() { }}
         className={cx(classes.betaNotice)}
       />
       <div
