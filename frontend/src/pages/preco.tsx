@@ -62,7 +62,7 @@ export const PrecoPage = () => {
     );
   }
 
-  const keyPointsTitle = "Les 4 points clés avant installation";
+  const keyPointsTitle = "Les 4 points clés";
 
   const parser = new DOMParser();
   const aRetenirDoc = parser.parseFromString(preco.aRetenir, "text/html");
@@ -75,7 +75,7 @@ export const PrecoPage = () => {
   const enrichedARetenir = aRetenirDoc.body.innerHTML;
 
   const h2Links = [
-    ...(preco.keyPoints
+    ...(preco.keyPoints && preco.keyPoints.length > 0
       ? [{ id: toAnchorId(keyPointsTitle), label: keyPointsTitle }]
       : []),
     ...h2Elements.map((h2) => ({ id: h2.id, label: h2.textContent ?? "" })),
@@ -98,16 +98,18 @@ export const PrecoPage = () => {
         </p>
 
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-          <div className={cx("fr-col-3", classes.stickyNav)}>
-            <Summary
-              links={h2Links.map((link) => ({
-                text: link.label,
-                linkProps: { href: `#${link.id}` },
-              }))}
-            />
-          </div>
+          {h2Links.length > 0 && (
+            <div className={cx("fr-col-3", classes.stickyNav)}>
+              <Summary
+                links={h2Links.map((link) => ({
+                  text: link.label,
+                  linkProps: { href: `#${link.id}` },
+                }))}
+              />
+            </div>
+          )}
 
-          <div className="fr-col-9">
+          <div className={h2Links.length > 0 ? "fr-col-9" : "fr-col-12"}>
             {preco.aRetenir && (
               <Alert
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
@@ -123,7 +125,7 @@ export const PrecoPage = () => {
                 small
               />
             )}
-            {preco.keyPoints && (
+            {preco.keyPoints && preco.keyPoints.length > 0 && (
               <>
                 <h2 id={toAnchorId(keyPointsTitle)}>{keyPointsTitle}</h2>
                 <div
