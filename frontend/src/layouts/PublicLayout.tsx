@@ -83,7 +83,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         }
         operatorLogo={{
           alt: "Cerema, climat et territoires de demain",
-          imgUrl: "images/cerema.svg",
+          imgUrl: "/images/cerema.svg",
           orientation: "horizontal",
         }}
         homeLinkProps={{
@@ -103,7 +103,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </>
         }
         isClosable
-        onClose={function noRefCheck() { }}
+        onClose={function noRefCheck() {}}
         className={cx(classes.betaNotice)}
       />
       <div
