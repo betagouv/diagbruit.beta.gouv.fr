@@ -14,7 +14,7 @@ const SonoScorePreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
 
     return (
         <div className={cx(classes.sonoscoreContainer, "fr-col-8")}>
-            <img src="/images/sonoscorePreview.png" alt="Légende du Sonoscore" className={cx(classes.image)} />
+            <img src="/images/sonoscorePreview.png" alt="Légende du Sonoscore" className={cx(classes.image)} fetchPriority="high" />
             <DiagnosticScoreOnScale score={diagnosticItem.diagnostic.score} db={diagnosticItem.diagnostic.max_db_lden} light />
             <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>
                 Source de bruit réglementée (aérien, route et ferroviaire)
@@ -53,7 +53,8 @@ const useStyles = tss.withName(SonoScorePreview.name).create(() => ({
     },
     image: {
         width: "100%",
-        height: "100%",
+        height: "auto",
+        aspectRatio: "16 / 9",
         objectFit: "cover",
         display: "block",
         marginBottom: fr.spacing("4v"),

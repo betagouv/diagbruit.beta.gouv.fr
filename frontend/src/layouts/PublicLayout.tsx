@@ -101,7 +101,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             text: 'Accueil'
           },
           {
-            isActive: pathname === "/diagnostic",
+            isActive: pathname.startsWith("/diagnostic"),
             linkProps: {
               href: '/diagnostic',
               target: '_self'
@@ -109,7 +109,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             text: 'Diagnostiquer une parcelle'
           },
           {
-            isActive: pathname === "/preco",
+            isActive: pathname.startsWith("/preco"),
             linkProps: {
               href: '/preco',
               target: '_self'
