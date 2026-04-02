@@ -86,7 +86,11 @@ export const PrecoPage = () => {
       {preco.imageBanner && (
         <img
           className={cx(classes.imageBanner)}
-          src={`${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`}
+          src={
+            preco.imageBanner.url.startsWith("/")
+              ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
+              : preco.imageBanner.url
+          }
           alt={preco.imageBanner.alternativeText ?? preco.title}
         />
       )}

@@ -27,13 +27,19 @@ export const CardsDisplay = () => {
         },
       })
       .then((res) => {
-        const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
-          title: item.title,
-          imageUrl: item.imageThumbnail?.url
-            ? `${process.env.REACT_APP_CMS_URL}${item.imageThumbnail.url}`
-            : "",
-          slug: item.slug,
-        }));
+        const items: CardPrecoProps[] = res.data.data.map((item: any) => {
+          const rawImageUrl = item.imageThumbnail?.url ?? "";
+          const imageUrl =
+            rawImageUrl.startsWith("/") && process.env.REACT_APP_CMS_URL
+              ? `${process.env.REACT_APP_CMS_URL}${rawImageUrl}`
+              : rawImageUrl;
+
+          return {
+            title: item.title,
+            imageUrl,
+            slug: item.slug,
+          };
+        });
         setCards(items);
       })
       .catch((err) => {
