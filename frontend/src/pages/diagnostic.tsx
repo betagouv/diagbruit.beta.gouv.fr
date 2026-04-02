@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
 import type { MapGeoJSONFeature } from "react-map-gl/maplibre";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
@@ -11,10 +11,11 @@ import MapComponent, {
 import type { AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
-import { decode } from "../utils/compression";
+import { decode, encode } from "../utils/compression";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
+import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 
 const defaultSearchValues = {
   codeInsee: "",
@@ -26,6 +27,7 @@ const defaultSearchValues = {
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
 
@@ -42,6 +44,13 @@ function DiagnosticPage() {
 
   const [addressDefaultValue, setAddressDefaultValue] =
     useState<AddressFeature>();
+
+  const [showParcelleSearch, setShowParcelleSearch] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    const encoded = params.get("parcelleSearch");
+    return encoded ? decode(encoded) === true : false;
+  });
+
 
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
@@ -213,7 +222,19 @@ function DiagnosticPage() {
         </div>
       )}
       <div className={cx(classes.container)}>
-        <h1 className={fr.cx("fr-mb-4v")}>Votre recherche de parcelle</h1>
+        <h1 className={fr.cx("fr-mb-4v")}>Diagnostiquer une parcelle</h1>
+        <ToggleSwitch
+          className={fr.cx("fr-mb-4v")}
+          label="Rechercher une parcelle"
+          checked={showParcelleSearch}
+          onChange={checked => {
+            setShowParcelleSearch(checked);
+            const params = new URLSearchParams(location.search);
+            params.set("parcelleSearch", encode(checked));
+            navigate({ search: params.toString() }, { replace: true });
+          }}
+        />
+
         {parcelleError && (
           <Alert
             className={fr.cx("fr-my-4v")}
@@ -223,27 +244,28 @@ function DiagnosticPage() {
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
         )}
-        <div className={fr.cx("fr-mt-4v")}>
-          <ParcelleSearch
-            formValues={searchValues}
-            onChange={() => {
-              setParcelleError(false);
-            }}
-            onParcelleRequested={(response) => {
-              if (mapMethodsRef.current?.resetAddress) {
-                mapMethodsRef.current.resetAddress();
-              }
+        {showParcelleSearch && (
+          <div className={fr.cx("fr-mt-4v")}>
+            <ParcelleSearch
+              formValues={searchValues}
+              onChange={() => {
+                setParcelleError(false);
+              }}
+              onParcelleRequested={(response) => {
+                if (mapMethodsRef.current?.resetAddress) {
+                  mapMethodsRef.current.resetAddress();
+                }
 
-              setDiagnosticsResponses([]);
-              if (response.data?.features[0]) {
-                const parcelleFeature = response.data?.features[0];
-                onParcelleSelected(parcelleFeature);
-              } else {
-                setParcelleError(true);
-              }
-            }}
-          />
-        </div>
+                setDiagnosticsResponses([]);
+                if (response.data?.features[0]) {
+                  const parcelleFeature = response.data?.features[0];
+                  onParcelleSelected(parcelleFeature);
+                } else {
+                  setParcelleError(true);
+                }
+              }}
+            />
+          </div>)}
         <MapComponent
           ref={mapMethodsRef}
           noisePins={

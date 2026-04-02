@@ -48,6 +48,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                     onClick={() => {
                         navigate({
                             pathname: "/diagnostic",
+                            search: `?parcelleSearch=${encode(true)}`,
                         });
                     }}
                     priority="secondary"

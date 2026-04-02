@@ -1,10 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
-import HomeHero from "../components/home/HomeHero";
-import AddressSearch, {
-  type AddressFeature,
-} from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { encode } from "../utils/compression";
 import { MostRecentPreco, MostRecentPrecoProps } from "../components/home/MostRecentPreco";
