@@ -76,10 +76,9 @@ const useStyles = tss.withName(About.name).create(() => ({
         paddingBottom: fr.spacing("8w"),
         marginLeft: "calc(-50vw + 50%)",
         marginRight: "calc(-50vw + 50%)",
-        marginBottom: fr.spacing("8v"),
         paddingLeft: "calc(50vw - 50%)",
         paddingRight: "calc(50vw - 50%)",
-        backgroundColor: fr.colors.decisions.background.alt.grey.default,
+        borderBottom: `1px solid #d9d9d9`,
     },
     textContainer: {
         paddingLeft: `${fr.spacing("10w")} !important`,

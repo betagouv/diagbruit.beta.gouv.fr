@@ -134,7 +134,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         className={cx(classes.betaNotice)}
       />
       <div
-        className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
+        className={cx(classes.container, fr.cx("fr-container", "fr-pt-10v"))}
       >
         {children}
         <TallyForm />
