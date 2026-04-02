@@ -580,6 +580,7 @@ export interface ApiHomePageContentHomePageContent
     partners: Schema.Attribute.Component<'global.partners', false> &
       Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    statsAndQuiz: Schema.Attribute.Component<'global.stats-and-quiz', false>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

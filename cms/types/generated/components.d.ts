@@ -21,6 +21,23 @@ export interface GlobalAbout extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalAccordion extends Struct.ComponentSchema {
+  collectionName: 'components_global_accordions';
+  info: {
+    displayName: 'accordion';
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalArray extends Struct.ComponentSchema {
   collectionName: 'components_global_arrays';
   info: {
@@ -135,6 +152,31 @@ export interface GlobalPartners extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalStats extends Struct.ComponentSchema {
+  collectionName: 'components_global_stats';
+  info: {
+    displayName: 'stats';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    sourceLink: Schema.Attribute.String;
+    sourceTitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalStatsAndQuiz extends Struct.ComponentSchema {
+  collectionName: 'components_global_stats_and_quizs';
+  info: {
+    displayName: 'stats&quiz';
+  };
+  attributes: {
+    quiz: Schema.Attribute.Component<'global.accordion', true>;
+    stats: Schema.Attribute.Component<'global.stats', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalTest extends Struct.ComponentSchema {
   collectionName: 'components_global_tests';
   info: {
@@ -172,6 +214,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'global.about': GlobalAbout;
+      'global.accordion': GlobalAccordion;
       'global.array': GlobalArray;
       'global.availability-map': GlobalAvailabilityMap;
       'global.conditions': GlobalConditions;
@@ -180,6 +223,8 @@ declare module '@strapi/strapi' {
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
       'global.most-recent-preco': GlobalMostRecentPreco;
       'global.partners': GlobalPartners;
+      'global.stats': GlobalStats;
+      'global.stats-and-quiz': GlobalStatsAndQuiz;
       'global.test': GlobalTest;
       'global.text-array': GlobalTextArray;
       'global.title-text-array': GlobalTitleTextArray;
