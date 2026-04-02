@@ -14,8 +14,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
 import DiagPreview from "../components/home/DiagPreview";
+import { HomeSearch, HomeSearchProps } from "../components/home/HomeSearch";
 
 interface HomePageContent {
+  homeSearch: HomeSearchProps;
   availabilityMapContent: AvailabilityMapProps;
   aboutHomePage: AboutHomePageProps;
   mostRecentPreco: MostRecentPrecoProps;
@@ -31,6 +33,10 @@ const params = {
   "populate[partners][populate][partnersLogos][fields][1]": "height",
   "populate[partners][populate][partnersLogos][fields][2]": "width",
   "populate[partners][populate][partnersLogos][fields][3]": "url",
+  "populate[homeSearch][populate][banner][fields][0]": "alternativeText",
+  "populate[homeSearch][populate][banner][fields][1]": "height",
+  "populate[homeSearch][populate][banner][fields][2]": "width",
+  "populate[homeSearch][populate][banner][fields][3]": "url",
   "populate[availabilityMapContent][populate]": "*",
   "populate[mostRecentPreco][populate]": "*",
 }
