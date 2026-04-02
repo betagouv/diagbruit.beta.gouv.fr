@@ -10,24 +10,6 @@ export interface GlobalArray extends Struct.ComponentSchema {
   attributes: {};
 }
 
-export interface GlobalConditions extends Struct.ComponentSchema {
-  collectionName: 'components_global_conditions';
-  info: {
-    description: '';
-    displayName: 'conditions';
-    icon: 'oneToMany';
-  };
-  attributes: {
-    isolation_gte: Schema.Attribute.Integer;
-    isolation_lte: Schema.Attribute.Integer;
-    score_gte: Schema.Attribute.Integer;
-    score_lte: Schema.Attribute.Integer;
-    source: Schema.Attribute.Enumeration<['all', 'land', 'air', 'multi']> &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'all'>;
-  };
-}
-
 export interface GlobalLink extends Struct.ComponentSchema {
   collectionName: 'components_global_links';
   info: {
@@ -54,26 +36,6 @@ export interface GlobalLocalDocumentationCodeInsee
   };
 }
 
-export interface GlobalTest extends Struct.ComponentSchema {
-  collectionName: 'components_global_tests';
-  info: {
-    displayName: 'test';
-  };
-  attributes: {};
-}
-
-export interface GlobalTextArray extends Struct.ComponentSchema {
-  collectionName: 'components_global_text_arrays';
-  info: {
-    description: '';
-    displayName: 'text-array';
-    icon: 'apps';
-  };
-  attributes: {
-    text: Schema.Attribute.Text;
-  };
-}
-
 export interface GlobalTitleTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_title_text_arrays';
   info: {
@@ -91,11 +53,8 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'global.array': GlobalArray;
-      'global.conditions': GlobalConditions;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
-      'global.test': GlobalTest;
-      'global.text-array': GlobalTextArray;
       'global.title-text-array': GlobalTitleTextArray;
     }
   }
