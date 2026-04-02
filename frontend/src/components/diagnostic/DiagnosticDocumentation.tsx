@@ -24,6 +24,7 @@ export const CardsDisplay = () => {
           "fields[1]": "slug",
           "populate[imageThumbnail][fields][0]": "url",
           "pagination[pageSize]": 100,
+          "sort[0]": "createdAt:desc",
         },
       })
       .then((res) => {
