@@ -89,7 +89,9 @@ function HomePage() {
           <Loader text="Chargement..." />
         </div>
       )}
-      <HomeHero />
+      {homeContent?.homeSearch && (
+        <HomeSearch content={homeContent.homeSearch} />
+      )}
       <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
         <img src="/images/search.svg" alt="search icon" />
         <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
@@ -109,28 +111,6 @@ function HomePage() {
         }}
         formValues={formValues}
       />
-      <div className={fr.cx("fr-mt-10v")}>
-        <p className={cx(classes.searchText)}>
-          Ou recherchez <b>une adresse / une zone géographique</b> pour accéder
-          à la carte et sélectionner une parcelle{" "}
-        </p>
-        <label htmlFor="mapSearch">Adresse ou zone géographique</label>
-        <p className={fr.cx("fr-hint-text", "fr-mb-2v")}>
-          Saisissez quelques caractères pour voir des suggestions
-        </p>
-        <AddressSearch
-          className={classes.searchAddress}
-          placeholder="Cherchez une ville, adresse..."
-          id="mapSearch"
-          onValueSelected={(feature: AddressFeature) => {
-            navigate({
-              pathname: "/diagnostic",
-              search: `?address=${encode(feature)}`,
-            });
-          }}
-          limit={3}
-        />
-      </div>
       <DiagPreview />
       {homeContent?.mostRecentPreco && (
         <MostRecentPreco content={homeContent.mostRecentPreco} />

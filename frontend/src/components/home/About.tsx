@@ -11,7 +11,7 @@ export interface AboutHomePageProps {
     profilePicture: ImageProps;
 }
 
-interface ImageProps {
+export interface ImageProps {
     alternativeText: string | null; height: number; width: number; url: string
 }
 
