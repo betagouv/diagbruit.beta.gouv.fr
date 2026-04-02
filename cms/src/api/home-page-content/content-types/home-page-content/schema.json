@@ -38,6 +38,12 @@
       "repeatable": false,
       "component": "global.most-recent-preco",
       "required": true
+    },
+    "homeSearch": {
+      "displayName": "homeSearch",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.home-search"
     }
   }
 }

@@ -66,6 +66,25 @@ export interface GlobalConditions extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalHomeSearch extends Struct.ComponentSchema {
+  collectionName: 'components_global_home_searches';
+  info: {
+    description: '';
+    displayName: 'homeSearch';
+  };
+  attributes: {
+    banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    description: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalLink extends Struct.ComponentSchema {
   collectionName: 'components_global_links';
   info: {
@@ -156,6 +175,7 @@ declare module '@strapi/strapi' {
       'global.array': GlobalArray;
       'global.availability-map': GlobalAvailabilityMap;
       'global.conditions': GlobalConditions;
+      'global.home-search': GlobalHomeSearch;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
       'global.most-recent-preco': GlobalMostRecentPreco;
