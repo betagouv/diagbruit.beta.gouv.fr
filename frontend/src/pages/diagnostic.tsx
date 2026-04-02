@@ -155,10 +155,11 @@ function DiagnosticPage() {
     }
   }, [mapMethodsRef.current?.parcelle]);
 
+  const searchParams = new URLSearchParams(location.search);
+  const parcelleParam = searchParams.get("parcelle");
+  const addressParam = searchParams.get("address");
+
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const parcelleParam = searchParams.get("parcelle");
-    const addressParam = searchParams.get("address");
 
     if (!isMapReady || !(parcelleParam || addressParam)) return;
 
@@ -212,7 +213,7 @@ function DiagnosticPage() {
         console.error("Error parsing address data");
       }
     }
-  }, [location.search, isMapReady]);
+  }, [parcelleParam, addressParam, isMapReady]);
 
   return (
     <div>
