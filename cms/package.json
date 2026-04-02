@@ -44,7 +44,9 @@
     "installId": "e8de71ed8f51d94a999377fbcffecf1d1e37a7e3179e61e14e39360078c1b71d"
   },
   "resolutions": {
-    "@types/minimatch": "5.1.2"
+    "@types/minimatch": "5.1.2",
+    "@casl/ability": "6.7.5",
+    "fast-xml-parser": "4.5.5"
   },
   "packageManager": "yarn@4.12.0"
 }
