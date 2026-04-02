@@ -8,7 +8,6 @@ import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import type { DiagnosticItem } from "../../utils/types";
-import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -18,7 +17,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
-import DiagnosticCardsDisplay from "./DiagnosticCardsDisplay";
+import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
