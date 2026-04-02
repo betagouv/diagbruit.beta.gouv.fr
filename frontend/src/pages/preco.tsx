@@ -178,10 +178,13 @@ export const PrecoPage = () => {
 
 const useStyles = tss.withName(PrecoPage.name).create(() => ({
   imageBanner: {
-    width: "100%",
-    height: "240px",
+    width: "100vw",
+    maxHeight: "350px",
     objectFit: "cover",
     display: "block",
+    position: "relative",
+    left: "50%",
+    marginLeft: "-50vw",
   },
   recommendationContent: {
     img: {
