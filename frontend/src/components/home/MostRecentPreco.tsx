@@ -22,7 +22,7 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
 
     return (
         <div className={cx(classes.contentContainer)}>
-            <h1>{content.title}</h1>
+            <h2>{content.title}</h2>
             <p>{content.description}</p>
             <div className={cx(classes.cardContainer)}>
                 {cards.map((c) => (

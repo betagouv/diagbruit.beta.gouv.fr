@@ -17,7 +17,7 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
         <div className={cx(classes.contentContainer)}>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className="fr-col-6">
-                    <h1>{content.title}</h1>
+                    <h2>{content.title}</h2>
                     <div
                         className={cx(classes.textContent)}
                         dangerouslySetInnerHTML={{ __html: text }}
