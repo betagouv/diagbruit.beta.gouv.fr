@@ -13,7 +13,9 @@ export const SolutionPreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
 
     return (<div className={cx(classes.solutionContainer, "fr-col-8")}>
         <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>Position du bâti</p>
-        <DiagnosticParcelleSvg geometry={diagnosticItem.parcelle.geometry} zones={diagnosticItem.diagnostic.zones} />
+        <div className={cx(classes.parcelleSvgContainer)}>
+            <DiagnosticParcelleSvg geometry={diagnosticItem.parcelle.geometry} zones={diagnosticItem.diagnostic.zones} />
+        </div>
         <DiagnosticParcelleSvgNotice zones={diagnosticItem.diagnostic.zones} />
     </div>)
 }
@@ -23,6 +25,10 @@ const useStyles = tss.withName(SolutionPreview.name).create(() => ({
         padding: fr.spacing("4v"),
         margin: `${fr.spacing("6w")} auto`,
         backgroundColor: fr.colors.decisions.background.default.grey.default,
+    },
+    parcelleSvgContainer: {
+        display: "flex",
+        justifyContent: "center",
     },
 
 }));
