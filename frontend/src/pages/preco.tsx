@@ -7,6 +7,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
+import { useEffect } from "react";
 
 const toAnchorId = (text: string) =>
   text
@@ -19,6 +20,30 @@ export const PrecoPage = () => {
 
   const { slug } = useParams<{ slug: string }>();
   const { preco, isLoading, notFound } = usePreco(slug ?? "");
+
+  useEffect(() => {
+    if (!preco) return;
+
+    document.title = `${preco.title} - Diagbruit`;
+
+    const parser = new DOMParser();
+    const plainText = parser
+      .parseFromString(preco.aRetenir || preco.content, "text/html")
+      .body.textContent?.trim()
+      .slice(0, 160);
+
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement("meta");
+      metaDescription.setAttribute("name", "description");
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute("content", plainText ?? "");
+
+    return () => {
+      document.title = "Diagbruit";
+    };
+  }, [preco]);
 
   if (isLoading) {
     return (
@@ -85,7 +110,7 @@ export const PrecoPage = () => {
           <div className="fr-col-9">
             {preco.aRetenir && (
               <Alert
-                className={fr.cx("fr-mb-4v")}
+                className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
                 title="À retenir"
                 description={
                   <div
