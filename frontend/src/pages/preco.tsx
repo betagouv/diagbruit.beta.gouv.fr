@@ -62,7 +62,6 @@ export const PrecoPage = () => {
     );
   }
 
-  const keyPointsTitle = "Les 4 points clés";
 
   const parser = new DOMParser();
   const aRetenirDoc = parser.parseFromString(preco.aRetenir, "text/html");
@@ -73,6 +72,8 @@ export const PrecoPage = () => {
   });
   const enrichedContent = contentDoc.body.innerHTML;
   const enrichedARetenir = aRetenirDoc.body.innerHTML;
+
+  const keyPointsTitle = preco.keyPoints.length > 0 ? `Les ${preco.keyPoints.length} points clés` : "Le point clé";
 
   const h2Links = [
     ...(preco.keyPoints && preco.keyPoints.length > 0
