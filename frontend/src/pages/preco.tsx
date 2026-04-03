@@ -8,6 +8,7 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
 import { useEffect } from "react";
+import { RichContent } from "../components/ui/RichContent";
 
 const toAnchorId = (text: string) =>
   text
@@ -122,9 +123,9 @@ export const PrecoPage = () => {
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
                 title="À retenir"
                 description={
-                  <div
+                  <RichContent
                     className={cx(classes.recommendationContent)}
-                    dangerouslySetInnerHTML={{ __html: enrichedARetenir }}
+                    html={enrichedARetenir}
                   />
                 }
                 onClose={function noRefCheck() { }}
@@ -168,9 +169,9 @@ export const PrecoPage = () => {
                 </div>
               </>
             )}
-            <div
+            <RichContent
               className={cx(classes.recommendationContent)}
-              dangerouslySetInnerHTML={{ __html: enrichedContent }}
+              html={enrichedContent}
             />
           </div>
         </div>
