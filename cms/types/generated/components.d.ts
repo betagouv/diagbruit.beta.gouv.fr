@@ -12,12 +12,12 @@ export interface GlobalAbout extends Struct.ComponentSchema {
     profilePicture: Schema.Attribute.Media<'images' | 'files'>;
     source: Schema.Attribute.String;
     textContent: Schema.Attribute.RichText &
-    Schema.Attribute.CustomField<
-      'plugin::ckeditor5.CKEditor',
-      {
-        preset: 'defaultHtml';
-      }
-    >;
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
   };
 }
 
@@ -28,12 +28,12 @@ export interface GlobalAccordion extends Struct.ComponentSchema {
   };
   attributes: {
     content: Schema.Attribute.RichText &
-    Schema.Attribute.CustomField<
-      'plugin::ckeditor5.CKEditor',
-      {
-        preset: 'defaultHtml';
-      }
-    >;
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     title: Schema.Attribute.String;
   };
 }
@@ -55,31 +55,13 @@ export interface GlobalAvailabilityMap extends Struct.ComponentSchema {
   };
   attributes: {
     textContent: Schema.Attribute.RichText &
-    Schema.Attribute.CustomField<
-      'plugin::ckeditor5.CKEditor',
-      {
-        preset: 'defaultHtml';
-      }
-    >;
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     title: Schema.Attribute.String;
-  };
-}
-
-export interface GlobalConditions extends Struct.ComponentSchema {
-  collectionName: 'components_global_conditions';
-  info: {
-    description: '';
-    displayName: 'conditions';
-    icon: 'oneToMany';
-  };
-  attributes: {
-    isolation_gte: Schema.Attribute.Integer;
-    isolation_lte: Schema.Attribute.Integer;
-    score_gte: Schema.Attribute.Integer;
-    score_lte: Schema.Attribute.Integer;
-    source: Schema.Attribute.Enumeration<['all', 'land', 'air', 'multi']> &
-    Schema.Attribute.Required &
-    Schema.Attribute.DefaultTo<'all'>;
   };
 }
 
@@ -92,12 +74,12 @@ export interface GlobalHomeSearch extends Struct.ComponentSchema {
   attributes: {
     banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     description: Schema.Attribute.RichText &
-    Schema.Attribute.CustomField<
-      'plugin::ckeditor5.CKEditor',
-      {
-        preset: 'defaultHtml';
-      }
-    >;
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
     title: Schema.Attribute.String;
   };
 }
@@ -197,7 +179,6 @@ declare module '@strapi/strapi' {
       'global.accordion': GlobalAccordion;
       'global.array': GlobalArray;
       'global.availability-map': GlobalAvailabilityMap;
-      'global.conditions': GlobalConditions;
       'global.home-search': GlobalHomeSearch;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
