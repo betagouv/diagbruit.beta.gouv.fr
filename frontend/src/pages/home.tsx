@@ -11,6 +11,7 @@ import axios from "axios";
 import { Loader } from "../components/ui/Loader";
 import DiagPreview from "../components/home/DiagPreview";
 import { HomeSearch, HomeSearchProps } from "../components/home/HomeSearch";
+import { StatsAndQuiz, StatsAndQuizProps } from "../components/home/StatsAndQuiz";
 
 interface HomePageContent {
   homeSearch: HomeSearchProps;
@@ -18,6 +19,7 @@ interface HomePageContent {
   aboutHomePage: AboutHomePageProps;
   mostRecentPreco: MostRecentPrecoProps;
   partners: PartnersProps;
+  statsAndQuiz: StatsAndQuizProps;
 }
 
 const params = {
@@ -33,6 +35,7 @@ const params = {
   "populate[homeSearch][populate][banner][fields][1]": "height",
   "populate[homeSearch][populate][banner][fields][2]": "width",
   "populate[homeSearch][populate][banner][fields][3]": "url",
+  "populate[statsAndQuiz][populate]": "*",
   "populate[availabilityMapContent][populate]": "*",
   "populate[mostRecentPreco][populate]": "*",
 }
@@ -108,6 +111,9 @@ function HomePage() {
         formValues={formValues}
       />
       <DiagPreview />
+      {homeContent?.statsAndQuiz && (
+        <StatsAndQuiz content={homeContent.statsAndQuiz} />
+      )}
       {homeContent?.mostRecentPreco && (
         <MostRecentPreco content={homeContent.mostRecentPreco} />
       )}
