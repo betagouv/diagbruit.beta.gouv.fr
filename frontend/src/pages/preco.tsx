@@ -95,8 +95,8 @@ export const PrecoPage = () => {
         />
       )}
       <div className={fr.cx("fr-my-10v", "fr-col-12")}>
-        <h1>{preco.title}</h1>
-        <p>
+        <h1 className="fr-mb-4v">{preco.title}</h1>
+        <p className={fr.cx("fr-text--sm")}>
           Dernière mise à jour le{" "}
           {new Date(preco.updatedAt).toLocaleDateString("fr-FR")}
         </p>
@@ -124,7 +124,7 @@ export const PrecoPage = () => {
                     dangerouslySetInnerHTML={{ __html: enrichedARetenir }}
                   />
                 }
-                onClose={function noRefCheck() {}}
+                onClose={function noRefCheck() { }}
                 severity="info"
                 small
               />
