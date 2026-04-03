@@ -73,7 +73,7 @@ export const PrecoPage = () => {
   const enrichedContent = contentDoc.body.innerHTML;
   const enrichedARetenir = aRetenirDoc.body.innerHTML;
 
-  const keyPointsTitle = preco.keyPoints.length > 0 ? `Les ${preco.keyPoints.length} points clés` : "Le point clé";
+  const keyPointsTitle = preco.keyPoints.length > 1 ? `Les ${preco.keyPoints.length} points clés` : "Le point clé";
 
   const h2Links = [
     ...(preco.keyPoints && preco.keyPoints.length > 0
@@ -85,15 +85,17 @@ export const PrecoPage = () => {
   return (
     <>
       {preco.imageBanner && (
-        <img
-          className={cx(classes.imageBanner)}
-          src={
-            preco.imageBanner.url.startsWith("/")
-              ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
-              : preco.imageBanner.url
-          }
-          alt={preco.imageBanner.alternativeText ?? preco.title}
-        />
+        <div className={cx(classes.imageBannerWrapper)}>
+          <img
+            className={cx(classes.imageBanner)}
+            src={
+              preco.imageBanner.url.startsWith("/")
+                ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
+                : preco.imageBanner.url
+            }
+            alt={preco.imageBanner.alternativeText ?? preco.title}
+          />
+        </div>
       )}
       <div className={fr.cx("fr-my-10v", "fr-col-12")}>
         <h1 className="fr-mb-4v">{preco.title}</h1>
@@ -178,14 +180,22 @@ export const PrecoPage = () => {
 };
 
 const useStyles = tss.withName(PrecoPage.name).create(() => ({
-  imageBanner: {
+  imageBannerWrapper: {
     width: "100vw",
     maxHeight: "350px",
-    objectFit: "cover",
-    display: "block",
+    overflow: "hidden",
     position: "relative",
     left: "50%",
+    right: "50%",
     marginLeft: "-50vw",
+    marginRight: "-50vw",
+  },
+  imageBanner: {
+    width: "100%",
+    height: "350px",
+    objectFit: "cover",
+    objectPosition: "center",
+    display: "block",
   },
   recommendationContent: {
     img: {
