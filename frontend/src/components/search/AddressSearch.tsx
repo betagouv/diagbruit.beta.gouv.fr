@@ -32,6 +32,7 @@ type AddressSearchProps = {
   onValueSelected?: (feature: AddressFeature) => void;
   limit?: number;
   defaultValue?: AddressFeature;
+  lite?: boolean;
 };
 
 const useAddressSearch = (limit: number) => {
@@ -91,6 +92,7 @@ const AddressSearch = forwardRef(
       onValueSelected,
       limit = 5,
       defaultValue,
+      lite = false,
     }: AddressSearchProps,
     ref: React.Ref<{ reset: () => void }>
   ) => {
@@ -178,11 +180,13 @@ const AddressSearch = forwardRef(
             )}
           />
           <Button
-            className={fr.cx("fr-px-8v")}
             type="submit"
             disabled={!valueSelected}
+            iconId="fr-icon-search-line"
+            iconPosition="left"
+            className={cx(classes.submitButton)}
           >
-            Rechercher
+            {lite ? "" : "Lancer le diagnostic sonore"}
           </Button>
         </form>
       </div>
@@ -194,14 +198,23 @@ const useStyles = tss.create(() => ({
   container: {
     form: {
       display: "flex",
-      gap: fr.spacing("2v"),
     },
+    borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
+  },
+  submitButton: {
+    display: "flex !important",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 !important",
+    "&::before": {
+      margin: "0 !important",
+    },
+    gap: fr.spacing("2v"),
   },
   autocomplete: {
     flexGrow: 1,
     ".MuiInputBase-root": {
       backgroundColor: fr.colors.decisions.background.disabled.grey.default,
-      border: 0,
       borderRadius: 0,
       paddingRight: `${fr.spacing("4v")} !important`,
       input: {

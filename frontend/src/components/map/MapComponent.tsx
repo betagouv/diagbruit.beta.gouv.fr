@@ -375,6 +375,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
             id="mapSearch"
             onValueSelected={onAddressSelected}
             defaultValue={addressDefaultValue}
+            lite
           />
         </div>
         <Map

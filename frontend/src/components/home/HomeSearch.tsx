@@ -87,10 +87,7 @@ const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().c
         textAlign: "center",
     },
     searchAddress: {
-        width: "56%",
-        [fr.breakpoints.down("md")]: {
-            width: "100%",
-        },
+        width: "100%",
     },
     searchAddressContainer: {
         padding: fr.spacing("8v"),
