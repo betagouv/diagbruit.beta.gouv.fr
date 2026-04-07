@@ -21,6 +21,11 @@ interface statsProps {
     sourceLink: string;
 }
 
+const sliceText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+}
+
 export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
     const { cx, classes } = useStyles();
 
@@ -28,22 +33,24 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
 
     return (<div className={cx(classes.contentContainer)}>
         <h2>{content.title}</h2>
-        <div className={cx(classes.statsContent, "fr-grid-row", "fr-grid-row--gutters", "fr-col-12")}>
+        <div className={cx(classes.statsContent)}>
             {content.stats.map((s) => (
-                <Card
-                    className="fr-col-4"
-                    border
-                    size="medium"
-                    title={s.title}
-                    titleAs="h3"
-                    desc={s.description}
-                    endDetail={<a href={s.sourceLink} target="_blank" rel="noopener noreferrer">{s.sourceTitle}</a>} />
+                <div key={s.title} className={cx(classes.statCardWrapper)}>
+                    <Card
+                        className={cx(classes.statCard)}
+                        border
+                        size="medium"
+                        title={s.title}
+                        titleAs="h3"
+                        desc={s.description}
+                        endDetail={<a href={s.sourceLink} target="_blank" rel="noopener noreferrer">{sliceText(s.sourceTitle, 40)}</a>} />
+                </div>
             ))}
         </div>
         <div className={cx(classes.accordionContainer)}>
             {content.quiz.map((q, index) => (
                 <Accordion
-                    key={q.title}
+                    key={q.title + index}
                     label={q.title}>
                     <div dangerouslySetInnerHTML={{ __html: parser.parseFromString(q.content, "text/html").body.innerHTML }} />
                 </Accordion>
@@ -64,17 +71,27 @@ const useStyles = tss.withName(StatsAndQuiz.name).create(() => ({
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
     },
     statsContent: {
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: fr.spacing("4v"),
+        [fr.breakpoints.down("md")]: {
+            gridTemplateColumns: "1fr",
+        },
+    },
+    statCardWrapper: {
+        display: "flex",
+    },
+    statCard: {
+        width: "100%",
         h3: {
-            color: fr.colors.decisions.text.actionHigh.redMarianne.default
+            color: fr.colors.decisions.text.actionHigh.redMarianne.default,
         },
         p: {
             fontWeight: 700,
         },
         a: {
             fontWeight: 500,
-            textDecoration: "none !important",
         },
-        gap: fr.spacing("2v"),
     },
     accordionContainer: {
         marginTop: fr.spacing("4v"),
