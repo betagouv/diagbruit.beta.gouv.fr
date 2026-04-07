@@ -14,7 +14,6 @@ function parseTable(tableEl: HTMLTableElement): ParsedTable {
   );
   const headers = headerCells.map((th) => th.textContent?.trim() ?? "");
 
-  // If no thead, use first tbody row as headers
   let dataRows: HTMLTableRowElement[];
   if (headers.length === 0) {
     const allRows = Array.from(tableEl.querySelectorAll("tbody tr, tr"));
@@ -98,11 +97,10 @@ export const RichContent = ({ html, className }: RichContentProps) => {
             />
           );
         }
-        const { caption, headers, data } = segment.table;
+        const { headers, data } = segment.table;
         return (
           <Table
             key={i}
-            caption={caption || "Tableau"}
             headers={headers}
             data={data}
             bordered

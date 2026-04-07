@@ -3,6 +3,7 @@ import {
   StrapiMediaLib,
   StrapiUploadAdapter,
 } from "@_sh/strapi-plugin-ckeditor";
+import "./editor.css";
 import {
   Alignment,
   Bold,
