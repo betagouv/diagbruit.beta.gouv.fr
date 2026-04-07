@@ -55,12 +55,14 @@ export default function DiagnosticReceiveByMail({
 
   return (
     <div ref={containerRef} className={cx(classes.container, "fr-grid-row")}>
-      <div className={cx(classes.tileTitle, "fr-col-4")}>
+      <div className={cx(classes.imgContainer, "fr-col-12", "fr-col-md-1")}>
         <img src="/images/document-download.svg" alt="" />
-        <h4 className={fr.cx("fr-h6")}>Recevoir le diagnostic par email</h4>
+
       </div>
-      <div className={cx(classes.tileContent, "fr-col-8")}>
+      <div className={cx(classes.tileContent, "fr-col-12", "fr-col-md-6")}>
         {<CheckTexts />}
+      </div>
+      <div className={cx("fr-col-12", "fr-col-md-4", classes.buttonContainer)}>
         <Button
           priority="primary"
           iconId="ri-mail-line"
@@ -103,23 +105,23 @@ const useStyles = tss.create(() => ({
     marginTop: fr.spacing("4v"),
     border: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
   },
-  tileTitle: {
-    borderRight: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
-    background: fr.colors.decisions.background.alt.blueFrance.default,
+  imgContainer: {
     display: "flex",
-    alignItems: "center",
     justifyContent: "center",
-    padding: fr.spacing("4v"),
-    h4: {
-      margin: 0,
-    },
+    alignItems: "center",
+    margin: fr.spacing("4v"),
+
   },
   tileContent: {
-    padding: fr.spacing("4v"),
-    marginTop: fr.spacing("2v"),
+    padding: `${fr.spacing("4v")} 0`,
     p: {
       margin: `0 0 0 ${fr.spacing("1v")} `,
     },
+  },
+  buttonContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   checkIcon: {
     color: fr.colors.decisions.background.flat.blueFrance.default,
