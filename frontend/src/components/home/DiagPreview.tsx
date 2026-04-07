@@ -74,11 +74,11 @@ export const DiagPreview = () => {
 
 const useStyles = tss.create(() => ({
     sonoscorePreviewContainer: {
-        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+        backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
         width: "100%",
     },
     regulationPreviewContainer: {
-        backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
+        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
         width: "100%",
     },
     solutionPreviewContainer: {
