@@ -107,7 +107,11 @@ export const PrecoPage = () => {
 
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
           {h2Links.length > 0 && (
-            <div className={cx("fr-col-3", classes.stickyNav)}>
+            <div className={cx("fr-col-12",
+              "fr-col-lg-3",
+              "fr-col-md-12",
+              "fr-col-sm-12",
+              "fr-mb-2w", classes.stickyNav)}>
               <Summary
                 links={h2Links.map((link) => ({
                   text: link.label,
@@ -175,7 +179,7 @@ export const PrecoPage = () => {
             />
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };
@@ -205,9 +209,11 @@ const useStyles = tss.withName(PrecoPage.name).create(() => ({
     },
   },
   stickyNav: {
-    position: "sticky",
-    top: fr.spacing("2v"),
     alignSelf: "flex-start",
+    [fr.breakpoints.up("lg")]: {
+      position: "sticky",
+      top: fr.spacing("2v"),
+    },
   },
 }));
 
