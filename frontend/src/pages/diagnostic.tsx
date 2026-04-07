@@ -16,6 +16,11 @@ import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import DiagnosticScoreOnScale from "../components/diagnostic/DiagnosticScoreOnScale";
+import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
+import DiagnosticSectionTitle from "../components/diagnostic/DiagnosticSectionTitle";
+import DiagnosticRegulation from "../components/diagnostic/DiagnosticRegulation";
+import DiagnosticLocalNoiseSources from "../components/diagnostic/DiagnosticLocalNoiseSources";
 
 const defaultSearchValues = {
   codeInsee: "",
@@ -215,6 +220,8 @@ function DiagnosticPage() {
     }
   }, [parcelleParam, addressParam, isMapReady]);
 
+  const diagnosticItem = diagnosticsResponses?.[0];
+
   return (
     <div>
       {isLoading && (
@@ -285,10 +292,24 @@ function DiagnosticPage() {
           }}
           addressDefaultValue={addressDefaultValue}
         />
-        {diagnosticsResponses?.[0] && (
+        {diagnosticItem && (
+          <div className={cx(classes.sonoscoreContainer)}>
+            <h2>Parcelle n°{diagnosticItem.parcelle.numero}</h2>
+            {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+              <DiagnosticScoreOnScale
+                score={diagnosticItem.diagnostic.score}
+                db={diagnosticItem.diagnostic.max_db_lden}
+                light
+              />
+            )}
+            <DiagnosticHero diagnosticItem={diagnosticItem} />
+          </div>
+        )}
+
+        {diagnosticItem && (
           <div className={fr.cx("fr-mt-6v")}>
             <Diagnostic
-              diagnosticItem={diagnosticsResponses[0]}
+              diagnosticItem={diagnosticItem}
               isLoading={false}
             />
           </div>
@@ -368,6 +389,10 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     marginTop: fr.spacing("8v"),
+  },
+  sonoscoreContainer: {
+    padding: fr.spacing("6v"),
+    backgroundColor: fr.colors.decisions.background.contrast.grey.default,
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",

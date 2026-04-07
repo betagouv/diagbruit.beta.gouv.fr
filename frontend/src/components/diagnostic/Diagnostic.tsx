@@ -75,6 +75,20 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   const diagnosticTabs = [
     {
+      tabId: "reglementation",
+      label: "Réglementation",
+      isDefault: activeTabId === "reglementation",
+      content: (
+        <>
+          <DiagnosticReceiveByMail
+            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          />
+          <h2>Réglementation</h2>
+          <DiagnosticRegulation diagnosticItem={diagnosticItem} />
+        </>
+      ),
+    },
+    {
       tabId: "evaluation",
       label: "Résumé du diagnostic",
       isDefault: activeTabId === "evaluation",
@@ -254,9 +268,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-          <DiagnosticReceiveByMail
-            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-          />
+
         </div>
       )}
       {copied && (
