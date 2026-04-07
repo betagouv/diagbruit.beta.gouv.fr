@@ -1,10 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { getIconFromNoiseCategorySlug } from "../../utils/tools";
-import type { DiagnosticItem, NoiseSourceIntersection } from "../../utils/types";
-import NoiseSourcesModal, { modal, type SelectedCategory } from "./NoiseSourcesModal";
+import type {
+  DiagnosticItem,
+  NoiseSourceIntersection,
+} from "../../utils/types";
+import NoiseSourcesModal, {
+  modal,
+  type SelectedCategory,
+} from "./NoiseSourcesModal";
 
 interface DiagnosticLocalNoiseSourcesProps {
   diagnosticItem: DiagnosticItem;
@@ -15,12 +21,13 @@ export default function DiagnosticLocalNoiseSources({
 }: DiagnosticLocalNoiseSourcesProps) {
   const { classes, cx } = useStyles();
   const { noisesource_intersections } = diagnosticItem.diagnostic;
-  const [selectedCategory, setSelectedCategory] = useState<SelectedCategory | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<SelectedCategory | null>(null);
 
   const handleCategoryClick = (
     categoryName: string,
     categorySlug: string,
-    sources: NoiseSourceIntersection[]
+    sources: NoiseSourceIntersection[],
   ) => {
     setSelectedCategory({ categoryName, categorySlug, sources });
     modal.open();
@@ -42,6 +49,32 @@ export default function DiagnosticLocalNoiseSources({
     );
   }
 
+  const noisesourcesGrouped = useMemo(() => {
+    return Object.entries(
+      noisesource_intersections.reduce(
+        (acc, source) => {
+          if (!acc[source.category_slug]) {
+            acc[source.category_slug] = {
+              category_name: source.category_name,
+              category_description: source.category_description,
+              sources: [],
+            };
+          }
+          acc[source.category_slug].sources.push(source);
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            category_name: string;
+            category_description: string;
+            sources: NoiseSourceIntersection[];
+          }
+        >,
+      ),
+    );
+  }, [noisesource_intersections]);
+
   return (
     <>
       <div className={classes.container}>
@@ -49,18 +82,7 @@ export default function DiagnosticLocalNoiseSources({
           Établissements et équipements sonores à proximité
         </h4>
         <div className={classes.buttonContainer}>
-          {Object.entries(
-            noisesource_intersections.reduce((acc, source) => {
-              if (!acc[source.category_slug]) {
-                acc[source.category_slug] = {
-                  category_name: source.category_name,
-                  sources: [],
-                };
-              }
-              acc[source.category_slug].sources.push(source);
-              return acc;
-            }, {} as Record<string, { category_name: string; sources: NoiseSourceIntersection[] }>)
-          ).map(([categorySlug, group]) => (
+          {noisesourcesGrouped.map(([categorySlug, group]) => (
             <Button
               key={categorySlug}
               size="small"
@@ -69,14 +91,14 @@ export default function DiagnosticLocalNoiseSources({
                 handleCategoryClick(
                   group.category_name,
                   categorySlug,
-                  group.sources
+                  group.sources,
                 )
               }
             >
               <i
                 className={cx(
                   fr.cx(getIconFromNoiseCategorySlug(categorySlug)),
-                  classes.groupIcon
+                  classes.groupIcon,
                 )}
               />{" "}
               Liste des {group.category_name.toLocaleLowerCase()} (
@@ -84,13 +106,15 @@ export default function DiagnosticLocalNoiseSources({
             </Button>
           ))}
         </div>
-        <p className={fr.cx("fr-mb-0")}>
+        <p>
           Ces établissements et équipements, situés à proximité de votre
-          parcelle, peuvent générer une gêne sonore, notamment la nuit lorsque
-          le niveau de bruit ambiant diminue. Nous vous recommandons de vous
-          rendre sur place afin d'évaluer la situation selon vos propres usages
-          et sensibilités.
+          parcelle, peuvent générer une gêne sonore. Nous vous recommandons de
+          vous rendre sur place afin d'évaluer la situation selon vos propres
+          usages et sensibilités.
         </p>
+        {noisesourcesGrouped.map(([, group]) => (
+          <p>{group.category_description}</p>
+        ))}
       </div>
 
       <NoiseSourcesModal selectedCategory={selectedCategory} />
@@ -105,6 +129,11 @@ const useStyles = tss.withName(DiagnosticLocalNoiseSources.name).create({
     padding: fr.spacing("4v"),
     ul: {
       marginLeft: fr.spacing("4v"),
+    },
+    p: {
+      "&:last-of-type": {
+        marginBottom: 0,
+      },
     },
   },
   title: {
