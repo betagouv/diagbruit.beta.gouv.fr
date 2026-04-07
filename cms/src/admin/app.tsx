@@ -3,6 +3,7 @@ import {
   StrapiMediaLib,
   StrapiUploadAdapter,
 } from "@_sh/strapi-plugin-ckeditor";
+import "./editor.css";
 import {
   Alignment,
   Bold,
@@ -10,6 +11,8 @@ import {
   Heading,
   Image,
   ImageInsert,
+  ImageResize,
+  ImageStyle,
   ImageToolbar,
   ImageUpload,
   Italic,
@@ -44,6 +47,8 @@ const myConfig: PluginConfig = {
           Link,
           Image,
           ImageInsert,
+          ImageResize,
+          ImageStyle,
           ImageToolbar,
           ImageUpload,
           Table,
@@ -104,7 +109,18 @@ const myConfig: PluginConfig = {
           ],
         },
         image: {
-          toolbar: ["imageTextAlternative"],
+          toolbar: [
+            "imageTextAlternative",
+            "|",
+            "imageStyle:alignLeft",
+            "imageStyle:alignCenter",
+            "imageStyle:alignRight",
+            "|",
+            "resizeImage:25",
+            "resizeImage:50",
+            "resizeImage:75",
+            "resizeImage:original",
+          ],
         },
         table: {
           contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"],

@@ -55,6 +55,7 @@
     },
     "aRetenir": {
       "type": "customField",
+      "default": "<p>✓ Lorem Ipsum</p>",
       "options": {
         "preset": "defaultHtml"
       },

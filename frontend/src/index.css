@@ -13,6 +13,38 @@ html,
   }
 }
 
+/* CKEditor image alignment */
+figure.image.image-style-align-left {
+  float: left;
+  margin-right: 1.5em;
+  margin-bottom: 1em;
+}
+
+figure.image.image-style-align-right {
+  float: right;
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+figure.image.image-style-align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figure.image {
+  display: table;
+}
+
+figure.image:not(.image-style-align-left):not(.image-style-align-right) {
+  clear: both;
+}
+
+figure.image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
