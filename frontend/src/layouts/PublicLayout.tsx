@@ -8,6 +8,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import type { Settings } from "../utils/types";
 import TallyForm from "../components/diagnostic/TallyForm";
+import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
+import { encode } from "../utils/compression";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -59,6 +61,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         />
       )}
       <Header
+        className={cx(classes.header)}
         brandTop={
           <>
             République
@@ -67,6 +70,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </>
         }
         quickAccessItems={[
+
           {
             iconId: "ri-flashlight-line",
             text: "Nouveautés",
@@ -74,6 +78,20 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
+          <div className={cx(classes.searchContainer)}>
+            <AddressSearch
+              key="header-search"
+              id="header-address-search"
+              placeholder="Rechercher une adresse..."
+              lite
+              onValueSelected={(feature: AddressFeature) => {
+                navigate({
+                  pathname: "/diagnostic",
+                  search: `?address=${encode(feature)}`,
+                });
+              }}
+            />
+          </div>
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
@@ -161,6 +179,31 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 const useStyles = tss.create(() => ({
   container: {
     minHeight: "85vh",
+  },
+  header: {
+    "& .fr-header__tools-links .fr-btns-group": {
+      flexDirection: "column" as const,
+      alignItems: "flex-end !important" as const,
+      gap: fr.spacing("1v"),
+      "&&": {
+        flexDirection: "column" as const,
+        alignItems: "flex-end !important" as const,
+      },
+      li: {
+        width: "100%",
+      },
+      width: "250px",
+    },
+  },
+  searchContainer: {
+    width: "100%",
+    "&& .fr-btn:disabled": {
+      backgroundColor: `${fr.colors.decisions.background.disabled.grey.default} !important`,
+    },
+    "&& .fr-btn:enabled": {
+      backgroundColor: `${fr.colors.decisions.background.actionHigh.blueFrance.default} !important`,
+      color: "#ffffff !important",
+    }
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,
