@@ -8,7 +8,7 @@ import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
   type ExposedMapMethods,
 } from "../components/map/MapComponent";
-import type { AddressFeature } from "../components/search/AddressSearch";
+import AddressSearch, { type AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
 import { decode, encode } from "../utils/compression";
@@ -18,9 +18,6 @@ import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import DiagnosticScoreOnScale from "../components/diagnostic/DiagnosticScoreOnScale";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
-import DiagnosticSectionTitle from "../components/diagnostic/DiagnosticSectionTitle";
-import DiagnosticRegulation from "../components/diagnostic/DiagnosticRegulation";
-import DiagnosticLocalNoiseSources from "../components/diagnostic/DiagnosticLocalNoiseSources";
 
 const defaultSearchValues = process.env.NODE_ENV === "development" ? {
   codeInsee: "33063",
@@ -40,6 +37,7 @@ function DiagnosticPage() {
   const navigate = useNavigate();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
+  const addressSearchRef = useRef<{ reset: () => void }>(null);
 
   const [isMapReady, setIsMapReady] = useState(false);
   const [parcelleError, setParcelleError] = useState(false);
@@ -61,6 +59,21 @@ function DiagnosticPage() {
     return encoded ? decode(encoded) === true : false;
   });
 
+
+  const onAddressSelected = (feature: AddressFeature) => {
+    if (mapMethodsRef.current?.map) {
+      mapMethodsRef.current.map.flyTo({
+        center: [
+          feature.geometry.coordinates[0],
+          feature.geometry.coordinates[1],
+        ],
+        zoom: getZoomFromGouvType(feature.properties.type),
+        essential: true,
+        speed: 10,
+      });
+    }
+    reset();
+  };
 
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
@@ -228,7 +241,7 @@ function DiagnosticPage() {
   const diagnosticItem = diagnosticsResponses?.[0];
 
   return (
-    <div>
+    <div className={cx("fr-mb-10v")}>
       {isLoading && (
         <div className={cx(classes.loaderContainer)}>
           <Loader text="Nous générons votre diagnostic..." />
@@ -236,6 +249,17 @@ function DiagnosticPage() {
       )}
       <div className={cx(classes.container)}>
         <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
+
+        <div className={fr.cx("fr-mb-6v", "fr-col-6")}>
+          <AddressSearch
+            ref={addressSearchRef}
+            placeholder="Cherchez une ville, adresse..."
+            id="mapSearch"
+            onValueSelected={onAddressSelected}
+            defaultValue={addressDefaultValue}
+            label="Rechercher"
+          />
+        </div>
         <ToggleSwitch
           className={cx(classes.toggle, fr.cx("fr-mb-6v"))}
           label="Rechercher une parcelle"
@@ -266,9 +290,7 @@ function DiagnosticPage() {
                 setParcelleError(false);
               }}
               onParcelleRequested={(response) => {
-                if (mapMethodsRef.current?.resetAddress) {
-                  mapMethodsRef.current.resetAddress();
-                }
+                addressSearchRef.current?.reset();
 
                 setDiagnosticsResponses([]);
                 if (response.data?.features[0]) {
@@ -296,7 +318,7 @@ function DiagnosticPage() {
             setNotIntegrated(error?.code === 404);
             setInternalServerError(error?.code === 500);
           }}
-          addressDefaultValue={addressDefaultValue}
+          onAddressSelected={onAddressSelected}
         />
         {diagnosticItem && (
           <div className={cx(classes.sonoscoreContainer)}>

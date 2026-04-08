@@ -32,6 +32,7 @@ type AddressSearchProps = {
   onValueSelected?: (feature: AddressFeature) => void;
   limit?: number;
   defaultValue?: AddressFeature;
+  label?: string;
   lite?: boolean;
   isMobile?: boolean;
 };
@@ -93,6 +94,7 @@ const AddressSearch = forwardRef(
       onValueSelected,
       limit = 5,
       defaultValue,
+      label = "Lancer le diagnostic sonore",
       lite = false,
       isMobile = false
     }: AddressSearchProps,
@@ -189,7 +191,7 @@ const AddressSearch = forwardRef(
             iconPosition="left"
             className={cx(classes.submitButton)}
           >
-            {lite || isMobile ? "" : "Lancer le diagnostic sonore"}
+            {lite || isMobile ? "" : label}
           </Button>
         </form>
       </div>
