@@ -22,7 +22,12 @@ import DiagnosticSectionTitle from "../components/diagnostic/DiagnosticSectionTi
 import DiagnosticRegulation from "../components/diagnostic/DiagnosticRegulation";
 import DiagnosticLocalNoiseSources from "../components/diagnostic/DiagnosticLocalNoiseSources";
 
-const defaultSearchValues = {
+const defaultSearchValues = process.env.NODE_ENV === "development" ? {
+  codeInsee: "33063",
+  prefix: "000",
+  section: "DL",
+  numero: "0039",
+} : {
   codeInsee: "",
   prefix: "",
   section: "",

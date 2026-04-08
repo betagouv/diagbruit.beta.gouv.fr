@@ -1,8 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import { useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
-import ParcelleSearch from "../components/search/ParcelleSearch";
-import { encode } from "../utils/compression";
 import { MostRecentPreco, MostRecentPrecoProps } from "../components/home/MostRecentPreco";
 import { AvailabilityMapProps, AvailabilityMap } from "../components/home/AvailabilityMap";
 import About, { AboutHomePageProps, PartnersProps } from "../components/home/About";
@@ -46,7 +42,6 @@ function HomePage() {
   const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const navigate = useNavigate();
 
   const isMobile: boolean = getIsMobile();
 
@@ -73,17 +68,6 @@ function HomePage() {
       });
   }, []);
 
-  let formValues: any;
-
-  if (process.env.NODE_ENV === "development") {
-    formValues = {
-      codeInsee: "33063",
-      prefix: "000",
-      section: "DL",
-      numero: "0039",
-    };
-  }
-
   return (
     <div>
       {isLoading && (
@@ -94,26 +78,7 @@ function HomePage() {
       {homeContent?.homeSearch && (
         <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
       )}
-      <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
-        <img src="/images/search.svg" alt="search icon" />
-        <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
-      </div>
-      <p className={cx(fr.cx("fr-mt-10v"), classes.searchText)}>
-        Effectuez une <b>recherche avancée de parcelle</b>
-      </p>
-      <ParcelleSearch
-        onParcelleRequested={(response, values) => {
-          const feature = response.data?.features[0] || {
-            errorFrom: values,
-          };
-          navigate({
-            pathname: "/diagnostic",
-            search: `?parcelle=${encode(feature)}`,
-          });
-        }}
-        formValues={formValues}
-      />
-      {!getIsMobile && (
+      {!isMobile && (
         <DiagPreview />
       )}
       {homeContent?.statsAndQuiz && (
@@ -133,25 +98,6 @@ function HomePage() {
 }
 
 const useStyles = tss.create(() => ({
-  subtitle: {
-    display: "flex",
-    alignItems: "center",
-    marginLeft: `-${fr.spacing("3v")}`,
-    h2: {
-      ...fr.typography[2].style,
-      marginBottom: 0,
-      marginLeft: fr.spacing("2v"),
-    },
-  },
-  searchText: {
-    ...fr.typography[21].style,
-  },
-  searchAddress: {
-    width: "56%",
-    [fr.breakpoints.down("md")]: {
-      width: "100%",
-    },
-  },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     display: "flex",
