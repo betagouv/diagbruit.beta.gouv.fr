@@ -218,23 +218,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   return (
     <div id="diagnostic-section">
-      <div className={fr.cx("fr-grid-row")}>
-        <div className={fr.cx("fr-col-8")}>
-          <h2>Votre diagnostic diagBruit</h2>
-        </div>
-        <div className={cx(fr.cx("fr-col-4"), classes.buttonSection)}>
-          <Button
-            priority="secondary"
-            iconId="ri-mail-line"
-            linkProps={{
-              href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
-              onClick: handleContactClick,
-            }}
-          >
-            Contacter l'équipe diagBruit
-          </Button>
-        </div>
-      </div>
       {diagnosticItem.diagnostic.score === 0 ? (
         <div className={cx(classes.container)}>
           <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>

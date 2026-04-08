@@ -283,25 +283,23 @@ function DiagnosticPage() {
           />
         )}
         {showParcelleSearch && (
-          <div className={fr.cx("fr-mt-4v")}>
-            <ParcelleSearch
-              formValues={searchValues}
-              onChange={() => {
-                setParcelleError(false);
-              }}
-              onParcelleRequested={(response) => {
-                addressSearchRef.current?.reset();
+          <ParcelleSearch
+            formValues={searchValues}
+            onChange={() => {
+              setParcelleError(false);
+            }}
+            onParcelleRequested={(response) => {
+              addressSearchRef.current?.reset();
 
-                setDiagnosticsResponses([]);
-                if (response.data?.features[0]) {
-                  const parcelleFeature = response.data?.features[0];
-                  onParcelleSelected(parcelleFeature);
-                } else {
-                  setParcelleError(true);
-                }
-              }}
-            />
-          </div>)}
+              setDiagnosticsResponses([]);
+              if (response.data?.features[0]) {
+                const parcelleFeature = response.data?.features[0];
+                onParcelleSelected(parcelleFeature);
+              } else {
+                setParcelleError(true);
+              }
+            }}
+          />)}
         <MapComponent
           ref={mapMethodsRef}
           noisePins={

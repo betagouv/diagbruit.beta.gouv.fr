@@ -34,49 +34,54 @@ export const SearchPrecoPage = () => {
                     <Loader text="Chargement de la médiathèque..." />
                 </div>
             )}
-            <h1 className="fr-mt-6v">Des solutions pour se protéger du bruit</h1>
-            <h2>
-                Médiathèque de préconisations
-            </h2>
-            <div className={cx(classes.searchBarContainer, "fr-col-3")}>
-                <SearchBar
-                    label="Rechercher un mot-clé"
-                    onButtonClick={(value) => setQuery(value)}
-                    renderInput={({ className, id, placeholder, type }) =>
-                        <input
-                            id={id}
-                            className={className}
-                            placeholder={placeholder}
-                            type={type}
-                            value={search}
-                            onChange={(event) => {
-                                if (event.currentTarget.value === "") setQuery("");
-                                setSearch(event.currentTarget.value);
-                            }}
-                        />
-                    }
-                />
-            </div>
-            {cards.length > 0 ? (
-                <div className={cx(classes.cardContainer, "fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
-                    {cards.map((c) => (
-                        <div className={fr.cx("fr-col-12", "fr-col-md-4")} key={c.title}>
-                            <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
-                        </div>
-                    ))}
+            <div className={cx(classes.container)}>
+                <h1>Des solutions pour se protéger du bruit</h1>
+                <h2>
+                    Médiathèque de préconisations
+                </h2>
+                <div className={cx(classes.searchBarContainer, "fr-col-3")}>
+                    <SearchBar
+                        label="Rechercher un mot-clé"
+                        onButtonClick={(value) => setQuery(value)}
+                        renderInput={({ className, id, placeholder, type }) =>
+                            <input
+                                id={id}
+                                className={className}
+                                placeholder={placeholder}
+                                type={type}
+                                value={search}
+                                onChange={(event) => {
+                                    if (event.currentTarget.value === "") setQuery("");
+                                    setSearch(event.currentTarget.value);
+                                }}
+                            />
+                        }
+                    />
                 </div>
-            ) : (<p>Aucune préconisation trouvée</p>)}
+                {cards.length > 0 ? (
+                    <div className={cx(classes.cardContainer, "fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
+                        {cards.map((c) => (
+                            <div className={fr.cx("fr-col-12", "fr-col-md-4")} key={c.title}>
+                                <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (<p>Aucune préconisation trouvée</p>)}
+            </div>
         </>
     )
 }
 
 const useStyles = tss.withName(SearchPrecoPage.name).create(() => ({
+    container: {
+        marginTop: fr.spacing("6v"),
+    },
     cardContainer: {
         display: "flex",
-        paddingBottom: fr.spacing("8v"),
+        paddingBottom: fr.spacing("6v"),
     },
     searchBarContainer: {
-        marginBottom: fr.spacing("8v"),
+        marginBottom: fr.spacing("6v"),
     },
     loaderContainer: {
         backgroundColor: "rgba(255, 255, 255, 0.9)",
