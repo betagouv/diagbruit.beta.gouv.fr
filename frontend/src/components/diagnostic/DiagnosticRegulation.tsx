@@ -1,4 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr";
+import { fr, FrIconClassName } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import type { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
@@ -10,6 +10,7 @@ import RegulationCls from "./regulation/RegulationCls";
 import RegulationIsolation from "./regulation/RegulationIsolation";
 import RegulationPeb from "./regulation/RegulationPeb";
 import RegulationPlu from "./regulation/RegulationPlu";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 type DiagnosticRegulationProps = {
   diagnosticItem: DiagnosticItem;
@@ -104,15 +105,20 @@ const DiagnosticRegulation = ({
           titleAs="h5"
           label={
             <>
-              <i className={fr.cx(accordion.icon as any, "fr-mr-1v")} />{" "}
+              <i className={fr.cx(accordion.icon as FrIconClassName, "fr-mr-1v")} />{" "}
               {accordion.label}
-              <i
-                className={fr.cx(
-                  accordion.isAffected
-                    ? "ri-alert-fill"
-                    : "ri-checkbox-circle-fill",
-                )}
-              />
+
+              <div className={cx(classes.badgesContainer)}>
+                {accordion.isAffected ? <Badge
+                  severity="warning"
+                >
+                  Parcelle exposée
+                </Badge> : <Badge
+                  severity="success"
+                >
+                  Parcelle non exposée
+                </Badge>}
+              </div>
             </>
           }
         >
@@ -149,6 +155,10 @@ const useStyles = tss.create(() => ({
       marginLeft: fr.spacing("2v"),
     },
   },
+  badgesContainer: {
+    marginLeft: "auto",
+    marginRight: fr.spacing("2v")
+  }
 }));
 
 export default DiagnosticRegulation;
