@@ -48,10 +48,13 @@ export const DiagnosticDocumentation = () => {
       });
   }, []);
 
+  const normalize = (str: string) =>
+    str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
   const filteredCards = useMemo(() => {
     if (!search.trim()) return cards;
-    const term = search.toLowerCase().trim();
-    return cards.filter((card) => card.title.toLowerCase().includes(term));
+    const term = normalize(search.trim());
+    return cards.filter((card) => normalize(card.title).includes(term));
   }, [cards, search]);
 
   return (

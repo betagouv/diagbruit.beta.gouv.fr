@@ -8,6 +8,7 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
 import { useEffect } from "react";
+import { RichContent } from "../components/ui/RichContent";
 
 const toAnchorId = (text: string) =>
   text
@@ -62,7 +63,6 @@ export const PrecoPage = () => {
     );
   }
 
-  const keyPointsTitle = "Les 4 points clés";
 
   const parser = new DOMParser();
   const aRetenirDoc = parser.parseFromString(preco.aRetenir, "text/html");
@@ -74,6 +74,8 @@ export const PrecoPage = () => {
   const enrichedContent = contentDoc.body.innerHTML;
   const enrichedARetenir = aRetenirDoc.body.innerHTML;
 
+  const keyPointsTitle = preco.keyPoints.length > 1 ? `Les ${preco.keyPoints.length} points clés` : "Le point clé";
+
   const h2Links = [
     ...(preco.keyPoints && preco.keyPoints.length > 0
       ? [{ id: toAnchorId(keyPointsTitle), label: keyPointsTitle }]
@@ -84,26 +86,32 @@ export const PrecoPage = () => {
   return (
     <>
       {preco.imageBanner && (
-        <img
-          className={cx(classes.imageBanner)}
-          src={
-            preco.imageBanner.url.startsWith("/")
-              ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
-              : preco.imageBanner.url
-          }
-          alt={preco.imageBanner.alternativeText ?? preco.title}
-        />
+        <div className={cx(classes.imageBannerWrapper)}>
+          <img
+            className={cx(classes.imageBanner)}
+            src={
+              preco.imageBanner.url.startsWith("/")
+                ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
+                : preco.imageBanner.url
+            }
+            alt={preco.imageBanner.alternativeText ?? preco.title}
+          />
+        </div>
       )}
       <div className={fr.cx("fr-my-10v", "fr-col-12")}>
-        <h1>{preco.title}</h1>
-        <p>
+        <h1 className="fr-mb-4v">{preco.title}</h1>
+        <p className={fr.cx("fr-text--sm")}>
           Dernière mise à jour le{" "}
           {new Date(preco.updatedAt).toLocaleDateString("fr-FR")}
         </p>
 
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
           {h2Links.length > 0 && (
-            <div className={cx("fr-col-3", classes.stickyNav)}>
+            <div className={cx("fr-col-12",
+              "fr-col-lg-3",
+              "fr-col-md-12",
+              "fr-col-sm-12",
+              "fr-mb-2w", classes.stickyNav)}>
               <Summary
                 links={h2Links.map((link) => ({
                   text: link.label,
@@ -119,12 +127,12 @@ export const PrecoPage = () => {
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
                 title="À retenir"
                 description={
-                  <div
+                  <RichContent
                     className={cx(classes.recommendationContent)}
-                    dangerouslySetInnerHTML={{ __html: enrichedARetenir }}
+                    html={enrichedARetenir}
                   />
                 }
-                onClose={function noRefCheck() {}}
+                onClose={function noRefCheck() { }}
                 severity="info"
                 small
               />
@@ -165,26 +173,34 @@ export const PrecoPage = () => {
                 </div>
               </>
             )}
-            <div
+            <RichContent
               className={cx(classes.recommendationContent)}
-              dangerouslySetInnerHTML={{ __html: enrichedContent }}
+              html={enrichedContent}
             />
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };
 
 const useStyles = tss.withName(PrecoPage.name).create(() => ({
-  imageBanner: {
+  imageBannerWrapper: {
     width: "100vw",
     maxHeight: "350px",
-    objectFit: "cover",
-    display: "block",
+    overflow: "hidden",
     position: "relative",
     left: "50%",
+    right: "50%",
     marginLeft: "-50vw",
+    marginRight: "-50vw",
+  },
+  imageBanner: {
+    width: "100%",
+    height: "350px",
+    objectFit: "cover",
+    objectPosition: "center",
+    display: "block",
   },
   recommendationContent: {
     img: {
@@ -193,9 +209,11 @@ const useStyles = tss.withName(PrecoPage.name).create(() => ({
     },
   },
   stickyNav: {
-    position: "sticky",
-    top: fr.spacing("2v"),
     alignSelf: "flex-start",
+    [fr.breakpoints.up("lg")]: {
+      position: "sticky",
+      top: fr.spacing("2v"),
+    },
   },
 }));
 

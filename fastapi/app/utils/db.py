@@ -471,7 +471,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
             return {"intersections": []}
         
         # Build category lookup: slug -> {buffer, name}
-        category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"]} for cat in categories}
+        category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"], "description": cat["description"]} for cat in categories}
         max_buffer = max(info["buffer"] for info in category_info.values())
         
         logger.debug(f"Loaded {len(categories)} categories, max buffer: {max_buffer}m")
@@ -506,6 +506,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
             category_data = category_info[category_slug]
             buffer_distance = category_data["buffer"]
             category_name = category_data["name"]
+            category_description = category_data["description"]
             
             point_2154 = func.ST_Transform(NoiseSourceItem.geometry, 2154)
             buffered_point = func.ST_Buffer(point_2154, buffer_distance)
@@ -547,6 +548,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
                     "label": r.label,
                     "category_slug": category_slug,
                     "category_name": category_name,
+                    "category_description": category_description,
                     "distance": int(distance) if distance else 0,
                     "geometry": geometry,
                     "geometry_point": geometry_point

@@ -91,6 +91,7 @@ export type NoiseSourceIntersection = {
   label: string;
   category_slug: string;
   category_name: string;
+  category_description: string;
   distance: number;
   geometry: Geometry | [number, number];
   geometry_point: [number, number];

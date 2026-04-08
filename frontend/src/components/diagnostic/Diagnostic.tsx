@@ -123,7 +123,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <DiagnosticSectionTitle
             title={`Autres sources de bruit à proximité`}
             isSecondTitle
-            hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
+            hint="Bars, restaurants, écoles"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
