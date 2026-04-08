@@ -8,7 +8,6 @@ import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import type { DiagnosticItem } from "../../utils/types";
-import DiagnosticDocumentation from "./DiagnosticDocumentation";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -18,6 +17,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
+import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -105,7 +105,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <DiagnosticSectionTitle
             title={`Autres sources de bruit à proximité`}
             isSecondTitle
-            hint="Terrasses / bars , écoles, industries, ralentisseurs, marchés, carrossiers et équipements sportifs"
+            hint="Bars, restaurants, écoles"
           />
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
@@ -156,15 +156,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: tabId === "recommendations",
       content: (
         <>
-          <DiagnosticSectionTitle
-            title="4. Préconisations"
-            image={{
-              src: "/images/document.svg",
-              width: 55,
-              height: 60,
-            }}
-          />
-          <DiagnosticDocumentation diagnosticItem={diagnosticItem} />
+          <DiagnosticCardsDisplay />
         </>
       ),
     },

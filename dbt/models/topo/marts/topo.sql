@@ -2,10 +2,10 @@
     materialized='table',
     post_hook=[
       "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS pk SERIAL PRIMARY KEY;",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_batiment_c ON {{ this }} (batiment_c);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_is_valid_now ON {{ this }} (is_valid_now);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_code_depar ON {{ this }} (code_depar);"
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_batiment_c; CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_batiment_c ON {{ this }} (batiment_c);",
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_is_valid_now; CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_is_valid_now ON {{ this }} (is_valid_now);",
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_code_depar; CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_code_depar ON {{ this }} (code_depar);"
     ]
 ) }}
 
