@@ -186,6 +186,7 @@ const AddressSearch = forwardRef(
           />
           <Button
             type="submit"
+            aria-label={label}
             disabled={!valueSelected}
             iconId="fr-icon-search-line"
             iconPosition="left"

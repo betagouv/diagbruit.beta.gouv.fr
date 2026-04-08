@@ -20,7 +20,7 @@ export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoPr
         imageUrl={
           !!imageUrl
             ? imageUrl
-            : "https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"
+            : "/images/imgPlaceholder.png"
         }
         linkProps={{
           href: `/preco/${slug}`,

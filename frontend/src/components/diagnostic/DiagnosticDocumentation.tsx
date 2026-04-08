@@ -87,7 +87,7 @@ export const DiagnosticDocumentation = () => {
               imageUrl={
                 !!card.imageUrl
                   ? card.imageUrl
-                  : "https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"
+                  : "/images/imgPlaceholder.png"
               }
               linkProps={{
                 href: `/preco/${card.slug}`,
