@@ -34,7 +34,7 @@ export const SearchPrecoPage = () => {
                     <Loader text="Chargement de la médiathèque..." />
                 </div>
             )}
-            <h1>Des solutions pour se protéger du bruit</h1>
+            <h1 className="fr-mt-6v">Des solutions pour se protéger du bruit</h1>
             <h2>
                 Médiathèque de préconisations
             </h2>

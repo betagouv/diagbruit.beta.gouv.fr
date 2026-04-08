@@ -720,6 +720,7 @@ export interface ApiRecommendationRecommendation
       > &
       Schema.Attribute.DefaultTo<'<p>\u2713 Lorem Ipsum</p>'>;
     content: Schema.Attribute.RichText &
+      Schema.Attribute.Required &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',
         {
