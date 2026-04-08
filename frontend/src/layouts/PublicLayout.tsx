@@ -73,7 +73,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           </>
         }
         quickAccessItems={[
-
           {
             iconId: "ri-flashlight-line",
             text: "Nouveautés",
@@ -81,24 +80,21 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
-          <>
-            {!isMobile && (
-              <div className={cx(classes.searchContainer)}>
-                <AddressSearch
-                  key="header-search"
-                  id="header-address-search"
-                  placeholder="Rechercher une adresse..."
-                  lite
-                  onValueSelected={(feature: AddressFeature) => {
-                    navigate({
-                      pathname: "/diagnostic",
-                      search: `?address=${encode(feature)}`,
-                    });
-                  }}
-                />
-              </div>
-            )}
-          </>
+          ...(!isMobile ? [
+            <div key="header-search" className={cx(classes.searchContainer)}>
+              <AddressSearch
+                id="header-address-search"
+                placeholder="Rechercher une adresse..."
+                lite
+                onValueSelected={(feature: AddressFeature) => {
+                  navigate({
+                    pathname: "/diagnostic",
+                    search: `?address=${encode(feature)}`,
+                  });
+                }}
+              />
+            </div>
+          ] : []),
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
