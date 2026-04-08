@@ -1,4 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import { Card } from "@codegouvfr/react-dsfr/Card";
+import { tss } from "tss-react/dsfr";
 
 export interface CardPrecoProps {
   title: string;
@@ -8,9 +10,12 @@ export interface CardPrecoProps {
 }
 
 export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoProps) => {
+  const { cx, classes } = useStyles();
+
   return (
-    <div className="fr-col-4">
+    <div className={cx(classes.cardContainer)}>
       <Card
+        className={cx(classes.card)}
         enlargeLink
         imageAlt="texte alternatif de l’image"
         imageUrl={
@@ -29,5 +34,15 @@ export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoPr
     </div>
   );
 };
+
+const useStyles = tss.withName(CardPreco.name).create(() => ({
+  cardContainer: {
+    display: "flex",
+    height: "100%"
+  },
+  card: {
+    width: "100%"
+  }
+}));
 
 export default CardPreco;

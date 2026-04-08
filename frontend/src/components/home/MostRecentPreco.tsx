@@ -24,9 +24,11 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
         <div className={cx(classes.contentContainer)}>
             <h2>{content.title}</h2>
             <p>{content.description}</p>
-            <div className={cx(classes.cardContainer)}>
+            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
                 {cards.map((c) => (
-                    <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
+                    <div key={c.title} className={fr.cx("fr-col-12", "fr-col-md-4")}>
+                        <CardPreco title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
+                    </div>
                 ))}
             </div>
             <a href="/preco" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right",)}>
@@ -37,11 +39,6 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
 }
 
 const useStyles = tss.withName(MostRecentPreco.name).create(() => ({
-    cardContainer: {
-        display: "flex",
-        gap: fr.spacing("2w"),
-        paddingBottom: fr.spacing("4v"),
-    },
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),
