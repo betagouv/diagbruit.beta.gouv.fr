@@ -38,7 +38,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
-  const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "evaluation");
+  const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "reglementation");
 
   const devMode = searchParams.get("dev") === "true";
 
@@ -80,10 +80,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: activeTabId === "reglementation",
       content: (
         <>
-          <DiagnosticReceiveByMail
-            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-          />
+
           <h2>Réglementation</h2>
+          <div className={fr.cx("fr-mb-8v")}>
+            <DiagnosticReceiveByMail
+              parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+            />
+          </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
         </>
       ),
