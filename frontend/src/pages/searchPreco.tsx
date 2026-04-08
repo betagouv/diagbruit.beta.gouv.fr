@@ -5,6 +5,7 @@ import CardPreco from "../components/ui/CardPreco";
 import { Loader } from "../components/ui/Loader";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import { useState } from "react";
+import { normalize } from "../utils/tools";
 
 
 export const SearchPrecoPage = () => {
@@ -17,10 +18,14 @@ export const SearchPrecoPage = () => {
         "fields[1]": "slug",
         "populate[imageThumbnail][fields][0]": "url",
         "sort[0]": "createdAt:desc",
-        ...(query && { "filters[title][$containsi]": query }),
+        "pagination[pageSize]": 100,
     };
 
-    const { precos: cards, isLoading } = useGetPrecosCards(params);
+    const { precos: allCards, isLoading } = useGetPrecosCards(params);
+
+    const cards = query
+        ? allCards.filter((c) => normalize(c.title).includes(normalize(query)))
+        : allCards;
 
     return (
         <>

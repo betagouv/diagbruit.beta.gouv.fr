@@ -489,3 +489,6 @@ export const getIsMobile = () => {
   const { windowInnerWidth } = useWindowInnerSize();
   return windowInnerWidth < breakpointsValues.md;
 }
+
+export const normalize = (str: string) =>
+  str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();

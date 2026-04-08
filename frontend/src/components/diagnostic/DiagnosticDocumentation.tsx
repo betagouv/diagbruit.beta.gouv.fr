@@ -4,6 +4,7 @@ import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { normalize } from "../../utils/tools";
 
 export interface CardPrecoProps {
   title: string;
@@ -47,9 +48,6 @@ export const DiagnosticDocumentation = () => {
         console.error(err);
       });
   }, []);
-
-  const normalize = (str: string) =>
-    str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
   const filteredCards = useMemo(() => {
     if (!search.trim()) return cards;
