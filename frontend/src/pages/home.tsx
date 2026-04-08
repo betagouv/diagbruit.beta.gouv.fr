@@ -12,6 +12,7 @@ import { Loader } from "../components/ui/Loader";
 import DiagPreview from "../components/home/DiagPreview";
 import { HomeSearch, HomeSearchProps } from "../components/home/HomeSearch";
 import { StatsAndQuiz, StatsAndQuizProps } from "../components/home/StatsAndQuiz";
+import { getIsMobile } from "../utils/tools";
 
 interface HomePageContent {
   homeSearch: HomeSearchProps;
@@ -46,6 +47,8 @@ function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const navigate = useNavigate();
+
+  const isMobile: boolean = getIsMobile();
 
   useEffect(() => {
     setIsLoading(true);
@@ -89,7 +92,7 @@ function HomePage() {
         </div>
       )}
       {homeContent?.homeSearch && (
-        <HomeSearch content={homeContent.homeSearch} />
+        <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
       )}
       <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
         <img src="/images/search.svg" alt="search icon" />
@@ -110,7 +113,9 @@ function HomePage() {
         }}
         formValues={formValues}
       />
-      <DiagPreview />
+      {!getIsMobile && (
+        <DiagPreview />
+      )}
       {homeContent?.statsAndQuiz && (
         <StatsAndQuiz content={homeContent.statsAndQuiz} />
       )}

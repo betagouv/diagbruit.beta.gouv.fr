@@ -33,6 +33,7 @@ type AddressSearchProps = {
   limit?: number;
   defaultValue?: AddressFeature;
   lite?: boolean;
+  isMobile?: boolean;
 };
 
 const useAddressSearch = (limit: number) => {
@@ -93,10 +94,12 @@ const AddressSearch = forwardRef(
       limit = 5,
       defaultValue,
       lite = false,
+      isMobile = false
     }: AddressSearchProps,
     ref: React.Ref<{ reset: () => void }>
   ) => {
     const { cx, classes } = useStyles();
+
     const [inputValue, setInputValue] = useState("");
     const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
       null
@@ -186,7 +189,7 @@ const AddressSearch = forwardRef(
             iconPosition="left"
             className={cx(classes.submitButton)}
           >
-            {lite ? "" : "Lancer le diagnostic sonore"}
+            {lite || isMobile ? "" : "Lancer le diagnostic sonore"}
           </Button>
         </form>
       </div>
@@ -196,8 +199,10 @@ const AddressSearch = forwardRef(
 
 const useStyles = tss.create(() => ({
   container: {
+    width: "100%",
     form: {
       display: "flex",
+      width: "100%",
     },
     borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
   },

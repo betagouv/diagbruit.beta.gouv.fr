@@ -10,6 +10,7 @@ import type { Settings } from "../utils/types";
 import TallyForm from "../components/diagnostic/TallyForm";
 import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
 import { encode } from "../utils/compression";
+import { getIsMobile } from "../utils/tools";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -23,6 +24,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   const navigate = useNavigate();
 
   const [settings, setSettings] = useState<Settings>();
+
+  const isMobile: boolean = getIsMobile();
 
   useEffect(() => {
     axios
@@ -78,20 +81,24 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
-          <div className={cx(classes.searchContainer)}>
-            <AddressSearch
-              key="header-search"
-              id="header-address-search"
-              placeholder="Rechercher une adresse..."
-              lite
-              onValueSelected={(feature: AddressFeature) => {
-                navigate({
-                  pathname: "/diagnostic",
-                  search: `?address=${encode(feature)}`,
-                });
-              }}
-            />
-          </div>
+          <>
+            {!isMobile && (
+              <div className={cx(classes.searchContainer)}>
+                <AddressSearch
+                  key="header-search"
+                  id="header-address-search"
+                  placeholder="Rechercher une adresse..."
+                  lite
+                  onValueSelected={(feature: AddressFeature) => {
+                    navigate({
+                      pathname: "/diagnostic",
+                      search: `?address=${encode(feature)}`,
+                    });
+                  }}
+                />
+              </div>
+            )}
+          </>
         ]}
         serviceTitle="diagBruit"
         serviceTagline={

@@ -10,6 +10,8 @@ import {
   IntRange,
   SoundClassificationIntersectionAffectedHelper,
 } from "./types";
+import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
+import { useWindowInnerSize } from "@codegouvfr/react-dsfr/tools/useWindowInnerSize";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -475,9 +477,15 @@ export const getMaxIsolationFromSoundClassificationAffectedHelper = (
 ) => {
   return !!optimalZoneSoundClassificationHelper.length
     ? Math.max(
-        ...optimalZoneSoundClassificationHelper.map(
-          (helper) => helper.isolation,
-        ),
-      )
+      ...optimalZoneSoundClassificationHelper.map(
+        (helper) => helper.isolation,
+      ),
+    )
     : 0;
 };
+
+export const getIsMobile = () => {
+  const { breakpointsValues } = useBreakpointsValuesPx();
+  const { windowInnerWidth } = useWindowInnerSize();
+  return windowInnerWidth < breakpointsValues.md;
+}

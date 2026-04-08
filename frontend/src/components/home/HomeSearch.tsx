@@ -11,6 +11,7 @@ export interface HomeSearchProps {
     title: string;
     description: string;
     banner: ImageProps;
+    isMobile?: boolean;
 }
 
 export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
@@ -42,6 +43,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                         });
                     }}
                     limit={3}
+                    isMobile={content.isMobile}
                 />
                 <Button
                     className="fr-mt-8v"
