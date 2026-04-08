@@ -40,7 +40,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                             author={content.author}
                             imageUrl={url ?? "//www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.1x1.png"}
                             size="xlarge"
-                            source={content.source}
+                            source={content.source ? <li>{content.source}</li> : undefined}
                             text={content.description}
                         />
                     </div>
