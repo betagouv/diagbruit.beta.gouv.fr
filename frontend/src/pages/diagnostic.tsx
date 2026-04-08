@@ -235,10 +235,11 @@ function DiagnosticPage() {
         </div>
       )}
       <div className={cx(classes.container)}>
-        <h1 className={fr.cx("fr-mb-4v")}>Diagnostiquer une parcelle</h1>
+        <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
         <ToggleSwitch
-          className={fr.cx("fr-mb-4v")}
+          className={cx(classes.toggle, fr.cx("fr-mb-6v"))}
           label="Rechercher une parcelle"
+          showCheckedHint={false}
           checked={showParcelleSearch}
           onChange={checked => {
             setShowParcelleSearch(checked);
@@ -394,6 +395,11 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     marginTop: fr.spacing("8v"),
+  },
+  toggle: {
+    "label::before": {
+      marginRight: fr.spacing("2v"),
+    }
   },
   sonoscoreContainer: {
     padding: fr.spacing("6v"),
