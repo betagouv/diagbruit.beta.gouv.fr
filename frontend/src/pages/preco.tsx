@@ -7,8 +7,8 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
-import { useEffect } from "react";
 import { RichContent } from "../components/ui/RichContent";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const toAnchorId = (text: string) =>
   text
@@ -22,29 +22,14 @@ export const PrecoPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { preco, isLoading, notFound } = usePreco(slug ?? "");
 
-  useEffect(() => {
-    if (!preco) return;
+  const plainText = preco
+    ? new DOMParser()
+        .parseFromString(preco.aRetenir || preco.content, "text/html")
+        .body.textContent?.trim()
+        .slice(0, 160)
+    : undefined;
 
-    document.title = `${preco.title} - Diagbruit`;
-
-    const parser = new DOMParser();
-    const plainText = parser
-      .parseFromString(preco.aRetenir || preco.content, "text/html")
-      .body.textContent?.trim()
-      .slice(0, 160);
-
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement("meta");
-      metaDescription.setAttribute("name", "description");
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute("content", plainText ?? "");
-
-    return () => {
-      document.title = "Diagbruit";
-    };
-  }, [preco]);
+  usePageMeta(preco?.title ?? "Préconisation", plainText);
 
   if (isLoading) {
     return (

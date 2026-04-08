@@ -6,10 +6,12 @@ import { Loader } from "../components/ui/Loader";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import { useState } from "react";
 import { normalize } from "../utils/tools";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 
 export const SearchPrecoPage = () => {
     const { cx, classes } = useStyles();
+    usePageMeta("Médiathèque", "Consultez nos préconisations pour se protéger du bruit.");
     const [search, setSearch] = useState("");
     const [query, setQuery] = useState("");
 

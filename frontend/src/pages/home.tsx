@@ -3,6 +3,7 @@ import { MostRecentPreco, MostRecentPrecoProps } from "../components/home/MostRe
 import { AvailabilityMapProps, AvailabilityMap } from "../components/home/AvailabilityMap";
 import About, { AboutHomePageProps, PartnersProps } from "../components/home/About";
 import { useEffect, useState } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
 import DiagPreview from "../components/home/DiagPreview";
@@ -39,6 +40,7 @@ const params = {
 
 function HomePage() {
   const { cx, classes } = useStyles();
+  usePageMeta("Accueil", "Intégrez le bruit dans les risques impactant les projets d'aménagement avec diagBruit.");
   const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);

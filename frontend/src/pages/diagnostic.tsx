@@ -16,6 +16,7 @@ import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { usePageMeta } from "../hooks/usePageMeta";
 import DiagnosticScoreOnScale from "../components/diagnostic/DiagnosticScoreOnScale";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
 
@@ -33,6 +34,7 @@ const defaultSearchValues = process.env.NODE_ENV === "development" ? {
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
+  usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
   const location = useLocation();
   const navigate = useNavigate();
 
