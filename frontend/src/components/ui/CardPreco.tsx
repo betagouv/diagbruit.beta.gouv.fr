@@ -1,4 +1,3 @@
-import { fr } from "@codegouvfr/react-dsfr";
 import { Card } from "@codegouvfr/react-dsfr/Card";
 import { tss } from "tss-react/dsfr";
 
@@ -41,7 +40,16 @@ const useStyles = tss.withName(CardPreco.name).create(() => ({
     height: "100%"
   },
   card: {
-    width: "100%"
+    width: "100%",
+    "& .fr-card__img": {
+      aspectRatio: "16/9",
+      overflow: "hidden",
+    },
+    "& .fr-card__img img": {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+    },
   }
 }));
 

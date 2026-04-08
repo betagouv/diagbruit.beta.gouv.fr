@@ -62,6 +62,88 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
     </div>)
 }
 
+export const HomeSearchSkeleton = () => {
+    const { cx, classes } = useSkeletonStyles();
+    return (
+        <div className={cx(classes.bgContainer)}>
+            <div className={cx(classes.contentContainer, "fr-col-10")}>
+                <div className={cx(classes.skeletonTitle)} />
+                <div className={cx(classes.skeletonLine)} />
+                <div className={cx(classes.skeletonLineShort)} />
+                <div className={cx(classes.searchBox)}>
+                    <div className={cx(classes.skeletonInput)} />
+                    <div className={cx(classes.skeletonButton)} />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const useSkeletonStyles = tss.withName("HomeSearchSkeleton").create(() => ({
+    bgContainer: {
+        paddingTop: fr.spacing("12w"),
+        paddingBottom: fr.spacing("12w"),
+        marginLeft: "calc(-50vw + 50%)",
+        marginRight: "calc(-50vw + 50%)",
+        paddingLeft: "calc(50vw - 50%)",
+        paddingRight: "calc(50vw - 50%)",
+        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
+    },
+    contentContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        margin: "0 auto",
+        gap: fr.spacing("3v"),
+    },
+    skeletonTitle: {
+        height: "40px",
+        width: "60%",
+        backgroundColor: fr.colors.decisions.background.default.grey.default,
+        borderRadius: fr.spacing("1v"),
+        opacity: 0.3,
+    },
+    skeletonLine: {
+        height: "20px",
+        width: "80%",
+        backgroundColor: fr.colors.decisions.background.default.grey.default,
+        borderRadius: fr.spacing("1v"),
+        opacity: 0.3,
+    },
+    skeletonLineShort: {
+        height: "20px",
+        width: "50%",
+        backgroundColor: fr.colors.decisions.background.default.grey.default,
+        borderRadius: fr.spacing("1v"),
+        opacity: 0.3,
+    },
+    searchBox: {
+        marginTop: fr.spacing("4v"),
+        padding: fr.spacing("8v"),
+        backgroundColor: fr.colors.decisions.background.default.grey.default,
+        borderRadius: fr.spacing("2v"),
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("4v"),
+    },
+    skeletonInput: {
+        height: "40px",
+        width: "100%",
+        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
+        borderRadius: fr.spacing("1v"),
+        opacity: 0.5,
+    },
+    skeletonButton: {
+        height: "40px",
+        width: "280px",
+        alignSelf: "center",
+        backgroundColor: fr.colors.decisions.background.contrast.grey.default,
+        borderRadius: fr.spacing("1v"),
+        opacity: 0.5,
+    },
+}));
+
 const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().create(({ url }) => ({
     bgContainer: {
         paddingTop: fr.spacing("12w"),

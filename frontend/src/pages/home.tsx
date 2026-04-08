@@ -7,7 +7,7 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
 import DiagPreview from "../components/home/DiagPreview";
-import { HomeSearch, HomeSearchProps } from "../components/home/HomeSearch";
+import { HomeSearch, HomeSearchSkeleton, HomeSearchProps } from "../components/home/HomeSearch";
 import { StatsAndQuiz, StatsAndQuizProps } from "../components/home/StatsAndQuiz";
 import { getIsMobile } from "../utils/tools";
 
@@ -77,9 +77,10 @@ function HomePage() {
           <Loader text="Chargement..." />
         </div>
       )}
-      {homeContent?.homeSearch && (
-        <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
-      )}
+      {homeContent?.homeSearch
+        ? <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
+        : isLoading && <HomeSearchSkeleton />
+      }
       {!isMobile && (
         <DiagPreview />
       )}

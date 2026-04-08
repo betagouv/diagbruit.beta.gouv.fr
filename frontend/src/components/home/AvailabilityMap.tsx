@@ -27,7 +27,13 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
                     </a>
                 </div>
                 <div className="fr-col-6">
-                    <img src="/images/carte_france_regionale.svg" alt="title icon" />
+                    <img
+                        src="/images/carte_france_regionale.svg"
+                        alt="title icon"
+                        width={450}
+                        height={392}
+                        className={cx(classes.mapImage)}
+                    />
                 </div>
             </div>
         </div>
@@ -49,6 +55,10 @@ const useStyles = tss.withName(AvailabilityMap.name).create(() => ({
         a: {
             color: fr.colors.decisions.background.flat.blueFrance.default,
         }
+    },
+    mapImage: {
+        width: "100%",
+        height: "auto",
     }
 }));
 
