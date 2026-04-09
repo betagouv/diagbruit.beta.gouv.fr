@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import SelectorContent from "../diagnostic/SelectorContent";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
-import type { DiagnosticItem, Geometry } from "../../utils/types";
 import SonoScorePreview from "./SonoScorePreview";
 import RegulationPreview from "./RegulationPreview";
 import SolutionPreview from "./SolutionPreview";
@@ -64,12 +63,8 @@ export const DiagPreview = () => {
                 onTabChange={(tabId) => {
                     setActiveTabId(tabId);
                 }}
+                diag
             />
-            <div className={fr.cx("fr-my-4v", "fr-ml-4v")}>
-                <a href="/diagnostic" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
-                    Diagnostiquer une parcelle
-                </a>
-            </div>
         </div>
     )
 

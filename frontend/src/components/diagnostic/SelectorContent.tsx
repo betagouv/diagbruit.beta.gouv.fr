@@ -13,15 +13,16 @@ interface SelectorContentProps {
     tabs: SelectorTab[];
     activeTabId: string;
     border?: boolean;
+    diag?: boolean;
     onTabChange: (tabId: string) => void;
 }
 
-const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: SelectorContentProps) => {
+const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange, diag = false }: SelectorContentProps) => {
     const { cx, classes } = useStyles({ border });
 
     return (
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-            <div className={fr.cx("fr-col-3")}>
+            <div className={cx(classes.selectorColumn, fr.cx("fr-col-3"))}>
                 <nav>
                     <ul className={cx(classes.selectorList)}>
                         {tabs.map((tab) => (
@@ -38,6 +39,13 @@ const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: Sel
                         ))}
                     </ul>
                 </nav>
+                {diag && (
+                    <div style={{ marginTop: "auto" }} className={fr.cx("fr-ml-4v")}>
+                        <a href="/diagnostic" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
+                            Diagnostiquer une parcelle
+                        </a>
+                    </div>
+                )}
             </div>
             <div className={fr.cx("fr-col-9")}>
                 {tabs.find((tab) => tab.tabId === activeTabId)?.content}
@@ -47,6 +55,10 @@ const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: Sel
 };
 
 const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolean }>().create(({ border }) => ({
+    selectorColumn: {
+        display: "flex",
+        flexDirection: "column",
+    },
     selectorList: {
         listStyle: "none",
         padding: 0,

@@ -45,8 +45,9 @@ const SonoScorePreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
 const useStyles = tss.withName(SonoScorePreview.name).create(() => ({
     sonoscoreContainer: {
         padding: fr.spacing("4v"),
-        margin: `${fr.spacing("6w")} auto`,
+        margin: `${fr.spacing("2v")} auto`,
         backgroundColor: fr.colors.decisions.background.default.grey.default,
+        boxShadow: "0px 2.05px 6.15px 0px rgba(0, 0, 18, 0.16)",
     },
     redAmbienceTag: {
         backgroundColor: fr.colors.decisions.background.actionHigh.redMarianne.active,
