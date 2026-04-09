@@ -70,12 +70,10 @@ const useStyles = tss.withName(StatsAndQuiz.name).create(() => ({
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),
-        borderBottom: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
         marginLeft: "calc(-50vw + 50%)",
         marginRight: "calc(-50vw + 50%)",
         paddingLeft: "calc(50vw - 50%)",
         paddingRight: "calc(50vw - 50%)",
-        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
     },
     statCard: {
         width: "100%",

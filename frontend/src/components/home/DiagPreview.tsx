@@ -53,7 +53,7 @@ export const DiagPreview = () => {
     ];
 
     return (
-        <div className={fr.cx("fr-my-8v",)}>
+        <div className={cx(classes.container)}>
             <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
                 <img width={40} height={40} src="/images/diagPreviewIcon.svg" />
                 <h2>Un diagnostic complet sur les risques sonores</h2>
@@ -76,6 +76,14 @@ export const DiagPreview = () => {
 }
 
 const useStyles = tss.create(() => ({
+    container: {
+        borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        padding: `${fr.spacing("8v")} 0`,
+        marginLeft: "calc(-50vw + 50%)",
+        marginRight: "calc(-50vw + 50%)",
+        paddingLeft: "calc(50vw - 50%)",
+        paddingRight: "calc(50vw - 50%)",
+    },
     titleContainer: {
         gap: fr.spacing("4v"),
     },

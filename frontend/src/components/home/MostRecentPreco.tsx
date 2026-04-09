@@ -55,7 +55,6 @@ const useStyles = tss.withName(MostRecentPreco.name).create(() => ({
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),
-        borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
         borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
         marginLeft: "calc(-50vw + 50%)",
         marginRight: "calc(-50vw + 50%)",
@@ -63,7 +62,7 @@ const useStyles = tss.withName(MostRecentPreco.name).create(() => ({
         paddingRight: "calc(50vw - 50%)",
     },
     skeletonCard: {
-        height: "280px",
+        height: "380px",
         backgroundColor: fr.colors.decisions.background.contrast.grey.default,
         borderRadius: fr.spacing("1v"),
     }

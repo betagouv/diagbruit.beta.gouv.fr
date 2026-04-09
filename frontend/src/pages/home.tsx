@@ -84,11 +84,11 @@ function HomePage() {
       {!isMobile && (
         <DiagPreview />
       )}
-      {homeContent?.statsAndQuiz && (
-        <StatsAndQuiz content={homeContent.statsAndQuiz} />
-      )}
       {homeContent?.mostRecentPreco && (
         <MostRecentPreco content={homeContent.mostRecentPreco} />
+      )}
+      {homeContent?.statsAndQuiz && (
+        <StatsAndQuiz content={homeContent.statsAndQuiz} />
       )}
       {homeContent?.availabilityMapContent && (
         <AvailabilityMap content={homeContent.availabilityMapContent} />
