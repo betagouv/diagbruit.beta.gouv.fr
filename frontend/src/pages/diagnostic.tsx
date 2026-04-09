@@ -17,11 +17,7 @@ import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { usePageMeta } from "../hooks/usePageMeta";
-import DiagnosticScoreOnScale from "../components/diagnostic/DiagnosticScoreOnScale";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
-import DiagnosticNoiseScore from "../components/diagnostic/DiagnosticNoiseScore";
-import DiagnosticTag from "../components/diagnostic/DiagnosticTag";
-import DiagnosticDetails from "../components/diagnostic/DiagnosticDetails";
 
 const defaultSearchValues = process.env.NODE_ENV === "development" ? {
   codeInsee: "33063",
@@ -324,7 +320,7 @@ function DiagnosticPage() {
           onAddressSelected={onAddressSelected}
         />
         {diagnosticItem && (
-          <DiagnosticDetails diagnosticItem={diagnosticItem} />
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
         )}
 
         {diagnosticItem && (

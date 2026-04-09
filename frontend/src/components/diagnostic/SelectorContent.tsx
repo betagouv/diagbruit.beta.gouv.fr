@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
 
 export interface SelectorTab {

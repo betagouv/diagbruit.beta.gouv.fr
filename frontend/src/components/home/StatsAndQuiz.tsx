@@ -33,7 +33,7 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
 
     return (<div className={cx(classes.contentContainer)}>
         <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
-            <img width={40} height={40} src="/images/statsIcon.svg" />
+            <img width={40} height={40} alt="stats and quiz icon" src="/images/statsIcon.svg" />
             <h2>{content.title}</h2>
 
         </div>

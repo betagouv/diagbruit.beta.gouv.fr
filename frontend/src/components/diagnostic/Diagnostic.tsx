@@ -7,13 +7,10 @@ import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
-import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
-import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 import SelectorContent from "./SelectorContent";
@@ -87,44 +84,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             />
           </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
-        </>
-      ),
-    },
-    {
-      tabId: "evaluation",
-      label: "Résumé du diagnostic",
-      isDefault: activeTabId === "evaluation",
-      content: (
-        <>
-          <DiagnosticSectionTitle
-            title={`1. Risques sonores sur la parcelle ${diagnosticItem.parcelle.numero}`}
-            image={{
-              src: "/images/connection-lost.svg",
-              width: 56,
-              height: 48,
-            }}
-          />
-          <DiagnosticSectionTitle
-            title={`Risque sonore`}
-            isSecondTitle
-            hint="Basé sur les cartes de bruit des transports routiers, ferroviaires et aériens"
-          />
-          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-            <DiagnosticScoreOnScale
-              score={diagnosticItem.diagnostic.score}
-              db={diagnosticItem.diagnostic.max_db_lden}
-              light
-            />
-          )}
-          <DiagnosticHero diagnosticItem={diagnosticItem} />
-          <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
-          <DiagnosticRegulation diagnosticItem={diagnosticItem} />
-          <DiagnosticSectionTitle
-            title={`Autres sources de bruit à proximité`}
-            isSecondTitle
-            hint="Bars, restaurants, écoles"
-          />
-          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
       ),
     },

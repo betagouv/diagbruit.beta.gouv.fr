@@ -54,7 +54,7 @@ export const DiagPreview = () => {
     return (
         <div className={cx(classes.container)}>
             <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
-                <img width={40} height={40} src="/images/diagPreviewIcon.svg" />
+                <img width={40} height={40} alt="diagnostic preview icon" src="/images/diagPreviewIcon.svg" />
                 <h2>Un diagnostic complet sur les risques sonores</h2>
             </div>
             <SelectorContent

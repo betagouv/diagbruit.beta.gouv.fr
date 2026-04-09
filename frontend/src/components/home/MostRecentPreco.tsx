@@ -23,7 +23,7 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
     return (
         <div className={cx(classes.contentContainer)}>
             <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
-                <img width={40} height={40} src="/images/precoIcon.svg" />
+                <img width={40} height={40} alt="most recent preco icon" src="/images/precoIcon.svg" />
                 <h2>{content.title}</h2>
             </div>
             <p>{content.description}</p>
