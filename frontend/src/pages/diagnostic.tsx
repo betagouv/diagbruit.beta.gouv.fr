@@ -258,7 +258,7 @@ function DiagnosticPage() {
         <div className={fr.cx("fr-mb-6v", "fr-col-6")}>
           <AddressSearch
             ref={addressSearchRef}
-            placeholder="Cherchez une ville, adresse..."
+            placeholder="Renseignez une adresse"
             id="mapSearch"
             onValueSelected={onAddressSelected}
             defaultValue={addressDefaultValue}

@@ -34,7 +34,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
             <div className={cx(classes.searchAddressContainer)}>
                 <AddressSearch
                     className={classes.searchAddress}
-                    placeholder="Cherchez une ville, adresse..."
+                    placeholder="Renseignez une adresse"
                     id="mapSearch"
                     onValueSelected={(feature: AddressFeature) => {
                         navigate({
