@@ -83,6 +83,7 @@ export default factories.createCoreController("api::email.email", () => ({
 
     await strapi.plugins.email.services.email.send({
       to,
+      bcc: "contact@diagbruit.fr",
       subject: `Votre diagnostic acoustique diagBruit - Parcelle ${parcelNumber}`,
       html,
     });
