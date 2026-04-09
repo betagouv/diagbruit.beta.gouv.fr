@@ -11,6 +11,7 @@ import RegulationIsolation from "./regulation/RegulationIsolation";
 import RegulationPeb from "./regulation/RegulationPeb";
 import RegulationPlu from "./regulation/RegulationPlu";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import { getIsMobile } from "../../utils/tools";
 
 type DiagnosticRegulationProps = {
   diagnosticItem: DiagnosticItem;
@@ -29,6 +30,8 @@ const DiagnosticRegulation = ({
 }: DiagnosticRegulationProps) => {
   const { cx, classes } = useStyles();
   const { diagnostic } = diagnosticItem;
+
+  const isMobile = getIsMobile();
 
   const codedept = parseInt(diagnosticItem.parcelle.code_insee.substring(0, 2), 10);
   const { decrees } = useDecrees(codedept);
@@ -112,11 +115,11 @@ const DiagnosticRegulation = ({
                 {accordion.isAffected ? <Badge
                   severity="warning"
                 >
-                  Parcelle exposée
+                  {isMobile ? "" : "Parcelle exposée"}
                 </Badge> : <Badge
                   severity="success"
                 >
-                  Parcelle non exposée
+                  {isMobile ? "" : "Parcelle non exposée"}
                 </Badge>}
               </div>
             </>

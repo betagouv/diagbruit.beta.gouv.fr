@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
@@ -276,7 +275,6 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     gap: fr.spacing("6v"),
-    minHeight: "calc(100vh - 200px)",
     marginTop: fr.spacing("2v"),
     ".fr-tabs__panel": {
       padding: `${fr.spacing("6v")} ${fr.spacing("8v")} ${fr.spacing(
