@@ -24,9 +24,9 @@ export const PrecoPage = () => {
 
   const plainText = preco
     ? new DOMParser()
-        .parseFromString(preco.aRetenir || preco.content, "text/html")
-        .body.textContent?.trim()
-        .slice(0, 160)
+      .parseFromString(preco.aRetenir || preco.content, "text/html")
+      .body.textContent?.trim()
+      .slice(0, 160)
     : undefined;
 
   usePageMeta(preco?.title ?? "Préconisation", plainText);
@@ -111,6 +111,7 @@ export const PrecoPage = () => {
               <Alert
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
                 title="À retenir"
+                as="h2"
                 description={
                   <RichContent
                     className={cx(classes.recommendationContent)}
