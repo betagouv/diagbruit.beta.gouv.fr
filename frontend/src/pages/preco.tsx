@@ -9,6 +9,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
 import { RichContent } from "../components/ui/RichContent";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { EmptyScreenZone } from "../components/ui/EmptyScreenZone";
 
 const toAnchorId = (text: string) =>
   text
@@ -33,9 +34,9 @@ export const PrecoPage = () => {
 
   if (isLoading) {
     return (
-      <div className={fr.cx("fr-my-16w")}>
+      <EmptyScreenZone>
         <Loader />
-      </div>
+      </EmptyScreenZone>
     );
   }
 
@@ -80,6 +81,7 @@ export const PrecoPage = () => {
                 : preco.imageBanner.url
             }
             alt={preco.imageBanner.alternativeText ?? preco.title}
+            fetchPriority="high"
           />
         </div>
       )}
@@ -186,6 +188,7 @@ const useStyles = tss.withName(PrecoPage.name).create(() => ({
     height: "350px",
     objectFit: "cover",
     objectPosition: "center",
+    aspectRatio: "5/1",
     display: "block",
   },
   recommendationContent: {
