@@ -107,7 +107,7 @@ export const getSummaryTextFromDiagnostic = (
 
   switch (risk) {
     case 3:
-      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>.";
+      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>. La construction ou la rénovation de logements sont soumis à des <strong>obligations réglementaires</strong>";
     case 2:
       return "Votre parcelle est exposée à un <strong>risque fort de nuisance sonore</strong>.";
     case 1:

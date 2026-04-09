@@ -48,7 +48,7 @@ const DiagnosticHero = ({
                   <DiagnosticTag
                     key={ambience}
                     ambience={ambience}
-                    className={cx(classes.ambienceTag, fr.cx("fr-mr-2v", "fr-mb-2v"))}
+                    className={cx(classes.ambienceTag)}
                   />
                 ))}
               </div>
@@ -75,6 +75,8 @@ const useStyles = tss
     },
     ambienceTag: {
       backgroundColor: getColorFromScore(score),
+      marginBottom: fr.spacing("2v"),
+      marginRight: fr.spacing("2v"),
     },
     summary: {
       ...fr.typography[21].style,

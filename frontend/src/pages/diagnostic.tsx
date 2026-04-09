@@ -19,6 +19,9 @@ import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { usePageMeta } from "../hooks/usePageMeta";
 import DiagnosticScoreOnScale from "../components/diagnostic/DiagnosticScoreOnScale";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
+import DiagnosticNoiseScore from "../components/diagnostic/DiagnosticNoiseScore";
+import DiagnosticTag from "../components/diagnostic/DiagnosticTag";
+import DiagnosticDetails from "../components/diagnostic/DiagnosticDetails";
 
 const defaultSearchValues = process.env.NODE_ENV === "development" ? {
   codeInsee: "33063",
@@ -321,17 +324,7 @@ function DiagnosticPage() {
           onAddressSelected={onAddressSelected}
         />
         {diagnosticItem && (
-          <div className={cx(classes.sonoscoreContainer)}>
-            <h2>Parcelle n°{diagnosticItem.parcelle.numero}</h2>
-            {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-              <DiagnosticScoreOnScale
-                score={diagnosticItem.diagnostic.score}
-                db={diagnosticItem.diagnostic.max_db_lden}
-                light
-              />
-            )}
-            <DiagnosticHero diagnosticItem={diagnosticItem} />
-          </div>
+          <DiagnosticDetails diagnosticItem={diagnosticItem} />
         )}
 
         {diagnosticItem && (
@@ -422,10 +415,6 @@ const useStyles = tss.create(() => ({
     "label::before": {
       marginRight: fr.spacing("2v"),
     }
-  },
-  sonoscoreContainer: {
-    padding: fr.spacing("6v"),
-    backgroundColor: fr.colors.decisions.background.contrast.grey.default,
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
