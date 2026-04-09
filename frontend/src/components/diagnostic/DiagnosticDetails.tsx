@@ -24,7 +24,7 @@ const DiagnosticDetails = ({
     <div className={cx(classes.container)}>
       <div className={cx("fr-col-12", "fr-grid-row")}>
         <h2>Parcelle n°{diagnosticItem.parcelle.numero}</h2>
-        <div className={cx("fr-col-12", "fr-col-md-3")}>
+        <div className={cx(classes.noiseScoreContainer, "fr-col-12", "fr-col-md-3")}>
           <DiagnosticNoiseScore
             score={diagnostic.score}
             db={diagnostic.max_db_lden}
