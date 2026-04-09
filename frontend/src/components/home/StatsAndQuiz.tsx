@@ -32,7 +32,11 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
     const parser = new DOMParser();
 
     return (<div className={cx(classes.contentContainer)}>
-        <h2>{content.title}</h2>
+        <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
+            <img width={40} height={40} src="/images/statsIcon.svg" />
+            <h2>{content.title}</h2>
+
+        </div>
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
             {content.stats.map((s, index) => (
                 <div key={s.title + index} className={fr.cx("fr-col-12", "fr-col-sm-6", "fr-col-md-4")}>
@@ -60,6 +64,9 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
 }
 
 const useStyles = tss.withName(StatsAndQuiz.name).create(() => ({
+    titleContainer: {
+        gap: fr.spacing("4v"),
+    },
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),

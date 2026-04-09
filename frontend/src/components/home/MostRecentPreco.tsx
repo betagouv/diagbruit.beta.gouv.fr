@@ -22,7 +22,10 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
 
     return (
         <div className={cx(classes.contentContainer)}>
-            <h2>{content.title}</h2>
+            <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
+                <img width={40} height={40} src="/images/precoIcon.svg" />
+                <h2>{content.title}</h2>
+            </div>
             <p>{content.description}</p>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
                 {isLoading
@@ -46,6 +49,9 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
 }
 
 const useStyles = tss.withName(MostRecentPreco.name).create(() => ({
+    titleContainer: {
+        gap: fr.spacing("4v"),
+    },
     contentContainer: {
         paddingTop: fr.spacing("8w"),
         paddingBottom: fr.spacing("8w"),

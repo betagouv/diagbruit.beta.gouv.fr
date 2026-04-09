@@ -54,7 +54,10 @@ export const DiagPreview = () => {
 
     return (
         <div className={fr.cx("fr-my-8v",)}>
-            <h2>Un diagnostic complet sur les risques sonores</h2>
+            <div className={cx(classes.titleContainer, "fr-col-12", "fr-grid-row")}>
+                <img width={40} height={40} src="/images/diagPreviewIcon.svg" />
+                <h2>Un diagnostic complet sur les risques sonores</h2>
+            </div>
             <SelectorContent
                 tabs={reviewTabs}
                 activeTabId={activeTabId}
@@ -73,6 +76,9 @@ export const DiagPreview = () => {
 }
 
 const useStyles = tss.create(() => ({
+    titleContainer: {
+        gap: fr.spacing("4v"),
+    },
     sonoscorePreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
         width: "100%",
