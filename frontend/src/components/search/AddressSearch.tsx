@@ -33,7 +33,7 @@ type AddressSearchProps = {
   limit?: number;
   defaultValue?: AddressFeature;
   label?: string;
-  lite?: boolean;
+  light?: boolean;
   isMobile?: boolean;
 };
 
@@ -101,7 +101,7 @@ const AddressSearch = forwardRef(
       limit = 5,
       defaultValue,
       label = "Lancer le diagnostic sonore",
-      lite = false,
+      light = false,
       isMobile = false
     }: AddressSearchProps,
     ref: React.Ref<{ reset: () => void }>
@@ -201,7 +201,7 @@ const AddressSearch = forwardRef(
             iconPosition="left"
             className={cx(classes.submitButton)}
           >
-            {lite || isMobile ? "" : label}
+            {light || isMobile ? "" : label}
           </Button>
         </form>
       </div>
