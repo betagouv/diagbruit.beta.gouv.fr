@@ -32,7 +32,7 @@ export const MostRecentPreco = ({ content }: { content: MostRecentPrecoProps }) 
                         </div>
                     ))
                     : cards.map((c) => (
-                        <div key={c.title} className={fr.cx("fr-col-12", "fr-col-md-4")}>
+                        <div key={c.title} className={fr.cx("fr-col-12", "fr-col-sm-6", "fr-col-md-4")}>
                             <CardPreco title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
                         </div>
                     ))

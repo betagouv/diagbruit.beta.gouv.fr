@@ -35,7 +35,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
             <div className={cx(classes.quoteContainer)}>
                 <h2>À propos</h2>
                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-col-12")}>
-                    <div className="fr-col-6">
+                    <div className={cx("fr-col-12", "fr-col-md-6")}>
                         <Quote
                             author={content.author}
                             imageUrl={url ?? "//www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.1x1.png"}
@@ -44,7 +44,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                             text={content.description}
                         />
                     </div>
-                    <div className={cx("fr-col-6", classes.textContainer)}>
+                    <div className={cx("fr-col-12", "fr-col-md-6", "fr-pl-md-10w", classes.textContainer)}>
                         <div
                             dangerouslySetInnerHTML={{ __html: text }}
                         />
@@ -81,7 +81,6 @@ const useStyles = tss.withName(About.name).create(() => ({
         borderBottom: `1px solid #d9d9d9`,
     },
     textContainer: {
-        paddingLeft: `${fr.spacing("10w")} !important`,
         justifyContent: "center",
         display: "flex",
         flexDirection: "column",

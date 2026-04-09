@@ -35,7 +35,7 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
         <h2>{content.title}</h2>
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
             {content.stats.map((s, index) => (
-                <div key={s.title + index} className={fr.cx("fr-col-12", "fr-col-md-4")}>
+                <div key={s.title + index} className={fr.cx("fr-col-12", "fr-col-sm-6", "fr-col-md-4")}>
                     <Card
                         className={cx(classes.statCard)}
                         border

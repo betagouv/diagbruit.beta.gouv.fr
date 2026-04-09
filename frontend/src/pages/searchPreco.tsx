@@ -41,7 +41,7 @@ export const SearchPrecoPage = () => {
                 <h2>
                     Médiathèque de préconisations
                 </h2>
-                <div className={cx(classes.searchBarContainer, "fr-col-3")}>
+                <div className={cx(classes.searchBarContainer, "fr-col-12", "fr-col-sm-6", "fr-col-md-3")}>
                     <SearchBar
                         label="Rechercher un mot-clé"
                         onButtonClick={(value) => setQuery(value)}
@@ -63,7 +63,7 @@ export const SearchPrecoPage = () => {
                 {cards.length > 0 ? (
                     <div className={cx(classes.cardContainer, "fr-grid-row", "fr-grid-row--gutters", "fr-mb-4v")}>
                         {cards.map((c) => (
-                            <div className={fr.cx("fr-col-12", "fr-col-md-4")} key={c.title}>
+                            <div className={fr.cx("fr-col-12", "fr-col-sm-6", "fr-col-md-4")} key={c.title}>
                                 <CardPreco key={c.title} title={c.title} imageUrl={c.imageUrl} slug={c.slug} />
                             </div>
                         ))}

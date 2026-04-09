@@ -16,7 +16,7 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
     return (
         <div className={cx(classes.contentContainer)}>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className="fr-col-6">
+                <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
                     <h2>{content.title}</h2>
                     <div
                         className={cx(classes.textContent)}
@@ -26,13 +26,14 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
                         Consulter nos statistiques
                     </a>
                 </div>
-                <div className="fr-col-6">
+                <div className={fr.cx("fr-col-12", "fr-col-md-6", "fr-mt-md-0", "fr-mt-4v")}>
                     <img
                         src="/images/carte_france_regionale.svg"
                         alt="title icon"
                         width={450}
                         height={392}
                         className={cx(classes.mapImage)}
+                        fetchPriority="high"
                     />
                 </div>
             </div>
