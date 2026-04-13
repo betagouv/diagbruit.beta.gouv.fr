@@ -25,7 +25,7 @@
     "title": "Le bruit : un enjeux de santé public",
     "quiz": [
       {
-        "title": "Quelle est la source principale de bruit en France ? Le traffic aérien, le traffic routier ou la piscine du voisin",
+        "title": "Combien de réglementation parle du bruit ? 2 5 ou 9",
         "content": "<p>Réponse : 5</p><p>La construction et la rénovation sont encadrés par plusieurs corpus réglementaires qui se cumulent :</p><ul><li>Code de l'environnement : Classement sonore des infrastructures terrestres</li><li>Code de l'urbanisme : Plan d'Exposition au Bruit (PEB) pour les nuisances aériennes</li><li>Code de la construction : Isolations réglementaires (façades, parties communes, équipements, etc.)</li><li>Code de la santé publique : bruits de voisinage et équipements spécifiques (pompes à chaleur, etc.)</li><li>PLU : réglementations et recommandations propres à chaque territoire</li></ul><p>diagBruit rassemble l'ensemble de ces réglementations et les applient précisément à une parcelle.</p><p><a href='/diagnostic'>Diagnostiquer une parcelle</a></p>"
       }
     ],
