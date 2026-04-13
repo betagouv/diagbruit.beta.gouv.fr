@@ -96,7 +96,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "legal",
       label: "Isolation réglementaires",
-      isDefault: activeTabId === "legal",
+      isDefault: activeTabId === "isolation",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -210,7 +210,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                       e.preventDefault();
                       setActiveTabId(tab.tabId);
                       replaceSearchParams(tab.tabId);
-                      trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
+                      trackMatomoEvent("Action", "Diagnostic Tab Change", `diagnostic-tab-${tab.tabId}`);
                     },
                   },
                 }))}

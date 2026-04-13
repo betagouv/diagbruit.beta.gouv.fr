@@ -18,6 +18,7 @@ import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { usePageMeta } from "../hooks/usePageMeta";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
+import { trackMatomoEvent } from "../utils/matomo";
 
 const defaultSearchValues = process.env.NODE_ENV === "development" ? {
   codeInsee: "33063",
@@ -133,6 +134,7 @@ function DiagnosticPage() {
           });
         });
       }
+      trackMatomoEvent("Action", `Diagnostic search parcelle n° ${parcelleFeature.properties.numero} - ${parcelleFeature.properties.nom_com}`, `diagnostic-search-id-${parcelleFeature.properties.numero}`);
     }
   };
 
