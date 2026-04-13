@@ -61,7 +61,9 @@ function DiagnosticPage() {
   });
 
 
-  const onAddressSelected = (feature: AddressFeature) => {
+  const onAddressSelected = (feature: AddressFeature | null) => {
+    if (feature === null)
+      return
     if (mapMethodsRef.current?.map) {
       mapMethodsRef.current.map.flyTo({
         center: [

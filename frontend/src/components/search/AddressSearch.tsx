@@ -29,7 +29,7 @@ type AddressSearchProps = {
   className?: string;
   id: string;
   placeholder: string;
-  onValueSelected?: (feature: AddressFeature) => void;
+  onValueSelected?: (feature: AddressFeature | null) => void;
   limit?: number;
   defaultValue?: AddressFeature;
   label?: string;
@@ -137,7 +137,7 @@ const AddressSearch = forwardRef(
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (onValueSelected && valueSelected) {
+            if (onValueSelected) {
               onValueSelected(valueSelected);
             }
           }}
@@ -196,7 +196,6 @@ const AddressSearch = forwardRef(
           <Button
             type="submit"
             aria-label={label}
-            disabled={!valueSelected}
             iconId="fr-icon-search-line"
             iconPosition="left"
             className={cx(classes.submitButton)}

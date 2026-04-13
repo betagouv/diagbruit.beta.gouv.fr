@@ -36,7 +36,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                     className={classes.searchAddress}
                     placeholder="Renseignez une adresse"
                     id="mapSearch"
-                    onValueSelected={(feature: AddressFeature) => {
+                    onValueSelected={(feature: AddressFeature | null) => {
                         navigate({
                             pathname: "/diagnostic",
                             search: `?address=${encode(feature)}`,

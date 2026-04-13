@@ -86,7 +86,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 id="header-address-search"
                 placeholder="Rechercher une adresse..."
                 light
-                onValueSelected={(feature: AddressFeature) => {
+                onValueSelected={(feature: AddressFeature | null) => {
                   navigate({
                     pathname: "/diagnostic",
                     search: `?address=${encode(feature)}`,
