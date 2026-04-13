@@ -492,3 +492,8 @@ export const getIsMobile = () => {
 
 export const normalize = (str: string) =>
   str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+export const imgUrl = (url: string) =>
+  url.startsWith("/")
+    ? `${process.env.REACT_APP_CMS_URL}${url}`
+    : url

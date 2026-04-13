@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { Quote } from "@codegouvfr/react-dsfr/Quote";
+import { imgUrl } from "../../utils/tools";
 
 export interface AboutHomePageProps {
     id: number;
@@ -28,7 +29,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
     const parser = new DOMParser();
     const doc = parser.parseFromString(content.textContent, "text/html");
     const text = doc.body.innerHTML;
-    const url = content.profilePicture?.url ? `${process.env.REACT_APP_CMS_URL}${content.profilePicture?.url}` : undefined;
+    const url = imgUrl(content.profilePicture?.url);
 
     return (
         <div className={cx(classes.contentContainer)}>
@@ -59,7 +60,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                         partners.partnersLogos.map((logo, index) => (
                             <div key={index} className={fr.cx("fr-col-6", "fr-col-sm-4", "fr-col-md-2")}>
                                 <img
-                                    src={`${process.env.REACT_APP_CMS_URL}${logo.url}`}
+                                    src={imgUrl(logo.url)}
                                     alt={logo.alternativeText ?? ""}
                                     className={cx(classes.partnerLogo)}
                                 />

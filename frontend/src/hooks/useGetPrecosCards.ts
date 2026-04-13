@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CardPrecoProps } from "../components/ui/CardPreco";
+import { imgUrl } from "../utils/tools";
 
 const useGetPrecosCards = (params: Record<string, string | number>) => {
     const [precos, setPrecos] = useState<CardPrecoProps[]>([]);
@@ -14,9 +15,7 @@ const useGetPrecosCards = (params: Record<string, string | number>) => {
                 const items: CardPrecoProps[] = res.data.data.map((item: any) => ({
                     title: item.title,
                     imageUrl: item.imageThumbnail?.url
-                        ? item.imageThumbnail.url.startsWith("/")
-                            ? `${process.env.REACT_APP_CMS_URL}${item.imageThumbnail.url}`
-                            : item.imageThumbnail.url
+                        ? imgUrl(item.imageThumbnail?.url)
                         : "",
                     slug: item.slug,
                 }));

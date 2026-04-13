@@ -10,6 +10,7 @@ import Summary from "@codegouvfr/react-dsfr/Summary";
 import { RichContent } from "../components/ui/RichContent";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { EmptyScreenZone } from "../components/ui/EmptyScreenZone";
+import { imgUrl } from "../utils/tools";
 
 const toAnchorId = (text: string) =>
   text
@@ -76,9 +77,7 @@ export const PrecoPage = () => {
           <img
             className={cx(classes.imageBanner)}
             src={
-              preco.imageBanner.url.startsWith("/")
-                ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
-                : preco.imageBanner.url
+              imgUrl(preco.imageBanner.url)
             }
             alt={preco.imageBanner.alternativeText ?? preco.title}
             fetchPriority="high"
