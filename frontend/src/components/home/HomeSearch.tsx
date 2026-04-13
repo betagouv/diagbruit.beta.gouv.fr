@@ -15,7 +15,10 @@ export interface HomeSearchProps {
 }
 
 export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
-    const url = content.banner?.url ? `${process.env.REACT_APP_CMS_URL}${content.banner?.url}` : undefined;
+    const url = content.banner?.url ? content.banner.url.startsWith("/")
+        ? `${process.env.REACT_APP_CMS_URL}${content.banner.url}`
+        : content.banner.url
+        : undefined;
     const { cx, classes } = useStyles({ url });
     const parser = new DOMParser();
     const doc = parser.parseFromString(content.description, "text/html");
