@@ -2,21 +2,29 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
 import type { MapGeoJSONFeature } from "react-map-gl/maplibre";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
   type ExposedMapMethods,
 } from "../components/map/MapComponent";
-import type { AddressFeature } from "../components/search/AddressSearch";
+import AddressSearch, { type AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
-import { decode } from "../utils/compression";
+import { decode, encode } from "../utils/compression";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
+import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { usePageMeta } from "../hooks/usePageMeta";
+import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
 
-const defaultSearchValues = {
+const defaultSearchValues = process.env.NODE_ENV === "development" ? {
+  codeInsee: "33063",
+  prefix: "000",
+  section: "DL",
+  numero: "0039",
+} : {
   codeInsee: "",
   prefix: "",
   section: "",
@@ -25,9 +33,12 @@ const defaultSearchValues = {
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
+  usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
+  const addressSearchRef = useRef<{ reset: () => void }>(null);
 
   const [isMapReady, setIsMapReady] = useState(false);
   const [parcelleError, setParcelleError] = useState(false);
@@ -42,6 +53,30 @@ function DiagnosticPage() {
 
   const [addressDefaultValue, setAddressDefaultValue] =
     useState<AddressFeature>();
+
+  const [showParcelleSearch, setShowParcelleSearch] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    const encoded = params.get("parcelleSearch");
+    return encoded ? decode(encoded) === true : false;
+  });
+
+
+  const onAddressSelected = (feature: AddressFeature | null) => {
+    if (feature === null)
+      return
+    if (mapMethodsRef.current?.map) {
+      mapMethodsRef.current.map.flyTo({
+        center: [
+          feature.geometry.coordinates[0],
+          feature.geometry.coordinates[1],
+        ],
+        zoom: getZoomFromGouvType(feature.properties.type),
+        essential: true,
+        speed: 10,
+      });
+    }
+    reset();
+  };
 
   const onParcelleSelected = (parcelleFeature: MapGeoJSONFeature) => {
     if (mapMethodsRef.current?.map) {
@@ -146,10 +181,11 @@ function DiagnosticPage() {
     }
   }, [mapMethodsRef.current?.parcelle]);
 
+  const searchParams = new URLSearchParams(location.search);
+  const parcelleParam = searchParams.get("parcelle");
+  const addressParam = searchParams.get("address");
+
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const parcelleParam = searchParams.get("parcelle");
-    const addressParam = searchParams.get("address");
 
     if (!isMapReady || !(parcelleParam || addressParam)) return;
 
@@ -203,36 +239,60 @@ function DiagnosticPage() {
         console.error("Error parsing address data");
       }
     }
-  }, [location.search, isMapReady]);
+  }, [parcelleParam, addressParam, isMapReady]);
+
+  const diagnosticItem = diagnosticsResponses?.[0];
 
   return (
-    <div>
+    <div className={cx("fr-mb-10v")}>
       {isLoading && (
         <div className={cx(classes.loaderContainer)}>
           <Loader text="Nous générons votre diagnostic..." />
         </div>
       )}
       <div className={cx(classes.container)}>
-        <h1 className={fr.cx("fr-mb-4v")}>Votre recherche de parcelle</h1>
+        <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
+
+        <div className={fr.cx("fr-mb-6v", "fr-col-12", "fr-col-md-6")}>
+          <AddressSearch
+            ref={addressSearchRef}
+            placeholder="Renseignez une adresse"
+            id="mapSearch"
+            onValueSelected={onAddressSelected}
+            defaultValue={addressDefaultValue}
+            label="Rechercher"
+          />
+        </div>
+        <ToggleSwitch
+          className={cx(classes.toggle, fr.cx("fr-mb-6v"))}
+          label="Rechercher une parcelle"
+          showCheckedHint={false}
+          checked={showParcelleSearch}
+          onChange={checked => {
+            setShowParcelleSearch(checked);
+            const params = new URLSearchParams(location.search);
+            params.set("parcelleSearch", encode(checked));
+            navigate({ search: params.toString() }, { replace: true });
+          }}
+        />
+
         {parcelleError && (
           <Alert
             className={fr.cx("fr-my-4v")}
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
         )}
-        <div className={fr.cx("fr-mt-4v")}>
+        {showParcelleSearch && (
           <ParcelleSearch
             formValues={searchValues}
             onChange={() => {
               setParcelleError(false);
             }}
             onParcelleRequested={(response) => {
-              if (mapMethodsRef.current?.resetAddress) {
-                mapMethodsRef.current.resetAddress();
-              }
+              addressSearchRef.current?.reset();
 
               setDiagnosticsResponses([]);
               if (response.data?.features[0]) {
@@ -242,8 +302,7 @@ function DiagnosticPage() {
                 setParcelleError(true);
               }
             }}
-          />
-        </div>
+          />)}
         <MapComponent
           ref={mapMethodsRef}
           noisePins={
@@ -260,12 +319,16 @@ function DiagnosticPage() {
             setNotIntegrated(error?.code === 404);
             setInternalServerError(error?.code === 500);
           }}
-          addressDefaultValue={addressDefaultValue}
+          onAddressSelected={onAddressSelected}
         />
-        {diagnosticsResponses?.[0] && (
+        {diagnosticItem && (
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
+        )}
+
+        {diagnosticItem && (
           <div className={fr.cx("fr-mt-6v")}>
             <Diagnostic
-              diagnosticItem={diagnosticsResponses[0]}
+              diagnosticItem={diagnosticItem}
               isLoading={false}
             />
           </div>
@@ -276,7 +339,7 @@ function DiagnosticPage() {
             <Alert
               className={fr.cx("fr-mt-6v")}
               description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() {}}
+              onClose={function noRefCheck() { }}
               severity="info"
               title={
                 parcelleError
@@ -304,7 +367,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
           />
@@ -330,7 +393,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Erreur lors de la génération du diagnostic"
           />
@@ -345,6 +408,11 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     marginTop: fr.spacing("8v"),
+  },
+  toggle: {
+    "label::before": {
+      marginRight: fr.spacing("2v"),
+    }
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",

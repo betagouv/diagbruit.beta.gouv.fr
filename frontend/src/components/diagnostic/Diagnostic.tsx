@@ -1,23 +1,20 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
-import DiagnosticHero from "./DiagnosticHero";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
-import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
+
 
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
@@ -37,9 +34,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
+  const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "reglementation");
 
   const devMode = searchParams.get("dev") === "true";
-  const tabId = searchParams.get("tab") || "evaluation";
 
   const handleCopyUrl = async (title?: string) => {
     try {
@@ -74,47 +71,32 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   const diagnosticTabs = [
     {
-      tabId: "evaluation",
-      label: "Résumé du diagnostic",
-      isDefault: tabId === "evaluation",
+      tabId: "reglementation",
+      label: "Réglementation",
+      isDefault: activeTabId === "reglementation",
       content: (
         <>
           <DiagnosticSectionTitle
-            title={`1. Risques sonores sur la parcelle ${diagnosticItem.parcelle.numero}`}
+            title="1. Réglementation"
             image={{
               src: "/images/connection-lost.svg",
               width: 56,
               height: 48,
             }}
           />
-          <DiagnosticSectionTitle
-            title={`Risque sonore`}
-            isSecondTitle
-            hint="Basé sur les cartes de bruit des transports routiers, ferroviaires et aériens"
-          />
-          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
-            <DiagnosticScoreOnScale
-              score={diagnosticItem.diagnostic.score}
-              db={diagnosticItem.diagnostic.max_db_lden}
-              light
+          <div className={fr.cx("fr-mb-8v")}>
+            <DiagnosticReceiveByMail
+              parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
             />
-          )}
-          <DiagnosticHero diagnosticItem={diagnosticItem} />
-          <DiagnosticSectionTitle title={`Réglementation`} isSecondTitle />
+          </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
-          <DiagnosticSectionTitle
-            title={`Autres sources de bruit à proximité`}
-            isSecondTitle
-            hint="Bars, restaurants, écoles"
-          />
-          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
       ),
     },
     {
       tabId: "legal",
       label: "Isolation réglementaires",
-      isDefault: tabId === "legal",
+      isDefault: activeTabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -132,7 +114,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     {
       tabId: "position",
       label: "Position du bâti",
-      isDefault: tabId === "position",
+      isDefault: activeTabId === "position",
       content: (
         <>
           <DiagnosticSectionTitle
@@ -152,8 +134,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "recommendations",
-      label: "Préconisations",
-      isDefault: tabId === "recommendations",
+      label: "Recommendations",
+      isDefault: activeTabId === "recommendations",
       content: (
         <>
           <DiagnosticCardsDisplay />
@@ -200,23 +182,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   return (
     <div id="diagnostic-section">
-      <div className={fr.cx("fr-grid-row")}>
-        <div className={fr.cx("fr-col-8")}>
-          <h2>Votre diagnostic diagBruit</h2>
-        </div>
-        <div className={cx(fr.cx("fr-col-4"), classes.buttonSection)}>
-          <Button
-            priority="secondary"
-            iconId="ri-mail-line"
-            linkProps={{
-              href: `mailto:${process.env.REACT_APP_CONTACT_EMAIL}`,
-              onClick: handleContactClick,
-            }}
-          >
-            Contacter l'équipe diagBruit
-          </Button>
-        </div>
-      </div>
       {diagnosticItem.diagnostic.score === 0 ? (
         <div className={cx(classes.container)}>
           <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>
@@ -225,26 +190,36 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           </h3>
           <Alert
             description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="info"
             title=""
           />
         </div>
       ) : (
         <div className={cx(classes.container)}>
-          <Tabs
-            key={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-            tabs={diagnosticTabs}
-            onTabChange={(tabItem) => {
-              const tabId = (tabItem.tab as any)?.tabId as string; // bug in package typing, tabId exists but is not typed
-              replaceSearchParams(tabId);
-              trackMatomoEvent(
-                "Action",
-                "Tab Change",
-                `Diagnostic Tab - ${tabId}`,
-              );
-            }}
-          />
+          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <div className={fr.cx("fr-col-12", "fr-col-md-3")}>
+              <SideMenu
+                burgerMenuButtonText="Navigation"
+                items={diagnosticTabs.map((tab) => ({
+                  text: tab.label,
+                  isActive: tab.tabId === activeTabId,
+                  linkProps: {
+                    href: "#",
+                    onClick: (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      setActiveTabId(tab.tabId);
+                      replaceSearchParams(tab.tabId);
+                      trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className={fr.cx("fr-col-12", "fr-col-md-9")}>
+              {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
+            </div>
+          </div>
           {devMode && (
             <Accordion label="Voir le retour de l'API" titleAs="h2">
               <pre>
@@ -256,21 +231,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-          <DiagnosticReceiveByMail
-            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-          />
-          <div className={fr.cx("fr-card", "fr-p-4v")}>
-            <iframe
-              data-tally-src="https://tally.so/embed/1A4kZL?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-              loading="lazy"
-              width="100%"
-              height={275}
-              frameBorder="0"
-              marginHeight={0}
-              marginWidth={0}
-              title="Votre avis sur diagBruit"
-            />
-          </div>
+
         </div>
       )}
       {copied && (
@@ -292,13 +253,7 @@ const useStyles = tss.create(() => ({
     display: "flex",
     flexDirection: "column",
     gap: fr.spacing("6v"),
-    minHeight: "calc(100vh - 200px)",
     marginTop: fr.spacing("2v"),
-    ".fr-tabs__panel": {
-      padding: `${fr.spacing("6v")} ${fr.spacing("8v")} ${fr.spacing(
-        "8v",
-      )} ${fr.spacing("8v")}`,
-    },
   },
   subtitle: {
     ...fr.typography[1].style,

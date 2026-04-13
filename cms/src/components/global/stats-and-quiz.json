@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_global_stats_and_quizs",
+  "info": {
+    "displayName": "stats&quiz"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "quiz": {
+      "displayName": "accordion",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.accordion"
+    },
+    "stats": {
+      "displayName": "stats",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.stats"
+    }
+  }
+}

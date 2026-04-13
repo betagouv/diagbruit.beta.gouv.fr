@@ -1,20 +1,18 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi';
+import homePageContentSeed from './seeds/home-page-content.json';
 
 export default {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    const uid = 'api::home-page-content.home-page-content';
+
+    const existing = await strapi.documents(uid).findFirst({ status: 'published' });
+
+    if (!existing) {
+      strapi.log.info('[seed] No home-page-content found, seeding...');
+      await strapi.documents(uid).create({ data: homePageContentSeed, status: 'published' });
+      strapi.log.info('[seed] home-page-content seeded.');
+    }
+  },
 };

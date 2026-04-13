@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_global_stats",
+  "info": {
+    "displayName": "stats"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "sourceTitle": {
+      "type": "string"
+    },
+    "sourceLink": {
+      "type": "string"
+    }
+  }
+}

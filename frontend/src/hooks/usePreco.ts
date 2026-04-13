@@ -1,4 +1,3 @@
-import { RootNode } from "@strapi/blocks-react-renderer/dist/BlocksRenderer";
 import axios from "axios";
 import { useEffect, useState } from "react";
 

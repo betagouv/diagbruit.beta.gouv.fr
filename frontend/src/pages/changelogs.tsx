@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Highlight } from "@codegouvfr/react-dsfr/Highlight";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 import { tss } from "tss-react/dsfr";
 import { Loader } from "../components/ui/Loader";
 import type { Changelog } from "../utils/types";
@@ -12,6 +13,7 @@ function ChangelogsPage() {
   const [error, setError] = useState("");
 
   const { cx, classes } = useStyles();
+  usePageMeta("Nouveautés", "Découvrez les dernières mises à jour et améliorations de diagBruit.");
 
   useEffect(() => {
     axios

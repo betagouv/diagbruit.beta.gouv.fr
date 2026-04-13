@@ -1,0 +1,55 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_page_contents",
+  "info": {
+    "singularName": "home-page-content",
+    "pluralName": "home-page-contents",
+    "displayName": "HomePageContent",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "aboutHomePage": {
+      "displayName": "about",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.about",
+      "required": true
+    },
+    "partners": {
+      "displayName": "partners",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.partners",
+      "required": true
+    },
+    "availabilityMapContent": {
+      "displayName": "availabilityMap",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.availability-map",
+      "required": true
+    },
+    "mostRecentPreco": {
+      "displayName": "mostRecentPreco",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.most-recent-preco",
+      "required": true
+    },
+    "homeSearch": {
+      "displayName": "homeSearch",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.home-search"
+    },
+    "statsAndQuiz": {
+      "displayName": "stats&quiz",
+      "type": "component",
+      "repeatable": false,
+      "component": "global.stats-and-quiz"
+    }
+  }
+}

@@ -24,14 +24,13 @@ import {
   getIconFromNoiseCategorySlug,
   getRiskFromScore,
   getZoomFromGeometry,
-  getZoomFromGouvType,
 } from "../../utils/tools";
 import type {
   DiagnosticItem,
   DiagnosticResponseError,
   NoiseSourceIntersection,
 } from "../../utils/types";
-import AddressSearch, { type AddressFeature } from "../search/AddressSearch";
+import { type AddressFeature } from "../search/AddressSearch";
 import NoisePinModal, { noisePinModal } from "./NoisePinModal";
 import orthoStyle from "./styles/ortho.json";
 import { useDiagnostics } from "./useDiagnostics";
@@ -63,7 +62,7 @@ type MapComponentProps = {
   onReady: () => void;
   onReset: () => void;
   onErrorChange: (error?: DiagnosticResponseError) => void;
-  addressDefaultValue?: AddressFeature;
+  onAddressSelected: (feature: AddressFeature) => void;
 };
 
 export interface ExposedMapMethods {
@@ -73,7 +72,6 @@ export interface ExposedMapMethods {
   setParcelleSiblings: Dispatch<
     React.SetStateAction<MapGeoJSONFeature[]>
   > | null;
-  resetAddress?: () => void;
 }
 
 const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
@@ -85,13 +83,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       onReady,
       onReset,
       onErrorChange,
-      addressDefaultValue,
+      onAddressSelected,
     },
     ref,
   ) => {
     const { cx, classes } = useStyles();
-
-    const addressSearchRef = useRef<{ reset: () => void }>(null);
 
     const [parcelle, setParcelle] = useState<MapGeoJSONFeature | null>(null);
     const [parcelleSiblings, setParcelleSiblings] = useState<
@@ -126,7 +122,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         parcelle,
         setParcelle,
         setParcelleSiblings,
-        resetAddress: addressSearchRef.current?.reset,
       }),
       [map, parcelle, setParcelle, setParcelleSiblings],
     );
@@ -259,25 +254,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
       });
     }, [map, parcelle, parcelleSiblings, response]);
 
-    const onAddressSelected = useCallback(
-      (feature: AddressFeature) => {
-        if (map) {
-          map.flyTo({
-            center: [
-              feature.geometry.coordinates[0],
-              feature.geometry.coordinates[1],
-            ],
-            zoom: getZoomFromGouvType(feature.properties.type),
-            essential: true,
-            speed: 10,
-          });
-        }
-
-        onReset();
-      },
-      [map],
-    );
-
     const handleNoisePinClick = useCallback((pin: NoiseSourceIntersection) => {
       setSelectedNoisePin(pin);
       noisePinModal.open();
@@ -364,19 +340,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
             </Button>
           </div>
         )}
-        <div className={cx(classes.search)}>
-          <label htmlFor="mapSearch">Adresse ou zone géographique</label>
-          <p className={fr.cx("fr-hint-text", "fr-mb-2v")}>
-            Saisissez quelques caractères pour voir des suggestions
-          </p>
-          <AddressSearch
-            ref={addressSearchRef}
-            placeholder="Cherchez une ville, adresse..."
-            id="mapSearch"
-            onValueSelected={onAddressSelected}
-            defaultValue={addressDefaultValue}
-          />
-        </div>
         <Map
           id="map"
           ref={mapRef}
@@ -446,20 +409,6 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 const useStyles = tss.create(() => ({
   container: {
     position: "relative",
-  },
-  search: {
-    position: "absolute",
-    left: fr.spacing("4v"),
-    top: fr.spacing("4v"),
-    width: "40%",
-    zIndex: 99,
-    backgroundColor: "rgba(255,255,255,0.9)",
-    padding: fr.spacing("4v"),
-    [fr.breakpoints.down("md")]: {
-      top: 0,
-      left: 0,
-      width: "100%",
-    },
   },
   bigAlert: {
     backgroundColor: "rgba(255, 255, 255, 0.95)",

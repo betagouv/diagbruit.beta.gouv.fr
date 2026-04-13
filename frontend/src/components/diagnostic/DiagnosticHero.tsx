@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { tss } from "tss-react/dsfr";
 import {
   getColorFromScore,
@@ -7,6 +6,8 @@ import {
 } from "../../utils/tools";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticNoiseScore from "./DiagnosticNoiseScore";
+import DiagnosticTag from "./DiagnosticTag";
+import DiagnosticScoreOnScale from "./DiagnosticScoreOnScale";
 
 type DiagnosticHeroProps = {
   diagnosticItem: DiagnosticItem;
@@ -21,45 +22,46 @@ const DiagnosticHero = ({
 
   return (
     <div className={cx(classes.container)}>
-      <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
-          <div
-            className={classes.summary}
-            dangerouslySetInnerHTML={{
-              __html: getSummaryTextFromDiagnostic(diagnostic),
-            }}
+      <div className={cx("fr-col-12", "fr-grid-row")}>
+        <h2>Parcelle n°{diagnosticItem.parcelle.numero}</h2>
+        <div className={cx(classes.noiseScoreContainer, "fr-col-12", "fr-col-md-3")}>
+          <DiagnosticNoiseScore
+            score={diagnostic.score}
+            db={diagnostic.max_db_lden}
+            disabled={diagnostic.flags.hasNoisemapWarning}
           />
         </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-7")}>
-          <div className={fr.cx("fr-mb-4v")}>
-            <DiagnosticNoiseScore
-              score={diagnostic.score}
-              db={diagnostic.max_db_lden}
-              disabled={diagnostic.flags.hasNoisemapWarning}
-            />
-          </div>
-          {diagnostic.equivalent_ambiences.length > 0 && (
-            <>
-              <p className={cx(fr.cx("fr-mb-2v"))}>
-                Niveaux sonores équivalents :
-              </p>
-              <div>
-                {diagnostic.equivalent_ambiences.map((ambience) => (
-                  <Tag
-                    key={ambience}
-                    className={cx(
-                      classes.ambienceTag,
-                      fr.cx("fr-mr-2v", "fr-mb-2v"),
-                    )}
-                  >
-                    {ambience}
-                  </Tag>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
       </div>
+
+      {!diagnostic.flags.hasNoisemapWarning && (
+        <DiagnosticScoreOnScale
+          score={diagnostic.score}
+          db={diagnostic.max_db_lden}
+          light
+        />
+      )}
+      <div
+        className={classes.summary}
+        dangerouslySetInnerHTML={{
+          __html: getSummaryTextFromDiagnostic(diagnostic),
+        }}
+      />
+      {diagnosticItem.diagnostic.equivalent_ambiences.length > 0 && (
+        <div className={fr.cx("fr-grid-row")}>
+          <strong className={cx(classes.title)}>
+            Niveaux sonores équivalents :
+          </strong>
+          <div className={cx()}>
+            {diagnostic.equivalent_ambiences.map((ambience) => (
+              <DiagnosticTag
+                key={ambience}
+                ambience={ambience}
+                className={cx(classes.ambienceTag)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -70,15 +72,25 @@ const useStyles = tss
   }>()
   .create(({ score }) => ({
     container: {
+      padding: fr.spacing("8v"),
       backgroundColor: fr.colors.decisions.background.contrast.grey.default,
-      padding: fr.spacing("6v"),
-      marginBottom: fr.spacing("6v"),
     },
-    titleIcon: {
-      color: fr.colors.decisions.background.flat.blueFrance.default,
+    noiseScoreContainer: {
+      marginLeft: "auto",
+      marginBottom: fr.spacing("8v")
+    },
+    title: {
+      display: "flex",
+      alignItems: "center",
+      marginRight: fr.spacing("2v")
     },
     ambienceTag: {
       backgroundColor: getColorFromScore(score),
+      marginTop: fr.spacing("2v"),
+      marginRight: fr.spacing("2v"),
+      [fr.breakpoints.up("md")]: {
+        marginTop: 0,
+      },
     },
     summary: {
       ...fr.typography[21].style,

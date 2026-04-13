@@ -1,0 +1,53 @@
+{
+  "aboutHomePage": {
+    "author": "Martin Schoreisz",
+    "description": "Notre ambition, rendre le cadre de vie des populations plus sain en les protégeant des risques sonores.",
+    "source": "Chargé d'étude trafic et bruit chez Cerema",
+    "textContent": "<p>diagBruit est un service public de diagnostic bruit non opposable (à titre informatif), co-construit avec les acteurs du terrain. Il croise les données nationales (classement sonore, PEB et dispositifs locaux CBS, PLU) pour évaluer l'environnement sonore sur les parcelles.</p>"
+  },
+  "partners": {
+    "title": "Merci à nos partenaires",
+    "description": "Cerema, DINUM, ANCT, DGPR, Nantes Métropole, Ville de Lille, Euro-Métropole de Strasbourg, Bordeaux métropole"
+  },
+  "availabilityMapContent": {
+    "title": "Déploiement des cartes",
+    "textContent": "<p>diagBruit croise les données nationales pour évaluer l'environnement sonore. Ces données sont disponible dans 5 départements, dont les villes de Bordeaux, Strasbourg, Rennes, Lille et Nantes.</p><p>Vous aimeriez diagbruit dans votre ville ?&nbsp;</p>"
+  },
+  "mostRecentPreco": {
+    "title": "Des solutions pour se protéger du bruit",
+    "description": "Conseils, informations techniques et bonnes pratiques vulgarisées : notre médiathèque de préconisations vous aide à anticiper les risques sonores et à protéger la santé des futurs résidents dès la phase de conception."
+  },
+  "homeSearch": {
+    "title": "Intégrez les risques sonores dès la conception d'un projet immobilier",
+    "description": "<p>Gagnez du temps sur la conception de votre projet immobilier. Identifier rapidement les parcelles exposées à des risques acoustiques et les réglementations à respecter.</p>"
+  },
+  "statsAndQuiz": {
+    "title": "Le bruit : un enjeux de santé public",
+    "quiz": [
+      {
+        "title": "Quelle est la source principale de bruit en France ? Le traffic aérien, le traffic routier ou la piscine du voisin",
+        "content": "<p>Réponse : 5</p><p>La construction et la rénovation sont encadrés par plusieurs corpus réglementaires qui se cumulent :</p><ul><li>Code de l'environnement : Classement sonore des infrastructures terrestres</li><li>Code de l'urbanisme : Plan d'Exposition au Bruit (PEB) pour les nuisances aériennes</li><li>Code de la construction : Isolations réglementaires (façades, parties communes, équipements, etc.)</li><li>Code de la santé publique : bruits de voisinage et équipements spécifiques (pompes à chaleur, etc.)</li><li>PLU : réglementations et recommandations propres à chaque territoire</li></ul><p>diagBruit rassemble l'ensemble de ces réglementations et les applient précisément à une parcelle.</p><p><a href='/diagnostic'>Diagnostiquer une parcelle</a></p>"
+      }
+    ],
+    "stats": [
+      {
+        "title": "6,5 millions",
+        "description": "de personnes avec troubles du sommeil liés au bruit des transports dans l'Union européenne",
+        "sourceTitle": "Source : Agence européenne de l'environnement sur le bruit environnemental",
+        "sourceLink": "https://google.com"
+      },
+      {
+        "title": "2e risque",
+        "description": "environnemental pour la santé après la pollution atmosphérique",
+        "sourceTitle": "Source : OMS",
+        "sourceLink": "https://google.com"
+      },
+      {
+        "title": "147 milliards €",
+        "description": "C'est le coût social du bruit en France par an",
+        "sourceTitle": "Source : ADEME",
+        "sourceLink": "https://google.com"
+      }
+    ]
+  }
+}

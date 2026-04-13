@@ -1,95 +1,117 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import { useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
-import HomeHero from "../components/home/HomeHero";
-import AddressSearch, {
-  type AddressFeature,
-} from "../components/search/AddressSearch";
-import ParcelleSearch from "../components/search/ParcelleSearch";
-import { encode } from "../utils/compression";
+import { MostRecentPreco, MostRecentPrecoProps } from "../components/home/MostRecentPreco";
+import { AvailabilityMapProps, AvailabilityMap } from "../components/home/AvailabilityMap";
+import About, { AboutHomePageProps, PartnersProps } from "../components/home/About";
+import { useEffect, useState } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
+import axios from "axios";
+import { Loader } from "../components/ui/Loader";
+import DiagPreview from "../components/home/DiagPreview";
+import { HomeSearch, HomeSearchSkeleton, HomeSearchProps } from "../components/home/HomeSearch";
+import { StatsAndQuiz, StatsAndQuizProps } from "../components/home/StatsAndQuiz";
+import { getIsMobile } from "../utils/tools";
+
+interface HomePageContent {
+  homeSearch: HomeSearchProps;
+  availabilityMapContent: AvailabilityMapProps;
+  aboutHomePage: AboutHomePageProps;
+  mostRecentPreco: MostRecentPrecoProps;
+  partners: PartnersProps;
+  statsAndQuiz: StatsAndQuizProps;
+}
+
+const params = {
+  "populate[aboutHomePage][populate][profilePicture][fields][0]": "alternativeText",
+  "populate[aboutHomePage][populate][profilePicture][fields][1]": "height",
+  "populate[aboutHomePage][populate][profilePicture][fields][2]": "width",
+  "populate[aboutHomePage][populate][profilePicture][fields][3]": "url",
+  "populate[partners][populate][partnersLogos][fields][0]": "alternativeText",
+  "populate[partners][populate][partnersLogos][fields][1]": "height",
+  "populate[partners][populate][partnersLogos][fields][2]": "width",
+  "populate[partners][populate][partnersLogos][fields][3]": "url",
+  "populate[homeSearch][populate][banner][fields][0]": "alternativeText",
+  "populate[homeSearch][populate][banner][fields][1]": "height",
+  "populate[homeSearch][populate][banner][fields][2]": "width",
+  "populate[homeSearch][populate][banner][fields][3]": "url",
+  "populate[statsAndQuiz][populate]": "*",
+  "populate[availabilityMapContent][populate]": "*",
+  "populate[mostRecentPreco][populate]": "*",
+}
 
 function HomePage() {
   const { cx, classes } = useStyles();
-  const navigate = useNavigate();
+  usePageMeta("Accueil", "Intégrez le bruit dans les risques impactant les projets d'aménagement avec diagBruit.");
+  const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  let formValues: any;
+  const isMobile: boolean = getIsMobile();
 
-  if (process.env.NODE_ENV === "development") {
-    formValues = {
-      codeInsee: "33063",
-      prefix: "000",
-      section: "DL",
-      numero: "0039",
-    };
-  }
+  useEffect(() => {
+    setIsLoading(true);
+    setNotFound(false);
+    axios
+      .get(`${process.env.REACT_APP_CMS_URL}/api/home-page-content`, {
+        params
+      })
+      .then((res) => {
+        const item = res.data.data ?? null;
+        if (!item) {
+          setNotFound(true);
+        } else {
+          setHomeContent(item);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
-    <div className={fr.cx("fr-my-10v")}>
-      <HomeHero />
-      <div className={cx(classes.subtitle, fr.cx("fr-mt-12v"))}>
-        <img src="/images/search.svg" alt="search icon" />
-        <h2>Rechercher une parcelle et obtenir son diagnostic diagBruit</h2>
-      </div>
-      <p className={cx(fr.cx("fr-mt-10v"), classes.searchText)}>
-        Effectuez une <b>recherche avancée de parcelle</b>
-      </p>
-      <ParcelleSearch
-        onParcelleRequested={(response, values) => {
-          const feature = response.data?.features[0] || {
-            errorFrom: values,
-          };
-          navigate({
-            pathname: "/diagnostic",
-            search: `?parcelle=${encode(feature)}`,
-          });
-        }}
-        formValues={formValues}
-      />
-      <div className={fr.cx("fr-mt-10v")}>
-        <p className={cx(classes.searchText)}>
-          Ou recherchez <b>une adresse / une zone géographique</b> pour accéder
-          à la carte et sélectionner une parcelle{" "}
-        </p>
-        <label htmlFor="mapSearch">Adresse ou zone géographique</label>
-        <p className={fr.cx("fr-hint-text", "fr-mb-2v")}>
-          Saisissez quelques caractères pour voir des suggestions
-        </p>
-        <AddressSearch
-          className={classes.searchAddress}
-          placeholder="Cherchez une ville, adresse..."
-          id="mapSearch"
-          onValueSelected={(feature: AddressFeature) => {
-            navigate({
-              pathname: "/diagnostic",
-              search: `?address=${encode(feature)}`,
-            });
-          }}
-          limit={3}
-        />
-      </div>
+    <div>
+      {isLoading && (
+        <div className={cx(classes.loaderContainer)}>
+          <Loader text="Chargement..." />
+        </div>
+      )}
+      {homeContent?.homeSearch
+        ? <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
+        : isLoading && <HomeSearchSkeleton />
+      }
+      {!isMobile && (
+        <DiagPreview />
+      )}
+      {homeContent?.mostRecentPreco && (
+        <MostRecentPreco content={homeContent.mostRecentPreco} />
+      )}
+      {homeContent?.statsAndQuiz && (
+        <StatsAndQuiz content={homeContent.statsAndQuiz} />
+      )}
+      {homeContent?.availabilityMapContent && (
+        <AvailabilityMap content={homeContent.availabilityMapContent} />
+      )}
+      {homeContent?.aboutHomePage && homeContent?.partners && (
+        <About content={homeContent.aboutHomePage} partners={homeContent.partners} />
+      )}
     </div>
   );
 }
 
 const useStyles = tss.create(() => ({
-  subtitle: {
+  loaderContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     display: "flex",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
     alignItems: "center",
-    marginLeft: `-${fr.spacing("3v")}`,
-    h2: {
-      ...fr.typography[2].style,
-      marginBottom: 0,
-      marginLeft: fr.spacing("2v"),
-    },
-  },
-  searchText: {
-    ...fr.typography[21].style,
-  },
-  searchAddress: {
-    width: "56%",
-    [fr.breakpoints.down("md")]: {
-      width: "100%",
-    },
+    height: "100%",
+    width: "100%",
+    zIndex: 9999,
   },
 }));
 

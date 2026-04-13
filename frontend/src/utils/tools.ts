@@ -10,6 +10,8 @@ import {
   IntRange,
   SoundClassificationIntersectionAffectedHelper,
 } from "./types";
+import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
+import { useWindowInnerSize } from "@codegouvfr/react-dsfr/tools/useWindowInnerSize";
 
 export const getRiskFromScore = (score: number): IntRange<0, 4> => {
   if (score > 8) return 3;
@@ -105,7 +107,7 @@ export const getSummaryTextFromDiagnostic = (
 
   switch (risk) {
     case 3:
-      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>.";
+      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>. La construction ou la rénovation de logements sont soumis à des <strong>obligations réglementaires</strong>";
     case 2:
       return "Votre parcelle est exposée à un <strong>risque fort de nuisance sonore</strong>.";
     case 1:
@@ -475,9 +477,18 @@ export const getMaxIsolationFromSoundClassificationAffectedHelper = (
 ) => {
   return !!optimalZoneSoundClassificationHelper.length
     ? Math.max(
-        ...optimalZoneSoundClassificationHelper.map(
-          (helper) => helper.isolation,
-        ),
-      )
+      ...optimalZoneSoundClassificationHelper.map(
+        (helper) => helper.isolation,
+      ),
+    )
     : 0;
 };
+
+export const getIsMobile = () => {
+  const { breakpointsValues } = useBreakpointsValuesPx();
+  const { windowInnerWidth } = useWindowInnerSize();
+  return windowInnerWidth < breakpointsValues.md;
+}
+
+export const normalize = (str: string) =>
+  str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();

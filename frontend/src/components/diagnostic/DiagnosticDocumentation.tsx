@@ -4,6 +4,7 @@ import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { normalize } from "../../utils/tools";
 
 export interface CardPrecoProps {
   title: string;
@@ -48,9 +49,6 @@ export const DiagnosticDocumentation = () => {
       });
   }, []);
 
-  const normalize = (str: string) =>
-    str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
-
   const filteredCards = useMemo(() => {
     if (!search.trim()) return cards;
     const term = normalize(search.trim());
@@ -89,7 +87,7 @@ export const DiagnosticDocumentation = () => {
               imageUrl={
                 !!card.imageUrl
                   ? card.imageUrl
-                  : "https://www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.16x9.png"
+                  : "/images/imgPlaceholder.png"
               }
               linkProps={{
                 href: `/preco/${card.slug}`,

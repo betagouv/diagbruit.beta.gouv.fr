@@ -15,10 +15,11 @@ type DiagnosticParcelleSvgNoticeProps = {
 const DiagnosticParcelleSvgNotice = ({
   zones,
 }: DiagnosticParcelleSvgNoticeProps) => {
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
 
   return (
-    <CallOut titleAs="h5" title="Légende" className={classes.callOutContainer}>
+    <div className={cx("fr-container", classes.container)}>
+      <h3>LÉGENDE</h3>
       <div className={classes.noticeContainer}>
         <div className={classes.noticeParcelle}>
           <span />
@@ -56,16 +57,21 @@ const DiagnosticParcelleSvgNotice = ({
             </div>
           ))}
       </div>
-    </CallOut>
+    </div>
   );
 };
 
 const useStyles = tss.create(() => ({
-  callOutContainer: {
+  container: {
     h3: {
-      ...fr.typography[0].style,
-      marginBottom: fr.spacing("4v"),
+      ...fr.typography[6].style,
+      color: fr.colors.decisions.background.flat.blueFrance.default
     },
+    "& .fr-text--md": {
+      margin: "0 !important",
+    },
+    border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+    padding: fr.spacing("6v"),
   },
   noticeContainer: {
     display: "flex",
