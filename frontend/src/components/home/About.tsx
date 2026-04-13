@@ -38,7 +38,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                     <div className={cx("fr-col-12", "fr-col-md-6")}>
                         <Quote
                             author={content.author}
-                            imageUrl={url ?? "//www.systeme-de-design.gouv.fr/v1.14/storybook/img/placeholder.1x1.png"}
+                            imageUrl={url ?? "/images/authorDefaultImage.png"}
                             size="xlarge"
                             source={content.source ? <li>{content.source}</li> : undefined}
                             text={content.description}
