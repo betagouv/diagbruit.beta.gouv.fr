@@ -5,6 +5,7 @@ import AddressSearch, { AddressFeature } from "../search/AddressSearch";
 import { useNavigate } from "react-router-dom";
 import { encode } from "../../utils/compression";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { imgUrl } from "../../utils/tools";
 
 
 export interface HomeSearchProps {
@@ -15,9 +16,7 @@ export interface HomeSearchProps {
 }
 
 export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
-    const url = content.banner?.url ? content.banner.url.startsWith("/")
-        ? `${process.env.REACT_APP_CMS_URL}${content.banner.url}`
-        : content.banner.url
+    const url = content.banner?.url ? imgUrl(content.banner.url)
         : undefined;
     const { cx, classes } = useStyles({ url });
     const parser = new DOMParser();
