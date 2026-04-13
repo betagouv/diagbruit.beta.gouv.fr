@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
@@ -13,7 +14,6 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
-import SelectorContent from "./SelectorContent";
 
 
 type DiagnosticProps = {
@@ -191,16 +191,29 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         </div>
       ) : (
         <div className={cx(classes.container)}>
-          <SelectorContent
-            tabs={diagnosticTabs}
-            activeTabId={activeTabId}
-            border
-            onTabChange={(tabId) => {
-              setActiveTabId(tabId);
-              replaceSearchParams(tabId);
-              trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tabId}`);
-            }}
-          />
+          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <div className={fr.cx("fr-col-12", "fr-col-md-3")}>
+              <SideMenu
+                burgerMenuButtonText="Navigation"
+                items={diagnosticTabs.map((tab) => ({
+                  text: tab.label,
+                  isActive: tab.tabId === activeTabId,
+                  linkProps: {
+                    href: "#",
+                    onClick: (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      setActiveTabId(tab.tabId);
+                      replaceSearchParams(tab.tabId);
+                      trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
+                    },
+                  },
+                }))}
+              />
+            </div>
+            <div className={fr.cx("fr-col-12", "fr-col-md-9")}>
+              {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
+            </div>
+          </div>
           {devMode && (
             <Accordion label="Voir le retour de l'API" titleAs="h2">
               <pre>
@@ -235,11 +248,6 @@ const useStyles = tss.create(() => ({
     flexDirection: "column",
     gap: fr.spacing("6v"),
     marginTop: fr.spacing("2v"),
-    ".fr-tabs__panel": {
-      padding: `${fr.spacing("6v")} ${fr.spacing("8v")} ${fr.spacing(
-        "8v",
-      )} ${fr.spacing("8v")}`,
-    },
   },
   subtitle: {
     ...fr.typography[1].style,

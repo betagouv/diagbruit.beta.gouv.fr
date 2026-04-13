@@ -251,7 +251,7 @@ function DiagnosticPage() {
       <div className={cx(classes.container)}>
         <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
 
-        <div className={fr.cx("fr-mb-6v", "fr-col-6")}>
+        <div className={fr.cx("fr-mb-6v", "fr-col-12", "fr-col-md-6")}>
           <AddressSearch
             ref={addressSearchRef}
             placeholder="Renseignez une adresse"
