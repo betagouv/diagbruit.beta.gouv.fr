@@ -55,15 +55,17 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                 <p className={cx("fr-text--xl", "fr-text--bold")}>{partners.title}</p>
                 <p className={cx("fr-text--lg", "fr-mb-8v")}>{partners.description}</p>
                 <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-grid-row--middle")}>
-                    {partners.partnersLogos.map((logo, index) => (
-                        <div key={index} className={fr.cx("fr-col-6", "fr-col-sm-4", "fr-col-md-2")}>
-                            <img
-                                src={`${process.env.REACT_APP_CMS_URL}${logo.url}`}
-                                alt={logo.alternativeText ?? ""}
-                                className={cx(classes.partnerLogo)}
-                            />
-                        </div>
-                    ))}
+                    {partners.partnersLogos && (
+                        partners.partnersLogos.map((logo, index) => (
+                            <div key={index} className={fr.cx("fr-col-6", "fr-col-sm-4", "fr-col-md-2")}>
+                                <img
+                                    src={`${process.env.REACT_APP_CMS_URL}${logo.url}`}
+                                    alt={logo.alternativeText ?? ""}
+                                    className={cx(classes.partnerLogo)}
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
