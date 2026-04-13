@@ -16,9 +16,9 @@ const SonoScorePreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
         <div className={cx(classes.sonoscoreContainer, "fr-col-8")}>
             <img src="/images/sonoscorePreview.png" alt="Légende du Sonoscore" className={cx(classes.image)} fetchPriority="high" />
             <DiagnosticScoreOnScale score={diagnosticItem.diagnostic.score} db={diagnosticItem.diagnostic.max_db_lden} light />
-            <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>
+            <h3 className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>
                 Source de bruit réglementée (aérien, route et ferroviaire)
-            </p>
+            </h3>
             <div className="fr-col-md-7">
                 <div className="fr-mb-2v">
                     <DiagnosticNoiseScore

@@ -12,7 +12,7 @@ export const RegulationPreview = ({ diagnosticItem }: SonoScorePreviewProps) => 
     const { cx, classes } = useStyles();
 
     return (<div className={cx(classes.regulationContainer, "fr-col-8")}>
-        <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>Réglementation</p>
+        <h3 className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>Réglementation</h3>
         <DiagnosticRegulation diagnosticItem={diagnosticItem} />
         <DiagnosticRegulationBox
             label="Zone à enjeux"

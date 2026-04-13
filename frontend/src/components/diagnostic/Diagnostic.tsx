@@ -76,8 +76,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: activeTabId === "reglementation",
       content: (
         <>
-
-          <h2>Réglementation</h2>
+          <DiagnosticSectionTitle
+            title="1. Réglementation"
+            image={{
+              src: "/images/connection-lost.svg",
+              width: 56,
+              height: 48,
+            }}
+          />
           <div className={fr.cx("fr-mb-8v")}>
             <DiagnosticReceiveByMail
               parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}

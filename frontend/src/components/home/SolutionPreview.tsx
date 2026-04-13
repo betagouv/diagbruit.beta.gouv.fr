@@ -12,7 +12,7 @@ export const SolutionPreview = ({ diagnosticItem }: SonoScorePreviewProps) => {
     const { cx, classes } = useStyles();
 
     return (<div className={cx(classes.solutionContainer, "fr-col-8")}>
-        <p className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>Position du bâti</p>
+        <h3 className={cx(fr.cx("fr-text--lg", "fr-text--bold"))}>Position du bâti</h3>
         <div className={cx(classes.parcelleSvgContainer)}>
             <DiagnosticParcelleSvg geometry={diagnosticItem.parcelle.geometry} zones={diagnosticItem.diagnostic.zones} />
         </div>
