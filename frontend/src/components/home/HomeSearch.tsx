@@ -41,7 +41,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                     id="mapSearch"
                     onValueSelected={(feature: AddressFeature | null) => {
                         if (feature)
-                            trackMatomoEvent("Action", "Home Address Search Button", `home-search-address-${feature.properties.label}`);
+                            trackMatomoEvent("Action", "Home Address Search Button", `home-search-address-${feature.properties.type}-${feature.properties.label}`);
                         navigate({
                             pathname: "/diagnostic",
                             search: `?address=${encode(feature)}`,
