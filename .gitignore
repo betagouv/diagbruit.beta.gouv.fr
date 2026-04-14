@@ -35,6 +35,7 @@ venv/
 fastapi-venv/
 dbt-venv/
 ingestion-venv/
+dagster-venv/
 ENV/
 env/
 
@@ -84,3 +85,6 @@ docker-compose.override.yml
 # Local database or dev files
 *.db
 *.sqlite3
+
+# Temporary folders
+.tmp*/

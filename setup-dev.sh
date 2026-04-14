@@ -19,5 +19,11 @@ source fastapi-venv/bin/activate
 pip install -r fastapi/requirements.txt
 deactivate
 
+echo "Setting up Dagster environment..."
+python -m venv dagster-venv
+source dagster-venv/bin/activate
+pip install -r dagster/requirements.txt
+deactivate
+
 echo "All environments set up! Activate the one you need with:"
-echo "source [ingestion|dbt|fastapi]-venv/bin/activate"
+echo "source [ingestion|dbt|fastapi|dagster]-venv/bin/activate"

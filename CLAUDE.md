@@ -13,6 +13,7 @@ Raw GeoData (shapefiles, GeoJSON)
     → fastapi/   (API: geometry intersection + scoring + recommendations)
     → frontend/  (React map: parcel selection → diagnostic results)
     → cms/       (Strapi: recommendation content management)
+    → dagster/   (Dagster orchestrator: ingestion + dbt pipeline)
 ```
 
 All components share a single **PostgreSQL 15 + PostGIS 3.3** database. The `public_workspace` schema holds raw ingested data; the `public` schema holds dbt-transformed tables consumed by the API.
@@ -30,7 +31,7 @@ docker-compose up -d
 ./setup-dbt.sh
 ```
 
-Local ports: frontend `:3000`, fastapi `:8000`, cms `:1337`, database `:5433`.
+Local ports: frontend `:3000`, fastapi `:8000`, cms `:1337`, database `:5433`, dagster `:3001` (run `dagster dev -p 3001` to avoid conflict with frontend).
 Default DB credentials: `user` / `password` / `diagbruit`.
 
 ## CI Pipeline
@@ -57,3 +58,4 @@ Each component has its own `CLAUDE.md` with commands and architecture details:
 - `fastapi/CLAUDE.md`
 - `dbt/CLAUDE.md`
 - `ingestion/CLAUDE.md`
+- `dagster/CLAUDE.md`

@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_topo_validated
+    description: "Validated topographic data with geometry validation"
+
+  - name: int_topo_fixed
+    description: "Topographic data with repaired geometries"
+
+  - name: int_topo_projected
+    description: "Topographic data projected to EPSG:4326"

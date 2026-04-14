@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: int_peb_validated
+    description: "Validates geometry and provides validation information"
+
+  - name: int_peb_fixed
+    description: "Repairs invalid geometries using ST_MakeValid"
+
+  - name: int_peb_fixed_clean
+    description: "Disaggregates MultiPolygons after geometries have been fixed with ST_MakeValid"
+
+  - name: int_peb_projected
+    description: "Transforms geometries to EPSG:4326 (WGS84) coordinate system"

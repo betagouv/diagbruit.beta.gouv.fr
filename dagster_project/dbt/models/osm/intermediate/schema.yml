@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: int_foods_filter
+    description: "Data with only restaurants, bars and pubs"
+  - name: int_foods_validate
+    description: "Foods data deduplicated against noisesource_stras"
+  - name: int_foods_slug
+    description: "Data with added category slugs"
+  - name: int_schools_filter
+    description: "Data with only named schools"
+  - name: int_schools_dep
+    description: "Data with added department code and name columns"
+  - name: int_schools_slug
+    description: "Data with added category_slug 'SCH' column"

@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: noisesource
+    description: "Combined noise sources from Strasbourg terrasses and OSM data"
+    columns:
+      - name: pk
+        description: "Auto-incrementing primary key"
+      - name: label
+        description: "Name of the establishment"
+      - name: geometry
+        description: "Geometry in EPSG:4326, type POINT"
+      - name: category_slug
+        description: "Category slug for the source: 'REST', 'BAR', or 'ECO'"
+      - name: codedept
+        description: "Department code (e.g. '67', '75')"

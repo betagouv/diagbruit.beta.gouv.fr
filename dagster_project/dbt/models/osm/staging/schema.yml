@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_full_osm_foods_data
+        description: "Raw data imported from foods dataset"
+        columns:
+          - name: name
+            description: "Name identifier"
+          - name: type
+            description: "Type of establishment"
+          - name: meta_code_dep
+            description: "Department code of establishment"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"
+      - name: raw_full_osm_schools_data
+        description: "Raw data imported from schools dataset"
+        columns:
+          - name: amenity
+            description: "Type of amenity"
+          - name: name
+            description: "Name of the school"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"
