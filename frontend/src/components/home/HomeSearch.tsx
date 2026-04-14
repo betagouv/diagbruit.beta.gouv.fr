@@ -18,7 +18,7 @@ export interface HomeSearchProps {
 
 export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
     const url = content.banner?.url ? imgUrl(content.banner.url)
-        : undefined;
+        : "/images/defaultBannerImage.png";
     const { cx, classes } = useStyles({ url });
     const parser = new DOMParser();
     const doc = parser.parseFromString(content.description, "text/html");

@@ -29,7 +29,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
     const parser = new DOMParser();
     const doc = parser.parseFromString(content.textContent, "text/html");
     const text = doc.body.innerHTML;
-    const url = imgUrl(content.profilePicture?.url);
+    const url = content.profilePicture.url ? imgUrl(content.profilePicture?.url) : "/images/authorDefaultImage.png";
 
     return (
         <div className={cx(classes.contentContainer)}>
@@ -39,7 +39,7 @@ export const About = ({ content, partners }: { content: AboutHomePageProps, part
                     <div className={cx("fr-col-12", "fr-col-md-6")}>
                         <Quote
                             author={content.author}
-                            imageUrl={url ?? "/images/authorDefaultImage.png"}
+                            imageUrl={url}
                             size="xlarge"
                             source={content.source ? <li>{content.source}</li> : undefined}
                             text={content.description}
