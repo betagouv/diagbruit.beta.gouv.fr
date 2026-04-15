@@ -11,7 +11,7 @@ interface ImagePreviewProps {
 export const ImagePreview = ({ src, width, height, alt = "Image preview" }: ImagePreviewProps) => {
     const { cx, classes } = useStyles();
 
-    return (<div className={cx(classes.regulationContainer, "fr-col-8")}>
+    return (<div className={cx(classes.container, "fr-col-8")}>
         <img
             src={src}
             width={width}
@@ -25,7 +25,7 @@ export const ImagePreview = ({ src, width, height, alt = "Image preview" }: Imag
 }
 
 const useStyles = tss.withName(ImagePreview.name).create(() => ({
-    regulationContainer: {
+    container: {
         padding: fr.spacing("4v"),
         margin: `${fr.spacing("2v")} auto`,
     },

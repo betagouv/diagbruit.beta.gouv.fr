@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
+import { encode } from "../../utils/compression";
 
 export interface SelectorTab {
     tabId: string;
@@ -13,16 +14,15 @@ interface SelectorContentProps {
     tabs: SelectorTab[];
     activeTabId: string;
     border?: boolean;
-    diag?: boolean;
     onTabChange: (tabId: string) => void;
 }
 
-const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange, diag = false }: SelectorContentProps) => {
+const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: SelectorContentProps) => {
     const { cx, classes } = useStyles({ border });
 
     return (
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-            <div className={cx(classes.selectorColumn, fr.cx("fr-col-3"))}>
+            <div className={cx(classes.selectorColumn, fr.cx("fr-col-4"))}>
                 <nav>
                     <ul className={cx(classes.selectorList)}>
                         {tabs.map((tab) => (
@@ -37,17 +37,19 @@ const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange, diag 
                                 )}
                             </li>
                         ))}
+                        <li>
+                            <div className={cx(classes.selectorLink)}>
+                                <a href={`/diagnostic?parcelleSearch=${encode(true)}`} className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
+                                    Diagnostiquer une parcelle
+                                </a>
+                            </div>
+                        </li>
                     </ul>
+
                 </nav>
-                {diag && (
-                    <div style={{ marginTop: "auto" }} className={fr.cx("fr-ml-4v")}>
-                        <a href="/diagnostic" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
-                            Diagnostiquer une parcelle
-                        </a>
-                    </div>
-                )}
+
             </div>
-            <div className={fr.cx("fr-col-9")}>
+            <div className={fr.cx("fr-col-8")}>
                 {tabs.find((tab) => tab.tabId === activeTabId)?.content}
             </div>
         </div>
@@ -67,6 +69,10 @@ const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolea
         flexDirection: "column",
         gap: fr.spacing("1v"),
         borderRight: `${border ? `1px solid ${fr.colors.decisions.border.default.grey.default}` : "none"}`,
+    },
+    selectorLink: {
+        marginLeft: fr.spacing('4v'),
+        marginTop: fr.spacing('4v'),
     },
     selectorItem: {
         padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
@@ -93,9 +99,9 @@ const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolea
         marginTop: fr.spacing("4v"),
         display: "block",
         fontWeight: 400,
-        fontSize: fr.typography[17].style.fontSize,
+        fontSize: fr.typography[18].style.fontSize,
         color: fr.colors.decisions.text.mention.grey.default,
-        lineHeight: fr.typography[17].style.lineHeight,
+        lineHeight: fr.typography[18].style.lineHeight,
     },
 }));
 

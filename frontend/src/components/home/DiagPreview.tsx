@@ -6,10 +6,9 @@ import { tss } from "tss-react/dsfr";
 import { ImagePreview } from "./ImagePreview";
 
 export const DiagPreview = () => {
-
-    const [searchParams] = useSearchParams();
     const { cx, classes } = useStyles();
 
+    const [searchParams] = useSearchParams();
     const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "sonoscore");
 
     const reviewTabs = [
@@ -20,7 +19,7 @@ export const DiagPreview = () => {
             isDefault: activeTabId === "sonoscore",
             content: (
                 <div className={classes.sonoscorePreviewContainer}>
-                    <ImagePreview src="/images/solutionPreview.svg" width={470} height={521} alt="Preview du sonoscore diagBruit" />
+                    <ImagePreview src="/images/sonoscorePreview.svg" width={470} height={521} alt="Preview du sonoscore diagBruit" />
                 </div>
             ),
         },
@@ -61,7 +60,6 @@ export const DiagPreview = () => {
                     onTabChange={(tabId) => {
                         setActiveTabId(tabId);
                     }}
-                    diag
                 />
             </div>
         </div>
@@ -83,16 +81,19 @@ const useStyles = tss.create(() => ({
     },
     contentContainer: {
         width: "100%",
-        padding: fr.spacing('10v')
     },
     sonoscorePreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.redMarianne.active,
+        padding: fr.spacing('10v')
+
     },
     regulationPreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+        padding: fr.spacing('10v')
     },
     solutionPreviewContainer: {
         backgroundColor: fr.colors.decisions.background.alt.grey.default,
+        padding: fr.spacing('10v')
     }
 
 
