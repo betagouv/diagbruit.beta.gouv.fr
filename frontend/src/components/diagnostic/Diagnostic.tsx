@@ -14,6 +14,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 
 type DiagnosticProps = {
@@ -90,6 +91,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             />
           </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
+          <h4>Autres sources de bruit à proximité</h4>
+          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
       ),
     },
