@@ -19,7 +19,7 @@ const useStyles = tss.withName(RegulationPreview.name).create(() => ({
         width: "100%",
         height: "auto",
         display: "flex",
-        backgroundColor: "white",
+        backgroundColor: fr.colors.decisions.background.default.grey.default,
         boxShadow: "0 2px 6px rgba(0, 0, 18, 0.16)",
     },
 

@@ -6,7 +6,6 @@ import { tss } from "tss-react/dsfr";
 import SonoScorePreview from "./SonoScorePreview";
 import RegulationPreview from "./RegulationPreview";
 import SolutionPreview from "./SolutionPreview";
-import { dummyDiagnosticItem } from "../utils/DummyDiag";
 
 export const DiagPreview = () => {
 
