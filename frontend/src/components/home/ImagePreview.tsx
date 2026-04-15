@@ -1,16 +1,30 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 
-export const RegulationPreview = () => {
+interface ImagePreviewProps {
+    src: string;
+    width: number;
+    height: number;
+    alt?: string;
+}
+
+export const ImagePreview = ({ src, width, height, alt = "Image preview" }: ImagePreviewProps) => {
     const { cx, classes } = useStyles();
 
     return (<div className={cx(classes.regulationContainer, "fr-col-8")}>
-        <img src="/images/regulationPreview.svg" width={470} height={464} fetchPriority="high" className={cx(classes.image)} />
+        <img
+            src={src}
+            width={width}
+            height={height}
+            fetchPriority="high"
+            className={cx(classes.image)}
+            alt={alt}
+        />
 
     </div>)
 }
 
-const useStyles = tss.withName(RegulationPreview.name).create(() => ({
+const useStyles = tss.withName(ImagePreview.name).create(() => ({
     regulationContainer: {
         padding: fr.spacing("4v"),
         margin: `${fr.spacing("2v")} auto`,
@@ -24,5 +38,3 @@ const useStyles = tss.withName(RegulationPreview.name).create(() => ({
     },
 
 }));
-
-export default RegulationPreview;
