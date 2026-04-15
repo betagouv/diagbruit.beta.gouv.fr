@@ -18,6 +18,13 @@ dbt/dbt_modules/
 dbt/.user.yml
 dbt/profiles.yml
 
+dagster_project/dbt/logs/
+dagster_project/dbt/target/
+dagster_project/dbt/dbt_packages/
+dagster_project/dbt/dbt_modules/
+dagster_project/dbt/.user.yml
+dagster_project/dbt/profiles.yml
+
 # Ingestion
 ingestion/launch-ingestion-prod.sh
 ingestion/launch-ingestion-preprod.sh
