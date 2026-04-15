@@ -67,12 +67,11 @@ const useStyles = tss.withName(SelectorContent.name).withParams<{ border: boolea
         margin: 0,
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("1v"),
+        gap: fr.spacing("3w"),
         borderRight: `${border ? `1px solid ${fr.colors.decisions.border.default.grey.default}` : "none"}`,
     },
     selectorLink: {
         marginLeft: fr.spacing('4v'),
-        marginTop: fr.spacing('4v'),
     },
     selectorItem: {
         padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,

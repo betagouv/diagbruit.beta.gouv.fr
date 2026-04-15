@@ -133,8 +133,9 @@ const AddressSearch = forwardRef(
     }, [defaultValue]);
 
     return (
-      <div className={cx(classes.container, className)}>
+      <div className={cx(classes.container, className, "fr-grid-row", "fr-col-12")}>
         <form
+          className="fr-col-12"
           onSubmit={(e) => {
             e.preventDefault();
             if (onValueSelected) {
@@ -194,11 +195,12 @@ const AddressSearch = forwardRef(
             )}
           />
           <Button
+
             type="submit"
             aria-label={label}
             iconId="fr-icon-search-line"
             iconPosition="left"
-            className={cx(classes.submitButton)}
+            className={cx(classes.submitButton, light ? "" : "fr-col-md-5")}
           >
             {light || isMobile ? "" : label}
           </Button>
@@ -215,7 +217,6 @@ const useStyles = tss.withParams<{ light: boolean }>().create(({ light }) => ({
       display: "flex",
       width: "100%",
       borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
-
     },
   },
   submitButton: {
