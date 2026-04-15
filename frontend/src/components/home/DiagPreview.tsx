@@ -23,7 +23,7 @@ export const DiagPreview = () => {
             isDefault: activeTabId === "sonoscore",
             content: (
                 <div className={cx(classes.sonoscorePreviewContainer, fr.cx("fr-p-10v"))}>
-                    <SonoScorePreview diagnosticItem={dummyDiagnosticItem} />
+                    <SonoScorePreview />
                 </div>
             ),
         },
@@ -34,7 +34,7 @@ export const DiagPreview = () => {
             isDefault: activeTabId === "reglementation",
             content: (
                 <div className={cx(classes.regulationPreviewContainer, fr.cx("fr-p-10v"))}>
-                    <RegulationPreview diagnosticItem={dummyDiagnosticItem} />
+                    <RegulationPreview />
                 </div>
             ),
         },
@@ -45,7 +45,7 @@ export const DiagPreview = () => {
             isDefault: activeTabId === "solutions",
             content: (
                 <div className={cx(classes.solutionPreviewContainer, fr.cx("fr-p-10v"))}>
-                    <SolutionPreview diagnosticItem={dummyDiagnosticItem} />
+                    <SolutionPreview />
                 </div>
             ),
         },
