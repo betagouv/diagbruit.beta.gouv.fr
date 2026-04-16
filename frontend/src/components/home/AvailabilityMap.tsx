@@ -50,9 +50,6 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
                         className={cx(classes.textContent)}
                         dangerouslySetInnerHTML={{ __html: text }}
                     />
-                    <a href="#" className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right",)}>
-                        Consulter nos statistiques
-                    </a>
                 </div>
                 <div className={cx(classes.imageContainer, "fr-col-12", "fr-col-md-6")}>
                     <img

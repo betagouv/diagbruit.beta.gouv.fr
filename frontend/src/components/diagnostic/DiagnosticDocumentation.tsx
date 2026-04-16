@@ -5,6 +5,8 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { normalize } from "../../utils/tools";
+import { EmptyScreenZone } from "../ui/EmptyScreenZone";
+import { Loader } from "../ui/Loader";
 
 export interface CardPrecoProps {
   title: string;
@@ -16,6 +18,7 @@ export const DiagnosticDocumentation = () => {
   const { cx, classes } = useStyles();
   const [cards, setCards] = useState<CardPrecoProps[]>([]);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -46,6 +49,9 @@ export const DiagnosticDocumentation = () => {
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -74,37 +80,43 @@ export const DiagnosticDocumentation = () => {
           onButtonClick={setSearch}
         />
       </div>
-      {filteredCards.length === 0 ? (
-        <p className={cx(classes.emptyState)}>
-          Aucune préconisation ne semble correspondre à votre recherche.
-        </p>
-      ) : (
-        <div className={cx(classes.cardContainer)}>
-          {filteredCards.map((card) => (
-            <Card
-              enlargeLink
-              imageAlt="texte alternatif de l’image"
-              imageUrl={
-                !!card.imageUrl
-                  ? card.imageUrl
-                  : "/images/imgPlaceholder.png"
-              }
-              linkProps={{
-                href: `/preco/${card.slug}`,
-                target: "_blank",
-              }}
-              size="medium"
-              title={card.title}
-              titleAs="h3"
-            />
-          ))}
-        </div>
-      )}
+      {isLoading ? <div className={classes.loaderContainer}>
+        <Loader />
+      </div> :
+        filteredCards.length === 0 ? (
+          <p className={cx(classes.emptyState)}>
+            Aucune préconisation ne semble correspondre à votre recherche.
+          </p>
+        ) : (
+          <div className={cx(classes.cardContainer)}>
+            {filteredCards.map((card) => (
+              <Card
+                enlargeLink
+                imageAlt="texte alternatif de l’image"
+                imageUrl={
+                  !!card.imageUrl
+                    ? card.imageUrl
+                    : "/images/imgPlaceholder.png"
+                }
+                linkProps={{
+                  href: `/preco/${card.slug}`,
+                  target: "_blank",
+                }}
+                size="medium"
+                title={card.title}
+                titleAs="h3"
+              />
+            ))}
+          </div>
+        )}
     </div>
   );
 };
 
 const useStyles = tss.withName(DiagnosticDocumentation.name).create(() => ({
+  loaderContainer: {
+    marginTop: fr.spacing('10v'),
+  },
   searchContainer: {
     marginBottom: fr.spacing("3w"),
     maxWidth: 350,

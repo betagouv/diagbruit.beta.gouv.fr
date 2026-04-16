@@ -35,7 +35,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
-  const activeTabId = searchParams.get("tab") || "reglementation";
+  const activeTabId = searchParams.get("tab") || "reglementations";
 
   const devMode = searchParams.get("dev") === "true";
 
@@ -65,19 +65,14 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   const diagnosticTabs = [
     {
-      tabId: "reglementation",
-      label: "Réglementation",
-      isDefault: activeTabId === "reglementation",
+      tabId: "reglementations",
+      label: "Réglementations",
+      isDefault: activeTabId === "reglementations",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="Réglementation"
+            title="Réglementations"
           />
-          <div className={fr.cx("fr-mb-8v")}>
-            <DiagnosticReceiveByMail
-              parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-            />
-          </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <h4>Autres sources de bruit à proximité</h4>
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
@@ -86,12 +81,12 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "legal",
-      label: "Isolation réglementaires",
+      label: "Isolation réglementaire",
       isDefault: activeTabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="Isolation réglementaires"
+            title="Isolation réglementaire"
           />
           <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         </>
@@ -105,7 +100,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         <>
           <DiagnosticSectionTitle
             title="Position du bâti"
-
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
@@ -116,10 +110,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "recommendations",
-      label: "Recommendations",
+      label: "Recommandations",
       isDefault: activeTabId === "recommendations",
       content: (
         <>
+          <DiagnosticSectionTitle
+            title="Recommandations"
+          />
           <DiagnosticCardsDisplay />
         </>
       ),
@@ -212,7 +209,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-
+          <DiagnosticReceiveByMail
+            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          />
         </div>
       )}
       {copied && (

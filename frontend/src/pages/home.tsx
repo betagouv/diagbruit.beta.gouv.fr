@@ -6,10 +6,11 @@ import { useEffect, useState } from "react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
-import DiagPreview from "../components/home/DiagPreview";
+import DiagPreview, { DiagPreviewProps } from "../components/home/DiagPreview";
 import { HomeSearch, HomeSearchSkeleton, HomeSearchProps } from "../components/home/HomeSearch";
 import { StatsAndQuiz, StatsAndQuizProps } from "../components/home/StatsAndQuiz";
 import { getIsMobile } from "../utils/tools";
+
 
 interface HomePageContent {
   homeSearch: HomeSearchProps;
@@ -18,6 +19,7 @@ interface HomePageContent {
   mostRecentPreco: MostRecentPrecoProps;
   partners: PartnersProps;
   statsAndQuiz: StatsAndQuizProps;
+  diagPreview: DiagPreviewProps[];
 }
 
 const params = {
@@ -36,6 +38,10 @@ const params = {
   "populate[statsAndQuiz][populate]": "*",
   "populate[availabilityMapContent][populate]": "*",
   "populate[mostRecentPreco][populate]": "*",
+  "populate[diagPreview][populate][image][fields][0]": "url",
+  "populate[diagPreview][populate][image][fields][1]": "width",
+  "populate[diagPreview][populate][image][fields][2]": "height",
+  "populate[diagPreview][populate][image][fields][3]": "alternativeText",
 }
 
 function HomePage() {
@@ -81,8 +87,8 @@ function HomePage() {
         ? <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
         : isLoading && <HomeSearchSkeleton />
       }
-      {!isMobile && (
-        <DiagPreview />
+      {!isMobile && homeContent?.diagPreview && (
+        <DiagPreview content={homeContent.diagPreview} />
       )}
       {homeContent?.mostRecentPreco && (
         <MostRecentPreco content={homeContent.mostRecentPreco} />
