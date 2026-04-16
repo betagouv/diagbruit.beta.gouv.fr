@@ -6,6 +6,34 @@ export interface AvailabilityMapProps {
     textContent: string;
 }
 
+const useStyles = tss.withName("AvailabilityMap").create(() => ({
+    contentContainer: {
+        paddingTop: fr.spacing("8w"),
+        paddingBottom: fr.spacing("8w"),
+        borderBottom: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
+        marginLeft: "calc(-50vw + 50%)",
+        marginRight: "calc(-50vw + 50%)",
+        paddingLeft: "calc(50vw - 50%)",
+        paddingRight: "calc(50vw - 50%)",
+        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+    },
+    textContent: {
+        a: {
+            color: fr.colors.decisions.background.flat.blueFrance.default,
+        }
+    },
+    imageContainer: {
+        marginTop: fr.spacing('4v'),
+        [fr.breakpoints.up("md")]: {
+            marginTop: 0,
+        },
+    },
+    mapImage: {
+        width: "100%",
+        height: "auto",
+    }
+}));
+
 export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) => {
     const { cx, classes } = useStyles();
 
@@ -26,7 +54,7 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
                         Consulter nos statistiques
                     </a>
                 </div>
-                <div className={fr.cx("fr-col-12", "fr-col-md-6", "fr-mt-md-0", "fr-mt-4v")}>
+                <div className={cx(classes.imageContainer, "fr-col-12", "fr-col-md-6")}>
                     <img
                         src="/images/carte_france_regionale.svg"
                         alt="title icon"
@@ -40,27 +68,5 @@ export const AvailabilityMap = ({ content }: { content: AvailabilityMapProps }) 
         </div>
     )
 }
-
-const useStyles = tss.withName(AvailabilityMap.name).create(() => ({
-    contentContainer: {
-        paddingTop: fr.spacing("8w"),
-        paddingBottom: fr.spacing("8w"),
-        borderBottom: `1px solid ${fr.colors.decisions.border.default.blueFrance.default}`,
-        marginLeft: "calc(-50vw + 50%)",
-        marginRight: "calc(-50vw + 50%)",
-        paddingLeft: "calc(50vw - 50%)",
-        paddingRight: "calc(50vw - 50%)",
-        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-    },
-    textContent: {
-        a: {
-            color: fr.colors.decisions.background.flat.blueFrance.default,
-        }
-    },
-    mapImage: {
-        width: "100%",
-        height: "auto",
-    }
-}));
 
 export default AvailabilityMap;

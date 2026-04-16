@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type React from "react";
 import { tss } from "tss-react/dsfr";
 import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
+import { useSearchParams } from "react-router-dom";
 
 type DiagnosticIsolationRangeProps = {
   isolation_min: number | null;
@@ -13,6 +14,11 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
   isolation_max,
 }) => {
   const { cx, classes } = useStyles();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const goToTab = (str: string) =>
+    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
 
   return (
     <div>
@@ -53,13 +59,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
         <button
           type="button"
           className={cx(classes.fakeLink, fr.cx("fr-mb-0"))}
-          onClick={() => {
-            (
-              document.querySelector(
-                '[id^="tabpanel-"][id$="-3"]'
-              ) as HTMLElement
-            )?.click();
-          }}
+          onClick={() => goToTab("recommendations")}
         >
           Voir la documentation d'isolation
         </button>

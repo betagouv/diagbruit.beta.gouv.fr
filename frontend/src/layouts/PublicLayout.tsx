@@ -194,8 +194,12 @@ const useStyles = tss.create(() => ({
       },
       li: {
         width: "100%",
+        justifyContent: "right",
       },
-      width: "250px",
+      width: "350px",
+      a: {
+        marginBottom: fr.spacing("1v")
+      }
     },
   },
   searchContainer: {

@@ -88,7 +88,7 @@ const DiagnosticRecommendations = ({
     <div>
       <div className={cx(classes.container)}>
         <div>
-          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v")}>
             Implantation du bâti : privilégiez la zone à faible exposition
             sonore
           </h4>
