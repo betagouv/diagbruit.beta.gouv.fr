@@ -65,6 +65,19 @@ export interface GlobalAvailabilityMap extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalDiagPreview extends Struct.ComponentSchema {
+  collectionName: 'components_global_diag_previews';
+  info: {
+    displayName: 'diagPreview';
+  };
+  attributes: {
+    backgroundColor: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalHomeSearch extends Struct.ComponentSchema {
   collectionName: 'components_global_home_searches';
   info: {
@@ -185,6 +198,7 @@ declare module '@strapi/strapi' {
       'global.accordion': GlobalAccordion;
       'global.array': GlobalArray;
       'global.availability-map': GlobalAvailabilityMap;
+      'global.diag-preview': GlobalDiagPreview;
       'global.home-search': GlobalHomeSearch;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;

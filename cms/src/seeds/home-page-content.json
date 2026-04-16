@@ -21,6 +21,22 @@
     "title": "Intégrez les risques sonores dès la conception d'un projet immobilier",
     "description": "<p>Gagnez du temps sur la conception de votre projet immobilier. Identifiez rapidement les parcelles exposées à des risques acoustiques et les réglementations à respecter.</p>"
   },
+  "diagPreview": [
+    {
+      "title": "Résumé du diagnostic",
+      "description": "Niveau d'exposition sonore de la parcelle, calculé à partir de données certifiées sur le bruit routier, ferroviaire et aérien.",
+      "backgroundColor": "#fac4c4"
+    },
+    {
+      "title": "Réglementations",
+      "description": "Résumé clair des réglementations applicables sur la parcelle (classement sonore, PEB, PLU, PPBE, et isolation réglementaire).",
+      "backgroundColor": "#f5f5fe" },
+    {
+      "title": "Solutions techniques et économiques",
+      "description": "Analyse de la position du bâti au regard des risques sonores, avec des préconisations concrètes d'isolation et d'aménagement.",
+      "backgroundColor": "#f6f6f6"
+    }
+  ],
   "statsAndQuiz": {
     "title": "Le bruit : un enjeu de santé public",
     "quiz": [
