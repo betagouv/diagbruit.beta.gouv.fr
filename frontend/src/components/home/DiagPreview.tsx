@@ -17,7 +17,7 @@ export const DiagPreview = ({ content }: { content: DiagPreviewProps[] }) => {
     const { cx, classes } = useStyles();
 
     const [searchParams] = useSearchParams();
-    const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || slugify(content[0].title));
+    const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || content[0] ? slugify(content[0].title) : "");
 
     const previewTabs = content.map((tab) => {
         return {

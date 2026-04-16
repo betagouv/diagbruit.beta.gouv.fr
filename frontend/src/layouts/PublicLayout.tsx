@@ -11,6 +11,7 @@ import TallyForm from "../components/diagnostic/TallyForm";
 import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
 import { encode } from "../utils/compression";
 import { getIsMobile } from "../utils/tools";
+import { trackMatomoEvent } from "../utils/matomo";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -87,6 +88,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 placeholder="Rechercher une adresse..."
                 light
                 onValueSelected={(feature: AddressFeature | null) => {
+                  trackMatomoEvent("Action", "Header address search", "header-search-address");
                   navigate({
                     pathname: "/diagnostic",
                     search: `?address=${encode(feature)}`,

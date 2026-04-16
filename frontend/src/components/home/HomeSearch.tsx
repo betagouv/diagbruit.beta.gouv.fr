@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { encode } from "../../utils/compression";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { imgUrl } from "../../utils/tools";
+import { trackMatomoEvent } from "../../utils/matomo";
 
 
 export interface HomeSearchProps {
@@ -17,7 +18,7 @@ export interface HomeSearchProps {
 
 export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
     const url = content.banner?.url ? imgUrl(content.banner.url)
-        : undefined;
+        : "/images/defaultBannerImage.png";
     const { cx, classes } = useStyles({ url });
     const parser = new DOMParser();
     const doc = parser.parseFromString(content.description, "text/html");
@@ -39,6 +40,8 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                     placeholder="Renseignez une adresse"
                     id="mapSearch"
                     onValueSelected={(feature: AddressFeature | null) => {
+                        if (feature)
+                            trackMatomoEvent("Action", "Home Address Search Button", `home-search-address-${feature.properties.type}-${feature.properties.label}`);
                         navigate({
                             pathname: "/diagnostic",
                             search: `?address=${encode(feature)}`,
@@ -50,9 +53,11 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                 <Button
                     className={cx(classes.buttonStyles, "fr-col-9")}
                     onClick={() => {
+                        trackMatomoEvent("Action", "Button search parcelle", "home-search-id");
                         navigate({
                             pathname: "/diagnostic",
                             search: `?parcelleSearch=${encode(true)}`,
+
                         });
                     }}
                     priority="secondary"

@@ -87,7 +87,7 @@ function HomePage() {
         ? <HomeSearch content={{ ...homeContent.homeSearch, isMobile }} />
         : isLoading && <HomeSearchSkeleton />
       }
-      {!isMobile && homeContent?.diagPreview && (
+      {!isMobile && homeContent?.diagPreview && homeContent?.diagPreview.length > 0 && (
         <DiagPreview content={homeContent.diagPreview} />
       )}
       {homeContent?.mostRecentPreco && (
