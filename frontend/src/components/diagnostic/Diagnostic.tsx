@@ -73,11 +73,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           <DiagnosticSectionTitle
             title="Réglementations"
           />
-          <div className={fr.cx("fr-mb-8v")}>
-            <DiagnosticReceiveByMail
-              parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-            />
-          </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <h4>Autres sources de bruit à proximité</h4>
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
@@ -105,7 +100,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
         <>
           <DiagnosticSectionTitle
             title="Position du bâti"
-
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
@@ -120,6 +114,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       isDefault: activeTabId === "recommendations",
       content: (
         <>
+          <DiagnosticSectionTitle
+            title="Recommandations"
+          />
           <DiagnosticCardsDisplay />
         </>
       ),
@@ -212,7 +209,9 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-
+          <DiagnosticReceiveByMail
+            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          />
         </div>
       )}
       {copied && (

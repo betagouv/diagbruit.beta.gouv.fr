@@ -15,7 +15,6 @@ export const CheckText = ({ text }: { text: string }) => {
 export const CheckTexts = () => {
     const { cx } = useStyles();
 
-
     return (
         <div>
             <div className={cx("fr-grid-row")}>
@@ -36,6 +35,9 @@ const useStyles = tss.create(() => ({
         display: "flex",
         alignItems: "center",
         gap: fr.spacing("2v"),
+        [fr.breakpoints.down('md')]: {
+            padding: `0 ${fr.spacing('4v')}`
+        }
     },
     checkIcon: {
         color: fr.colors.decisions.background.flat.blueFrance.default,
