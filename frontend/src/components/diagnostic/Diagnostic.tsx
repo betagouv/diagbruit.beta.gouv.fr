@@ -35,7 +35,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
-  const activeTabId = searchParams.get("tab") || "reglementation";
+  const activeTabId = searchParams.get("tab") || "reglementations";
 
   const devMode = searchParams.get("dev") === "true";
 

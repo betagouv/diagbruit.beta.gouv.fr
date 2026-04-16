@@ -188,6 +188,7 @@ const AddressSearch = forwardRef(
             }
             renderInput={(params) => (
               <TextField
+                className={classes.textField}
                 {...params}
                 placeholder={placeholder}
                 variant="outlined"
@@ -216,7 +217,6 @@ const useStyles = tss.withParams<{ light: boolean }>().create(({ light }) => ({
     form: {
       display: "flex",
       width: "100%",
-      borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
     },
   },
   submitButton: {
@@ -230,6 +230,10 @@ const useStyles = tss.withParams<{ light: boolean }>().create(({ light }) => ({
     },
     borderRadius: "0 4px 0 0",
     gap: fr.spacing("2v"),
+  },
+  textField: {
+    borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
+
   },
   autocomplete: {
     flexGrow: 1,
