@@ -52,6 +52,9 @@ export const StatsAndQuiz = ({ content }: { content: StatsAndQuizProps }) => {
             ))}
         </div>
         <div className={cx(classes.accordionContainer)}>
+            <h3>
+                Quizz
+            </h3>
             {content.quiz.map((q, index) => (
                 <Accordion
                     key={q.title + index}

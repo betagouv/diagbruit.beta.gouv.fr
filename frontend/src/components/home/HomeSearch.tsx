@@ -26,11 +26,11 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
 
 
     return (<div className={cx(classes.bgContainer)}>
-        <div className={cx(classes.contentContainer, "fr-col-10")}>
+        <div className={cx(classes.contentContainer, "fr-col-12", "fr-col-md-9")}>
             <h1>
                 {content.title}
             </h1>
-            <div
+            <div className={cx("fr-px-4v")}
                 dangerouslySetInnerHTML={{ __html: text }}
             />
             <div className={cx(classes.searchAddressContainer)}>
@@ -48,7 +48,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                     isMobile={content.isMobile}
                 />
                 <Button
-                    className="fr-mt-8v"
+                    className={cx(classes.buttonStyles, "fr-col-9")}
                     onClick={() => {
                         navigate({
                             pathname: "/diagnostic",
@@ -56,6 +56,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                         });
                     }}
                     priority="secondary"
+                    size="small"
                 >
                     ou rechercher une parcelle cadastrale
                 </Button>
@@ -176,10 +177,11 @@ const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().c
         width: "100%",
     },
     searchAddressContainer: {
-        padding: fr.spacing("8v"),
+        padding: fr.spacing("5w"),
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         borderRadius: fr.spacing("2v"),
+    },
+    buttonStyles: {
+        marginTop: fr.spacing('6v'),
     }
-
-
 }));

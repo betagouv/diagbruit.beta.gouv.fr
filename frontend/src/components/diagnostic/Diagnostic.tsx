@@ -14,6 +14,7 @@ import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 
 type DiagnosticProps = {
@@ -31,10 +32,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
   } = diagnosticItem;
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
-  const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "reglementation");
+  const activeTabId = searchParams.get("tab") || "reglementation";
 
   const devMode = searchParams.get("dev") === "true";
 
@@ -61,13 +62,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     );
   };
 
-  const replaceSearchParams = (tabId: string) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", tabId);
-
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, "", newUrl);
-  };
 
   const diagnosticTabs = [
     {
@@ -77,12 +71,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="1. Réglementation"
-            image={{
-              src: "/images/connection-lost.svg",
-              width: 56,
-              height: 48,
-            }}
+            title="Réglementation"
           />
           <div className={fr.cx("fr-mb-8v")}>
             <DiagnosticReceiveByMail
@@ -90,6 +79,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             />
           </div>
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
+          <h4>Autres sources de bruit à proximité</h4>
+          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
       ),
     },
@@ -100,12 +91,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="2. Isolation réglementaires"
-            image={{
-              src: "/images/document.svg",
-              width: 44,
-              height: 60,
-            }}
+            title="Isolation réglementaires"
           />
           <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         </>
@@ -118,12 +104,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       content: (
         <>
           <DiagnosticSectionTitle
-            title="3. Position du bâti"
-            image={{
-              src: "/images/innovation.svg",
-              width: 55,
-              height: 60,
-            }}
+            title="Position du bâti"
+
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
           {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
@@ -208,8 +190,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                     href: "#",
                     onClick: (e: React.MouseEvent) => {
                       e.preventDefault();
-                      setActiveTabId(tab.tabId);
-                      replaceSearchParams(tab.tabId);
+                      setSearchParams(prev => new URLSearchParams({ ...Object.fromEntries(prev), tab: tab.tabId }));
                       trackMatomoEvent("Action", "Tab Change", `Diagnostic Tab - ${tab.tabId}`);
                     },
                   },

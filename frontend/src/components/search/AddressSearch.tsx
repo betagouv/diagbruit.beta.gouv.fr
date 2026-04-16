@@ -106,7 +106,7 @@ const AddressSearch = forwardRef(
     }: AddressSearchProps,
     ref: React.Ref<{ reset: () => void }>
   ) => {
-    const { cx, classes } = useStyles();
+    const { cx, classes } = useStyles({ light });
 
     const [inputValue, setInputValue] = useState("");
     const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
@@ -133,8 +133,9 @@ const AddressSearch = forwardRef(
     }, [defaultValue]);
 
     return (
-      <div className={cx(classes.container, className)}>
+      <div className={cx(classes.container, className, "fr-grid-row", "fr-col-12")}>
         <form
+          className="fr-col-12"
           onSubmit={(e) => {
             e.preventDefault();
             if (onValueSelected) {
@@ -194,11 +195,12 @@ const AddressSearch = forwardRef(
             )}
           />
           <Button
+
             type="submit"
             aria-label={label}
             iconId="fr-icon-search-line"
             iconPosition="left"
-            className={cx(classes.submitButton)}
+            className={cx(classes.submitButton, light ? "" : "fr-col-md-5")}
           >
             {light || isMobile ? "" : label}
           </Button>
@@ -208,30 +210,32 @@ const AddressSearch = forwardRef(
   }
 );
 
-const useStyles = tss.create(() => ({
+const useStyles = tss.withParams<{ light: boolean }>().create(({ light }) => ({
   container: {
     width: "100%",
     form: {
       display: "flex",
       width: "100%",
+      borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
     },
-    borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
   },
   submitButton: {
     display: "flex !important",
     alignItems: "center",
     justifyContent: "center",
     margin: "0 !important",
+    fontSize: "1rem !important",
     "&::before": {
       margin: "0 !important",
     },
+    borderRadius: "0 4px 0 0",
     gap: fr.spacing("2v"),
   },
   autocomplete: {
     flexGrow: 1,
     ".MuiInputBase-root": {
       backgroundColor: fr.colors.decisions.background.disabled.grey.default,
-      borderRadius: 0,
+      borderRadius: "4px 0 0 0",
       paddingRight: `${fr.spacing("4v")} !important`,
       input: {
         padding: "0 !important",
@@ -243,6 +247,10 @@ const useStyles = tss.create(() => ({
     ".MuiAutocomplete-endAdornment": {
       display: "none",
     },
+    ".MuiAutocomplete-input": {
+      marginLeft: `${fr.spacing("2v")} !important`,
+      height: `${light ? "100%" : "auto"}`,
+    }
   },
   autocompleteOption: {
     padding: fr.spacing("3v"),
