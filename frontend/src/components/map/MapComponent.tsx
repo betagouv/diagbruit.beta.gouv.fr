@@ -38,6 +38,7 @@ import {
   useHoverFeatureState,
   useOutlinePreviousSelection,
 } from "./useMapFeatureState";
+import { trackMatomoEvent } from "../../utils/matomo";
 
 const interactiveLayerIds = ["parcelles-fill"];
 
@@ -173,6 +174,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
           setParcelleSiblings(nearbySiblings);
           setParcelle(clickedParcelle);
+          trackMatomoEvent("Action", "Map clic search", `diagnostic-map-clic-${parcelle?.id}`)
         } else {
           setParcelle(null);
         }
