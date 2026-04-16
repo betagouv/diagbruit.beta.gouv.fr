@@ -20,11 +20,14 @@ module.exports = ({ env }) => {
                 Bucket: env("AWS_BUCKET"),
               },
             },
+            actionOptions: {
+              sizeLimit: 5 * 1024 * 1024,
+            },
           }
         : {
             provider: "local",
             providerOptions: {
-              sizeLimit: 1000000,
+              sizeLimit: 5 * 1024 * 1024,
             },
           },
     },
