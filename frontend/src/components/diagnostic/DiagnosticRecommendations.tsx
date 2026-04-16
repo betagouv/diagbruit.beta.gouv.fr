@@ -58,7 +58,7 @@ const DiagnosticRecommendations = ({
         <p className={fr.cx("fr-mb-2v")}>
           Nous vous recommandons de <strong>positionner</strong> votre bâtiment
           résidentiel <strong>dans la zone idéale</strong> identifiée par
-          diagbruit.
+          diagBruit.
         </p>
         <p className={fr.cx("fr-mb-0")}>
           Ce diagnostic s'appuie sur les cartes de bruit réglementaires. Pour

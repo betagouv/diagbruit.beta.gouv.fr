@@ -15,7 +15,7 @@ export const DiagPreview = () => {
         {
             tabId: "sonoscore",
             label: "Résumé du diagnostic",
-            description: "Niveau d'exposition sonore de la parcelle, calculé à partir des données certifiées sur le bruit routier, ferroviaire et aérien.",
+            description: "Niveau d'exposition sonore de la parcelle, calculé à partir de données certifiées sur le bruit routier, ferroviaire et aérien.",
             isDefault: activeTabId === "sonoscore",
             content: (
                 <div className={classes.sonoscorePreviewContainer}>
@@ -25,7 +25,7 @@ export const DiagPreview = () => {
         },
         {
             tabId: "reglementation",
-            label: "Réglementation",
+            label: "Réglementations",
             description: "Résumé clair des réglementations applicables sur la parcelle (classement sonore, PEB, PLU, PPBE, et isolation réglementaire).",
             isDefault: activeTabId === "reglementation",
             content: (

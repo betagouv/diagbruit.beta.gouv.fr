@@ -4,9 +4,9 @@ export const EVALUATION_TEXTS = {
 
     CHARACTERISTICS: {
       MULTI_EXPOSURE:
-        "Elle est exposée à plusieurs sources de bruit des transports (selon les cartes de bruits stratégiques : {{sources}})",
+        "Elle est exposée à plusieurs sources de bruit des transports (selon les cartes de bruit stratégiques : {{sources}})",
       NO_MULTI_EXPOSURE:
-        "La parcelle n’est pas exposée à plusieurs sources de bruit des transports (selon les cartes de bruits stratégiques).",
+        "La parcelle n’est pas exposée à plusieurs sources de bruit des transports (selon les cartes de bruit stratégiques).",
 
       MAIN_SOURCE_INFRA:
         "Elle est impactée sur <b>{{percent_impacted}}%</b> de sa surface par la source <b>{{typesource}} ({{codinfra}})</b> depuis <b>{{direction}}</b>.",

@@ -65,13 +65,13 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   const diagnosticTabs = [
     {
-      tabId: "reglementation",
-      label: "Réglementation",
-      isDefault: activeTabId === "reglementation",
+      tabId: "reglementations",
+      label: "Réglementations",
+      isDefault: activeTabId === "reglementations",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="Réglementation"
+            title="Réglementations"
           />
           <div className={fr.cx("fr-mb-8v")}>
             <DiagnosticReceiveByMail
@@ -86,12 +86,12 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "legal",
-      label: "Isolation réglementaires",
+      label: "Isolation réglementaire",
       isDefault: activeTabId === "legal",
       content: (
         <>
           <DiagnosticSectionTitle
-            title="Isolation réglementaires"
+            title="Isolation réglementaire"
           />
           <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         </>
@@ -116,7 +116,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     },
     {
       tabId: "recommendations",
-      label: "Recommendations",
+      label: "Recommandations",
       isDefault: activeTabId === "recommendations",
       content: (
         <>

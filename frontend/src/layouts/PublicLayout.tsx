@@ -99,8 +99,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         serviceTitle="diagBruit"
         serviceTagline={
           <>
-            Intégrer le bruit dans les risques impactant les projets
-            d'aménagement
+            Intégrez les risques sonores dès la conception d'un projet immobilier
           </>
         }
         operatorLogo={{

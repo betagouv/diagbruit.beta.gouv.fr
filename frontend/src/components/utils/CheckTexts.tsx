@@ -19,7 +19,7 @@ export const CheckTexts = () => {
     return (
         <div>
             <div className={cx("fr-grid-row")}>
-                <CheckText text="Retrouver facilement les réglementations en vigueurs" />
+                <CheckText text="Retrouvez facilement les réglementations en vigueur" />
             </div>
             <div className={cx("fr-grid-row")}>
                 <CheckText text="Partagez rapidement l'analyse avec vos interlocuteurs" />
