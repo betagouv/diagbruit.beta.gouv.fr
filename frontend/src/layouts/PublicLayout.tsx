@@ -11,6 +11,7 @@ import TallyForm from "../components/diagnostic/TallyForm";
 import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
 import { encode } from "../utils/compression";
 import { getIsMobile } from "../utils/tools";
+import { trackMatomoEvent } from "../utils/matomo";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -87,6 +88,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
                 placeholder="Rechercher une adresse..."
                 light
                 onValueSelected={(feature: AddressFeature | null) => {
+                  trackMatomoEvent("Action", "Header address search", "header-search-address");
                   navigate({
                     pathname: "/diagnostic",
                     search: `?address=${encode(feature)}`,
@@ -99,8 +101,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         serviceTitle="diagBruit"
         serviceTagline={
           <>
-            Intégrer le bruit dans les risques impactant les projets
-            d'aménagement
+            Intégrez les risques sonores dès la conception d'un projet immobilier
           </>
         }
         operatorLogo={{

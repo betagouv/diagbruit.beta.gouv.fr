@@ -33,7 +33,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
             bruit :
           </p>
           <DiagnosticIsolationBadge
-            title="Isolement préconnisé"
+            title="Isolement préconisé"
             isolation={isolation_min || 30}
           />
 
@@ -42,7 +42,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
             bruit :
           </p>
           <DiagnosticIsolationBadge
-            title="Isolement préconnisé"
+            title="Isolement préconisé"
             isolation={isolation_max || 30}
           />
         </div>

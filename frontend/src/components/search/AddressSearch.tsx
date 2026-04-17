@@ -195,7 +195,7 @@ const AddressSearch = forwardRef(
             )}
           />
           <Button
-
+            disabled={!!inputValue && !valueSelected}
             type="submit"
             aria-label={label}
             iconId="fr-icon-search-line"

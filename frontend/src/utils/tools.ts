@@ -107,7 +107,7 @@ export const getSummaryTextFromDiagnostic = (
 
   switch (risk) {
     case 3:
-      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>. La construction ou la rénovation de logements sont soumis à des <strong>obligations réglementaires</strong>";
+      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>. Les projets de construction ou de rénovation sont soumis à des <strong>obligations réglementaires</strong>";
     case 2:
       return "Votre parcelle est exposée à un <strong>risque fort de nuisance sonore</strong>.";
     case 1:
@@ -492,6 +492,9 @@ export const getIsMobile = () => {
 
 export const normalize = (str: string) =>
   str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+
+export const slugify = (str: string) =>
+  normalize(str).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export const imgUrl = (url: string) =>
   url.startsWith("/")

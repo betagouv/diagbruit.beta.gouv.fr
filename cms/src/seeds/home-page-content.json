@@ -10,7 +10,7 @@
     "description": "Cerema, DINUM, ANCT, DGPR, Nantes Métropole, Ville de Lille, Euro-Métropole de Strasbourg, Bordeaux métropole"
   },
   "availabilityMapContent": {
-    "title": "Déploiement des cartes",
+    "title": "diagBruit sur le territoire",
     "textContent": "<p>diagBruit croise les données nationales pour évaluer l'environnement sonore. Ces données sont disponible dans 5 départements, dont les villes de Bordeaux, Strasbourg, Rennes, Lille et Nantes.</p><p>Vous aimeriez diagbruit dans votre ville ?&nbsp;</p>"
   },
   "mostRecentPreco": {
@@ -19,20 +19,36 @@
   },
   "homeSearch": {
     "title": "Intégrez les risques sonores dès la conception d'un projet immobilier",
-    "description": "<p>Gagnez du temps sur la conception de votre projet immobilier. Identifier rapidement les parcelles exposées à des risques acoustiques et les réglementations à respecter.</p>"
+    "description": "<p>Gagnez du temps sur la conception de votre projet immobilier. Identifiez rapidement les parcelles exposées à des risques acoustiques et les réglementations à respecter.</p>"
   },
+  "diagPreview": [
+    {
+      "title": "Résumé du diagnostic",
+      "description": "Niveau d'exposition sonore de la parcelle, calculé à partir de données certifiées sur le bruit routier, ferroviaire et aérien.",
+      "backgroundColor": "#fac4c4"
+    },
+    {
+      "title": "Réglementations",
+      "description": "Résumé clair des réglementations applicables sur la parcelle (classement sonore, PEB, PLU, PPBE, et isolation réglementaire).",
+      "backgroundColor": "#f5f5fe" },
+    {
+      "title": "Solutions techniques et économiques",
+      "description": "Analyse de la position du bâti au regard des risques sonores, avec des préconisations concrètes d'isolation et d'aménagement.",
+      "backgroundColor": "#f6f6f6"
+    }
+  ],
   "statsAndQuiz": {
-    "title": "Le bruit : un enjeux de santé public",
+    "title": "Le bruit : un enjeu de santé public",
     "quiz": [
       {
-        "title": "Combien de réglementation parle du bruit ? 2 5 ou 9",
-        "content": "<p>Réponse : 5</p><p>La construction et la rénovation sont encadrés par plusieurs corpus réglementaires qui se cumulent :</p><ul><li>Code de l'environnement : Classement sonore des infrastructures terrestres</li><li>Code de l'urbanisme : Plan d'Exposition au Bruit (PEB) pour les nuisances aériennes</li><li>Code de la construction : Isolations réglementaires (façades, parties communes, équipements, etc.)</li><li>Code de la santé publique : bruits de voisinage et équipements spécifiques (pompes à chaleur, etc.)</li><li>PLU : réglementations et recommandations propres à chaque territoire</li></ul><p>diagBruit rassemble l'ensemble de ces réglementations et les applient précisément à une parcelle.</p><p><a href='/diagnostic'>Diagnostiquer une parcelle</a></p>"
+        "title": "Combien de réglementation parle du bruit ? 2 5 ou 9 ?",
+        "content": "<p>Réponse : 5</p><p>La construction et la rénovation sont encadrés par plusieurs corpus réglementaires qui se cumulent :</p><ul><li>Code de l'environnement : Classement sonore des infrastructures terrestres</li><li>Code de l'urbanisme : Plan d'Exposition au Bruit (PEB) pour les nuisances aériennes</li><li>Code de la construction : Isolations réglementaires (façades, parties communes, équipements, etc.)</li><li>Code de la santé publique : bruits de voisinage et équipements spécifiques (pompes à chaleur, etc.)</li><li>PLU : réglementations et recommandations propres à chaque territoire</li></ul><p>diagBruit rassemble l'ensemble de ces réglementations et les applient précisément à une parcelle.</p><p><a href='/diagnostic?parcelleSearch=eJwrKSpNBQAEeQHB'>Diagnostiquer une parcelle</a></p>"
       }
     ],
     "stats": [
       {
         "title": "6,5 millions",
-        "description": "de personnes avec troubles du sommeil liés au bruit des transports dans l'Union européenne",
+        "description": "de personnes ont des troubles du sommeil liés au bruit des transports dans l'Union européenne",
         "sourceTitle": "Source : Agence européenne de l'environnement sur le bruit environnemental",
         "sourceLink": "https://google.com"
       },

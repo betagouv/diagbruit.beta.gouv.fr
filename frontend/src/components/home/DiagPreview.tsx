@@ -4,48 +4,34 @@ import SelectorContent from "../diagnostic/SelectorContent";
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 import { ImagePreview } from "./ImagePreview";
+import { imgUrl, slugify } from "../../utils/tools";
 
-export const DiagPreview = () => {
+export interface DiagPreviewProps {
+    title: string;
+    description: string;
+    backgroundColor: string;
+    image: { url: string; width: number; height: number; alternativeText: string } | null;
+}
+
+export const DiagPreview = ({ content }: { content: DiagPreviewProps[] }) => {
     const { cx, classes } = useStyles();
 
     const [searchParams] = useSearchParams();
-    const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || "sonoscore");
+    const [activeTabId, setActiveTabId] = useState(searchParams.get("tab") || content[0] ? slugify(content[0].title) : "");
 
-    const reviewTabs = [
-        {
-            tabId: "sonoscore",
-            label: "Résumé du diagnostic",
-            description: "Niveau d'exposition sonore de la parcelle, calculé à partir des données certifiées sur le bruit routier, ferroviaire et aérien.",
-            isDefault: activeTabId === "sonoscore",
-            content: (
-                <div className={classes.sonoscorePreviewContainer}>
-                    <ImagePreview src="/images/sonoscorePreview.svg" width={470} height={521} alt="Preview du sonoscore diagBruit" />
+    const previewTabs = content.map((tab) => {
+        return {
+            tabId: slugify(tab.title),
+            label: tab.title,
+            description: tab.description,
+            isDefault: activeTabId === slugify(tab.title),
+            content: tab.image && (
+                <div style={{ backgroundColor: tab.backgroundColor }}>
+                    <ImagePreview src={imgUrl(tab.image.url)} width={tab.image.width} height={tab.image.height} alt={tab.image.alternativeText} />
                 </div>
             ),
-        },
-        {
-            tabId: "reglementation",
-            label: "Réglementation",
-            description: "Résumé clair des réglementations applicables sur la parcelle (classement sonore, PEB, PLU, PPBE, et isolation réglementaire).",
-            isDefault: activeTabId === "reglementation",
-            content: (
-                <div className={classes.regulationPreviewContainer}>
-                    <ImagePreview src="/images/regulationPreview.svg" width={470} height={464} alt="Preview des réglementations" />
-                </div>
-            ),
-        },
-        {
-            tabId: "solutions",
-            label: "Solutions techniques et économiques",
-            description: "Analyse de la position du bâti au regard des risques sonores, avec des préconisations concrètes d'isolation et d'aménagement.",
-            isDefault: activeTabId === "solutions",
-            content: (
-                <div className={classes.solutionPreviewContainer}>
-                    <ImagePreview src="/images/solutionPreview.svg" width={470} height={521} alt="Preview des solutions techniques" />
-                </div>
-            ),
-        },
-    ];
+        }
+    })
 
     return (
         <div className={cx(classes.container)}>
@@ -55,7 +41,7 @@ export const DiagPreview = () => {
             </div>
             <div className={classes.contentContainer}>
                 <SelectorContent
-                    tabs={reviewTabs}
+                    tabs={previewTabs}
                     activeTabId={activeTabId}
                     onTabChange={(tabId) => {
                         setActiveTabId(tabId);

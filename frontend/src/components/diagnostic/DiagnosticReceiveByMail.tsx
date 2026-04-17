@@ -56,7 +56,7 @@ export default function DiagnosticReceiveByMail({
   return (
     <div ref={containerRef} className={cx(classes.container, "fr-grid-row")}>
       <div className={cx(classes.imgContainer, "fr-col-12", "fr-col-md-1")}>
-        <img src="/images/document-download.svg" alt="" />
+        <img src="/images/document-download.svg" alt="Document email icon" />
 
       </div>
       <div className={cx(classes.tileContent, "fr-col-12", "fr-col-md-6")}>
@@ -109,8 +109,9 @@ const useStyles = tss.create(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    margin: fr.spacing("4v"),
-
+    [fr.breakpoints.up('md')]: {
+      margin: fr.spacing("4v"),
+    }
   },
   tileContent: {
     padding: `${fr.spacing("4v")} 0`,
@@ -122,6 +123,10 @@ const useStyles = tss.create(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
+    [fr.breakpoints.down('md')]: {
+      justifyContent: "center",
+      marginBottom: fr.spacing('4v')
+    }
   },
   checkIcon: {
     color: fr.colors.decisions.background.flat.blueFrance.default,
