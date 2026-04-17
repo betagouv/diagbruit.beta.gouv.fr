@@ -41,7 +41,7 @@ def ingest_geojson(file_path, table_name, db_url, schema, if_exists):
         )
         print("Data imported successfully")
 
-        return True
+        return len(geojson)
 
     except Exception as e:
         print(f"Error importing geojson data : {e}", file=sys.stderr)
