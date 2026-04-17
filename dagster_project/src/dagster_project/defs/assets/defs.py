@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 
 from dagster import AssetExecutionContext, asset
@@ -19,14 +18,17 @@ def _db_url() -> str:
 DAGSTER_ROOT = Path(__file__).resolve().parents[2]
 
 
-@asset
-def raw_full_osm_data(context: AssetExecutionContext):
-    """Ingest OSM food service and school GeoJSON files into public_workspace."""
-    files = [
-        #replace this line with the path to the osm food service geojson
-        (DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "osm-france-food-service.geojson", "raw_full_osm_foods_data"),
-    ]
-    db_url = _db_url()
-    for file_path, table_name in files:
-        context.log.info(f"Ingesting {file_path.name} → {table_name}")
-        ingest_geojson(str(file_path), table_name, db_url, schema="public_workspace", if_exists="replace")
+@asset(group_name="ingestion", key="raw_full_stras_data")
+def ingest_strasbourg(context: AssetExecutionContext):
+    """Ingest Strasbourg terrasses GeoJSON into public_workspace."""
+    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg" / "strasbourg-terrasses-autorisees-2025.geojson"
+    context.log.info(f"Ingesting {file_path.name} → raw_full_stras_data")
+    ingest_geojson(str(file_path), "raw_full_stras_data", _db_url(), schema="public_workspace", if_exists="replace")
+
+
+@asset(group_name="ingestion", key="raw_full_osm_foods_data")
+def ingest_osm_foods(context: AssetExecutionContext):
+    """Ingest OSM food service GeoJSON into public_workspace."""
+    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "osm-france-food-service.geojson"
+    context.log.info(f"Ingesting {file_path.name} → raw_full_osm_foods_data")
+    ingest_geojson(str(file_path), "raw_full_osm_foods_data", _db_url(), schema="public_workspace", if_exists="replace")
