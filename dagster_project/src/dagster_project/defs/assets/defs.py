@@ -40,8 +40,7 @@ def reporthook(block_count: int, block_size: int, total_size: int, context: Asse
 
 DAGSTER_ROOT = Path(__file__).resolve().parents[2]
 
-
-@asset(group_name="ingestion", key="raw_full_stras_data")
+@asset(group_name="strasbourg", key="raw_full_stras_data")
 def ingest_strasbourg(context: AssetExecutionContext):
     """Ingest Strasbourg terrasses GeoJSON into public_workspace."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg" / "strasbourg-terrasses-autorisees-2025.geojson"
@@ -54,8 +53,7 @@ def ingest_strasbourg(context: AssetExecutionContext):
 
 OSM_FOODS_URL = "https://data.smartidf.services/api/explore/v2.1/catalog/datasets/osm-france-food-service/exports/geojson?lang=fr&timezone=Europe%2FParis"
 
-
-@asset(group_name="ingestion", key="raw_full_osm_foods_data")
+@asset(group_name="osm", key="raw_full_osm_foods_data")
 def ingest_osm_foods(context: AssetExecutionContext):
     """Download and ingest OSM food service GeoJSON into public_workspace."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "osm-france-food-service.geojson"
@@ -84,9 +82,10 @@ def ingest_osm_foods(context: AssetExecutionContext):
         "row_count": MetadataValue.int(row_count),
     })
 
+
 OSM_SCHOOLS_URL = "https://www.data.gouv.fr/api/1/datasets/r/bedd394a-24c6-40e1-b0a9-303f78e119c5"
 
-@asset(group_name="ingestion", key="raw_full_osm_schools_data")
+@asset(group_name="osm", key="raw_full_osm_schools_data")
 def ingest_osm_schools(context:AssetExecutionContext):
     """Download and ingest OSM schools service SHP into public_workspace."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "schools"
@@ -131,4 +130,21 @@ def ingest_osm_schools(context:AssetExecutionContext):
         "extracted_files": MetadataValue.json(extracted),
         "row_count": MetadataValue.int(row_count),
 
+    })
+
+@asset(group_name="peb", key="raw_peb")
+def raw_peb(context:AssetExecutionContext) :
+    """Ingest PEB SHP into public_workspace."""
+    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "PEB"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    shp_files = list(file_path.rglob("*.shp"))
+    shp_file = shp_files[0]
+    context.log.info(f"Ingesting {shp_file.name} → raw_peb")
+
+    row_count = ingest_shapefile(str(shp_file), "raw_peb", _db_url(), schema="public_workspace", if_exists="replace")
+    context.log.info(f"Ingestion Successful for {file_path}")
+
+    return MaterializeResult(metadata={
+        "row_count": MetadataValue.int(row_count)
     })
