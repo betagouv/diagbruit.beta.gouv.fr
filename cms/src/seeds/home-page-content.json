@@ -11,7 +11,7 @@
   },
   "availabilityMapContent": {
     "title": "diagBruit sur le territoire",
-    "textContent": "<p>diagBruit croise les données nationales pour évaluer l'environnement sonore. Ces données sont disponible dans 5 départements, dont les villes de Bordeaux, Strasbourg, Rennes, Lille et Nantes.</p><p>Vous aimeriez diagbruit dans votre ville ?&nbsp;</p>"
+    "textContent": "<p>diagBruit croise les données nationales pour évaluer l'environnement sonore. Ces données sont disponible dans 5 départements, dont les villes de Bordeaux, Strasbourg, Rennes, Lille et Nantes.</p><p>Vous aimeriez diagBruit dans votre ville ? <a href=\"mailto:contact@diagbruit.fr\">Contactez-nous</a></p>"
   },
   "mostRecentPreco": {
     "title": "Des solutions pour se protéger du bruit",
