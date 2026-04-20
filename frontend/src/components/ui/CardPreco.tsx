@@ -8,6 +8,25 @@ export interface CardPrecoProps {
   target?: boolean;
 }
 
+const useStyles = tss.withName("CardPreco").create(() => ({
+  cardContainer: {
+    display: "flex",
+    height: "100%"
+  },
+  card: {
+    width: "100%",
+    "& .fr-card__img": {
+      aspectRatio: "16/9",
+      overflow: "hidden",
+    },
+    "& .fr-card__img img": {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+    },
+  }
+}));
+
 export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoProps) => {
   const { cx, classes } = useStyles();
 
@@ -34,23 +53,6 @@ export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoPr
   );
 };
 
-const useStyles = tss.withName(CardPreco.name).create(() => ({
-  cardContainer: {
-    display: "flex",
-    height: "100%"
-  },
-  card: {
-    width: "100%",
-    "& .fr-card__img": {
-      aspectRatio: "16/9",
-      overflow: "hidden",
-    },
-    "& .fr-card__img img": {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-    },
-  }
-}));
+
 
 export default CardPreco;

@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
-import { encode } from "../../utils/compression";
+import { buildExclusiveDiagnosticSearch } from "../../utils/diagnosticSearchParams";
 
 export interface SelectorTab {
     tabId: string;
@@ -39,7 +39,7 @@ const SelectorContent = ({ tabs, activeTabId, border = false, onTabChange }: Sel
                         ))}
                         <li>
                             <div className={cx(classes.selectorLink)}>
-                                <a href={`/diagnostic?parcelleSearch=${encode(true)}`} className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
+                                <a href={`/diagnostic?${buildExclusiveDiagnosticSearch("parcelleSearch", true).toString()}`} className={fr.cx("fr-link", "fr-icon-arrow-right-line", "fr-link--icon-right")}>
                                     Diagnostiquer une parcelle
                                 </a>
                             </div>

@@ -18,7 +18,7 @@ import Map, {
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
 import usePrevious from "../../hooks/previous";
-import { encode } from "../../utils/compression";
+import { buildExclusiveDiagnosticSearch } from "../../utils/diagnosticSearchParams";
 import { computeParcelleSiblings, updateFeatureState } from "../../utils/map";
 import {
   getIconFromNoiseCategorySlug,
@@ -207,9 +207,11 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         },
         bbox: bbox(parcelle._geometry),
       };
-      const params = new URLSearchParams(window.location.search);
-      params.set("parcelle", encode(queryParcelle));
-
+      const params = buildExclusiveDiagnosticSearch(
+        "parcelle",
+        queryParcelle,
+        window.location.search,
+      );
       const newUrl = `${window.location.pathname}?${params.toString()}`;
       window.history.replaceState({}, "", newUrl);
     };

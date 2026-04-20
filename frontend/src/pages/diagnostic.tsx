@@ -11,7 +11,8 @@ import MapComponent, {
 import AddressSearch, { type AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
-import { decode, encode } from "../utils/compression";
+import { decode } from "../utils/compression";
+import { buildExclusiveDiagnosticSearch } from "../utils/diagnosticSearchParams";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
@@ -273,8 +274,11 @@ function DiagnosticPage() {
           checked={showParcelleSearch}
           onChange={checked => {
             setShowParcelleSearch(checked);
-            const params = new URLSearchParams(location.search);
-            params.set("parcelleSearch", encode(checked));
+            const params = buildExclusiveDiagnosticSearch(
+              "parcelleSearch",
+              checked,
+              location.search,
+            );
             navigate({ search: params.toString() }, { replace: true });
           }}
         />
