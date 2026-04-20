@@ -29,49 +29,58 @@ type AddressSearchProps = {
   className?: string;
   id: string;
   placeholder: string;
-  onValueSelected?: (feature: AddressFeature) => void;
+  onValueSelected?: (feature: AddressFeature | null) => void;
   limit?: number;
   defaultValue?: AddressFeature;
+  label?: string;
+  light?: boolean;
+  isMobile?: boolean;
 };
 
 const useAddressSearch = (limit: number) => {
   const [options, setOptions] = useState<AddressFeature[]>([]);
   const [loading, setLoading] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchAddresses = async (query: string) => {
+  const fetchAddresses = (query: string) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
     if (query.length < 3) {
       setOptions([]);
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
-          query
-        )}&limit=${limit}`
-      );
-      const data = await response.json();
-      setOptions(data.features || []);
-    } catch (error) {
-      console.error("Error fetching addresses:", error);
-      setOptions([]);
-    } finally {
-      setLoading(false);
-    }
+    debounceTimer.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+            query
+          )}&limit=${limit}`
+        );
+        const data = await response.json();
+        setOptions(data.features || []);
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+        setOptions([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
   };
 
   return { options, loading, fetchAddresses };
 };
 
 const renderAddressOption = (
-  props: React.HTMLAttributes<HTMLLIElement>,
+  props: React.HTMLAttributes<HTMLLIElement> & { key?: React.Key },
   option: AddressFeature
 ) => {
+  const { key, ...restProps } = props;
   const { label, context, type } = option.properties;
 
   return (
-    <li {...props}>
+    <li key={key} {...restProps}>
       <div>
         <b>{label}</b>
         <br />
@@ -91,10 +100,14 @@ const AddressSearch = forwardRef(
       onValueSelected,
       limit = 5,
       defaultValue,
+      label = "Lancer le diagnostic sonore",
+      light = false,
+      isMobile = false
     }: AddressSearchProps,
     ref: React.Ref<{ reset: () => void }>
   ) => {
-    const { cx, classes } = useStyles();
+    const { cx, classes } = useStyles({ light });
+
     const [inputValue, setInputValue] = useState("");
     const [valueSelected, setValueSelected] = useState<AddressFeature | null>(
       null
@@ -120,11 +133,12 @@ const AddressSearch = forwardRef(
     }, [defaultValue]);
 
     return (
-      <div className={cx(classes.container, className)}>
+      <div className={cx(classes.container, className, "fr-grid-row", "fr-col-12")}>
         <form
+          className="fr-col-12"
           onSubmit={(e) => {
             e.preventDefault();
-            if (onValueSelected && valueSelected) {
+            if (onValueSelected) {
               onValueSelected(valueSelected);
             }
           }}
@@ -135,6 +149,9 @@ const AddressSearch = forwardRef(
             inputValue={inputValue}
             options={options}
             getOptionLabel={(option) => option.properties?.label || ""}
+            getOptionKey={(option) =>
+              `${option.geometry.coordinates[0]},${option.geometry.coordinates[1]}`
+            }
             filterOptions={(x) => x}
             noOptionsText="Aucun résultat"
             slotProps={{
@@ -178,11 +195,14 @@ const AddressSearch = forwardRef(
             )}
           />
           <Button
-            className={fr.cx("fr-px-8v")}
+            disabled={!!inputValue && !valueSelected}
             type="submit"
-            disabled={!valueSelected}
+            aria-label={label}
+            iconId="fr-icon-search-line"
+            iconPosition="left"
+            className={cx(classes.submitButton, light ? "" : "fr-col-md-5")}
           >
-            Rechercher
+            {light || isMobile ? "" : label}
           </Button>
         </form>
       </div>
@@ -190,19 +210,32 @@ const AddressSearch = forwardRef(
   }
 );
 
-const useStyles = tss.create(() => ({
+const useStyles = tss.withParams<{ light: boolean }>().create(({ light }) => ({
   container: {
+    width: "100%",
     form: {
       display: "flex",
-      gap: fr.spacing("2v"),
+      width: "100%",
+      borderBottom: `2px solid ${fr.colors.decisions.background.flat.blueFrance.default}`,
     },
+  },
+  submitButton: {
+    display: "flex !important",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 !important",
+    fontSize: "1rem !important",
+    "&::before": {
+      margin: "0 !important",
+    },
+    borderRadius: "0 4px 0 0",
+    gap: fr.spacing("2v"),
   },
   autocomplete: {
     flexGrow: 1,
     ".MuiInputBase-root": {
       backgroundColor: fr.colors.decisions.background.disabled.grey.default,
-      border: 0,
-      borderRadius: 0,
+      borderRadius: "4px 0 0 0",
       paddingRight: `${fr.spacing("4v")} !important`,
       input: {
         padding: "0 !important",
@@ -214,6 +247,10 @@ const useStyles = tss.create(() => ({
     ".MuiAutocomplete-endAdornment": {
       display: "none",
     },
+    ".MuiAutocomplete-input": {
+      marginLeft: `${fr.spacing("2v")} !important`,
+      height: `${light ? "100%" : "auto"}`,
+    }
   },
   autocompleteOption: {
     padding: fr.spacing("3v"),

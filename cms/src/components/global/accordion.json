@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_global_accordions",
+  "info": {
+    "displayName": "accordion"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    }
+  }
+}

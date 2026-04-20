@@ -58,7 +58,7 @@ const DiagnosticRecommendations = ({
         <p className={fr.cx("fr-mb-2v")}>
           Nous vous recommandons de <strong>positionner</strong> votre bâtiment
           résidentiel <strong>dans la zone idéale</strong> identifiée par
-          diagbruit.
+          diagBruit.
         </p>
         <p className={fr.cx("fr-mb-0")}>
           Ce diagnostic s'appuie sur les cartes de bruit réglementaires. Pour
@@ -88,7 +88,7 @@ const DiagnosticRecommendations = ({
     <div>
       <div className={cx(classes.container)}>
         <div>
-          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-10v")}>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v")}>
             Implantation du bâti : privilégiez la zone à faible exposition
             sonore
           </h4>

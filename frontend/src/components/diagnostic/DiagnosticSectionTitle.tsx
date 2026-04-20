@@ -54,7 +54,7 @@ const useStyles = tss.create(() => ({
     [fr.breakpoints.down("md")]: {
       flexDirection: "column",
     },
-    marginBottom: fr.spacing("4v"),
+    marginBottom: fr.spacing("2v"),
   },
   mainImage: {
     padding: fr.spacing("1v"),

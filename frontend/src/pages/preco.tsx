@@ -7,8 +7,10 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Summary from "@codegouvfr/react-dsfr/Summary";
-import { useEffect } from "react";
 import { RichContent } from "../components/ui/RichContent";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { EmptyScreenZone } from "../components/ui/EmptyScreenZone";
+import { imgUrl } from "../utils/tools";
 
 const toAnchorId = (text: string) =>
   text
@@ -22,35 +24,20 @@ export const PrecoPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { preco, isLoading, notFound } = usePreco(slug ?? "");
 
-  useEffect(() => {
-    if (!preco) return;
-
-    document.title = `${preco.title} - Diagbruit`;
-
-    const parser = new DOMParser();
-    const plainText = parser
+  const plainText = preco
+    ? new DOMParser()
       .parseFromString(preco.aRetenir || preco.content, "text/html")
       .body.textContent?.trim()
-      .slice(0, 160);
+      .slice(0, 160)
+    : undefined;
 
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement("meta");
-      metaDescription.setAttribute("name", "description");
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute("content", plainText ?? "");
-
-    return () => {
-      document.title = "Diagbruit";
-    };
-  }, [preco]);
+  usePageMeta(preco?.title ?? "Préconisation", plainText);
 
   if (isLoading) {
     return (
-      <div className={fr.cx("fr-my-16w")}>
+      <EmptyScreenZone>
         <Loader />
-      </div>
+      </EmptyScreenZone>
     );
   }
 
@@ -90,11 +77,10 @@ export const PrecoPage = () => {
           <img
             className={cx(classes.imageBanner)}
             src={
-              preco.imageBanner.url.startsWith("/")
-                ? `${process.env.REACT_APP_CMS_URL}${preco.imageBanner.url}`
-                : preco.imageBanner.url
+              imgUrl(preco.imageBanner.url)
             }
             alt={preco.imageBanner.alternativeText ?? preco.title}
+            fetchPriority="high"
           />
         </div>
       )}
@@ -126,6 +112,7 @@ export const PrecoPage = () => {
               <Alert
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
                 title="À retenir"
+                as="h2"
                 description={
                   <RichContent
                     className={cx(classes.recommendationContent)}
@@ -200,6 +187,7 @@ const useStyles = tss.withName(PrecoPage.name).create(() => ({
     height: "350px",
     objectFit: "cover",
     objectPosition: "center",
+    aspectRatio: "5/1",
     display: "block",
   },
   recommendationContent: {

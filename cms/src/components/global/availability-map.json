@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_global_availability_maps",
+  "info": {
+    "displayName": "availabilityMap"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "textContent": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    }
+  }
+}

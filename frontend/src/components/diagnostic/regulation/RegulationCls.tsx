@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type { DiagnosticItem } from "../../../utils/types";
 import FakeLinkComponent from "../../ui/FakeLinkComponent";
 import DiagnosticRegulationBox from "../DiagnosticRegulationBox";
+import { useSearchParams } from "react-router-dom";
 
 type RegulationClsProps = {
   diagnosticItem: DiagnosticItem;
@@ -9,6 +10,12 @@ type RegulationClsProps = {
 
 const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
   const { diagnostic } = diagnosticItem;
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const goToTab = (str: string) =>
+    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
+
   const hasIntersections =
     diagnostic.soundclassification_intersections.length > 0;
 
@@ -29,13 +36,7 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
             <p className={fr.cx("fr-mb-4v")}>
               Vous avez une obligation réglementaire d'isoler votre bâtiment.
             </p>
-            <FakeLinkComponent onClick={() => {
-              (
-                document.querySelector(
-                  '[id^="tabpanel-"][id$="-1"]',
-                ) as HTMLElement
-              )?.click();
-            }}>
+            <FakeLinkComponent onClick={() => goToTab('legal')}>
               Voir la valeur de l'isolation réglementaire{" "}
               <i className={fr.cx("ri-arrow-right-line")} />
             </FakeLinkComponent>

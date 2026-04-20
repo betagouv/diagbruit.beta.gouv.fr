@@ -7,6 +7,11 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import type { Settings } from "../utils/types";
+import TallyForm from "../components/diagnostic/TallyForm";
+import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
+import { encode } from "../utils/compression";
+import { getIsMobile } from "../utils/tools";
+import { trackMatomoEvent } from "../utils/matomo";
 
 type PublicLayoutProps = {
   children: React.ReactNode;
@@ -20,6 +25,8 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   const navigate = useNavigate();
 
   const [settings, setSettings] = useState<Settings>();
+
+  const isMobile: boolean = getIsMobile();
 
   useEffect(() => {
     axios
@@ -58,6 +65,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         />
       )}
       <Header
+        className={cx(classes.header)}
         brandTop={
           <>
             République
@@ -73,12 +81,27 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
+          ...(!isMobile ? [
+            <div key="header-search" className={cx(classes.searchContainer)}>
+              <AddressSearch
+                id="header-address-search"
+                placeholder="Rechercher une adresse..."
+                light
+                onValueSelected={(feature: AddressFeature | null) => {
+                  trackMatomoEvent("Action", "Header address search", "header-search-address");
+                  navigate({
+                    pathname: "/diagnostic",
+                    search: `?address=${encode(feature)}`,
+                  });
+                }}
+              />
+            </div>
+          ] : []),
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
           <>
-            Intégrer le bruit dans les risques impactant les projets
-            d'aménagement
+            Intégrez les risques sonores dès la conception d'un projet immobilier
           </>
         }
         operatorLogo={{
@@ -90,6 +113,32 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           href: "/",
           title: "Accueil - diagBruit",
         }}
+        navigation={[
+          {
+            isActive: pathname === "/",
+            linkProps: {
+              href: '/',
+              target: '_self'
+            },
+            text: 'Accueil'
+          },
+          {
+            isActive: pathname.startsWith("/diagnostic"),
+            linkProps: {
+              href: '/diagnostic',
+              target: '_self'
+            },
+            text: 'Diagnostiquer une parcelle'
+          },
+          {
+            isActive: pathname.startsWith("/preco"),
+            linkProps: {
+              href: '/preco',
+              target: '_self'
+            },
+            text: 'Se protéger du bruit'
+          }
+        ]}
         id="fr-header-simple-header"
       />
       <Notice
@@ -105,9 +154,10 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         className={cx(classes.betaNotice)}
       />
       <div
-        className={cx(classes.container, fr.cx("fr-container", "fr-py-10v"))}
+        className={cx(classes.container, fr.cx("fr-container", "fr-pt-10v"))}
       >
         {children}
+        <TallyForm />
       </div>
       <Footer
         accessibility="non compliant"
@@ -133,6 +183,35 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
 const useStyles = tss.create(() => ({
   container: {
     minHeight: "85vh",
+  },
+  header: {
+    "& .fr-header__tools-links .fr-btns-group": {
+      flexDirection: "column" as const,
+      alignItems: "flex-end !important" as const,
+      gap: fr.spacing("1v"),
+      "&&": {
+        flexDirection: "column" as const,
+        alignItems: "flex-end !important" as const,
+      },
+      li: {
+        width: "100%",
+        justifyContent: "right",
+      },
+      width: "350px",
+      a: {
+        marginBottom: fr.spacing("1v")
+      }
+    },
+  },
+  searchContainer: {
+    width: "100%",
+    "&& .fr-btn:disabled": {
+      backgroundColor: `${fr.colors.decisions.background.disabled.grey.default} !important`,
+    },
+    "&& .fr-btn:enabled": {
+      backgroundColor: `${fr.colors.decisions.background.actionHigh.blueFrance.default} !important`,
+      color: "#ffffff !important",
+    }
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,

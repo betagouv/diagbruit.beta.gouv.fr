@@ -1,5 +1,43 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface GlobalAbout extends Struct.ComponentSchema {
+  collectionName: 'components_global_abouts';
+  info: {
+    description: '';
+    displayName: 'about';
+  };
+  attributes: {
+    author: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    profilePicture: Schema.Attribute.Media<'images' | 'files'>;
+    source: Schema.Attribute.String;
+    textContent: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+  };
+}
+
+export interface GlobalAccordion extends Struct.ComponentSchema {
+  collectionName: 'components_global_accordions';
+  info: {
+    displayName: 'accordion';
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalArray extends Struct.ComponentSchema {
   collectionName: 'components_global_arrays';
   info: {
@@ -8,6 +46,55 @@ export interface GlobalArray extends Struct.ComponentSchema {
     icon: 'apps';
   };
   attributes: {};
+}
+
+export interface GlobalAvailabilityMap extends Struct.ComponentSchema {
+  collectionName: 'components_global_availability_maps';
+  info: {
+    displayName: 'availabilityMap';
+  };
+  attributes: {
+    textContent: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalDiagPreview extends Struct.ComponentSchema {
+  collectionName: 'components_global_diag_previews';
+  info: {
+    displayName: 'diagPreview';
+  };
+  attributes: {
+    backgroundColor: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalHomeSearch extends Struct.ComponentSchema {
+  collectionName: 'components_global_home_searches';
+  info: {
+    description: '';
+    displayName: 'homeSearch';
+  };
+  attributes: {
+    banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    description: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    title: Schema.Attribute.String;
+  };
 }
 
 export interface GlobalLink extends Struct.ComponentSchema {
@@ -36,6 +123,55 @@ export interface GlobalLocalDocumentationCodeInsee
   };
 }
 
+export interface GlobalMostRecentPreco extends Struct.ComponentSchema {
+  collectionName: 'components_global_most_recent_precos';
+  info: {
+    displayName: 'mostRecentPreco';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalPartners extends Struct.ComponentSchema {
+  collectionName: 'components_global_partners';
+  info: {
+    description: '';
+    displayName: 'partners';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    partnersLogos: Schema.Attribute.Media<'images' | 'files', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalStats extends Struct.ComponentSchema {
+  collectionName: 'components_global_stats';
+  info: {
+    displayName: 'stats';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    sourceLink: Schema.Attribute.String;
+    sourceTitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface GlobalStatsAndQuiz extends Struct.ComponentSchema {
+  collectionName: 'components_global_stats_and_quizs';
+  info: {
+    displayName: 'stats&quiz';
+  };
+  attributes: {
+    quiz: Schema.Attribute.Component<'global.accordion', true>;
+    stats: Schema.Attribute.Component<'global.stats', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalTitleTextArray extends Struct.ComponentSchema {
   collectionName: 'components_global_title_text_arrays';
   info: {
@@ -58,9 +194,18 @@ export interface GlobalTitleTextArray extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'global.about': GlobalAbout;
+      'global.accordion': GlobalAccordion;
       'global.array': GlobalArray;
+      'global.availability-map': GlobalAvailabilityMap;
+      'global.diag-preview': GlobalDiagPreview;
+      'global.home-search': GlobalHomeSearch;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
+      'global.most-recent-preco': GlobalMostRecentPreco;
+      'global.partners': GlobalPartners;
+      'global.stats': GlobalStats;
+      'global.stats-and-quiz': GlobalStatsAndQuiz;
       'global.title-text-array': GlobalTitleTextArray;
     }
   }

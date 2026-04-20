@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
+import { useSearchParams } from "react-router-dom";
 import type { DiagnosticItem } from "../../../utils/types";
 import FakeLinkComponent from "../../ui/FakeLinkComponent";
 
@@ -8,6 +9,11 @@ type RegulationIsolationProps = {
 
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const { diagnostic } = diagnosticItem;
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const goToTab = (str: string) =>
+    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
+
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
 
@@ -46,19 +52,11 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         </p>
       )}
 
-      <FakeLinkComponent onClick={() => {
-        (
-          document.querySelector('[id^="tabpanel-"][id$="-1"]') as HTMLElement
-        )?.click();
-      }}>
+      <FakeLinkComponent onClick={() => goToTab("legal")}>
         Voir le détail du classement sonore{" "}
         <i className={fr.cx("ri-arrow-right-line")} />
       </FakeLinkComponent>
-      <FakeLinkComponent onClick={() => {
-        (
-          document.querySelector('[id^="tabpanel-"][id$="-2"]') as HTMLElement
-        )?.click();
-      }}>
+      <FakeLinkComponent onClick={() => goToTab("position")}>
         Voir la répartition sonore sur la parcelle{" "}
         <i className={fr.cx("ri-arrow-right-line")} />
       </FakeLinkComponent>
