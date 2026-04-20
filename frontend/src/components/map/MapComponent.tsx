@@ -174,7 +174,8 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
           setParcelleSiblings(nearbySiblings);
           setParcelle(clickedParcelle);
-          trackMatomoEvent("Action", "Map clic search", `diagnostic-map-clic-${parcelle?.id}`)
+          if (parcelle)
+            trackMatomoEvent("Action", "Map clic search", `${parcelle.properties.commune}-${parcelle.properties.section}-${parcelle.properties.numero}`)
         } else {
           setParcelle(null);
         }
