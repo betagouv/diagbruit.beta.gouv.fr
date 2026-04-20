@@ -9,7 +9,7 @@ strasbourg_job = define_asset_job(
     selection=AssetSelection.keys("raw_full_stras_data") | AssetSelection.groups("strasbourg"),
 )
 
-full_pipeline_job = define_asset_job(
-    name="full_pipeline_job",
+full_noisesource_job = define_asset_job(
+    name="full_noisesource_job",
     selection=AssetSelection.groups("ingestion") | AssetSelection.groups("strasbourg") | AssetSelection.groups("osm") ,
 )
