@@ -188,7 +188,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                     onClick: (e: React.MouseEvent) => {
                       e.preventDefault();
                       setSearchParams(prev => new URLSearchParams({ ...Object.fromEntries(prev), tab: tab.tabId }));
-                      trackMatomoEvent("Action", "Diagnostic Tab Change", `${tab.tabId}`);
+                      trackMatomoEvent("Action", "Diagnostic Tab Change", `diagnostic-tab-${tab.tabId}`);
                     },
                   },
                 }))}
