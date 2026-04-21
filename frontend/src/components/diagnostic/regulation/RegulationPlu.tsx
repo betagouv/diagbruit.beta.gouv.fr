@@ -25,7 +25,6 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
           <DiagnosticRegulationBox
             label={noisezone.label}
             content={noisezone.alert}
-            source="PLU"
           />
         </div>
       ))}
