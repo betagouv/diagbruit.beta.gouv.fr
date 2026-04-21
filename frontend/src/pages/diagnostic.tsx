@@ -136,7 +136,7 @@ function DiagnosticPage() {
           });
         });
       }
-      trackMatomoEvent("Action", `Diagnostic search parcelle n° ${parcelleFeature.properties.numero} - ${parcelleFeature.properties.nom_com}`, `diagnostic-search-id-${parcelleFeature.properties.numero}`);
+      trackMatomoEvent("Action", `Diagnostic search parcelle`, `${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`);
     }
   };
 
