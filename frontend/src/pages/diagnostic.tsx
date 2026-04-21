@@ -76,7 +76,7 @@ function DiagnosticPage() {
         essential: true,
         speed: 10,
       });
-      trackMatomoEvent("Action", "Diagnostic Search Address", `${feature.properties.type}-${feature.properties.label}`);
+      trackMatomoEvent("Action", "Diagnostic Search Address", `diagnostic-search-address-${feature.properties.type}-${feature.properties.label}`);
     }
     reset();
   };
