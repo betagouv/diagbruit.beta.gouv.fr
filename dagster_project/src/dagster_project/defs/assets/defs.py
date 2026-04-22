@@ -1,9 +1,15 @@
+import hashlib
 import io
+import json
 import os
 import shutil
 import time
 import urllib.request
 import zipfile
+from datetime import datetime, timezone
+
+import boto3
+
 from pathlib import Path
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
@@ -148,3 +154,60 @@ def raw_peb(context:AssetExecutionContext) :
     return MaterializeResult(metadata={
         "row_count": MetadataValue.int(row_count)
     })
+
+S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
+S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
+
+
+@asset(group_name="launcher", key="noisemap_infra_033_launcher")
+def noisemap_infra_033_launcher(context: AssetExecutionContext):
+    """Upload noisemap infras from dept 033 files to S3 bucket."""
+
+    #to be replaced with url
+    input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "noise" / "INFRA_FASTLINES_033" / "type_a_lden"
+
+    s3 = boto3.client(
+        "s3",
+        region_name=S3_REGION,
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    )
+
+    sha256 = {
+        file.name: hashlib.sha256(file.read_bytes()).hexdigest()
+        for file in input_dir.rglob("*")
+        if file.is_file()
+    }
+
+    manifest = {
+        "provenance": "test",
+        "pulled_at": datetime.now(timezone.utc).isoformat(),
+        "sha256": sha256,
+    }
+    manifest_key = "noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/manifest.json"
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=manifest_key,
+        Body=json.dumps(manifest, indent=2),
+        ContentType="application/json",
+    )
+    context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
+
+    files = list(input_dir.rglob("*"))
+    uploaded = 0
+    for file in files:
+        if not file.is_file():
+            continue
+        key = f"noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/_source/{file.relative_to(input_dir)}"
+        context.log.info(f"Uploading {file.name} → s3://{S3_BUCKET}/{key}")
+        s3.upload_file(str(file), S3_BUCKET, key)
+        uploaded += 1
+
+    context.log.info(f"Uploaded {uploaded} files to s3://{S3_BUCKET}/noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/_source")
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text("noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/"),
+        "files_uploaded": MetadataValue.int(uploaded),
+        "manifest": MetadataValue.json(manifest),
+    })
+
