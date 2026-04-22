@@ -164,14 +164,53 @@ s3 = boto3.client(
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
 )
+
+@asset(group_name="launcher", key="peb_launcher")
+def peb_launcher(context: AssetExecutionContext):
+
+    #to be replaced with origin url
+    input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "PEB"
+
+    s3_path = "peb/scope=national/campaign=2023/"
+    manifest_key = s3_path + "manifest.json"
+
+    manifest = manifest_file(input_dir)
+
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=manifest_key,
+        Body=json.dumps(manifest, indent=2),
+        ContentType="application/json",
+    )
+    context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
+
+    files = list(input_dir.rglob("*"))
+
+    uploaded = 0
+    for file in files:
+        if not file.is_file():
+            continue
+        key = f"{s3_path}_source/{file.relative_to(input_dir)}"
+        context.log.info(f"Uploading {file.name} → s3://{S3_BUCKET}/{key}")
+        s3.upload_file(str(file), S3_BUCKET, key)
+        uploaded += 1
+
+    return MaterializeResult(metadata={
+            "bucket": MetadataValue.text(S3_BUCKET),
+            "prefix": MetadataValue.text(s3_path),
+            "files_uploaded": MetadataValue.int(uploaded),
+            "manifest": MetadataValue.json(manifest_file(input_dir)),
+        })
+        
+
 @asset(group_name="launcher", key="noisemap_infra_033_launcher")
 def noisemap_infra_033_launcher(context: AssetExecutionContext):
     """Upload noisemap infras from dept 033 files to S3 bucket."""
 
-    #to be replaced with url
+    #to be replaced with origin url
     input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "noise" / "INFRA_FASTLINES_033" / "type_a_lden"
 
-    manifest_key = "noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/manifest.json"
+    s3_path = "noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/"
 
     manifest = manifest_file(input_dir)
 
@@ -188,15 +227,15 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     for file in files:
         if not file.is_file():
             continue
-        key = f"noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/_source/{file.relative_to(input_dir)}"
+        key = f"{s3_path}_source/{file.relative_to(input_dir)}"
         context.log.info(f"Uploading {file.name} → s3://{S3_BUCKET}/{key}")
         s3.upload_file(str(file), S3_BUCKET, key)
         uploaded += 1
 
-    context.log.info(f"Uploaded {uploaded} files to s3://{S3_BUCKET}/noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/_source")
+    context.log.info(f"Uploaded {uploaded} files to s3://{S3_BUCKET}/{s3_path}_source")
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
-        "prefix": MetadataValue.text("noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/"),
+        "prefix": MetadataValue.text(s3_path),
         "files_uploaded": MetadataValue.int(uploaded),
         "manifest": MetadataValue.json(manifest),
     })
