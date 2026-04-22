@@ -137,22 +137,6 @@ def ingest_osm_schools(context:AssetExecutionContext):
 
     })
 
-@asset(group_name="peb", key="raw_peb")
-def raw_peb(context:AssetExecutionContext) :
-    """Ingest PEB SHP into public_workspace."""
-    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "PEB"
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    shp_files = list(file_path.rglob("*.shp"))
-    shp_file = shp_files[0]
-    context.log.info(f"Ingesting {shp_file.name} → raw_peb")
-
-    row_count = ingest_shapefile(str(shp_file), "raw_peb", _db_url(), schema="public_workspace", if_exists="replace")
-    context.log.info(f"Ingestion Successful for {file_path}")
-
-    return MaterializeResult(metadata={
-        "row_count": MetadataValue.int(row_count)
-    })
 
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
 S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
@@ -211,6 +195,7 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "noise" / "INFRA_FASTLINES_033" / "type_a_lden"
 
     s3_path = "noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/"
+    manifest_key = s3_path + "manifest.json"
 
     manifest = manifest_file(input_dir)
 
@@ -240,3 +225,50 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
         "manifest": MetadataValue.json(manifest),
     })
 
+@asset(group_name="landing", key="raw_peb")
+def peb_landing(context: AssetExecutionContext):
+    """Download all PEB source files from S3 and ingest into public_workspace."""
+    s3_path = "peb/scope=national/campaign=2023/_source/"
+
+    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "peb"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    downloaded = 0
+
+    paginator = s3.get_paginator("list_objects_v2")
+    pages = paginator.paginate(Bucket=S3_BUCKET, Prefix=s3_path)
+
+    if(not pages) :
+        context.log.info(f"No files found from s3://{S3_BUCKET}/{s3_path}")
+        return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "files_downloaded": MetadataValue.int(downloaded),
+        }) 
+
+    for page in pages:
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            relative = key[len(s3_path):]
+            if not relative:
+                continue
+            local_path = file_path / relative
+            local_path.parent.mkdir(parents=True, exist_ok=True)
+            context.log.info(f"Downloading s3://{S3_BUCKET}/{key} → {local_path.name}")
+            s3.download_file(S3_BUCKET, key, str(local_path))
+            downloaded += 1
+
+    context.log.info(f"Downloaded {downloaded} files from s3://{S3_BUCKET}/{s3_path}")
+
+    shp_files = list(file_path.rglob("*.shp"))
+    shp_file = shp_files[0]
+    context.log.info(f"Ingesting {shp_file.name} → raw_peb")
+
+    row_count = ingest_shapefile(str(shp_file), "raw_peb", _db_url(), schema="public_workspace", if_exists="replace")
+    context.log.info(f"Ingestion Successful for {file_path}")
+
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(s3_path),
+        "files_downloaded": MetadataValue.int(downloaded),
+        "row_count": MetadataValue.int(row_count)
+    })
