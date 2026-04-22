@@ -1,4 +1,3 @@
-import hashlib
 import io
 import json
 import os
@@ -6,7 +5,6 @@ import shutil
 import time
 import urllib.request
 import zipfile
-from datetime import datetime, timezone
 
 import boto3
 
@@ -16,6 +14,7 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
+from dagster_project.defs.jobs.tools import manifest_file
 
 
 def _db_url() -> str:
@@ -159,6 +158,12 @@ S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
 S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
 
 
+s3 = boto3.client(
+        "s3",
+        region_name=S3_REGION,
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+)
 @asset(group_name="launcher", key="noisemap_infra_033_launcher")
 def noisemap_infra_033_launcher(context: AssetExecutionContext):
     """Upload noisemap infras from dept 033 files to S3 bucket."""
@@ -166,25 +171,10 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     #to be replaced with url
     input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "noise" / "INFRA_FASTLINES_033" / "type_a_lden"
 
-    s3 = boto3.client(
-        "s3",
-        region_name=S3_REGION,
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-    )
-
-    sha256 = {
-        file.name: hashlib.sha256(file.read_bytes()).hexdigest()
-        for file in input_dir.rglob("*")
-        if file.is_file()
-    }
-
-    manifest = {
-        "provenance": "test",
-        "pulled_at": datetime.now(timezone.utc).isoformat(),
-        "sha256": sha256,
-    }
     manifest_key = "noisemap/cbs_infra/dept=033/campaign=2026/type_a_lden/manifest.json"
+
+    manifest = manifest_file(input_dir)
+
     s3.put_object(
         Bucket=S3_BUCKET,
         Key=manifest_key,
