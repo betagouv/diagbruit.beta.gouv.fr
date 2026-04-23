@@ -250,31 +250,14 @@ def peb_landing(context: AssetExecutionContext):
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "peb"
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    downloaded = 0
+    downloaded = download_from_s3(bucket=S3_BUCKET, file_path=file_path, s3_path=s3_path, context=context, s3=s3)
 
-    paginator = s3.get_paginator("list_objects_v2")
-    pages = paginator.paginate(Bucket=S3_BUCKET, Prefix=s3_path)
-
-    if(not pages) :
-        context.log.info(f"No files found from s3://{S3_BUCKET}/{s3_path}")
+    if downloaded == 0:
+        context.log.info(f"No files found at s3://{S3_BUCKET}/{s3_path}")
         return MaterializeResult(metadata={
-        "bucket": MetadataValue.text(S3_BUCKET),
-        "files_downloaded": MetadataValue.int(downloaded),
-        }) 
-
-    for page in pages:
-        for obj in page.get("Contents", []):
-            key = obj["Key"]
-            relative = key[len(s3_path):]
-            if not relative:
-                continue
-            local_path = file_path / relative
-            local_path.parent.mkdir(parents=True, exist_ok=True)
-            context.log.info(f"Downloading s3://{S3_BUCKET}/{key} → {local_path.name}")
-            s3.download_file(S3_BUCKET, key, str(local_path))
-            downloaded += 1
-
-    context.log.info(f"Downloaded {downloaded} files from s3://{S3_BUCKET}/{s3_path}")
+            "bucket": MetadataValue.text(S3_BUCKET),
+            "files_downloaded": MetadataValue.int(0),
+        })
 
     shp_files = list(file_path.rglob("*.shp"))
     shp_file = shp_files[0]

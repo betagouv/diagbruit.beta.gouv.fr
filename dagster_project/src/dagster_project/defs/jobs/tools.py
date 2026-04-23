@@ -1,7 +1,10 @@
 import hashlib
 import time
+import os
 
 from datetime import datetime, timezone
+from typing import Any
+from dagster import AssetExecutionContext
 
 def _db_url() -> str:
     host = os.getenv("DB_HOST", "localhost")
@@ -41,3 +44,27 @@ def manifest_file(input_dir:str):
     }
 
     return manifest
+
+def download_from_s3(bucket:str,file_path:str, s3_path:str, context: AssetExecutionContext, s3: Any):
+    """Downloads a repo/file from S3 and returns the number of files downloaded"""
+    downloaded = 0
+
+    paginator = s3.get_paginator("list_objects_v2")
+    pages = paginator.paginate(Bucket=bucket, Prefix=s3_path)
+
+    if(not pages) :
+        context.log.info(f"No files found from s3://{bucket}/{s3_path}")
+        return downloaded
+
+    for page in pages:
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            relative = key[len(s3_path):]
+            if not relative:
+                continue
+            local_path = file_path / relative
+            local_path.parent.mkdir(parents=True, exist_ok=True)
+            context.log.info(f"Downloading s3://{bucket}/{key} → {local_path.name}")
+            s3.download_file(bucket, key, str(local_path))
+            downloaded += 1
+    return downloaded
