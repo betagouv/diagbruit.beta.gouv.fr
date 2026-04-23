@@ -25,6 +25,17 @@ def _db_url() -> str:
     password = os.getenv("DB_PASSWORD", "password")
     return f"postgresql://{user}:{password}@{host}:{port}/{name}"
 
+S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
+S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
+
+
+s3 = boto3.client(
+        "s3",
+        region_name=S3_REGION,
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+)
+
 
 def reporthook(block_count: int, block_size: int, total_size: int, context: AssetExecutionContext, start_time: float, last_log_time: list) -> None:
     now = time.time()
@@ -57,6 +68,50 @@ def ingest_strasbourg(context: AssetExecutionContext):
 
 
 OSM_FOODS_URL = "https://data.smartidf.services/api/explore/v2.1/catalog/datasets/osm-france-food-service/exports/geojson?lang=fr&timezone=Europe%2FParis"
+
+@asset(group_name="launcher", key="osm_foods_launcher")
+def osm_foods_launcher(context: AssetExecutionContext):
+    """Download and uploading OSM schools service SHP into S3."""
+    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "foods" / "osm-france-food-service.geojson"
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    context.log.info(f"Downloading OSM foods data from {OSM_FOODS_URL}")
+    start_time = time.time()
+    last_log_time = [start_time]
+    urllib.request.urlretrieve(
+        OSM_FOODS_URL,
+        file_path,
+        reporthook=lambda b, bs, ts: reporthook(b, bs, ts, context, start_time, last_log_time),
+    )
+    file_size_mb = file_path.stat().st_size / 1024 / 1024
+    context.log.info(f"Downloaded {file_size_mb:.1f} MB in {time.time() - start_time:.1f}s")
+
+    context.log.info(f"Uploading OSM foods data to S3")
+
+    s3_path = "noisesource/osm/foods/"
+    manifest_key = s3_path + "manifest.json"
+
+    manifest = manifest_file(file_path)
+
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=manifest_key,
+        Body=json.dumps(manifest, indent=2),
+        ContentType="application/json",
+    )
+
+    context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
+
+    s3.upload_file(str(file_path), S3_BUCKET, f"{s3_path}_source/{file_path.name}")
+
+    context.log.info(f"Uploaded {file_path} files to s3://{S3_BUCKET}/{s3_path}_source")
+
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(s3_path),
+        "source_url": MetadataValue.url(OSM_FOODS_URL),
+        "file_size_mb": MetadataValue.float(round(file_size_mb, 2)),
+    })
 
 @asset(group_name="osm", key="raw_full_osm_foods_data")
 def ingest_osm_foods(context: AssetExecutionContext):
@@ -138,19 +193,11 @@ def ingest_osm_schools(context:AssetExecutionContext):
     })
 
 
-S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
-S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
 
-
-s3 = boto3.client(
-        "s3",
-        region_name=S3_REGION,
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-)
 
 @asset(group_name="launcher", key="peb_launcher")
 def peb_launcher(context: AssetExecutionContext):
+    """Upload PEB SHP into S3."""
 
     #to be replaced with origin url
     input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "PEB"
