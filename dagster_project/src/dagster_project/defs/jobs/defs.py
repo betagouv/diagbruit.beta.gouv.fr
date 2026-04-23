@@ -30,5 +30,5 @@ osm_full_job = define_asset_job(
 
 peb_full_job = define_asset_job(
     name="peb_job",
-    selection=AssetSelection.keys("peb_launcher") | AssetSelection.keys("peb_landing")
+    selection=AssetSelection.keys("peb_launcher") | AssetSelection.keys("raw_peb")
 )
