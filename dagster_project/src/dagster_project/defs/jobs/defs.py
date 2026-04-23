@@ -1,5 +1,15 @@
 from dagster import AssetSelection, define_asset_job
 
+full_launcher_job = define_asset_job(
+    name="full_launcher_job",
+    selection=AssetSelection.groups("launcher"),
+)
+
+full_landing_job = define_asset_job(
+    name="full_landing_job",
+    selection=AssetSelection.groups("landing"),
+)
+
 full_ingestion_job = define_asset_job(
     name="full_ingestion_job",
     selection=AssetSelection.keys("raw_full_stras_data") 
@@ -13,21 +23,12 @@ strasbourg_job = define_asset_job(
     selection=AssetSelection.groups("strasbourg"),
 )
 
-osm_job = define_asset_job(
-    name="osm_job",
-    selection=AssetSelection.groups("osm") 
+osm_full_job = define_asset_job(
+    name="osm_full_job",
+    selection=AssetSelection.keys("osm_foods_launcher") | AssetSelection.keys("raw_full_osm_foods_data")
 )
 
-full_noisesource_job = define_asset_job(
-    name="full_noisesource_job",
-    selection=AssetSelection.keys("raw_full_stras_data") 
-    | AssetSelection.keys("raw_full_osm_foods_data") 
-    | AssetSelection.keys("raw_full_osm_schools_data") 
-    | AssetSelection.groups("strasbourg")
-    | AssetSelection.groups("osm")
-)
-
-peb_job = define_asset_job(
+peb_full_job = define_asset_job(
     name="peb_job",
-    selection=AssetSelection.groups("peb") ,
+    selection=AssetSelection.keys("peb_launcher") | AssetSelection.keys("peb_landing")
 )
