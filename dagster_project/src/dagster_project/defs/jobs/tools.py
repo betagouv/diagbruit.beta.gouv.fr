@@ -1,10 +1,23 @@
 import hashlib
 import time
 import os
+from pathlib import Path
+
+import boto3
 
 from datetime import datetime, timezone
-from typing import Any
 from dagster import AssetExecutionContext
+
+S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
+
+s3 = boto3.client(
+    "s3",
+    region_name=os.getenv("AWS_DEFAULT_REGION", "eu-west-3"),
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+)
+
+DAGSTER_ROOT = Path(__file__).resolve().parents[2]
 
 def _db_url() -> str:
     host = os.getenv("DB_HOST", "localhost")
@@ -45,7 +58,8 @@ def manifest_file(input_dir:str):
 
     return manifest
 
-def download_from_s3(bucket:str,file_path:str, s3_path:str, context: AssetExecutionContext, s3: Any):
+
+def download_from_s3(bucket: str, file_path: str, s3_path: str, context: AssetExecutionContext):
     """Downloads a repo/file from S3 and returns the number of files downloaded"""
     downloaded = 0
 
