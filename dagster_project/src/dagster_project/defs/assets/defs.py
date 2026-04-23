@@ -2,9 +2,9 @@ import io
 import json
 import os
 import shutil
-import time
 import urllib.request
 import zipfile
+import time
 
 import boto3
 
@@ -14,20 +14,11 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import manifest_file
+from dagster_project.defs.jobs.tools import manifest_file, reporthook, _db_url, download_from_s3
 
-
-def _db_url() -> str:
-    host = os.getenv("DB_HOST", "localhost")
-    port = os.getenv("DB_PORT", "5433")
-    name = os.getenv("DB_NAME", "diagbruit")
-    user = os.getenv("DB_USER", "user")
-    password = os.getenv("DB_PASSWORD", "password")
-    return f"postgresql://{user}:{password}@{host}:{port}/{name}"
 
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
 S3_REGION = os.getenv("AWS_DEFAULT_REGION", "eu-west-3")
-
 
 s3 = boto3.client(
         "s3",
@@ -35,24 +26,6 @@ s3 = boto3.client(
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
 )
-
-
-def reporthook(block_count: int, block_size: int, total_size: int, context: AssetExecutionContext, start_time: float, last_log_time: list) -> None:
-    now = time.time()
-    if now - last_log_time[0] < 2:
-        return
-    last_log_time[0] = now
-
-    downloaded = block_count * block_size
-    elapsed = now - start_time
-    speed_mb = (downloaded / elapsed) / (1024 * 1024) if elapsed > 0 else 0
-
-    if total_size > 0:
-        percent = min(downloaded / total_size * 100, 100)
-        context.log.info(f"Downloading... {percent:.1f}% — {speed_mb:.2f} MB/s")
-    else:
-        context.log.info(f"Downloading... {downloaded / (1024 * 1024):.1f} MB — {speed_mb:.2f} MB/s")
-
 
 DAGSTER_ROOT = Path(__file__).resolve().parents[2]
 
@@ -191,9 +164,6 @@ def ingest_osm_schools(context:AssetExecutionContext):
         "row_count": MetadataValue.int(row_count),
 
     })
-
-
-
 
 @asset(group_name="launcher", key="peb_launcher")
 def peb_launcher(context: AssetExecutionContext):
