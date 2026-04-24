@@ -9,25 +9,25 @@ from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.defs.jobs.tools import manifest_file, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
-    select = {
+    mapping = {
         "geometry": True,
         "legende": {"from": "category"},
-        "typesource": typesource,
-        "cbstype": cbstype,
-        "indicetype": indicetype,
-        "annee": "2022",
-        "codedept": "033",
-        "typeterr": "AGGLO",
+        "typesource": {"value": typesource},
+        "cbstype": {"value": cbstype},
+        "indicetype": {"value": indicetype},
+        "annee": {"value": "2022"},
+        "codedept": {"value": "033"},
+        "typeterr": {"value": "AGGLO"},
     }
     if not ignore_source:
-        select["source"] = True
+        mapping["source"] = True
 
-    return {"name": file, "select": select}
+    return {"name": file, "mapping": mapping}
 
 def _infra_033_entry(file: str) -> dict:
     return {
         "name": file,
-        "select": {
+        "mapping": {
             "geometry": True,
             "codeinfra": {"from": "codinfra"},
             "id": {"from": "idzonbruit"},
@@ -160,7 +160,7 @@ def agglo_landing(context: AssetExecutionContext):
             _db_url(),
             schema="public_workspace",
             if_exists="append",
-            select=entry.get("select"),
+            mapping=entry.get("mapping"),
         )
         if success:
             ingested += 1

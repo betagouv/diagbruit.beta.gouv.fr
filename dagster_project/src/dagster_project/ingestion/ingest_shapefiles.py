@@ -43,24 +43,24 @@ def parse_arg_columns(column_args):
     return fixed_columns
 
 
-def _apply_select(gdf, select: dict):
+def _apply_mapping(gdf, mapping: dict):
     """
-    Apply a select schema to a GeoDataFrame.
+    Apply a mapping schema to a GeoDataFrame.
     Each key is the output column name, value can be:
-      - True              → keep source column with that name (whitelist)
-      - "fixed_value"     → add a new column with that constant value
-      - {"from": "col"}   → rename source column to this key
+      - True                  → keep source column with that name (whitelist)
+      - {"value": "constant"} → add a new column with that constant value
+      - {"from": "col"}       → rename source column to this key
     Source columns not referenced are dropped.
     """
     keep = set()
     renames = {}
     fixed = {}
 
-    for output_col, spec in select.items():
+    for output_col, spec in mapping.items():
         if spec is True:
             keep.add(output_col)
-        elif isinstance(spec, str):
-            fixed[output_col] = spec
+        elif isinstance(spec, dict) and "value" in spec:
+            fixed[output_col] = spec["value"]
         elif isinstance(spec, dict) and "from" in spec:
             source_col = spec["from"]
             renames[source_col] = output_col
@@ -76,7 +76,7 @@ def _apply_select(gdf, select: dict):
     return gdf
 
 
-def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, select=None):
+def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None):
     try:
         print(f"Reading shapefile: {file_path}")
         gdf = gpd.read_file(file_path)
@@ -84,8 +84,8 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
 
         gdf = gdf.to_crs(epsg=2154)
 
-        if select is not None:
-            gdf = _apply_select(gdf, select)
+        if mapping is not None:
+            gdf = _apply_mapping(gdf, mapping)
         else:
             if ignore_columns:
                 print(f"Ignoring columns: {ignore_columns}")
