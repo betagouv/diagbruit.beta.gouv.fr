@@ -130,12 +130,54 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
         "mapping": MetadataValue.json(mapping_infra_033),
     })
 
+@asset(group_name="launcher", key="noisemap_fastline_033_launcher")
+def noisemap_fastline_033_launcher(context: AssetExecutionContext):
+    s3_path = "noisemap/cbs_infra_fastlines/dept=033/campaign=2022/"
+
+    source_prefix = s3_path + "_source/"
+    mapping_key = s3_path + "mapping.json"
+
+    paginator = s3.get_paginator("list_objects_v2")
+
+    shp_files = []
+    for page in paginator.paginate(Bucket=S3_BUCKET, Prefix=source_prefix, Delimiter="/"):
+        for prefix in page.get("CommonPrefixes", []):
+            folder_prefix = prefix["Prefix"]
+            folder_name = folder_prefix.rstrip("/").split("/")[-1]
+            folder_shps = [
+                obj["Key"]
+                for obj_page in paginator.paginate(Bucket=S3_BUCKET, Prefix=folder_prefix)
+                for obj in obj_page.get("Contents", [])
+                if obj["Key"].endswith(".shp")
+            ]
+            shp_files.extend(folder_shps)
+            context.log.info(f"{folder_name}: {[k.split('/')[-1] for k in folder_shps]}")
+
+    context.log.info(f"Found {len(shp_files)} shp files total")
+    mapping_fastline_033 = []
+
+    for file in shp_files:
+        mapping_fastline_033.append(rename_infra('/'.join(file.split('/')[-2:])))
+    
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=mapping_key,
+        Body=json.dumps(mapping_fastline_033, indent=2),
+        ContentType="application/json",
+    )
+
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(s3_path),
+        "mapping": MetadataValue.json(mapping_fastline_033),
+    })
+
 @asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
 def noisemap_infra_033_landing(context: AssetExecutionContext):
     """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    base_s3_path = "noisemap/cbs_infra/dept=033/campaign=2022/"
-    source_s3_path = base_s3_path + "_source/"
-    mapping_s3_key = base_s3_path + "mapping.json"
+    infra_s3_path = "noisemap/cbs_infra/dept=033/campaign=2022/"
+    source_s3_path = infra_s3_path + "_source/"
+    mapping_s3_key = infra_s3_path + "mapping.json"
 
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "infra_033"
     local_dir.mkdir(parents=True, exist_ok=True)
