@@ -16,8 +16,10 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
   const goToTab = (str: string) =>
     setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
 
+  const intersections = diagnostic.soundclassification_intersections;
+
   const hasIntersections =
-    diagnostic.soundclassification_intersections.length > 0;
+    intersections.length > 0;
 
   if (!hasIntersections) {
     return (
@@ -27,19 +29,21 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
     );
   }
 
+  const firstTypesource = intersections[0].typesource;
+  const allSameTypesource = intersections.every((i) => i.typesource === firstTypesource);
+
   return (
     <div className={fr.cx("fr-mb-4v")}>
       <DiagnosticRegulationBox
         label="Parcelle soumise au classement sonore"
         content={
           <>
-            <p className={fr.cx("fr-mb-4v")}>
-              Vous avez une obligation réglementaire d'isoler votre bâtiment.
+            <p className={fr.cx("fr-mb-0")}>
+              La parcelle est exposée à {diagnostic.soundclassification_intersections.length} sources de bruit de {allSameTypesource ? `catégorie ${firstTypesource}` : "différentes catégories."}
             </p>
-            <FakeLinkComponent onClick={() => goToTab('legal')}>
-              Voir la valeur de l'isolation réglementaire{" "}
-              <i className={fr.cx("ri-arrow-right-line")} />
-            </FakeLinkComponent>
+            <p className={fr.cx("fr-mb-4v")}>
+              Vous avez une obligation réglementaire d'<FakeLinkComponent onClick={() => goToTab('legal')}>isoler votre bâtiment.</FakeLinkComponent>
+            </p>
           </>
         }
       />
