@@ -24,13 +24,26 @@ def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, 
 
     return {"name": file, "mapping": mapping}
 
-def _infra_033_entry(file: str) -> dict:
+def rename_infra(file:str) -> dict:
     return {
         "name": file,
         "mapping": {
             "geometry": True,
             "codeinfra": {"from": "codinfra"},
             "id": {"from": "idzonbruit"},
+            "idcbs" : True,
+            "annee" : True,
+            "uueid" : True,
+            "codedept" : True,
+            "typeterr" : True,
+            "producteur" : True,
+            "typesource" : True,
+            "cbstype" : True,
+            "zonedef" : True,
+            "legende" : True,
+            "indicetype" : True,
+            "validedeb" : True,
+            "validefin" : True,
         },
     }
 
@@ -51,8 +64,6 @@ mapping_agglo_033 = [
     _agglo_033_entry("NoiseContours_railwaysInAgglomeration_Lnight.shp","F", "A", "LN", ignore_source=True),
     _agglo_033_entry("NoiseContours_roadsInAgglomeration_Lnight.shp","R", "A", "LN", ignore_source=True),
 ]
-
-
 
 @asset(group_name="launcher", key="agglo_033")
 def agglo_033_launcher(context: AssetExecutionContext):
@@ -104,7 +115,7 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     mapping_infra_033 = []
 
     for file in shp_files:
-        mapping_infra_033.append(_infra_033_entry('/'.join(file.split('/')[-2:])))
+        mapping_infra_033.append(rename_infra('/'.join(file.split('/')[-2:])))
     
     s3.put_object(
         Bucket=S3_BUCKET,
@@ -118,6 +129,64 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
         "prefix": MetadataValue.text(s3_path),
         "mapping": MetadataValue.json(mapping_infra_033),
     })
+
+@asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
+def noisemap_infra_033_landing(context: AssetExecutionContext):
+    """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
+    base_s3_path = "noisemap/cbs_infra/dept=033/campaign=2022/"
+    source_s3_path = base_s3_path + "_source/"
+    mapping_s3_key = base_s3_path + "mapping.json"
+
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "infra_033"
+    local_dir.mkdir(parents=True, exist_ok=True)
+
+    mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
+    mapping = json.loads(mapping_obj["Body"].read())
+    context.log.info(f"Loaded mapping: {len(mapping)} entries from s3://{S3_BUCKET}/{mapping_s3_key}")
+
+    downloaded = download_from_s3(bucket=S3_BUCKET, file_path=local_dir, s3_path=source_s3_path, context=context)
+
+    if downloaded == 0:
+        context.log.warning(f"No source files found at s3://{S3_BUCKET}/{source_s3_path}")
+        shutil.rmtree(local_dir)
+        return MaterializeResult(metadata={
+            "files_downloaded": MetadataValue.int(0),
+            "files_ingested": MetadataValue.int(0),
+        })
+
+    ingested = 0
+    skipped = 0
+
+    for entry in mapping:
+        shp_path = local_dir / entry["name"]
+        if not shp_path.exists():
+            context.log.warning(f"File not found, skipping: {entry['name']}")
+            skipped += 1
+            continue
+        
+        context.log.info(f"Ingesting {entry['name']} → raw_noisemap")
+        success = ingest_shapefile(
+            str(shp_path),
+            "raw_noisemap",
+            _db_url(),
+            schema="public_workspace",
+            if_exists="replace",
+            mapping=entry.get("mapping"),
+        )
+        if success:
+            ingested += 1
+        else:
+            context.log.error(f"Failed to ingest {entry['name']}")
+
+    shutil.rmtree(local_dir)
+    context.log.info(f"Cleaned up {local_dir}")
+
+    return MaterializeResult(metadata={
+        "files_downloaded": MetadataValue.int(downloaded),
+        "files_ingested": MetadataValue.int(ingested),
+        "files_skipped": MetadataValue.int(skipped),
+    })
+
 
 @asset(group_name="landing", key="raw_agglo", deps=["agglo_033"])
 def agglo_landing(context: AssetExecutionContext):
