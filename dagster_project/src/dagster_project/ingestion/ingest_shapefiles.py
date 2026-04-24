@@ -43,7 +43,40 @@ def parse_arg_columns(column_args):
     return fixed_columns
 
 
-def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None):
+def _apply_select(gdf, select: dict):
+    """
+    Apply a select schema to a GeoDataFrame.
+    Each key is the output column name, value can be:
+      - True              → keep source column with that name (whitelist)
+      - "fixed_value"     → add a new column with that constant value
+      - {"from": "col"}   → rename source column to this key
+    Source columns not referenced are dropped.
+    """
+    keep = set()
+    renames = {}
+    fixed = {}
+
+    for output_col, spec in select.items():
+        if spec is True:
+            keep.add(output_col)
+        elif isinstance(spec, str):
+            fixed[output_col] = spec
+        elif isinstance(spec, dict) and "from" in spec:
+            source_col = spec["from"]
+            renames[source_col] = output_col
+            keep.add(source_col)
+
+    drop = [col for col in gdf.columns if col not in keep and col != "geometry"]
+    gdf.drop(columns=[col for col in drop if col in gdf.columns], inplace=True)
+
+    for col, value in fixed.items():
+        gdf[col] = value
+
+    gdf.rename(columns=renames, inplace=True)
+    return gdf
+
+
+def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, select=None):
     try:
         print(f"Reading shapefile: {file_path}")
         gdf = gpd.read_file(file_path)
@@ -51,18 +84,21 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
 
         gdf = gdf.to_crs(epsg=2154)
 
-        if ignore_columns:
-            print(f"Ignoring columns: {ignore_columns}")
-            gdf.drop(columns=[col for col in ignore_columns if col in gdf.columns], inplace=True)
+        if select is not None:
+            gdf = _apply_select(gdf, select)
+        else:
+            if ignore_columns:
+                print(f"Ignoring columns: {ignore_columns}")
+                gdf.drop(columns=[col for col in ignore_columns if col in gdf.columns], inplace=True)
 
-        if fixed_columns:
-            print(f"Adding fixed columns: {fixed_columns}")
-            for key, value in fixed_columns.items():
-                gdf[key] = value
+            if fixed_columns:
+                print(f"Adding fixed columns: {fixed_columns}")
+                for key, value in fixed_columns.items():
+                    gdf[key] = value
 
-        if column_renames:
-            print(f"Renaming columns: {column_renames}")
-            gdf.rename(columns=column_renames, inplace=True)
+            if column_renames:
+                print(f"Renaming columns: {column_renames}")
+                gdf.rename(columns=column_renames, inplace=True)
 
         gdf["geometry"] = gdf["geometry"].apply(drop_z)
 
