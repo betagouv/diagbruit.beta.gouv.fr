@@ -1,4 +1,6 @@
 from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
 import io
 import json
 import shutil
@@ -26,6 +28,46 @@ DEPT033_URL = [
     "https://www.data.gouv.fr/api/1/datasets/r/5cb02473-5c7a-416a-a883-c22fce652819"
 
 ]
+
+def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, context: AssetExecutionContext) -> tuple[list[str], dict[str, str]]:
+    """Download a ZIP from url, extract it to extract_dir, upload all files to S3 under source_prefix.
+    Returns (shp_paths, sha256) where sha256 maps relative path → hash, computed before cleanup."""
+    start_time = time.time()
+    last_log_time = [start_time]
+
+    zip_buffer = io.BytesIO()
+    with urllib.request.urlopen(url) as response:
+        while chunk := response.read(8192):
+            zip_buffer.write(chunk)
+            block_count = zip_buffer.tell() // 8192
+            reporthook(block_count, 8192, -1, context, start_time, last_log_time)
+
+    zip_size_mb = zip_buffer.tell() / 1024 / 1024
+    context.log.info(f"Downloaded {zip_size_mb:.1f} MB in {time.time() - start_time:.1f}s")
+
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    zip_buffer.seek(0)
+    with zipfile.ZipFile(zip_buffer) as zf:
+        zf.extractall(extract_dir)
+        extracted = zf.namelist()
+    context.log.info(f"Extracted {len(extracted)} files")
+
+    shp_paths = []
+    sha256 = {}
+    for file in extract_dir.rglob("*"):
+        if not file.is_file():
+            continue
+        relative = file.relative_to(extract_dir)
+        sha256[str(relative)] = hashlib.sha256(file.read_bytes()).hexdigest()
+        key = f"{source_prefix}{relative}"
+        s3.upload_file(str(file), S3_BUCKET, key)
+        if file.suffix == ".shp":
+            shp_paths.append(str(relative))
+
+    shutil.rmtree(extract_dir)
+    context.log.info(f"Uploaded {len(shp_paths)} shp files to s3://{S3_BUCKET}/{source_prefix}")
+    return shp_paths, sha256
+
 
 def rename_infra(file:str) -> dict:
     return {
@@ -62,47 +104,20 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_infra_033 = []
-    total_uploaded = 0
+    all_sha256 = {}
 
     for i, url in enumerate(DEPT033_URL):
         context.log.info(f"[{i + 1}/{len(DEPT033_URL)}] Downloading {url}")
-        start_time = time.time()
-        last_log_time = [start_time]
-
-        zip_buffer = io.BytesIO()
-        with urllib.request.urlopen(url) as response:
-            while chunk := response.read(8192):
-                zip_buffer.write(chunk)
-                block_count = zip_buffer.tell() // 8192
-                reporthook(block_count, 8192, -1, context, start_time, last_log_time)
-
-        zip_size_mb = zip_buffer.tell() / 1024 / 1024
-        context.log.info(f"Downloaded {zip_size_mb:.1f} MB in {time.time() - start_time:.1f}s")
-
-        extract_dir = local_dir / f"zip_{i}"
-        extract_dir.mkdir(parents=True, exist_ok=True)
-        zip_buffer.seek(0)
-        with zipfile.ZipFile(zip_buffer) as zf:
-            zf.extractall(extract_dir)
-            extracted = zf.namelist()
-        context.log.info(f"Extracted {len(extracted)} files")
-
-        for file in extract_dir.rglob("*"):
-            if not file.is_file():
-                continue
-            relative = file.relative_to(extract_dir)
-            key = f"{source_prefix}{relative}"
-            s3.upload_file(str(file), S3_BUCKET, key)
-            if file.suffix == ".shp":
-                mapping_infra_033.append(rename_infra(str(relative)))
-            total_uploaded += 1
-
-        shutil.rmtree(extract_dir)
-        context.log.info(f"Uploaded and cleaned zip_{i} ({total_uploaded} files total so far)")
+        shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
+        mapping_infra_033.extend(rename_infra(p) for p in shp_paths)
+        all_sha256.update(sha256)
 
     manifest_key = s3_path + "manifest.json"
-
-    manifest = manifest_file(local_dir)
+    manifest = {
+        "provenance": DEPT033_URL,
+        "pulled_at": datetime.now(timezone.utc).isoformat(),
+        "sha256": all_sha256,
+    }
 
     s3.put_object(
         Bucket=S3_BUCKET,
@@ -112,8 +127,6 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     )
 
     context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
-
-    shutil.rmtree(local_dir)
 
     s3.put_object(
         Bucket=S3_BUCKET,
@@ -126,7 +139,6 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(s3_path),
-        "files_uploaded": MetadataValue.int(total_uploaded),
         "mapping": MetadataValue.json(mapping_infra_033),
         "manifest": MetadataValue.json(manifest),
     })

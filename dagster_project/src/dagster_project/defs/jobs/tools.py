@@ -45,7 +45,7 @@ def reporthook(block_count: int, block_size: int, total_size: int, context: Asse
 
 def manifest_file(input_dir:str):
     sha256 = {
-        file.name: hashlib.sha256(file.read_bytes()).hexdigest()
+        str(file.relative_to(input_dir)): hashlib.sha256(file.read_bytes()).hexdigest()
         for file in input_dir.rglob("*")
         if file.is_file()
     }
