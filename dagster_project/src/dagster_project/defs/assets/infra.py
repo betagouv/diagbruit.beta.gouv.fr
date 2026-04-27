@@ -11,7 +11,7 @@ import zipfile
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import manifest_file, reporthook, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.defs.jobs.tools import reporthook, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
 
 DEPT033_URL = [
     "https://www.data.gouv.fr/api/1/datasets/r/17e3754b-b23a-4c5d-be5c-becb000a9d4c",
@@ -92,22 +92,19 @@ def rename_infra(file:str) -> dict:
         },
     }
 
-
-@asset(group_name="launcher", key="noisemap_infra_033_launcher")
-def noisemap_infra_033_launcher(context: AssetExecutionContext):
-    """Download infra 033 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
-    s3_path = "noisemap/cbs_infra/dept=033/campaign=2022/"
+def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, arr_url:list[str]):
+    s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
     source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
 
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "infra_033"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"infra_{dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_infra_033 = []
     all_sha256 = {}
 
-    for i, url in enumerate(DEPT033_URL):
-        context.log.info(f"[{i + 1}/{len(DEPT033_URL)}] Downloading {url}")
+    for i, url in enumerate(arr_url):
+        context.log.info(f"[{i + 1}/{len(arr_url)}] Downloading {url}")
         shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
         mapping_infra_033.extend(rename_infra(p) for p in shp_paths)
         all_sha256.update(sha256)
@@ -143,14 +140,12 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
         "manifest": MetadataValue.json(manifest),
     })
 
-@asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
-def noisemap_infra_033_landing(context: AssetExecutionContext):
-    """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    infra_s3_path = "noisemap/cbs_infra/dept=033/campaign=2022/"
-    source_s3_path = infra_s3_path + "_source/"
-    mapping_s3_key = infra_s3_path + "mapping.json"
+def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str):
+    s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
+    source_s3_path = s3_path + "_source/"
+    mapping_s3_key = s3_path + "mapping.json"
 
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "infra_033"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"infra_{dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
@@ -200,45 +195,12 @@ def noisemap_infra_033_landing(context: AssetExecutionContext):
         "files_skipped": MetadataValue.int(skipped),
     })
 
+@asset(group_name="launcher", key="noisemap_infra_033_launcher")
+def noisemap_infra_033_launcher(context: AssetExecutionContext):
+    """Download infra 033 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
+    return(noisemap_launcher(context=context,dept="033",campaign="2022", arr_url=DEPT033_URL))
 
-@asset(group_name="launcher", key="noisemap_fastline_033_launcher")
-def noisemap_fastline_033_launcher(context: AssetExecutionContext):
-    s3_path = "noisemap/cbs_infra_fastlines/dept=033/campaign=2022/"
-
-    source_prefix = s3_path + "_source/"
-    mapping_key = s3_path + "mapping.json"
-
-    paginator = s3.get_paginator("list_objects_v2")
-
-    shp_files = []
-    for page in paginator.paginate(Bucket=S3_BUCKET, Prefix=source_prefix, Delimiter="/"):
-        for prefix in page.get("CommonPrefixes", []):
-            folder_prefix = prefix["Prefix"]
-            folder_name = folder_prefix.rstrip("/").split("/")[-1]
-            folder_shps = [
-                obj["Key"]
-                for obj_page in paginator.paginate(Bucket=S3_BUCKET, Prefix=folder_prefix)
-                for obj in obj_page.get("Contents", [])
-                if obj["Key"].endswith(".shp")
-            ]
-            shp_files.extend(folder_shps)
-            context.log.info(f"{folder_name}: {[k.split('/')[-1] for k in folder_shps]}")
-
-    context.log.info(f"Found {len(shp_files)} shp files total")
-    mapping_fastline_033 = []
-
-    for file in shp_files:
-        mapping_fastline_033.append(rename_infra('/'.join(file.split('/')[-2:])))
-    
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=mapping_key,
-        Body=json.dumps(mapping_fastline_033, indent=2),
-        ContentType="application/json",
-    )
-
-    return MaterializeResult(metadata={
-        "bucket": MetadataValue.text(S3_BUCKET),
-        "prefix": MetadataValue.text(s3_path),
-        "mapping": MetadataValue.json(mapping_fastline_033),
-    })
+@asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
+def noisemap_infra_033_landing(context: AssetExecutionContext):
+    """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
+    return(noisemap_landing(context=context, dept="033", campaign="2022"))
