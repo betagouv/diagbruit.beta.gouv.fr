@@ -100,13 +100,13 @@ def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, ar
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"infra_{dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
-    mapping_infra_033 = []
+    mapping_infra = []
     all_sha256 = {}
 
     for i, url in enumerate(arr_url):
         context.log.info(f"[{i + 1}/{len(arr_url)}] Downloading {url}")
         shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
-        mapping_infra_033.extend(rename_infra(p) for p in shp_paths)
+        mapping_infra.extend(rename_infra(p) for p in shp_paths)
         all_sha256.update(sha256)
 
     manifest_key = s3_path + "manifest.json"
@@ -128,7 +128,7 @@ def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, ar
     s3.put_object(
         Bucket=S3_BUCKET,
         Key=mapping_key,
-        Body=json.dumps(mapping_infra_033, indent=2),
+        Body=json.dumps(mapping_infra, indent=2),
         ContentType="application/json",
     )
     context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
@@ -136,7 +136,7 @@ def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, ar
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(s3_path),
-        "mapping": MetadataValue.json(mapping_infra_033),
+        "mapping": MetadataValue.json(mapping_infra),
         "manifest": MetadataValue.json(manifest),
     })
 

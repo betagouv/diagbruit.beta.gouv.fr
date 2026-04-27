@@ -36,7 +36,5 @@ registry_modules = [
     "dagster_project.components.*",
 ]
 
-[tool.uv]
-env-file = ".env"
 
 
