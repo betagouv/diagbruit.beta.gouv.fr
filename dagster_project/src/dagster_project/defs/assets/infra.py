@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime, timezone
+from typing import Callable
 import hashlib
 import io
 import json
@@ -26,7 +27,10 @@ DEPT033_URL = [
     "https://www.data.gouv.fr/api/1/datasets/r/ad82bc06-5f23-4ca0-935f-8f16feba630b",
     "https://www.data.gouv.fr/api/1/datasets/r/d7546128-fb23-4cbd-a43a-42d0e2890286",
     "https://www.data.gouv.fr/api/1/datasets/r/5cb02473-5c7a-416a-a883-c22fce652819"
+]
 
+DEPT044_URL = [
+    "https://www.data.gouv.fr/api/1/datasets/r/e9b82009-955b-4997-bf1d-f6a542eadda3"
 ]
 
 def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, context: AssetExecutionContext) -> tuple[list[str], dict[str, str]]:
@@ -92,7 +96,7 @@ def rename_infra(file:str) -> dict:
         },
     }
 
-def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, arr_url:list[str]):
+def noisemap_launcher(context: AssetExecutionContext, dept: str, campaign: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
     s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
     source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
@@ -106,7 +110,7 @@ def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, ar
     for i, url in enumerate(arr_url):
         context.log.info(f"[{i + 1}/{len(arr_url)}] Downloading {url}")
         shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
-        mapping_infra.extend(rename_infra(p) for p in shp_paths)
+        mapping_infra.extend(callback(p) for p in shp_paths)
         all_sha256.update(sha256)
 
     manifest_key = s3_path + "manifest.json"
@@ -140,7 +144,7 @@ def noisemap_launcher(context: AssetExecutionContext, dept:str, campaign:str, ar
         "manifest": MetadataValue.json(manifest),
     })
 
-def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str):
+def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exist:str = "append"):
     s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
     source_s3_path = s3_path + "_source/"
     mapping_s3_key = s3_path + "mapping.json"
@@ -178,7 +182,7 @@ def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str):
             "raw_noisemap",
             _db_url(),
             schema="public_workspace",
-            if_exists="replace",
+            if_exists=if_exist,
             mapping=entry.get("mapping"),
         )
         if success:
@@ -200,7 +204,17 @@ def noisemap_infra_033_launcher(context: AssetExecutionContext):
     """Download infra 033 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
     return(noisemap_launcher(context=context,dept="033",campaign="2022", arr_url=DEPT033_URL))
 
+@asset(group_name="launcher", key="noisemap_infra_044_launcher")
+def noisemap_infra_044_launcher(context: AssetExecutionContext):
+    """Download infra 044 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
+    return(noisemap_launcher(context=context,dept="044",campaign="2022", arr_url=DEPT044_URL))
+
 @asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
 def noisemap_infra_033_landing(context: AssetExecutionContext):
     """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
     return(noisemap_landing(context=context, dept="033", campaign="2022"))
+
+@asset(group_name="landing", key="noisemap_infra_044_landing", deps=["noisemap_infra_044_launcher"])
+def noisemap_infra_044_landing(context: AssetExecutionContext):
+    """Download infra 044 ZIPs from S3 and ingest into public_workspace.raw_noisemap."""
+    return(noisemap_landing(context=context,dept="044",campaign="2022"))
