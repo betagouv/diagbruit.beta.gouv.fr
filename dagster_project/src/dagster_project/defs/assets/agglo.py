@@ -2,11 +2,14 @@
 from pathlib import Path
 import json
 import shutil
-
+import os
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.defs.jobs.tools import manifest_file, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
+
+from dagster_project.defs.resources.box import BoxResource
+
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
     mapping = {
