@@ -1,6 +1,7 @@
 
 import hashlib
 import json
+from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
@@ -9,8 +10,6 @@ from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.defs.jobs.tools import _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
 
 from dagster_project.defs.resources.box import BoxResource
-
-
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
     mapping = {
@@ -49,18 +48,18 @@ mapping_agglo_033 = [
 
 BOX_AGGLO_033_FOLDER_ID = "378891546195"
 
-@asset(group_name="launcher", key="agglo_033")
-def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
-    s3_path = "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
+def agglo_launcher(context: AssetExecutionContext, box: BoxResource, folder_id:str, mapping: list[dict]):
+    client = box.get_client()
+    folder = client.folders.get_folder_by_id(folder_id)
+
+    s3_path = f"noisemap/cbs_agglo/territory={folder.name}/campaign=2022/"
     source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
     manifest_key = s3_path + "manifest.json"
-
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "agglo_033"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"agglo_{folder.name}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
-    client = box.get_client()
-    items = client.folders.get_folder_items(BOX_AGGLO_033_FOLDER_ID)
+    items = client.folders.get_folder_items(folder_id)
 
     sha256 = {}
     for item in items.entries:
@@ -78,7 +77,7 @@ def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
     shutil.rmtree(local_dir)
 
     manifest = {
-        "provenance": f"box://folder/{BOX_AGGLO_033_FOLDER_ID}",
+        "provenance": f"box://folder/{folder_id}",
         "pulled_at": datetime.now(timezone.utc).isoformat(),
         "sha256": sha256,
     }
@@ -86,18 +85,20 @@ def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
     s3.put_object(Bucket=S3_BUCKET, Key=manifest_key, Body=json.dumps(manifest, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
 
-    s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping_agglo_033, indent=2), ContentType="application/json")
+    s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
-
     return MaterializeResult(metadata={
         "box_id": MetadataValue.text(BOX_AGGLO_033_FOLDER_ID),
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(s3_path),
         "files_uploaded": MetadataValue.int(len(sha256)),
-        "mapping": MetadataValue.json(mapping_agglo_033),
+        "mapping": MetadataValue.json(mapping),
         "manifest": MetadataValue.json(manifest),
     })
 
+@asset(group_name="launcher", key="agglo_033")
+def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
+    return(agglo_launcher(context=context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
 
 @asset(group_name="landing", key="raw_agglo", deps=["agglo_033"])
 def agglo_landing(context: AssetExecutionContext):
