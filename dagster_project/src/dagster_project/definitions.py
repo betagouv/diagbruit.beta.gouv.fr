@@ -13,7 +13,10 @@ def defs():
                 "box": BoxResource(
                     client_id=EnvVar("BOX_CLIENT_ID"),
                     client_secret=EnvVar("BOX_CLIENT_SECRET"),
-                    enterprise_id=EnvVar("BOX_ENTERPRISE_ID"),
+                    jwt_key_id=EnvVar("BOX_JWT_KEY_ID"),
+                    private_key=EnvVar("BOX_PRIVATE_KEY"),
+                    private_key_passphrase=EnvVar("BOX_PRIVATE_KEY_PASSPHRASE"),
+                    user_id=EnvVar("BOX_USER_ID"),
                 )
             }
         ),
