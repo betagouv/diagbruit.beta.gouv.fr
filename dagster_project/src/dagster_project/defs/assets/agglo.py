@@ -1,14 +1,15 @@
 
-from pathlib import Path
+import hashlib
 import json
 import shutil
-import os
+from datetime import datetime, timezone
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import manifest_file, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.defs.jobs.tools import _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
 
 from dagster_project.defs.resources.box import BoxResource
+
 
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
@@ -46,41 +47,55 @@ mapping_agglo_033 = [
     _agglo_033_entry("NoiseContours_roadsInAgglomeration_Lnight.shp","R", "A", "LN", ignore_source=True),
 ]
 
-@asset(group_name="launcher", key="agglo_033")
-def agglo_033_launcher(context: AssetExecutionContext):
-    """[WIP]Uploads mapping & manifest for agglo 033 [WIP]"""
-    s3_path = "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
-    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / Path(s3_path)
-    file_path.parent.mkdir(parents=True, exist_ok=True)
+BOX_AGGLO_033_FOLDER_ID = "378891546195"
 
+@asset(group_name="launcher", key="agglo_033")
+def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
+    s3_path = "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
+    source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
     manifest_key = s3_path + "manifest.json"
 
-    manifest = manifest_file(file_path)
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "agglo_033"
+    local_dir.mkdir(parents=True, exist_ok=True)
 
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=manifest_key,
-        Body=json.dumps(manifest, indent=2),
-        ContentType="application/json",
-    )
+    client = box.get_client()
+    items = client.folders.get_folder_items(BOX_AGGLO_033_FOLDER_ID)
 
+    sha256 = {}
+    for item in items.entries:
+        if item.type != "file":
+            continue
+        context.log.info(f"Downloading {item.name} from Box")
+        stream = client.downloads.download_file(item.id)
+        content = stream.read()
+        local_path = local_dir / item.name
+        local_path.write_bytes(content)
+        sha256[item.name] = hashlib.sha256(content).hexdigest()
+        s3.upload_file(str(local_path), S3_BUCKET, f"{source_prefix}{item.name}")
+        context.log.info(f"Uploaded {item.name} → s3://{S3_BUCKET}/{source_prefix}{item.name}")
+
+    shutil.rmtree(local_dir)
+
+    manifest = {
+        "provenance": f"box://folder/{BOX_AGGLO_033_FOLDER_ID}",
+        "pulled_at": datetime.now(timezone.utc).isoformat(),
+        "sha256": sha256,
+    }
+
+    s3.put_object(Bucket=S3_BUCKET, Key=manifest_key, Body=json.dumps(manifest, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
 
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=mapping_key,
-        Body=json.dumps(mapping_agglo_033, indent=2),
-        ContentType="application/json",
-    )
-
+    s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping_agglo_033, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
 
     return MaterializeResult(metadata={
-            "bucket": MetadataValue.text(S3_BUCKET),
-            "prefix": MetadataValue.text(s3_path),
-            "mapping": MetadataValue.json(mapping_agglo_033),
-            "manifest": MetadataValue.json(manifest),
+        "box_id": MetadataValue.text(BOX_AGGLO_033_FOLDER_ID),
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(s3_path),
+        "files_uploaded": MetadataValue.int(len(sha256)),
+        "mapping": MetadataValue.json(mapping_agglo_033),
+        "manifest": MetadataValue.json(manifest),
     })
 
 
@@ -140,5 +155,3 @@ def agglo_landing(context: AssetExecutionContext):
         "files_ingested": MetadataValue.int(ingested),
         "files_skipped": MetadataValue.int(skipped),
     })
-
-
