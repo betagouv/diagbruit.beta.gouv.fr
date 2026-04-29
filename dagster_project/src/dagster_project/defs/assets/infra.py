@@ -96,10 +96,9 @@ def rename_infra(file:str) -> dict:
         },
     }
 
-def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
-    s3_path = path
-    source_prefix = s3_path + "_source/"
-    mapping_key = s3_path + "mapping.json"
+def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], callback: Callable[..., dict] = rename_infra):
+    source_prefix = path + "_source/"
+    mapping_key = path + "mapping.json"
 
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
     local_dir.mkdir(parents=True, exist_ok=True)
@@ -113,9 +112,9 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
         mapping_infra.extend(callback(p) for p in shp_paths)
         all_sha256.update(sha256)
 
-    manifest_key = s3_path + "manifest.json"
+    manifest_key = path + "manifest.json"
     manifest = {
-        "provenance": DEPT033_URL,
+        "provenance": arr_url,
         "pulled_at": datetime.now(timezone.utc).isoformat(),
         "sha256": all_sha256,
     }
@@ -139,15 +138,14 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
 
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
-        "prefix": MetadataValue.text(s3_path),
+        "prefix": MetadataValue.text(path),
         "mapping": MetadataValue.json(mapping_infra),
         "manifest": MetadataValue.json(manifest),
     })
 
-def s3_landing(context: AssetExecutionContext,path:str, if_exist:str = "append"):
-    s3_path = path
-    source_s3_path = s3_path + "_source/"
-    mapping_s3_key = s3_path + "mapping.json"
+def s3_landing(context: AssetExecutionContext,path:str, if_exist:str = "append",  db_name:str = "raw_noisemap"):
+    source_s3_path = path + "_source/"
+    mapping_s3_key = path + "mapping.json"
 
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
     local_dir.mkdir(parents=True, exist_ok=True)
@@ -176,10 +174,10 @@ def s3_landing(context: AssetExecutionContext,path:str, if_exist:str = "append")
             skipped += 1
             continue
         
-        context.log.info(f"Ingesting {entry['name']} → raw_noisemap")
+        context.log.info(f"Ingesting {entry['name']} → {db_name}")
         success = ingest_shapefile(
             str(shp_path),
-            "raw_noisemap",
+            db_name,
             _db_url(),
             schema="public_workspace",
             if_exists=if_exist,

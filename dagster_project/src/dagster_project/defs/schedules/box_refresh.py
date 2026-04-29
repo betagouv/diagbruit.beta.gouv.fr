@@ -28,7 +28,7 @@ box_token_refresh_job = define_asset_job(
 
 @sensor(
     job=box_token_refresh_job,
-    minimum_interval_seconds=3540,
+    minimum_interval_seconds=3000,
     default_status=DefaultSensorStatus.RUNNING,
 )
 def box_token_refresh_sensor(context):
