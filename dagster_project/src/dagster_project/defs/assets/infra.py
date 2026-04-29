@@ -96,7 +96,7 @@ def rename_infra(file:str) -> dict:
         },
     }
 
-def noisemap_launcher(context: AssetExecutionContext, dept: str, campaign: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
+def infra_launcher(context: AssetExecutionContext, dept: str, campaign: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
     s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
     source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
@@ -144,7 +144,7 @@ def noisemap_launcher(context: AssetExecutionContext, dept: str, campaign: str, 
         "manifest": MetadataValue.json(manifest),
     })
 
-def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exist:str = "append"):
+def infra_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exist:str = "append"):
     s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
     source_s3_path = s3_path + "_source/"
     mapping_s3_key = s3_path + "mapping.json"
@@ -199,22 +199,22 @@ def noisemap_landing(context: AssetExecutionContext, dept:str, campaign:str, if_
         "files_skipped": MetadataValue.int(skipped),
     })
 
-@asset(group_name="launcher", key="noisemap_infra_033_launcher")
-def noisemap_infra_033_launcher(context: AssetExecutionContext):
+@asset(group_name="launcher", key="infra_033_launcher")
+def infra_033_launcher(context: AssetExecutionContext):
     """Download infra 033 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
-    return(noisemap_launcher(context=context,dept="033",campaign="2022", arr_url=DEPT033_URL))
+    return(infra_launcher(context=context,dept="033",campaign="2022", arr_url=DEPT033_URL))
 
-@asset(group_name="launcher", key="noisemap_infra_044_launcher")
-def noisemap_infra_044_launcher(context: AssetExecutionContext):
+@asset(group_name="launcher", key="infra_044_launcher")
+def infra_044_launcher(context: AssetExecutionContext):
     """Download infra 044 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
-    return(noisemap_launcher(context=context,dept="044",campaign="2022", arr_url=DEPT044_URL))
+    return(infra_launcher(context=context,dept="044",campaign="2022", arr_url=DEPT044_URL))
 
-@asset(group_name="landing", key="noisemap_infra_033_landing", deps=["noisemap_infra_033_launcher"])
-def noisemap_infra_033_landing(context: AssetExecutionContext):
+@asset(group_name="landing", key="infra_033_landing", deps=["infra_033_launcher"])
+def infra_033_landing(context: AssetExecutionContext):
     """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    return(noisemap_landing(context=context, dept="033", campaign="2022"))
+    return(infra_landing(context=context, dept="033", campaign="2022"))
 
-@asset(group_name="landing", key="noisemap_infra_044_landing", deps=["noisemap_infra_044_launcher"])
-def noisemap_infra_044_landing(context: AssetExecutionContext):
+@asset(group_name="landing", key="infra_044_landing", deps=["infra_044_launcher"])
+def infra_044_landing(context: AssetExecutionContext):
     """Download infra 044 ZIPs from S3 and ingest into public_workspace.raw_noisemap."""
-    return(noisemap_landing(context=context,dept="044",campaign="2022"))
+    return(infra_landing(context=context,dept="044",campaign="2022"))

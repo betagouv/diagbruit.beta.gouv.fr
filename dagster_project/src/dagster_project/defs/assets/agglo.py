@@ -1,7 +1,6 @@
 
 import hashlib
 import json
-from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
@@ -96,16 +95,13 @@ def agglo_launcher(context: AssetExecutionContext, box: BoxResource, folder_id:s
         "manifest": MetadataValue.json(manifest),
     })
 
-@asset(group_name="launcher", key="agglo_033")
-def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
-    return(agglo_launcher(context=context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
+def agglo_landing(context: AssetExecutionContext, box: BoxResource, folder_id:str):
+    client = box.get_client()
+    folder = client.folders.get_folder_by_id(folder_id)
 
-@asset(group_name="landing", key="raw_agglo", deps=["agglo_033"])
-def agglo_landing(context: AssetExecutionContext):
-    """Download agglo 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    base_s3_path = "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
-    source_s3_path = base_s3_path + "_source/"
-    mapping_s3_key = base_s3_path + "mapping.json"
+    s3_path = f"noisemap/cbs_agglo/territory={folder.name}/campaign=2022/"
+    source_s3_path = s3_path + "_source/"
+    mapping_s3_key = s3_path + "mapping.json"
 
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "agglo_033"
     local_dir.mkdir(parents=True, exist_ok=True)
@@ -156,3 +152,14 @@ def agglo_landing(context: AssetExecutionContext):
         "files_ingested": MetadataValue.int(ingested),
         "files_skipped": MetadataValue.int(skipped),
     })
+
+
+@asset(group_name="launcher", key="agglo_033_launcher")
+def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
+    """Upload agglo 033 files from box and ingest into S3."""
+    return(agglo_launcher(context=context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
+
+@asset(group_name="landing", key="agglo_033_landing", deps=["agglo_033_launcher"])
+def agglo_033_landing(context: AssetExecutionContext, box: BoxResource):
+    """Download agglo 033 files from S3 and ingest into public_workspace.raw_noisemap."""
+    return(agglo_landing(context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID))
