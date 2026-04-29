@@ -10,6 +10,22 @@ full_landing_job = define_asset_job(
     selection=AssetSelection.groups("landing"),
 )
 
+dept_033 = define_asset_job(
+    name="dept_033",
+    selection= AssetSelection.keys("agglo_033_launcher") 
+    | AssetSelection.keys("agglo_033_landing") 
+    | AssetSelection.keys("infra_033_launcher") 
+    | AssetSelection.keys("infra_033_landing")
+)
+
+dept_044 = define_asset_job(
+    name="dept_044",
+    selection= AssetSelection.keys("agglo_044_launcher") 
+    | AssetSelection.keys("agglo_044_landing") 
+    | AssetSelection.keys("infra_044_launcher") 
+    | AssetSelection.keys("infra_044_landing")
+)
+
 full_ingestion_job = define_asset_job(
     name="full_ingestion_job",
     selection=AssetSelection.keys("raw_full_stras_data") 
