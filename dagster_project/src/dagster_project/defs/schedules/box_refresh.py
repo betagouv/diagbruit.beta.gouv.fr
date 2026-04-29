@@ -1,10 +1,12 @@
 from dagster import (
     AssetExecutionContext,
+    DefaultSensorStatus,
     MaterializeResult,
     MetadataValue,
-    ScheduleDefinition,
+    RunRequest,
     asset,
     define_asset_job,
+    sensor,
 )
 
 from dagster_project.defs.resources.box import BoxResource
@@ -23,7 +25,11 @@ box_token_refresh_job = define_asset_job(
     selection=["box_token_refresh"],
 )
 
-box_token_refresh_schedule = ScheduleDefinition(
+
+@sensor(
     job=box_token_refresh_job,
-    cron_schedule="*/59 * * * *",
+    minimum_interval_seconds=3540,
+    default_status=DefaultSensorStatus.RUNNING,
 )
+def box_token_refresh_sensor(context):
+    yield RunRequest()

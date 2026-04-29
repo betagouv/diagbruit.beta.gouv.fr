@@ -144,8 +144,8 @@ def agglo_landing(context: AssetExecutionContext, box: BoxResource, folder_id:st
         else:
             context.log.error(f"Failed to ingest {entry['file']}")
 
-    shutil.rmtree(local_dir)
-    context.log.info(f"Cleaned up {local_dir}")
+    shutil.rmtree(local_dir.parent.parent)
+    context.log.info(f"Cleaned up {local_dir.parent.parent}")
 
     return MaterializeResult(metadata={
         "files_downloaded": MetadataValue.int(downloaded),

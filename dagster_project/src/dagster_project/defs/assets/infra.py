@@ -96,12 +96,12 @@ def rename_infra(file:str) -> dict:
         },
     }
 
-def infra_launcher(context: AssetExecutionContext, dept: str, campaign: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
-    s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
+def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], callback: Callable[[str], dict] = rename_infra):
+    s3_path = path
     source_prefix = s3_path + "_source/"
     mapping_key = s3_path + "mapping.json"
 
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"infra_{dept}"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_infra = []
@@ -144,12 +144,12 @@ def infra_launcher(context: AssetExecutionContext, dept: str, campaign: str, arr
         "manifest": MetadataValue.json(manifest),
     })
 
-def infra_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exist:str = "append"):
-    s3_path = f"noisemap/cbs_infra/dept={dept}/campaign={campaign}/"
+def s3_landing(context: AssetExecutionContext,path:str, if_exist:str = "append"):
+    s3_path = path
     source_s3_path = s3_path + "_source/"
     mapping_s3_key = s3_path + "mapping.json"
 
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"infra_{dept}"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
@@ -190,8 +190,8 @@ def infra_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exi
         else:
             context.log.error(f"Failed to ingest {entry['name']}")
 
-    shutil.rmtree(local_dir)
-    context.log.info(f"Cleaned up {local_dir}")
+    shutil.rmtree(local_dir.parent.parent)
+    context.log.info(f"Cleaned up {local_dir.parent.parent}")
 
     return MaterializeResult(metadata={
         "files_downloaded": MetadataValue.int(downloaded),
@@ -202,19 +202,23 @@ def infra_landing(context: AssetExecutionContext, dept:str, campaign:str, if_exi
 @asset(group_name="launcher", key="infra_033_launcher")
 def infra_033_launcher(context: AssetExecutionContext):
     """Download infra 033 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
-    return(infra_launcher(context=context,dept="033",campaign="2022", arr_url=DEPT033_URL))
+    path = "noisemap/cbs_infra/dept=033/campaign=2022/"
+    return(s3_launcher(context=context,path=path, arr_url=DEPT033_URL))
 
 @asset(group_name="launcher", key="infra_044_launcher")
 def infra_044_launcher(context: AssetExecutionContext):
     """Download infra 044 ZIPs from data.gouv.fr, extract, upload to S3, and write mapping."""
-    return(infra_launcher(context=context,dept="044",campaign="2022", arr_url=DEPT044_URL))
+    path = "noisemap/cbs_infra/dept=044/campaign=2022/"
+    return(s3_launcher(context=context,path=path, arr_url=DEPT044_URL))
 
 @asset(group_name="landing", key="infra_033_landing", deps=["infra_033_launcher"])
 def infra_033_landing(context: AssetExecutionContext):
     """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    return(infra_landing(context=context, dept="033", campaign="2022"))
+    path = "noisemap/cbs_infra/dept=033/campaign=2022/"
+    return(s3_landing(context=context, path=path))
 
 @asset(group_name="landing", key="infra_044_landing", deps=["infra_044_launcher"])
 def infra_044_landing(context: AssetExecutionContext):
     """Download infra 044 ZIPs from S3 and ingest into public_workspace.raw_noisemap."""
-    return(infra_landing(context=context,dept="044",campaign="2022"))
+    path = "noisemap/cbs_infra/dept=044/campaign=2022/"
+    return(s3_landing(context=context, path=path))
