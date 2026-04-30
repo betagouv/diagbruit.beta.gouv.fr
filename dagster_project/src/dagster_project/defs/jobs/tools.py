@@ -161,13 +161,13 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
     local_dir.mkdir(parents=True, exist_ok=True)
 
-    mapping_infra = []
+    mapping = []
     all_sha256 = {}
 
     for i, url in enumerate(arr_url):
         context.log.info(f"[{i + 1}/{len(arr_url)}] Downloading {url}")
         shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
-        mapping_infra.extend(callback(p) for p in shp_paths)
+        mapping.extend(callback(p) for p in shp_paths)
         all_sha256.update(sha256)
 
     manifest_key = path + "manifest.json"
@@ -189,7 +189,7 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
     s3.put_object(
         Bucket=S3_BUCKET,
         Key=mapping_key,
-        Body=json.dumps(mapping_infra, indent=2),
+        Body=json.dumps(mapping, indent=2),
         ContentType="application/json",
     )
     context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
@@ -197,7 +197,7 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(path),
-        "mapping": MetadataValue.json(mapping_infra),
+        "mapping": MetadataValue.json(mapping),
         "manifest": MetadataValue.json(manifest),
     })
 
