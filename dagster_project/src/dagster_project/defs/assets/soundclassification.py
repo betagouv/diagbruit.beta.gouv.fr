@@ -18,31 +18,94 @@ SOUNDCLASS_MAP = {
     "TRAMWAY": {"mode": "tramway", "routier": False},
 }
 
-def rename_soundclass_033(file: str, routier: bool = False) -> dict:
-    return {
-        "name": file,
-        "mapping": {
-            "segment": {"from": "nom_tronc"} if routier else True,
-            "ligne": True,
-            "rang": True,
-            "pkdebssseg": True,
-            "pkfinssseg": True,
-            "long_ssseg": True,
-            "lidebssseg": True,
-            "lifinsseg": True,
-            "nvx_class": True,
-            "base_class": True,
-            "publi_ap": True,
-            "evol_class": True,
-            "sect_affect": True,
-            "communes": True,
-            "region": True,
-            "dept": True,
-            "geomtry": True,
-            "code_dept": True,
-            "codedept": {"value": "033"},
+SOUNDCLASS_URL_044 = [
+    {"url": "https://www.data.gouv.fr/api/1/datasets/r/2843713d-9875-4a93-892d-aef363e836e8", "mode": "fer"},
+    {"url": "https://www.data.gouv.fr/api/1/datasets/r/b0effe95-9a56-4fff-8e6a-f5c06aa91dfa", "mode": "routier"},
+]
+
+def rename_soundclass_033(file: str, mode:str) -> dict:
+    map = {
+        "fer": {
+            "name": file,
+            "mapping": {
+                "segment": True,
+                "ligne": True,
+                "rang": True,
+                "pkdebssseg": True,
+                "pkfinssseg": True,
+                "long_ssseg": True,
+                "lidebssseg": True,
+                "lifinsseg": True,
+                "nvx_class": True,
+                "base_class": True,
+                "publi_ap": True,
+                "evol_class": True,
+                "sect_affect": True,
+                "communes": True,
+                "region": True,
+                "dept": True,
+                "geometry": True,
+                "code_dept": True,
+                "codedept": {"value": "033"},
+            },
         },
+        "routier": {
+            "name": file,
+            "mapping":{
+                "cls_id":True,
+                "numero":True,
+                "segment":{"from": "nom_tronc"},
+                "debutant":True,
+                "finissant":True,
+                "cls_commen":True,
+                "cat_bruit":True,
+                "gestion":True,
+                "horizon":True,
+                "communes":True,
+                "projet":True,
+                "larg_secte":True,
+                "geometry":True,
+                "codedept": {"value": "033"},
+            }
+            },
+        "lgv":{
+            "name": file,
+            "mapping": {
+                "id":True,
+                "nature":True,
+                "pos_sol":True,
+                "etat":True,
+                "date_creat":True,
+                "date_maj":True,
+                "date_conf":True,
+                "electrifie":True,
+                "largeur":True,
+                "nb_voies":True,
+                "id_vfn":True,
+                "toponyme":True,
+                "cat":True,
+                "larg_secte":True,
+                "geometry":True,
+                "codedept": {"value": "033"},
+            }
+        },
+        "tramway": {
+            "name": file,
+            "mapping":{
+                "id":True,
+                "nature":True,
+                "etat":True,
+                "electrifie":True,
+                "largeur":True,
+                "nb_voies":True,
+                "categorie":True,
+                "larg_secte":True,
+                "geometry":True,
+                "codedept": {"value": "033"},
+            }
+        }
     }
+    return map[mode]
 
 
 @asset(group_name="launcher", key="soundclass_033_launcher")
@@ -52,7 +115,6 @@ def soundclass_033_launcher(context: AssetExecutionContext):
 
     for folder_name, meta in SOUNDCLASS_MAP.items():
         mode = meta["mode"]
-        routier = meta["routier"]
         s3_path = f"soundclassification/dept=033/campaign=2022/mode={mode}/"
         source_prefix = s3_path + "_source/"
         local_mode_dir = SOUNDCLASS_LOCAL_DIR / folder_name
@@ -70,7 +132,7 @@ def soundclass_033_launcher(context: AssetExecutionContext):
             s3.upload_file(str(file), S3_BUCKET, f"{source_prefix}{file.name}")
             context.log.info(f"Uploaded {file.name} → s3://{S3_BUCKET}/{source_prefix}{file.name}")
             if file.suffix == ".shp":
-                mapping_entries.append(rename_soundclass_033(file.name, routier=routier))
+                mapping_entries.append(rename_soundclass_033(file.name, mode=meta["mode"]))
 
         mapping_key = s3_path + "mapping.json"
         s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping_entries, indent=2), ContentType="application/json")
@@ -97,7 +159,7 @@ def soundclass_044_launcher(context: AssetExecutionContext):
     for meta in SOUNDCLASS_URL_044:
         mode = meta["mode"]
         path = f"soundclassification/dept=044/campaign=2022/mode={mode}/"
-        callback = partial(rename_soundclass_044, mode=meta["mode"])
+        callback = partial(rename_soundclass_033, mode=meta["mode"])
         s3_launcher(context=context, path=path, arr_url=[meta["url"]], callback=callback)
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
