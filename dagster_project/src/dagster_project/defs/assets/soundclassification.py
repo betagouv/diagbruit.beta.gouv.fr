@@ -89,4 +89,20 @@ def soundclass_033_launcher(context: AssetExecutionContext):
         "modes_uploaded": MetadataValue.int(len(all_mappings)),
         "files_uploaded": MetadataValue.int(len(all_sha256)),
         "manifest": MetadataValue.json(manifest),
+@asset(group_name="landing", key="soundclass_033_landing", deps=["soundclass_033_launcher"])
+def soundclass_033_landing(context: AssetExecutionContext):
+    total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
+
+    for meta in SOUNDCLASS_MAP.values():
+        mode = meta["mode"]
+        path = f"soundclassification/dept=033/campaign=2022/mode={mode}/"
+        result = s3_landing(context=context, path=path, db_name= f"raw_soundclassification_{mode}")
+        for key in total:
+            if key in result.metadata:
+                total[key] += result.metadata[key].value
+
+    return MaterializeResult(metadata={
+        "files_downloaded": MetadataValue.int(total["files_downloaded"]),
+        "files_ingested": MetadataValue.int(total["files_ingested"]),
+        "files_skipped": MetadataValue.int(total["files_skipped"]),
     })
