@@ -82,13 +82,27 @@ def soundclass_033_launcher(context: AssetExecutionContext):
         manifest_key = s3_path + "manifest.json"
         s3.put_object(Bucket=S3_BUCKET, Key=manifest_key, Body=json.dumps(manifest, indent=2), ContentType="application/json")
         context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
-            
 
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
         "modes_uploaded": MetadataValue.int(len(all_mappings)),
         "files_uploaded": MetadataValue.int(len(all_sha256)),
         "manifest": MetadataValue.json(manifest),
+    })
+
+@asset(group_name="launcher", key="soundclass_044_launcher")
+def soundclass_044_launcher(context: AssetExecutionContext):
+    for meta in SOUNDCLASS_URL_044:
+        mode = meta["mode"]
+        path = f"soundclassification/dept=044/campaign=2022/mode={mode}/"
+        callback = partial(rename_soundclass_044, mode=meta["mode"])
+        s3_launcher(context=context, path=path, arr_url=[meta["url"]], callback=callback)
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "modes_uploaded": MetadataValue.int(len(SOUNDCLASS_URL_044)),
+    })
+
+
 @asset(group_name="landing", key="soundclass_033_landing", deps=["soundclass_033_launcher"])
 def soundclass_033_landing(context: AssetExecutionContext):
     total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
