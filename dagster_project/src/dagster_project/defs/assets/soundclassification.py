@@ -5,7 +5,9 @@ from functools import partial
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
-from dagster_project.defs.jobs.tools import  s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.defs.jobs.tools import s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.defs.assets.infra import s3_launcher, s3_landing
+
 
 SOUNDCLASS_LOCAL_DIR = DAGSTER_ROOT / "ingestion" / "inputs" / "soundclassification" / "AGGLO_033"
 
@@ -103,6 +105,23 @@ def soundclass_044_launcher(context: AssetExecutionContext):
     })
 
 
+@asset(group_name="landing", key="soundclass_044_landing", deps=["soundclass_044_launcher"])
+def soundclass_044_landing(context: AssetExecutionContext):
+    total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
+
+    for meta in SOUNDCLASS_URL_044:
+        mode = meta["mode"]
+        path = f"soundclassification/dept=044/campaign=2022/mode={mode}/"
+        result = s3_landing(context=context, path=path, db_name= f"raw_soundclassification_{mode}")
+        for key in total:
+            if key in result.metadata:
+                total[key] += result.metadata[key].value
+
+    return MaterializeResult(metadata={
+        "files_downloaded": MetadataValue.int(total["files_downloaded"]),
+        "files_ingested": MetadataValue.int(total["files_ingested"]),
+        "files_skipped": MetadataValue.int(total["files_skipped"]),
+    })
 @asset(group_name="landing", key="soundclass_033_landing", deps=["soundclass_033_launcher"])
 def soundclass_033_landing(context: AssetExecutionContext):
     total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
