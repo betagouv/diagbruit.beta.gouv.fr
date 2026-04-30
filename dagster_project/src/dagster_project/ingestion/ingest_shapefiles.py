@@ -76,9 +76,11 @@ def _apply_mapping(gdf, mapping: dict):
     return gdf
 
 
-def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None):
+def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, context=None):
+    log = context.log.info if context else print
+    log_err = context.log.error if context else lambda msg: print(msg, file=sys.stderr)
     try:
-        print(f"Reading shapefile: {file_path}")
+        log(f"Reading shapefile: {file_path}")
         gdf = gpd.read_file(file_path)
         gdf.columns = [col.lower() for col in gdf.columns]
 
@@ -88,16 +90,16 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
             gdf = _apply_mapping(gdf, mapping)
         else:
             if ignore_columns:
-                print(f"Ignoring columns: {ignore_columns}")
+                log(f"Ignoring columns: {ignore_columns}")
                 gdf.drop(columns=[col for col in ignore_columns if col in gdf.columns], inplace=True)
 
             if fixed_columns:
-                print(f"Adding fixed columns: {fixed_columns}")
+                log(f"Adding fixed columns: {fixed_columns}")
                 for key, value in fixed_columns.items():
                     gdf[key] = value
 
             if column_renames:
-                print(f"Renaming columns: {column_renames}")
+                log(f"Renaming columns: {column_renames}")
                 gdf.rename(columns=column_renames, inplace=True)
 
         gdf["geometry"] = gdf["geometry"].apply(drop_z)
@@ -110,17 +112,17 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
             full_table_name = f"{schema}.{table_name}"
             tables = inspector.get_table_names(schema=schema)
             if table_name in tables:
-                print(f"ℹ️ Table {full_table_name} already exists — skipping ingestion.")
+                log(f"Table {full_table_name} already exists — skipping ingestion.")
                 return True
             if_exists = 'replace'
 
-        print(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
+        log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
         gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists)
 
-        print(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
+        log(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
         return True
     except Exception as e:
-        print(f"Error ingesting shapefile: {e}", file=sys.stderr)
+        log_err(f"Error ingesting shapefile: {e}, {sys.stderr}")
         return False
 
 
