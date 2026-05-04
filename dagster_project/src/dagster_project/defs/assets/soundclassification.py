@@ -6,7 +6,7 @@ from functools import partial
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.defs.jobs.tools import s3, S3_BUCKET, DAGSTER_ROOT
-from dagster_project.defs.assets.infra import s3_launcher, s3_landing
+from dagster_project.defs.assets.noisemap.infra.index import s3_launcher, s3_landing
 
 
 SOUNDCLASS_LOCAL_DIR = DAGSTER_ROOT / "ingestion" / "inputs" / "soundclassification" / "AGGLO_033"
