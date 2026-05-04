@@ -40,3 +40,8 @@ peb_full_job = define_asset_job(
     name="peb_job",
     selection=AssetSelection.keys("peb_launcher") | AssetSelection.keys("raw_peb")
 )
+
+raw_noisemap_job = define_asset_job(
+    name="raw_noisemap_job",
+    selection=AssetSelection.keys("raw_noisemap").upstream() | AssetSelection.keys("raw_noisemap"),
+)
