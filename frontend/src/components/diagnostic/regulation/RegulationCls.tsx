@@ -42,7 +42,7 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
               La parcelle est exposée à {diagnostic.soundclassification_intersections.length} sources de bruit de {allSameTypesource ? `catégorie ${firstTypesource}` : "différentes catégories."}
             </p>
             <p className={fr.cx("fr-mb-4v")}>
-              Vous avez une obligation réglementaire d'<FakeLinkComponent onClick={() => goToTab('legal')}>isoler votre bâtiment.</FakeLinkComponent>
+              Vous avez une obligation réglementaire d'isoler votre bâtiment.
             </p>
           </>
         }
