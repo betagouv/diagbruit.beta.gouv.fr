@@ -160,7 +160,7 @@ def soundclass_044_launcher(context: AssetExecutionContext):
         mode = meta["mode"]
         path = f"soundclassification/dept=044/campaign=2022/mode={mode}/"
         callback = partial(rename_soundclass_033, mode=meta["mode"])
-        s3_launcher(context=context, path=path, arr_url=[meta["url"]], callback=callback)
+        s3_launcher(context=context, path=path, arr_url=[meta["url"]], mapping=callback)
     return MaterializeResult(metadata={
         "bucket": MetadataValue.text(S3_BUCKET),
         "modes_uploaded": MetadataValue.int(len(SOUNDCLASS_URL_044)),
@@ -174,7 +174,7 @@ def soundclass_044_landing(context: AssetExecutionContext):
     for meta in SOUNDCLASS_URL_044:
         mode = meta["mode"]
         path = f"soundclassification/dept=044/campaign=2022/mode={mode}/"
-        result = s3_landing(context=context, path=path, db_name= f"raw_soundclassification_{mode}")
+        result = s3_landing(context=context, path=path, db_table= f"raw_soundclassification_{mode}")
         for key in total:
             if key in result.metadata:
                 total[key] += result.metadata[key].value
@@ -191,7 +191,7 @@ def soundclass_033_landing(context: AssetExecutionContext):
     for meta in SOUNDCLASS_MAP.values():
         mode = meta["mode"]
         path = f"soundclassification/dept=033/campaign=2022/mode={mode}/"
-        result = s3_landing(context=context, path=path, db_name= f"raw_soundclassification_{mode}")
+        result = s3_landing(context=context, path=path, db_table= f"raw_soundclassification_{mode}")
         for key in total:
             if key in result.metadata:
                 total[key] += result.metadata[key].value

@@ -1,6 +1,6 @@
 from dagster import AssetExecutionContext, asset
 
-from dagster_project.defs.assets.noisemap.agglo.index import box_to_s3_launcher, ingest_from_s3_landing
+from dagster_project.defs.assets.noisemap.tools import box_to_s3_launcher, ingest_from_s3_landing
 from dagster_project.defs.resources.box import BoxResource
 
 
@@ -46,9 +46,11 @@ mapping_agglo_033 = [
 @asset(group_name="launcher", key="agglo_033_launcher")
 def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload agglo 033 files from box and ingest into S3."""
-    return(box_to_s3_launcher(context=context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
+    path= "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
+    return(box_to_s3_launcher(context=context, path=path, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
 
 @asset(group_name="landing", key="agglo_033_landing", deps=["agglo_033_launcher"])
 def agglo_033_landing(context: AssetExecutionContext, box: BoxResource):
     """Download agglo 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    return(ingest_from_s3_landing(context, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID))
+    path= "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
+    return(ingest_from_s3_landing(context,path=path, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID))

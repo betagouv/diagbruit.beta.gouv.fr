@@ -1,5 +1,5 @@
 from dagster import AssetExecutionContext, asset
-from dagster_project.defs.jobs.tools import s3_launcher, s3_landing
+from dagster_project.defs.assets.noisemap.tools import s3_launcher, s3_landing
 
 DEPT033_URL = [
     "https://www.data.gouv.fr/api/1/datasets/r/b4cf0f5e-4b99-4af3-916e-1d8c2625fce2"
@@ -25,10 +25,10 @@ def infra_044_launcher(context: AssetExecutionContext):
 def infra_033_landing(context: AssetExecutionContext):
     """Download infra 033 files from S3 and ingest into public_workspace.raw_noisemap."""
     path = "noisemap/cbs_infra/dept=033/campaign=2022/"
-    return(s3_landing(context=context, path=path, db_name= "raw_noisemap"))
+    return(s3_landing(context=context, path=path, db_table= "raw_noisemap"))
 
 @asset(group_name="landing", key="infra_044_landing", deps=["infra_044_launcher"])
 def infra_044_landing(context: AssetExecutionContext):
     """Download infra 044 ZIPs from S3 and ingest into public_workspace.raw_noisemap."""
     path = "noisemap/cbs_infra/dept=044/campaign=2022/"
-    return(s3_landing(context=context, path=path,  db_name= "raw_noisemap"))
+    return(s3_landing(context=context, path=path,  db_table= "raw_noisemap"))

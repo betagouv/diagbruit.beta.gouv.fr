@@ -3,17 +3,13 @@ import time
 import os
 from pathlib import Path
 import io
-import json
 import shutil
 import urllib.request
 import zipfile
 import boto3
-from typing import Callable
 
 from datetime import datetime, timezone
 from dagster import AssetExecutionContext
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue
-from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 
 S3_BUCKET = os.getenv("AWS_S3_BUCKET", "diagbruit")
 
@@ -129,129 +125,3 @@ def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, con
     shutil.rmtree(extract_dir)
     context.log.info(f"Uploaded {len(shp_paths)} shp files to s3://{S3_BUCKET}/{source_prefix}")
     return shp_paths, sha256
-
-
-def rename_infra(file:str) -> dict:
-    return {
-        "name": file,
-        "mapping": {
-            "geometry": True,
-            "codeinfra": {"from": "codinfra"},
-            "id": {"from": "idzonbruit"},
-            "idcbs" : True,
-            "annee" : True,
-            "uueid" : True,
-            "codedept" : True,
-            "typeterr" : True,
-            "producteur" : True,
-            "typesource" : True,
-            "cbstype" : True,
-            "zonedef" : True,
-            "legende" : True,
-            "indicetype" : True,
-            "validedeb" : True,
-            "validefin" : True,
-        },
-    }
-
-def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], callback: Callable[..., dict] = rename_infra):
-    source_prefix = path + "_source/"
-    mapping_key = path + "mapping.json"
-
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
-    local_dir.mkdir(parents=True, exist_ok=True)
-
-    mapping = []
-    all_sha256 = {}
-
-    for i, url in enumerate(arr_url):
-        context.log.info(f"[{i + 1}/{len(arr_url)}] Downloading {url}")
-        shp_paths, sha256 = download_extract_upload(url, local_dir / f"zip_{i}", source_prefix, context)
-        mapping.extend(callback(p) for p in shp_paths)
-        all_sha256.update(sha256)
-
-    manifest_key = path + "manifest.json"
-    manifest = {
-        "provenance": arr_url,
-        "pulled_at": datetime.now(timezone.utc).isoformat(),
-        "sha256": all_sha256,
-    }
-
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=manifest_key,
-        Body=json.dumps(manifest, indent=2),
-        ContentType="application/json",
-    )
-
-    context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
-
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=mapping_key,
-        Body=json.dumps(mapping, indent=2),
-        ContentType="application/json",
-    )
-    context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
-
-    return MaterializeResult(metadata={
-        "bucket": MetadataValue.text(S3_BUCKET),
-        "prefix": MetadataValue.text(path),
-        "mapping": MetadataValue.json(mapping),
-        "manifest": MetadataValue.json(manifest),
-    })
-
-def s3_landing(context: AssetExecutionContext,path:str, db_name:str, if_exist:str = "append"):
-    source_s3_path = path + "_source/"
-    mapping_s3_key = path + "mapping.json"
-
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / path
-    local_dir.mkdir(parents=True, exist_ok=True)
-
-    mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
-    mapping = json.loads(mapping_obj["Body"].read())
-    context.log.info(f"Loaded mapping: {len(mapping)} entries from s3://{S3_BUCKET}/{mapping_s3_key}")
-
-    downloaded = download_from_s3(bucket=S3_BUCKET, file_path=local_dir, s3_path=source_s3_path, context=context)
-
-    if downloaded == 0:
-        context.log.warning(f"No source files found at s3://{S3_BUCKET}/{source_s3_path}")
-        shutil.rmtree(local_dir)
-        return MaterializeResult(metadata={
-            "files_downloaded": MetadataValue.int(0),
-            "files_ingested": MetadataValue.int(0),
-        })
-
-    ingested = 0
-    skipped = 0
-
-    for entry in mapping:
-        shp_path = local_dir / entry["name"]
-        if not shp_path.exists():
-            context.log.warning(f"File not found, skipping: {entry['name']}")
-            skipped += 1
-            continue
-        
-        context.log.info(f"Ingesting {entry['name']} → {db_name}")
-        success = ingest_shapefile(
-            str(shp_path),
-            db_name,
-            _db_url(),
-            schema="public_workspace",
-            if_exists=if_exist,
-            mapping=entry.get("mapping"),
-            context=context
-        )
-        if success:
-            ingested += 1
-        else:
-            context.log.error(f"Failed to ingest {entry['name']}")
-
-    shutil.rmtree(local_dir.parent.parent)
-    context.log.info(f"Cleaned up {local_dir.parent.parent}")
-
-    return MaterializeResult(metadata={
-        "files_downloaded": MetadataValue.int(downloaded),
-        "files_ingested": MetadataValue.int(ingested),
-        "files_skipped": MetadataValue.int(skipped),
-    })
