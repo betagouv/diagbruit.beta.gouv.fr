@@ -137,32 +137,46 @@ def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:s
         "files_skipped": MetadataValue.int(skipped),
     })
 
-def box_to_s3_launcher(context: AssetExecutionContext, path:str, box: BoxResource, folder_id:str, mapping: list[dict]):
+def _box_walk(client, folder_id: str, local_dir, source_prefix: str, context: AssetExecutionContext) -> tuple[dict, list[str]]:
+    """Recursively download all files in a Box folder tree to local_dir and upload to S3."""
+    sha256 = {}
+    shp_files = []
+    items = client.folders.get_folder_items(folder_id)
+    for item in items.entries:
+        if item.type == "folder":
+            sub_sha256, sub_shp = _box_walk(client, item.id, local_dir, source_prefix, context)
+            sha256.update(sub_sha256)
+            shp_files.extend(sub_shp)
+        elif item.type == "file":
+            context.log.info(f"Downloading {item.name} from Box")
+            stream = client.downloads.download_file(item.id)
+            content = stream.read()
+            local_path = local_dir / item.name
+            local_path.write_bytes(content)
+            sha256[item.name] = hashlib.sha256(content).hexdigest()
+            s3.upload_file(str(local_path), S3_BUCKET, f"{source_prefix}{item.name}")
+            context.log.info(f"Uploaded {item.name} → s3://{S3_BUCKET}/{source_prefix}{item.name}")
+            if item.name.lower().endswith(".shp"):
+                shp_files.append(item.name)
+    return sha256, shp_files
+
+
+def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResource, type:str, dept:str, folder_id: str, mapping: list[dict] | None = None):
     client = box.get_client()
-    folder = client.folders.get_folder_by_id(folder_id)
 
     source_prefix = path + "_source/"
     mapping_key = path + "mapping.json"
     manifest_key = path + "manifest.json"
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"agglo_{folder.name}"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"{type}_{dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
-    items = client.folders.get_folder_items(folder_id)
+    sha256, shp_files = _box_walk(client, folder_id, local_dir, source_prefix, context)
 
-    sha256 = {}
-    for item in items.entries:
-        if item.type != "file":
-            continue
-        context.log.info(f"Downloading {item.name} from Box")
-        stream = client.downloads.download_file(item.id)
-        content = stream.read()
-        local_path = local_dir / item.name
-        local_path.write_bytes(content)
-        sha256[item.name] = hashlib.sha256(content).hexdigest()
-        s3.upload_file(str(local_path), S3_BUCKET, f"{source_prefix}{item.name}")
-        context.log.info(f"Uploaded {item.name} → s3://{S3_BUCKET}/{source_prefix}{item.name}")
-
+    context.log.info(f"Found {len(shp_files)} .shp file(s): {shp_files}")
     shutil.rmtree(local_dir)
+
+    mapping_entries = mapping if mapping is not None else [rename_infra(f) for f in shp_files]
+    context.log.info(f"Built {len(mapping_entries)} mapping entries")
 
     manifest = {
         "provenance": f"box://folder/{folder_id}",
@@ -173,25 +187,24 @@ def box_to_s3_launcher(context: AssetExecutionContext, path:str, box: BoxResourc
     s3.put_object(Bucket=S3_BUCKET, Key=manifest_key, Body=json.dumps(manifest, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded manifest → s3://{S3_BUCKET}/{manifest_key}")
 
-    s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping, indent=2), ContentType="application/json")
+    s3.put_object(Bucket=S3_BUCKET, Key=mapping_key, Body=json.dumps(mapping_entries, indent=2), ContentType="application/json")
     context.log.info(f"Uploaded mapping → s3://{S3_BUCKET}/{mapping_key}")
     return MaterializeResult(metadata={
         "box_id": MetadataValue.text(folder_id),
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(path),
         "files_uploaded": MetadataValue.int(len(sha256)),
-        "mapping": MetadataValue.json(mapping),
+        "mapping": MetadataValue.json(mapping_entries),
         "manifest": MetadataValue.json(manifest),
     })
 
-def ingest_from_s3_landing(context: AssetExecutionContext, path:str, box: BoxResource, folder_id:str, db_table:str = "raw_noisemap",):
+def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,dept:str, box: BoxResource, folder_id:str, db_table:str = "raw_noisemap",):
     client = box.get_client()
-    folder = client.folders.get_folder_by_id(folder_id)
 
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
-    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "agglo_033"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"{type}_{dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
     mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
