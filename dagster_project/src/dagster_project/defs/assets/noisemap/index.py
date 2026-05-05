@@ -4,6 +4,7 @@ RAW_NOISEMAP_DEPS = [
     "agglo_033_landing",
     "infra_033_landing",
     "infra_044_landing",
+    "fastline_033_landing"
 ]
 
 @asset(
