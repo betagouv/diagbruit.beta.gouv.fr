@@ -202,4 +202,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-.ingestion/inputs/
+src/dagster_project/ingestion/inputs/
