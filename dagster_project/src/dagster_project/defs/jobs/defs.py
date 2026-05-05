@@ -45,3 +45,9 @@ raw_noisemap_job = define_asset_job(
     name="raw_noisemap_job",
     selection=AssetSelection.keys("raw_noisemap").upstream() | AssetSelection.keys("raw_noisemap"),
 )
+
+full_noisemap_job = define_asset_job(
+    name="full_noisemap_job",
+    description="Executes the FULL noisemap pipeline, this includes : the launcher, landing and the full dbt pipeline.",
+    selection=AssetSelection.keys("noisemap").upstream() | AssetSelection.keys("noisemap"),
+)
