@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from dagster import AssetExecutionContext, asset
 
 from dagster_project.defs.assets.noisemap.tools import box_to_s3_launcher, ingest_from_s3_landing
@@ -9,6 +11,7 @@ BOX_AGGLO_033_FOLDER_ID = "378891546195"
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
     mapping = {
+        "id": True,
         "geometry": True,
         "legende": {"from": "category"},
         "typesource": {"value": typesource},
@@ -17,6 +20,12 @@ def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, 
         "annee": {"value": "2022"},
         "codedept": {"value": "033"},
         "typeterr": {"value": "AGGLO"},
+        "codeinfra": {"value": ""},
+        "idcbs" :  {"value": ""},
+        "producteur" :  {"value": ""},
+        "zonedef" :  {"value": ""},
+        "validedeb" :  {"value": ""},
+        "validefin" :  {"value": ""},
     }
     if not ignore_source:
         mapping["source"] = True
@@ -42,15 +51,16 @@ mapping_agglo_033 = [
     _agglo_033_entry("NoiseContours_roadsInAgglomeration_Lnight.shp","R", "A", "LN", ignore_source=True),
 ]
 
+file_name = Path(__file__).stem
 
 @asset(group_name="launcher", key="agglo_033_launcher")
 def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload agglo 033 files from box and ingest into S3."""
-    path= "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
+    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2022/"
     return(box_to_s3_launcher(context=context, path=path,type="agglo",dept="033", box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
 
 @asset(group_name="landing", key="agglo_033_landing", deps=["agglo_033_launcher"])
-def agglo_033_landing(context: AssetExecutionContext, box: BoxResource):
+def agglo_033_landing(context: AssetExecutionContext):
     """Download agglo 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    path= "noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/"
-    return(ingest_from_s3_landing(context,path=path,type="agglo",dept="033", box=box, folder_id=BOX_AGGLO_033_FOLDER_ID))
+    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2022/"
+    return(ingest_from_s3_landing(context,path=path,type="agglo",dept="033"))
