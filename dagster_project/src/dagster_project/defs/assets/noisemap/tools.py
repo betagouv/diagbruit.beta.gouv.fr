@@ -128,8 +128,8 @@ def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:s
         else:
             context.log.error(f"Failed to ingest {entry['name']}")
 
-    shutil.rmtree(local_dir.parent)
-    context.log.info(f"Cleaned up {local_dir.parent}")
+    shutil.rmtree(local_dir)
+    context.log.info(f"Cleaned up {local_dir}")
 
     return MaterializeResult(metadata={
         "files_downloaded": MetadataValue.int(downloaded),
@@ -199,8 +199,6 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
     })
 
 def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,dept:str, box: BoxResource, folder_id:str, db_table:str = "raw_noisemap",):
-    client = box.get_client()
-
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -245,8 +243,8 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
         else:
             context.log.error(f"Failed to ingest {entry['file']}")
 
-    shutil.rmtree(local_dir.parent)
-    context.log.info(f"Cleaned up {local_dir.parent}")
+    shutil.rmtree(local_dir)
+    context.log.info(f"Cleaned up {local_dir}")
 
     return MaterializeResult(metadata={
         "files_downloaded": MetadataValue.int(downloaded),
