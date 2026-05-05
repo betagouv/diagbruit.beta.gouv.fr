@@ -6,6 +6,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from shapely import transform
+from geoalchemy2 import Geometry
 
 def drop_z(geom):
     return transform(geom, lambda coords: coords, include_z=False)
@@ -116,8 +117,20 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
                 return True
             if_exists = 'replace'
 
+        if if_exists == "append":
+            inspector = inspect(engine)
+            if table_name in inspector.get_table_names(schema=schema):
+                with engine.connect() as conn:
+                    conn.execute(text(
+                        f"ALTER TABLE {schema}.{table_name} "
+                        f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
+                        f"USING geometry::geometry(Geometry,2154)"
+                    ))
+                    conn.commit()
+                    log(f"Altered geometry column to geometry(Geometry,2154)")
+
         log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
-        gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists)
+        gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
 
         log(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
         return True
