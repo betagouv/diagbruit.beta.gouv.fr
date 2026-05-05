@@ -8,6 +8,11 @@ from dagster_project.defs.resources.box import BoxResource
 
 BOX_AGGLO_033_FOLDER_ID = "378891546195"
 
+file_name = Path(__file__).stem
+
+dept="033"
+type="agglo"
+campaign="2022"
 
 def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, ignore_source: bool = False) -> dict:
     mapping = {
@@ -18,7 +23,7 @@ def _agglo_033_entry(file: str, typesource: str, cbstype: str, indicetype: str, 
         "cbstype": {"value": cbstype},
         "indicetype": {"value": indicetype},
         "annee": {"value": "2022"},
-        "codedept": {"value": "033"},
+        "codedept": {"value": dept},
         "typeterr": {"value": "AGGLO"},
         "codeinfra": {"value": ""},
         "idcbs" :  {"value": ""},
@@ -51,16 +56,15 @@ mapping_agglo_033 = [
     _agglo_033_entry("NoiseContours_roadsInAgglomeration_Lnight.shp","R", "A", "LN", ignore_source=True),
 ]
 
-file_name = Path(__file__).stem
 
 @asset(group_name="launcher", key="agglo_033_launcher")
 def agglo_033_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload agglo 033 files from box and ingest into S3."""
-    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2022/"
-    return(box_to_s3_launcher(context=context, path=path,type="agglo",dept="033", box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
+    path= f"noisemap/cbs_{type}/territory={file_name}/campaign={campaign}/"
+    return(box_to_s3_launcher(context=context, path=path,type=type,dept=dept, box=box, folder_id=BOX_AGGLO_033_FOLDER_ID, mapping=mapping_agglo_033))
 
 @asset(group_name="landing", key="agglo_033_landing", deps=["agglo_033_launcher"])
 def agglo_033_landing(context: AssetExecutionContext):
     """Download agglo 033 files from S3 and ingest into public_workspace.raw_noisemap."""
-    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2022/"
-    return(ingest_from_s3_landing(context,path=path,type="agglo",dept="033"))
+    path= f"noisemap/cbs_{type}/territory={file_name}/campaign={campaign}/"
+    return(ingest_from_s3_landing(context,path=path,type=type,dept=dept))

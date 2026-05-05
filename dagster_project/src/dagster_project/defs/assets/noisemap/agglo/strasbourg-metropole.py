@@ -8,6 +8,11 @@ from dagster_project.defs.resources.box import BoxResource
 
 BOX_AGGLO_067_FOLDER_ID = "380247162343"
 
+file_name = Path(__file__).stem
+
+dept="067"
+type="agglo"
+campaign="2022"
 
 def _agglo_067_entry(file: str, typesource: str, cbstype: str, indicetype: str) -> dict:
     return {
@@ -51,16 +56,15 @@ mapping_agglo_067 = [
     _agglo_067_entry("EMS_2022_Route_C_Ln.shp",   "R", "C", "LN"),
 ]
 
-file_name = Path(__file__).stem
 
 @asset(group_name="launcher", key="agglo_067_launcher")
 def agglo_067_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload agglo 067 files from box and ingest into S3."""
-    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2021/"
-    return(box_to_s3_launcher(context=context, path=path,type="agglo",dept="067", box=box, folder_id=BOX_AGGLO_067_FOLDER_ID, mapping=mapping_agglo_067))
+    path= f"noisemap/cbs_{type}/territory={file_name}/campaign={campaign}/"
+    return(box_to_s3_launcher(context=context, path=path,type=type,dept=dept, box=box, folder_id=BOX_AGGLO_067_FOLDER_ID, mapping=mapping_agglo_067))
 
 @asset(group_name="landing", key="agglo_067_landing", deps=["agglo_067_launcher"])
 def agglo_067_landing(context: AssetExecutionContext):
     """Download agglo 067 files from S3 and ingest into public_workspace.raw_noisemap."""
-    path= f"noisemap/cbs_agglo/territory={file_name}/campaign=2021/"
-    return(ingest_from_s3_landing(context,path=path,type="agglo",dept="067"))
+    path= f"noisemap/cbs_{type}/territory={file_name}/campaign={campaign}/"
+    return(ingest_from_s3_landing(context,path=path,type=type,dept=dept))
