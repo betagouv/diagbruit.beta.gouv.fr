@@ -126,7 +126,7 @@ def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:s
         if success:
             ingested += 1
         else:
-            context.log.error(f"Failed to ingest {entry['name']}")
+            context.log.error(f"Failed to ingest {entry['name']} → {db_table} (path: {shp_path})")
 
     shutil.rmtree(local_dir)
     context.log.info(f"Cleaned up {local_dir}")
@@ -198,7 +198,7 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
         "manifest": MetadataValue.json(manifest),
     })
 
-def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,dept:str, box: BoxResource, folder_id:str, db_table:str = "raw_noisemap",):
+def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,dept:str, db_table:str = "raw_noisemap",):
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -241,7 +241,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
         if success:
             ingested += 1
         else:
-            context.log.error(f"Failed to ingest {entry['file']}")
+            context.log.error(f"Failed to ingest {entry['name']} → {db_table} (path: {shp_path})")
 
     shutil.rmtree(local_dir)
     context.log.info(f"Cleaned up {local_dir}")
