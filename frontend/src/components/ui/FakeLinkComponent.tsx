@@ -20,7 +20,7 @@ export default function FakeLinkComponent({ onClick, children }: FakeButtonCompo
 const useStyles = tss.create(() => ({
 	fakeLink: {
 		...fr.typography[19].style,
-		display: "block",
+		display: "inline",
 		textDecoration: "underline",
 		cursor: "pointer",
 		color: fr.colors.decisions.background.flat.blueFrance.default,
