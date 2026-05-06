@@ -175,7 +175,20 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
     context.log.info(f"Found {len(shp_files)} .shp file(s): {shp_files}")
     shutil.rmtree(local_dir)
 
-    mapping_entries = mapping if mapping is not None else [rename_infra(f) for f in shp_files]
+    if mapping is not None:
+        mapping_index = {entry["name"]: entry for entry in mapping}
+        mapping_entries = []
+        for actual_name in shp_files:
+            entry = mapping_index.get(actual_name) or next(
+                (e for key, e in mapping_index.items() if actual_name.endswith(key)),
+                None,
+            )
+            if entry is None:
+                context.log.warning(f"No mapping entry for {actual_name!r}, skipping")
+                continue
+            mapping_entries.append({**entry, "name": actual_name})
+    else:
+        mapping_entries = [rename_infra(f) for f in shp_files]
     context.log.info(f"Built {len(mapping_entries)} mapping entries")
 
     manifest = {

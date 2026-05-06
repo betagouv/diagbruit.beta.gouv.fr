@@ -111,7 +111,7 @@ uv sync
 
 # Activate the virtual environment
 source .venv/bin/activate   # macOS/Linux
-# .venv\Scripts\activate    # Windows
+.venv\Scripts\activate    # Windows
 
 # Seed the Box OAuth token (one-time)
 python box_auth.py
