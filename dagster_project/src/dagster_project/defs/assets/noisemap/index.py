@@ -3,10 +3,11 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 RAW_NOISEMAP_DEPS = [
     "agglo_033_landing",
     "agglo_067_landing",
+    "agglo_059_landing",
     "infra_033_landing",
     "infra_044_landing",
     "fastline_033_landing",
-    "fastline_044_landing"
+    "fastline_044_landing",
 ]
 
 @asset(
