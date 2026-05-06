@@ -85,7 +85,11 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         gdf = gpd.read_file(file_path)
         gdf.columns = [col.lower() for col in gdf.columns]
 
-        gdf = gdf.to_crs(epsg=2154)
+        if gdf.crs is None:
+            log(f"No CRS found in {file_path}, defaulting to EPSG:2154")
+            gdf = gdf.set_crs(epsg=2154)
+        else:
+            gdf = gdf.to_crs(epsg=2154)
 
         if mapping is not None:
             gdf = _apply_mapping(gdf, mapping)
