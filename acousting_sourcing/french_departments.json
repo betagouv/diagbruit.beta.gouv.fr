@@ -2,7 +2,7 @@
   "sound_classification": {
     "01": {
       "dept_label": "Ain",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -84,7 +84,7 @@
     },
     "02": {
       "dept_label": "Aisne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -92,7 +92,7 @@
     },
     "03": {
       "dept_label": "Allier",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -100,7 +100,7 @@
     },
     "04": {
       "dept_label": "Alpes-de-Haute-Provence",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -133,7 +133,7 @@
     },
     "05": {
       "dept_label": "Hautes-Alpes",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -141,7 +141,7 @@
     },
     "06": {
       "dept_label": "Alpes-Maritimes",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -149,7 +149,7 @@
     },
     "07": {
       "dept_label": "Ardèche",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -157,7 +157,7 @@
     },
     "08": {
       "dept_label": "Ardennes",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -165,7 +165,7 @@
     },
     "09": {
       "dept_label": "Ariège",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -173,7 +173,7 @@
     },
     "10": {
       "dept_label": "Aube",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -181,7 +181,7 @@
     },
     "11": {
       "dept_label": "Aude",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -189,7 +189,7 @@
     },
     "12": {
       "dept_label": "Aveyron",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -197,7 +197,7 @@
     },
     "13": {
       "dept_label": "Bouches-du-Rhône",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -217,7 +217,7 @@
     },
     "14": {
       "dept_label": "Calvados",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -345,7 +345,7 @@
     },
     "15": {
       "dept_label": "Cantal",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -353,7 +353,7 @@
     },
     "16": {
       "dept_label": "Charente",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -388,7 +388,7 @@
     },
     "17": {
       "dept_label": "Charente-Maritime",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -417,7 +417,7 @@
     },
     "18": {
       "dept_label": "Cher",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -425,7 +425,7 @@
     },
     "19": {
       "dept_label": "Corrèze",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -433,7 +433,7 @@
     },
     "2A": {
       "dept_label": "Corse-du-Sud",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -441,7 +441,7 @@
     },
     "2B": {
       "dept_label": "Haute-Corse",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -472,7 +472,7 @@
     },
     "21": {
       "dept_label": "Côte-d'Or",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -480,7 +480,7 @@
     },
     "22": {
       "dept_label": "Côtes-d'Armor",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -488,7 +488,7 @@
     },
     "23": {
       "dept_label": "Creuse",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -496,7 +496,7 @@
     },
     "24": {
       "dept_label": "Dordogne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -504,7 +504,7 @@
     },
     "25": {
       "dept_label": "Doubs",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -512,7 +512,7 @@
     },
     "26": {
       "dept_label": "Drôme",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -520,7 +520,7 @@
     },
     "27": {
       "dept_label": "Eure",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -593,7 +593,7 @@
     },
     "28": {
       "dept_label": "Eure-et-Loir",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -601,7 +601,7 @@
     },
     "29": {
       "dept_label": "Finistère",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -656,7 +656,7 @@
     },
     "30": {
       "dept_label": "Gard",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -693,7 +693,7 @@
     },
     "31": {
       "dept_label": "Haute-Garonne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -754,7 +754,7 @@
     },
     "32": {
       "dept_label": "Gers",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -762,7 +762,7 @@
     },
     "33": {
       "dept_label": "Gironde",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -842,7 +842,7 @@
     },
     "34": {
       "dept_label": "Hérault",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -887,7 +887,7 @@
     },
     "35": {
       "dept_label": "Ille-et-Vilaine",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -974,7 +974,7 @@
     },
     "36": {
       "dept_label": "Indre",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1087,7 +1087,7 @@
     },
     "37": {
       "dept_label": "Indre-et-Loire",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1128,7 +1128,7 @@
     },
     "38": {
       "dept_label": "Isère",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1306,7 +1306,7 @@
     },
     "39": {
       "dept_label": "Jura",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1366,7 +1366,7 @@
     },
     "40": {
       "dept_label": "Landes",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1456,7 +1456,7 @@
     },
     "41": {
       "dept_label": "Loir-et-Cher",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1475,7 +1475,7 @@
     },
     "42": {
       "dept_label": "Loire",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1483,7 +1483,7 @@
     },
     "43": {
       "dept_label": "Haute-Loire",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1555,7 +1555,7 @@
     },
     "44": {
       "dept_label": "Loire-Atlantique",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1653,7 +1653,7 @@
     },
     "45": {
       "dept_label": "Loiret",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1661,7 +1661,7 @@
     },
     "46": {
       "dept_label": "Lot",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1701,7 +1701,7 @@
     },
     "47": {
       "dept_label": "Lot-et-Garonne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1709,7 +1709,7 @@
     },
     "48": {
       "dept_label": "Lozère",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1717,7 +1717,7 @@
     },
     "49": {
       "dept_label": "Maine-et-Loire",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1794,7 +1794,7 @@
     },
     "50": {
       "dept_label": "Manche",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1842,7 +1842,7 @@
     },
     "51": {
       "dept_label": "Marne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1850,7 +1850,7 @@
     },
     "52": {
       "dept_label": "Haute-Marne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1929,7 +1929,7 @@
     },
     "53": {
       "dept_label": "Mayenne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1937,7 +1937,7 @@
     },
     "54": {
       "dept_label": "Meurthe-et-Moselle",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1945,7 +1945,7 @@
     },
     "55": {
       "dept_label": "Meuse",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1978,7 +1978,7 @@
     },
     "56": {
       "dept_label": "Morbihan",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1986,7 +1986,7 @@
     },
     "57": {
       "dept_label": "Moselle",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -1994,7 +1994,7 @@
     },
     "58": {
       "dept_label": "Nièvre",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2002,7 +2002,7 @@
     },
     "59": {
       "dept_label": "Nord",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2010,7 +2010,7 @@
     },
     "60": {
       "dept_label": "Oise",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2018,7 +2018,7 @@
     },
     "61": {
       "dept_label": "Orne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2026,7 +2026,7 @@
     },
     "62": {
       "dept_label": "Pas-de-Calais",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2041,7 +2041,7 @@
     },
     "63": {
       "dept_label": "Puy-de-Dôme",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2152,7 +2152,7 @@
     },
     "64": {
       "dept_label": "Pyrénées-Atlantiques",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2201,7 +2201,7 @@
     },
     "65": {
       "dept_label": "Hautes-Pyrénées",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2214,7 +2214,7 @@
     },
     "66": {
       "dept_label": "Pyrénées-Orientales",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2222,7 +2222,7 @@
     },
     "67": {
       "dept_label": "Bas-Rhin",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2230,7 +2230,7 @@
     },
     "68": {
       "dept_label": "Haut-Rhin",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2314,7 +2314,7 @@
     },
     "69": {
       "dept_label": "Rhône",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2425,7 +2425,7 @@
     },
     "70": {
       "dept_label": "Haute-Saône",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2433,7 +2433,7 @@
     },
     "71": {
       "dept_label": "Saône-et-Loire",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2455,7 +2455,7 @@
     },
     "72": {
       "dept_label": "Sarthe",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2606,7 +2606,7 @@
     },
     "73": {
       "dept_label": "Savoie",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2614,7 +2614,7 @@
     },
     "74": {
       "dept_label": "Haute-Savoie",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2660,7 +2660,7 @@
     },
     "75": {
       "dept_label": "Paris",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2700,7 +2700,7 @@
     },
     "76": {
       "dept_label": "Seine-Maritime",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2708,7 +2708,7 @@
     },
     "77": {
       "dept_label": "Seine-et-Marne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2716,7 +2716,7 @@
     },
     "78": {
       "dept_label": "Yvelines",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2724,7 +2724,7 @@
     },
     "79": {
       "dept_label": "Deux-Sèvres",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2732,7 +2732,7 @@
     },
     "80": {
       "dept_label": "Somme",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2790,7 +2790,7 @@
     },
     "81": {
       "dept_label": "Tarn",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2834,7 +2834,7 @@
     },
     "82": {
       "dept_label": "Tarn-et-Garonne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2842,7 +2842,7 @@
     },
     "83": {
       "dept_label": "Var",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2898,7 +2898,7 @@
     },
     "84": {
       "dept_label": "Vaucluse",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2906,7 +2906,7 @@
     },
     "85": {
       "dept_label": "Vendée",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -2914,7 +2914,7 @@
     },
     "86": {
       "dept_label": "Vienne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3079,7 +3079,7 @@
     },
     "87": {
       "dept_label": "Haute-Vienne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3164,7 +3164,7 @@
     },
     "88": {
       "dept_label": "Vosges",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3172,7 +3172,7 @@
     },
     "89": {
       "dept_label": "Yonne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3180,7 +3180,7 @@
     },
     "90": {
       "dept_label": "Territoire de Belfort",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3188,7 +3188,7 @@
     },
     "91": {
       "dept_label": "Essonne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3196,7 +3196,7 @@
     },
     "92": {
       "dept_label": "Hauts-de-Seine",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3240,7 +3240,7 @@
     },
     "93": {
       "dept_label": "Seine-Saint-Denis",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3286,7 +3286,7 @@
     },
     "94": {
       "dept_label": "Val-de-Marne",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
@@ -3347,7 +3347,7 @@
     },
     "95": {
       "dept_label": "Val-d'Oise",
-      "produceur": "",
+      "producer": "",
       "collect_type": "",
       "approbation_date": "",
       "approbation_url": "",
