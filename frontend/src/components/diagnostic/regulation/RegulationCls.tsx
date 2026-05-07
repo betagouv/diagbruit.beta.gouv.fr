@@ -29,8 +29,8 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
     );
   }
 
-  const firstTypesource = intersections[0].typesource;
-  const allSameTypesource = intersections.every((i) => i.typesource === firstTypesource);
+  const firstSoundCategory = intersections[0].sound_category;
+  const allSameSoundCategory = intersections.every((i) => i.sound_category === firstSoundCategory);
 
   return (
     <div className={fr.cx("fr-mb-4v")}>
@@ -39,7 +39,7 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
         content={
           <>
             <p className={fr.cx("fr-mb-0")}>
-              La parcelle est exposée à {diagnostic.soundclassification_intersections.length} sources de bruit de {allSameTypesource ? `catégorie ${firstTypesource}` : "différentes catégories."}
+              La parcelle est exposée à {diagnostic.soundclassification_intersections.length} sources de bruit de {allSameSoundCategory ? `catégorie ${firstSoundCategory}` : "différentes catégories."}
             </p>
             <p className={fr.cx("fr-mb-4v")}>
               Vous avez une obligation réglementaire d'isoler votre bâtiment.
