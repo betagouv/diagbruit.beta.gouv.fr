@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
 import type { MapGeoJSONFeature } from "react-map-gl/maplibre";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
@@ -11,8 +11,7 @@ import MapComponent, {
 import AddressSearch, { type AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
-import { decode } from "../utils/compression";
-import { buildExclusiveDiagnosticSearch } from "../utils/diagnosticSearchParams";
+import { decode, encode } from "../utils/compression";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
 import { getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
@@ -37,7 +36,6 @@ function DiagnosticPage() {
   const { cx, classes } = useStyles();
   usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
   const location = useLocation();
-  const navigate = useNavigate();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
   const addressSearchRef = useRef<{ reset: () => void }>(null);
@@ -146,6 +144,9 @@ function DiagnosticPage() {
 
   const onDiagnosticsChange = (newDiagnostics: DiagnosticItem[]) => {
     setDiagnosticsResponses(newDiagnostics);
+    if (newDiagnostics.length > 0) {
+      setParcelleError(false);
+    }
   };
 
   const reset = () => {
@@ -158,6 +159,7 @@ function DiagnosticPage() {
 
     setNotIntegrated(false);
     setInternalServerError(false);
+    setParcelleError(false);
     setDiagnosticsResponses([]);
     setSearchValues(defaultSearchValues);
   };
@@ -274,12 +276,17 @@ function DiagnosticPage() {
           checked={showParcelleSearch}
           onChange={checked => {
             setShowParcelleSearch(checked);
-            const params = buildExclusiveDiagnosticSearch(
-              "parcelleSearch",
-              checked,
-              location.search,
+            const params = new URLSearchParams(window.location.search);
+            if (checked) {
+              params.set("parcelleSearch", encode(checked));
+            } else {
+              params.delete("parcelleSearch");
+            }
+            window.history.replaceState(
+              {},
+              "",
+              `${window.location.pathname}?${params.toString()}`,
             );
-            navigate({ search: params.toString() }, { replace: true });
           }}
         />
 
