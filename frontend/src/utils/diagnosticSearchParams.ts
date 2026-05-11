@@ -1,6 +1,14 @@
 import { encode } from "./compression";
 
-const EXCLUSIVE_PARAMS = ["parcelle", "address", "parcelleSearch"] as const;
+const EXCLUSIVE_PARAMS = [
+  "parcelle",
+  "address",
+  "parcelleSearch",
+  "insee_com",
+  "section",
+  "prefixe",
+  "numero",
+] as const;
 
 export type DiagnosticSearchParam = (typeof EXCLUSIVE_PARAMS)[number];
 
