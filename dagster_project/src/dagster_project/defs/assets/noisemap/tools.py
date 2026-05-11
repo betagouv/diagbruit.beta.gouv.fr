@@ -250,6 +250,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
             schema="public_workspace",
             if_exists="append",
             mapping=entry.get("mapping"),
+            context=context
         )
         if success:
             ingested += 1
