@@ -1,4 +1,5 @@
 """Run once to authenticate with Box via OAuth2 and store the token in Postgres."""
+
 import http.server
 import os
 import urllib.parse
@@ -7,13 +8,13 @@ from dotenv import load_dotenv
 from box_sdk_gen import BoxOAuth, OAuthConfig, GetAuthorizeUrlOptions
 
 from dagster_project.defs.resources.box import PostgresTokenStorage
-from dagster_project.defs.jobs.tools import _db_url
+from dagster_project.io.db import db_url
 
 REDIRECT_URI = "http://localhost:8888"
 
 load_dotenv()
 
-db_url = _db_url()
+db_url = db_url()
 storage = PostgresTokenStorage(db_url)
 
 auth = BoxOAuth(
@@ -24,11 +25,14 @@ auth = BoxOAuth(
     )
 )
 
-auth_url = auth.get_authorize_url(options=GetAuthorizeUrlOptions(redirect_uri=REDIRECT_URI))
+auth_url = auth.get_authorize_url(
+    options=GetAuthorizeUrlOptions(redirect_uri=REDIRECT_URI)
+)
 print(f"\nOpening browser for Box login...\n{auth_url}\n")
 webbrowser.open(auth_url)
 
 code_holder = [None]
+
 
 class CallbackHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -40,6 +44,7 @@ class CallbackHandler(http.server.BaseHTTPRequestHandler):
 
     def log_message(self, *_args):
         pass
+
 
 print("Waiting for Box to redirect...")
 http.server.HTTPServer(("localhost", 8888), CallbackHandler).handle_request()
