@@ -14,11 +14,15 @@ from dagster import AssetSelection, define_asset_job
 
 from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
 from dagster_project.defs.assets.noisemap.infra._registry import INFRA_TERRITORIES
+from dagster_project.defs.assets.noisemap.infra_fastlines._registry import FASTLINE_TERRITORIES
 
-# Unified noisemap dept list: every dept present in agglo OR infra gets a job.
-# When infra_fastlines gains a registry, merge it in here too.
+# Unified noisemap dept list: every dept present in any sub-registry gets a job.
 NOISEMAP_DEPTS: tuple[str, ...] = tuple(
-    sorted({t.dept for t in AGGLO_TERRITORIES} | {t.dept for t in INFRA_TERRITORIES})
+    sorted(
+        {t.dept for t in AGGLO_TERRITORIES}
+        | {t.dept for t in INFRA_TERRITORIES}
+        | {t.dept for t in FASTLINE_TERRITORIES}
+    )
 )
 
 NOISEMAP_INGEST_GROUPS = ("noisemap_agglo", "noisemap_infra", "noisemap_fastline")
