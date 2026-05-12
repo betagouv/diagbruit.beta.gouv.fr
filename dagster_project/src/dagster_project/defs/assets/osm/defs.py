@@ -14,9 +14,17 @@ from dagster_project.io.db import db_url
 from dagster_project.io.manifest import manifest_file, reporthook
 from dagster_project.io.s3 import S3_BUCKET, download_from_s3, s3
 
+GROUP = "osm"
+SOURCE = "data.gouv"
+
 OSM_FOODS_URL = "https://data.smartidf.services/api/explore/v2.1/catalog/datasets/osm-france-food-service/exports/geojson?lang=fr&timezone=Europe%2FParis"
 
-@asset(group_name="launcher", key="osm_foods_launcher")
+@asset(
+    key="osm_foods_launcher",
+    group_name=GROUP,
+    tags={"stage": "launcher", "source": SOURCE},
+    kinds={"s3"},
+)
 def osm_foods_launcher(context: AssetExecutionContext):
     """Download and uploading OSM schools service SHP into S3."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "foods" / "osm-france-food-service.geojson"
@@ -62,7 +70,12 @@ def osm_foods_launcher(context: AssetExecutionContext):
 
 OSM_SCHOOLS_URL = "https://www.data.gouv.fr/api/1/datasets/r/bedd394a-24c6-40e1-b0a9-303f78e119c5"
 
-@asset(group_name="launcher", key="osm_schools_launcher")
+@asset(
+    key="osm_schools_launcher",
+    group_name=GROUP,
+    tags={"stage": "launcher", "source": SOURCE},
+    kinds={"s3"},
+)
 def osm_schools_launcher(context: AssetExecutionContext):
     """Download OSM schools ZIP, extract, and upload SHP files to S3."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "osm" / "schools"
@@ -121,7 +134,13 @@ def osm_schools_launcher(context: AssetExecutionContext):
     })
 
 
-@asset(group_name="landing", key="raw_full_osm_schools_data", deps=["osm_schools_launcher"])
+@asset(
+    key="raw_full_osm_schools_data",
+    group_name=GROUP,
+    tags={"stage": "landing", "source": SOURCE},
+    kinds={"s3", "postgres"},
+    deps=["osm_schools_launcher"],
+)
 def osm_schools_landing(context: AssetExecutionContext):
     """Download OSM schools SHP files from S3 and ingest into public_workspace."""
     s3_path = "noisesource/osm/schools/_source/"
@@ -158,7 +177,13 @@ def osm_schools_landing(context: AssetExecutionContext):
         "row_count": MetadataValue.int(row_count),
     })
 
-@asset(group_name="landing", key="raw_full_osm_foods_data", deps=["osm_foods_launcher"])
+@asset(
+    key="raw_full_osm_foods_data",
+    group_name=GROUP,
+    tags={"stage": "landing", "source": SOURCE},
+    kinds={"s3", "postgres"},
+    deps=["osm_foods_launcher"],
+)
 def osm_foods_landing(context: AssetExecutionContext):
     """Download osm foods source files from S3 and ingest into public_workspace."""
     s3_path = "noisesource/osm/foods/_source/"

@@ -10,7 +10,12 @@ from dagster_project.io.db import db_url
 from dagster_project.io.manifest import manifest_file
 from dagster_project.io.s3 import S3_BUCKET, download_from_s3, s3
 
-@asset(group_name="strasbourg", key="raw_full_stras_data")
+@asset(
+    key="raw_full_stras_data",
+    group_name="strasbourg",
+    tags={"source": "local"},
+    kinds={"postgres"},
+)
 def ingest_strasbourg(context: AssetExecutionContext):
     """Ingest Strasbourg terrasses GeoJSON into public_workspace."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg" / "strasbourg-terrasses-autorisees-2025.geojson"
@@ -21,7 +26,12 @@ def ingest_strasbourg(context: AssetExecutionContext):
     })
 
 
-@asset(group_name="launcher", key="peb_launcher")
+@asset(
+    key="peb_launcher",
+    group_name="peb",
+    tags={"stage": "launcher", "source": "local"},
+    kinds={"s3"},
+)
 def peb_launcher(context: AssetExecutionContext):
     """Upload PEB SHP into S3."""
 
@@ -60,7 +70,13 @@ def peb_launcher(context: AssetExecutionContext):
         })
         
 
-@asset(group_name="landing", key="raw_peb", deps=["peb_launcher"])
+@asset(
+    key="raw_peb",
+    group_name="peb",
+    tags={"stage": "landing", "source": "local"},
+    kinds={"s3", "postgres"},
+    deps=["peb_launcher"],
+)
 def peb_landing(context: AssetExecutionContext):
     """Download all PEB source files from S3 and ingest into public_workspace."""
     s3_path = "peb/scope=national/campaign=2023/_source/"

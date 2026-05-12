@@ -10,6 +10,8 @@ from dagster_project.io.s3 import S3_BUCKET, s3
 from dagster_project.defs.assets.noisemap._io import s3_landing, s3_launcher
 
 
+GROUP = "soundclassification"
+
 SOUNDCLASS_LOCAL_DIR = DAGSTER_ROOT / "ingestion" / "inputs" / "soundclassification" / "AGGLO_033"
 
 SOUNDCLASS_MAP = {
@@ -109,7 +111,12 @@ def rename_soundclass_033(file: str, mode:str) -> dict:
     return map[mode]
 
 
-@asset(group_name="launcher", key="soundclass_033_launcher")
+@asset(
+    key="soundclass_033_launcher",
+    group_name=GROUP,
+    tags={"dept": "033", "stage": "launcher", "source": "local"},
+    kinds={"s3"},
+)
 def soundclass_033_launcher(context: AssetExecutionContext):
     all_sha256 = {}
     all_mappings = {}
@@ -155,7 +162,12 @@ def soundclass_033_launcher(context: AssetExecutionContext):
         "manifest": MetadataValue.json(manifest),
     })
 
-@asset(group_name="launcher", key="soundclass_044_launcher")
+@asset(
+    key="soundclass_044_launcher",
+    group_name=GROUP,
+    tags={"dept": "044", "stage": "launcher", "source": "data.gouv"},
+    kinds={"s3"},
+)
 def soundclass_044_launcher(context: AssetExecutionContext):
     for meta in SOUNDCLASS_URL_044:
         mode = meta["mode"]
@@ -168,7 +180,13 @@ def soundclass_044_launcher(context: AssetExecutionContext):
     })
 
 
-@asset(group_name="landing", key="soundclass_044_landing", deps=["soundclass_044_launcher"])
+@asset(
+    key="soundclass_044_landing",
+    group_name=GROUP,
+    tags={"dept": "044", "stage": "landing", "source": "data.gouv"},
+    kinds={"s3", "postgres"},
+    deps=["soundclass_044_launcher"],
+)
 def soundclass_044_landing(context: AssetExecutionContext):
     total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
 
@@ -185,7 +203,13 @@ def soundclass_044_landing(context: AssetExecutionContext):
         "files_ingested": MetadataValue.int(total["files_ingested"]),
         "files_skipped": MetadataValue.int(total["files_skipped"]),
     })
-@asset(group_name="landing", key="soundclass_033_landing", deps=["soundclass_033_launcher"])
+@asset(
+    key="soundclass_033_landing",
+    group_name=GROUP,
+    tags={"dept": "033", "stage": "landing", "source": "local"},
+    kinds={"s3", "postgres"},
+    deps=["soundclass_033_launcher"],
+)
 def soundclass_033_landing(context: AssetExecutionContext):
     total = {"files_downloaded": 0, "files_ingested": 0, "files_skipped": 0}
 

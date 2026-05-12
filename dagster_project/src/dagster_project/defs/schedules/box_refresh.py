@@ -12,7 +12,11 @@ from dagster import (
 from dagster_project.defs.resources.box import BoxResource
 
 
-@asset(group_name="maintenance", key="box_token_refresh")
+@asset(
+    key="box_token_refresh",
+    group_name="maintenance",
+    kinds={"box"},
+)
 def box_token_refresh(context: AssetExecutionContext, box: BoxResource):
     client = box.get_client()
     me = client.users.get_user_me()

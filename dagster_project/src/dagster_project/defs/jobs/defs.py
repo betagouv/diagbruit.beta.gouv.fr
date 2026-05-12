@@ -1,53 +1,96 @@
+"""Job definitions.
+
+Naming convention: `<domain>_[<scope>_]job` where
+  - <domain>  = noisemap | osm | peb | strasbourg | soundclassification | full
+  - <scope>   = optional: `ingest` (ingest assets only, no dbt), `launcher`,
+                `landing`, or a department code (033, 044, ...)
+  - bare `<domain>_job` = the whole domain, dbt included.
+
+Selections lean on tags (`dept`, `stage`, `source`) and groups so that adding a
+new territory only requires a registry entry — never a new job definition.
+"""
+
 from dagster import AssetSelection, define_asset_job
 
+from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
+
+NOISEMAP_INGEST_GROUPS = ("noisemap_agglo", "noisemap_infra", "noisemap_fastline")
+_STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
+    "stage", "landing"
+)
+
+# ── Stage cross-cuts (across every domain) ────────────────────────────────
 full_launcher_job = define_asset_job(
-    name="full_launcher_job",
-    selection=AssetSelection.groups("launcher"),
+    "full_launcher_job",
+    selection=AssetSelection.tag("stage", "launcher"),
+    tags={"domain": "full", "scope": "launcher"},
 )
-
 full_landing_job = define_asset_job(
-    name="full_landing_job",
-    selection=AssetSelection.groups("landing"),
+    "full_landing_job",
+    selection=AssetSelection.tag("stage", "landing"),
+    tags={"domain": "full", "scope": "landing"},
 )
 
-dept_033 = define_asset_job(
-    name="dept_033",
-    selection= AssetSelection.keys("agglo_033_launcher") 
-    | AssetSelection.keys("agglo_033_landing") 
-    | AssetSelection.keys("infra_033_launcher") 
-    | AssetSelection.keys("infra_033_landing")
+# ── Per-domain ingest-only (S3 + Postgres landing, no dbt) ────────────────
+noisemap_ingest_job = define_asset_job(
+    "noisemap_ingest_job",
+    selection=AssetSelection.groups(*NOISEMAP_INGEST_GROUPS),
+    tags={"domain": "noisemap", "scope": "ingest"},
+)
+osm_ingest_job = define_asset_job(
+    "osm_ingest_job",
+    selection=AssetSelection.groups("osm") & _STAGE_INGEST,
+    tags={"domain": "osm", "scope": "ingest"},
+)
+peb_ingest_job = define_asset_job(
+    "peb_ingest_job",
+    selection=AssetSelection.groups("peb") & _STAGE_INGEST,
+    tags={"domain": "peb", "scope": "ingest"},
+)
+soundclassification_ingest_job = define_asset_job(
+    "soundclassification_ingest_job",
+    selection=AssetSelection.groups("soundclassification") & _STAGE_INGEST,
+    tags={"domain": "soundclassification", "scope": "ingest"},
 )
 
-full_ingestion_job = define_asset_job(
-    name="full_ingestion_job",
-    selection=AssetSelection.keys("raw_full_stras_data") 
-    | AssetSelection.keys("raw_full_osm_foods_data") 
-    | AssetSelection.keys("raw_full_osm_schools_data") 
-    | AssetSelection.keys("raw_peb")
+# ── Per-domain "everything" (ingest + dbt) ────────────────────────────────
+noisemap_job = define_asset_job(
+    "noisemap_job",
+    selection=AssetSelection.assets("noisemap").upstream(),
+    tags={"domain": "noisemap", "scope": "pipeline"},
 )
-
+osm_job = define_asset_job(
+    "osm_job",
+    selection=AssetSelection.assets("noisesource").upstream(),
+    tags={"domain": "osm", "scope": "pipeline"},
+)
+peb_job = define_asset_job(
+    "peb_job",
+    selection=AssetSelection.assets("peb").upstream(),
+    tags={"domain": "peb", "scope": "pipeline"},
+)
 strasbourg_job = define_asset_job(
-    name="strasbourg_job",
-    selection=AssetSelection.groups("strasbourg"),
+    "strasbourg_job",
+    selection=AssetSelection.groups("strasbourg").downstream(),
+    tags={"domain": "strasbourg", "scope": "pipeline"},
 )
 
-osm_full_job = define_asset_job(
-    name="osm_full_job",
-    selection=AssetSelection.keys("osm_foods_launcher") | AssetSelection.keys("raw_full_osm_foods_data")
-)
+# ── Per-dept noisemap ingest (auto-generated from AGGLO_TERRITORIES) ──────
+# Sourcing the dept list from AGGLO_TERRITORIES works while every infra/fastline
+# dept is also an agglo dept. When `infra/` and `infra_fastlines/` get their own
+# registries (PR-x), unify into a single NOISEMAP_DEPTS constant.
+for _t in AGGLO_TERRITORIES:
+    _name = f"noisemap_{_t.dept}_job"
+    globals()[_name] = define_asset_job(
+        _name,
+        selection=AssetSelection.groups(*NOISEMAP_INGEST_GROUPS)
+        & AssetSelection.tag("dept", _t.dept),
+        tags={"domain": "noisemap", "scope": "dept", "dept": _t.dept},
+    )
 
-peb_full_job = define_asset_job(
-    name="peb_job",
-    selection=AssetSelection.keys("peb_launcher") | AssetSelection.keys("raw_peb")
-)
-
-raw_noisemap_job = define_asset_job(
-    name="raw_noisemap_job",
-    selection=AssetSelection.keys("raw_noisemap").upstream() | AssetSelection.keys("raw_noisemap"),
-)
-
-full_noisemap_job = define_asset_job(
-    name="full_noisemap_job",
-    description="Executes the FULL noisemap pipeline, this includes : the launcher, landing and the full dbt pipeline.",
-    selection=AssetSelection.keys("noisemap").upstream() | AssetSelection.keys("noisemap"),
+# ── Everything everywhere ─────────────────────────────────────────────────
+full_pipeline_job = define_asset_job(
+    "full_pipeline_job",
+    selection=AssetSelection.all(),
+    tags={"domain": "full", "scope": "pipeline"},
 )
