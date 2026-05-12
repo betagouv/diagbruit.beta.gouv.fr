@@ -1,5 +1,5 @@
 from dagster import AssetExecutionContext, asset
-from dagster_project.defs.assets.noisemap.tools import s3_launcher, s3_landing
+from dagster_project.defs.assets.noisemap._io import s3_landing, s3_launcher
 
 DEPT033_URL = [
     "https://www.data.gouv.fr/api/1/datasets/r/b4cf0f5e-4b99-4af3-916e-1d8c2625fce2"

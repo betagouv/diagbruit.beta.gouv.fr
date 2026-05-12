@@ -9,7 +9,10 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import manifest_file, reporthook, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.io import DAGSTER_ROOT
+from dagster_project.io.db import db_url
+from dagster_project.io.manifest import manifest_file, reporthook
+from dagster_project.io.s3 import S3_BUCKET, download_from_s3, s3
 
 OSM_FOODS_URL = "https://data.smartidf.services/api/explore/v2.1/catalog/datasets/osm-france-food-service/exports/geojson?lang=fr&timezone=Europe%2FParis"
 
@@ -143,7 +146,7 @@ def osm_schools_landing(context: AssetExecutionContext):
     shp_file = shp_files[0]
     context.log.info(f"Ingesting {shp_file.name} → raw_full_osm_schools_data")
 
-    row_count = ingest_shapefile(str(shp_file), "raw_full_osm_schools_data", _db_url(), schema="public_workspace", if_exists="replace")
+    row_count = ingest_shapefile(str(shp_file), "raw_full_osm_schools_data", db_url(), schema="public_workspace", if_exists="replace")
 
     shutil.rmtree(file_path)
     context.log.info(f"Deleted {file_path}")
@@ -180,7 +183,7 @@ def osm_foods_landing(context: AssetExecutionContext):
     geojson_file = geojson_files[0]
     context.log.info(f"Ingesting {geojson_file.name} → raw_full_osm_foods_data")
 
-    row_count = ingest_geojson(str(geojson_file), "raw_full_osm_foods_data", _db_url(), schema="public_workspace", if_exists="replace")
+    row_count = ingest_geojson(str(geojson_file), "raw_full_osm_foods_data", db_url(), schema="public_workspace", if_exists="replace")
 
     shutil.rmtree(file_path.parent)
     context.log.info(f"Deleted {file_path.parent}")

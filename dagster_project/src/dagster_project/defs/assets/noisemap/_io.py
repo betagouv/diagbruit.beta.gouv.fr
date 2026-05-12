@@ -7,7 +7,9 @@ from datetime import datetime, timezone
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import _db_url, download_from_s3, download_extract_upload, s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.io import DAGSTER_ROOT
+from dagster_project.io.db import db_url
+from dagster_project.io.s3 import S3_BUCKET, download_extract_upload, download_from_s3, s3
 
 from dagster_project.defs.resources.box import BoxResource
 
@@ -117,7 +119,7 @@ def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:s
         success = ingest_shapefile(
             str(shp_path),
             db_table,
-            _db_url(),
+            db_url(),
             schema="public_workspace",
             if_exists=if_exist,
             mapping=entry.get("mapping"),
@@ -246,7 +248,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
         success = ingest_shapefile(
             str(shp_path),
             db_table,
-            _db_url(),
+            db_url(),
             schema="public_workspace",
             if_exists="append",
             mapping=entry.get("mapping"),

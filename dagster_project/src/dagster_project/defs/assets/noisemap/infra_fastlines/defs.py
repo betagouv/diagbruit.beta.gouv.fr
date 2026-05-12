@@ -1,6 +1,6 @@
 from dagster import AssetExecutionContext, asset
 
-from dagster_project.defs.assets.noisemap.tools import box_to_s3_launcher, ingest_from_s3_landing
+from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
 from dagster_project.defs.resources.box import BoxResource
 
 BOX_FOLDER_033_ID = "380068036799"

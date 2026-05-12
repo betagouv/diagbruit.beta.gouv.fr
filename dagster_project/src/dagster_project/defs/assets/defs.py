@@ -5,14 +5,17 @@ from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, ass
 
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
-from dagster_project.defs.jobs.tools import manifest_file, reporthook, _db_url, download_from_s3, s3, S3_BUCKET, DAGSTER_ROOT
+from dagster_project.io import DAGSTER_ROOT
+from dagster_project.io.db import db_url
+from dagster_project.io.manifest import manifest_file
+from dagster_project.io.s3 import S3_BUCKET, download_from_s3, s3
 
 @asset(group_name="strasbourg", key="raw_full_stras_data")
 def ingest_strasbourg(context: AssetExecutionContext):
     """Ingest Strasbourg terrasses GeoJSON into public_workspace."""
     file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg" / "strasbourg-terrasses-autorisees-2025.geojson"
     context.log.info(f"Ingesting {file_path.name} → raw_full_stras_data")
-    row_count = ingest_geojson(str(file_path), "raw_full_stras_data", _db_url(), schema="public_workspace", if_exists="replace")
+    row_count = ingest_geojson(str(file_path), "raw_full_stras_data", db_url(), schema="public_workspace", if_exists="replace")
     return MaterializeResult(metadata={
         "row_count": MetadataValue.int(row_count),
     })
@@ -78,7 +81,7 @@ def peb_landing(context: AssetExecutionContext):
     shp_file = shp_files[0]
     context.log.info(f"Ingesting {shp_file.name} → raw_peb")
 
-    row_count = ingest_shapefile(str(shp_file), "raw_peb", _db_url(), schema="public_workspace", if_exists="replace")
+    row_count = ingest_shapefile(str(shp_file), "raw_peb", db_url(), schema="public_workspace", if_exists="replace")
     context.log.info(f"Ingestion Successful for {file_path}")
 
     shutil.rmtree(file_path)
