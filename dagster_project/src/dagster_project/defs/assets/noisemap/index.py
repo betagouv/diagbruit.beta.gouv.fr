@@ -1,9 +1,9 @@
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
+from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
+
 RAW_NOISEMAP_DEPS = [
-    "agglo_033_landing",
-    "agglo_067_landing",
-    "agglo_059_landing",
+    *[f"agglo_{t.dept}_landing" for t in AGGLO_TERRITORIES],
     "infra_033_landing",
     "infra_044_landing",
     "fastline_033_landing",
