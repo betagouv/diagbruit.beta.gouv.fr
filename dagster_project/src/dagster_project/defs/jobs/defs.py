@@ -13,6 +13,13 @@ new territory only requires a registry entry — never a new job definition.
 from dagster import AssetSelection, define_asset_job
 
 from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
+from dagster_project.defs.assets.noisemap.infra._registry import INFRA_TERRITORIES
+
+# Unified noisemap dept list: every dept present in agglo OR infra gets a job.
+# When infra_fastlines gains a registry, merge it in here too.
+NOISEMAP_DEPTS: tuple[str, ...] = tuple(
+    sorted({t.dept for t in AGGLO_TERRITORIES} | {t.dept for t in INFRA_TERRITORIES})
+)
 
 NOISEMAP_INGEST_GROUPS = ("noisemap_agglo", "noisemap_infra", "noisemap_fastline")
 _STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
@@ -75,17 +82,14 @@ strasbourg_job = define_asset_job(
     tags={"domain": "strasbourg", "scope": "pipeline"},
 )
 
-# ── Per-dept noisemap ingest (auto-generated from AGGLO_TERRITORIES) ──────
-# Sourcing the dept list from AGGLO_TERRITORIES works while every infra/fastline
-# dept is also an agglo dept. When `infra/` and `infra_fastlines/` get their own
-# registries (PR-x), unify into a single NOISEMAP_DEPTS constant.
-for _t in AGGLO_TERRITORIES:
-    _name = f"noisemap_{_t.dept}_job"
+# ── Per-dept noisemap ingest (auto-generated from NOISEMAP_DEPTS) ─────────
+for _dept in NOISEMAP_DEPTS:
+    _name = f"noisemap_{_dept}_job"
     globals()[_name] = define_asset_job(
         _name,
         selection=AssetSelection.groups(*NOISEMAP_INGEST_GROUPS)
-        & AssetSelection.tag("dept", _t.dept),
-        tags={"domain": "noisemap", "scope": "dept", "dept": _t.dept},
+        & AssetSelection.tag("dept", _dept),
+        tags={"domain": "noisemap", "scope": "dept", "dept": _dept},
     )
 
 # ── Everything everywhere ─────────────────────────────────────────────────
