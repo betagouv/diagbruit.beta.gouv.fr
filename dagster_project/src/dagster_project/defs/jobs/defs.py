@@ -3,29 +3,18 @@
 Naming convention: `<domain>_[<scope>_]job` where
   - <domain>  = noisemap | osm | peb | strasbourg | soundclassification | full
   - <scope>   = optional: `ingest` (ingest assets only, no dbt), `launcher`,
-                `landing`, or a department code (033, 044, ...)
+                `landing`, or a noisemap source-type (`agglo`, `infra`,
+                `fastline`).
   - bare `<domain>_job` = the whole domain, dbt included.
 
-Selections lean on tags (`dept`, `stage`, `source`) and groups so that adding a
-new territory only requires a registry entry — never a new job definition.
+Noisemap ingest is split per source type (`agglo_ingest_job`, `infra_ingest_job`,
+`fastline_ingest_job`) because each source has its own dept partition set. To
+ingest "all noisemap data for dept 033" run the three jobs with partition 033,
+or select the relevant assets directly from the Assets page.
 """
 
 from dagster import AssetSelection, define_asset_job
 
-from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
-from dagster_project.defs.assets.noisemap.infra._registry import INFRA_TERRITORIES
-from dagster_project.defs.assets.noisemap.infra_fastlines._registry import FASTLINE_TERRITORIES
-
-# Unified noisemap dept list: every dept present in any sub-registry gets a job.
-NOISEMAP_DEPTS: tuple[str, ...] = tuple(
-    sorted(
-        {t.dept for t in AGGLO_TERRITORIES}
-        | {t.dept for t in INFRA_TERRITORIES}
-        | {t.dept for t in FASTLINE_TERRITORIES}
-    )
-)
-
-NOISEMAP_INGEST_GROUPS = ("noisemap_agglo", "noisemap_infra", "noisemap_fastline")
 _STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
     "stage", "landing"
 )
@@ -42,12 +31,24 @@ full_landing_job = define_asset_job(
     tags={"domain": "full", "scope": "landing"},
 )
 
-# ── Per-domain ingest-only (S3 + Postgres landing, no dbt) ────────────────
-noisemap_ingest_job = define_asset_job(
-    "noisemap_ingest_job",
-    selection=AssetSelection.groups(*NOISEMAP_INGEST_GROUPS),
-    tags={"domain": "noisemap", "scope": "ingest"},
+# ── Noisemap per-source ingest (each its own dept partition set) ──────────
+agglo_ingest_job = define_asset_job(
+    "agglo_ingest_job",
+    selection=AssetSelection.groups("noisemap_agglo"),
+    tags={"domain": "noisemap", "scope": "agglo"},
 )
+infra_ingest_job = define_asset_job(
+    "infra_ingest_job",
+    selection=AssetSelection.groups("noisemap_infra"),
+    tags={"domain": "noisemap", "scope": "infra"},
+)
+fastline_ingest_job = define_asset_job(
+    "fastline_ingest_job",
+    selection=AssetSelection.groups("noisemap_fastline"),
+    tags={"domain": "noisemap", "scope": "fastline"},
+)
+
+# ── Other per-domain ingest-only ──────────────────────────────────────────
 osm_ingest_job = define_asset_job(
     "osm_ingest_job",
     selection=AssetSelection.groups("osm") & _STAGE_INGEST,
@@ -65,6 +66,9 @@ soundclassification_ingest_job = define_asset_job(
 )
 
 # ── Per-domain "everything" (ingest + dbt) ────────────────────────────────
+# noisemap_job spans the 3 source-type partition defs + unpartitioned dbt.
+# Dagster handles this by treating each partitioned asset on its own axis at
+# launch time. For a focused single-source run use the per-source ingest jobs.
 noisemap_job = define_asset_job(
     "noisemap_job",
     selection=AssetSelection.assets("noisemap").upstream(),
@@ -85,16 +89,6 @@ strasbourg_job = define_asset_job(
     selection=AssetSelection.groups("strasbourg").downstream(),
     tags={"domain": "strasbourg", "scope": "pipeline"},
 )
-
-# ── Per-dept noisemap ingest (auto-generated from NOISEMAP_DEPTS) ─────────
-for _dept in NOISEMAP_DEPTS:
-    _name = f"noisemap_{_dept}_job"
-    globals()[_name] = define_asset_job(
-        _name,
-        selection=AssetSelection.groups(*NOISEMAP_INGEST_GROUPS)
-        & AssetSelection.tag("dept", _dept),
-        tags={"domain": "noisemap", "scope": "dept", "dept": _dept},
-    )
 
 # ── Everything everywhere ─────────────────────────────────────────────────
 full_pipeline_job = define_asset_job(

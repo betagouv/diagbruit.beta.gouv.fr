@@ -1,14 +1,22 @@
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
+from dagster import (
+    AllPartitionMapping,
+    AssetDep,
+    AssetExecutionContext,
+    MaterializeResult,
+    MetadataValue,
+    asset,
+)
 
-from dagster_project.defs.assets.noisemap.agglo._registry import AGGLO_TERRITORIES
-from dagster_project.defs.assets.noisemap.infra._registry import INFRA_TERRITORIES
-from dagster_project.defs.assets.noisemap.infra_fastlines._registry import FASTLINE_TERRITORIES
 
+# raw_noisemap is unpartitioned and waits for ALL partitions of each
+# partitioned upstream. Made explicit (rather than relying on Dagster's
+# implicit default) so the intent survives Dagster version upgrades.
 RAW_NOISEMAP_DEPS = [
-    *[f"agglo_{t.dept}_landing" for t in AGGLO_TERRITORIES],
-    *[f"infra_{t.dept}_landing" for t in INFRA_TERRITORIES],
-    *[f"fastline_{t.dept}_landing" for t in FASTLINE_TERRITORIES],
+    AssetDep("agglo_landing", partition_mapping=AllPartitionMapping()),
+    AssetDep("infra_landing", partition_mapping=AllPartitionMapping()),
+    AssetDep("fastline_landing", partition_mapping=AllPartitionMapping()),
 ]
+
 
 @asset(
     group_name="noisemap",
@@ -16,5 +24,9 @@ RAW_NOISEMAP_DEPS = [
     deps=RAW_NOISEMAP_DEPS,
 )
 def raw_noisemap(context: AssetExecutionContext):
-    context.log.info("All noisemap landings complete")
+    """Fan-in marker. Materialized after every partition of every upstream landing.
+
+    No-op asset: signals downstream dbt that all per-dept ingest is complete.
+    """
+    context.log.info("raw_noisemap fan-in: all upstream partitions ready")
     return MaterializeResult(metadata={"status": MetadataValue.text("ok")})

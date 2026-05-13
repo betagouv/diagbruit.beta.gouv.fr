@@ -6,12 +6,42 @@ from typing import Callable
 from datetime import datetime, timezone
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
+from sqlalchemy import create_engine, text
+
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.io import DAGSTER_ROOT
 from dagster_project.io.db import db_url
 from dagster_project.io.s3 import S3_BUCKET, download_extract_upload, download_from_s3, s3
 
 from dagster_project.defs.resources.box import BoxResource
+
+
+def _delete_dept_rows(
+    context: AssetExecutionContext, db_table: str, dept: str, schema: str = "public_workspace"
+) -> int:
+    """Delete existing rows for `dept` from `schema.db_table` before re-ingesting.
+
+    Idempotency primitive for partitioned re-runs — without it, re-materializing
+    a dept partition appends duplicate rows to raw_noisemap. Safe to call when
+    the table doesn't yet exist (returns 0 and swallows the error) since the
+    first-ever materialization will create the table via ingest_shapefile.
+    """
+    engine = create_engine(db_url())
+    sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept')
+    try:
+        with engine.begin() as conn:
+            result = conn.execute(sql, {"dept": dept})
+            deleted = result.rowcount or 0
+        context.log.info(
+            f"Deleted {deleted} existing rows for dept={dept} from {schema}.{db_table}"
+        )
+        return deleted
+    except Exception as e:
+        # Table may not exist yet on first run, or codedept column may not be present.
+        context.log.warning(
+            f"Pre-ingest DELETE skipped on {schema}.{db_table} (dept={dept}): {e}"
+        )
+        return 0
 
 
 def rename_infra(file:str) -> dict:
@@ -84,7 +114,13 @@ def s3_launcher(context: AssetExecutionContext, path: str, arr_url: list[str], c
         "manifest": MetadataValue.json(manifest),
     })
 
-def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:str = "append"):
+def s3_landing(
+    context: AssetExecutionContext,
+    path: str,
+    db_table: str,
+    if_exist: str = "append",
+    dept: str | None = None,
+):
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -104,6 +140,10 @@ def s3_landing(context: AssetExecutionContext,path:str, db_table:str, if_exist:s
             "files_downloaded": MetadataValue.int(0),
             "files_ingested": MetadataValue.int(0),
         })
+
+    # Idempotent re-ingest: clear prior rows for this dept before append.
+    if dept is not None and if_exist == "append":
+        _delete_dept_rows(context, db_table=db_table, dept=dept)
 
     ingested = 0
     skipped = 0
@@ -233,6 +273,9 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
             "files_downloaded": MetadataValue.int(0),
             "files_ingested": MetadataValue.int(0),
         })
+
+    # Idempotent re-ingest: clear prior rows for this dept before append.
+    _delete_dept_rows(context, db_table=db_table, dept=dept)
 
     ingested = 0
     skipped = 0

@@ -1,14 +1,24 @@
-from dagster import AssetExecutionContext, AssetsDefinition, asset
+"""Mapping helpers for agglo ingestion.
 
-from dagster_project.defs.assets.noisemap.agglo._registry import AggloFile, AggloTerritory
-from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
-from dagster_project.defs.resources.box import BoxResource
+The actual @asset definitions live in `defs.py` — this module only holds the
+per-territory mapping construction so the asset file stays focused on Dagster
+wiring.
+"""
 
+from dagster_project.defs.assets.noisemap.agglo._registry import (
+    AGGLO_TERRITORIES,
+    AggloFile,
+    AggloTerritory,
+)
 
 KIND = "agglo"
+GROUP = "noisemap_agglo"
+SOURCE = "box"
+
+AGGLO_BY_DEPT: dict[str, AggloTerritory] = {t.dept: t for t in AGGLO_TERRITORIES}
 
 
-def _s3_prefix(t: AggloTerritory) -> str:
+def s3_prefix(t: AggloTerritory) -> str:
     return f"noisemap/cbs_{KIND}/territory={t.slug}/campaign={t.campaign}/"
 
 
@@ -35,48 +45,5 @@ def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
     return mapping
 
 
-def _build_territory_mapping(t: AggloTerritory) -> list[dict]:
+def build_territory_mapping(t: AggloTerritory) -> list[dict]:
     return [{"name": f.name, "mapping": _file_mapping(t, f)} for f in t.files]
-
-
-GROUP = "noisemap_agglo"
-SOURCE = "box"
-
-
-def build_agglo_assets(t: AggloTerritory) -> tuple[AssetsDefinition, AssetsDefinition]:
-    prefix = _s3_prefix(t)
-    mapping = _build_territory_mapping(t)
-    launcher_key = f"{KIND}_{t.dept}_launcher"
-    landing_key = f"{KIND}_{t.dept}_landing"
-    base_tags = {"dept": t.dept, "source": SOURCE}
-
-    @asset(
-        name=launcher_key,
-        group_name=GROUP,
-        tags={**base_tags, "stage": "launcher"},
-        kinds={"box", "s3"},
-    )
-    def _launcher(context: AssetExecutionContext, box: BoxResource):
-        f"""Upload {KIND} {t.dept} ({t.slug}) files from Box to S3."""
-        return box_to_s3_launcher(
-            context=context,
-            path=prefix,
-            type=KIND,
-            dept=t.dept,
-            box=box,
-            folder_id=t.box_folder_id,
-            mapping=mapping,
-        )
-
-    @asset(
-        name=landing_key,
-        group_name=GROUP,
-        tags={**base_tags, "stage": "landing"},
-        kinds={"s3", "postgres"},
-        deps=[launcher_key],
-    )
-    def _landing(context: AssetExecutionContext):
-        f"""Download {KIND} {t.dept} ({t.slug}) files from S3 into public_workspace.raw_noisemap."""
-        return ingest_from_s3_landing(context, path=prefix, type=KIND, dept=t.dept)
-
-    return _launcher, _landing
