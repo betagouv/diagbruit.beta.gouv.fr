@@ -8,7 +8,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import type { Settings } from "../utils/types";
 import TallyForm from "../components/diagnostic/TallyForm";
-import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
+import AddressSearch, {
+  AddressFeature,
+} from "../components/search/AddressSearch";
 import { encode } from "../utils/compression";
 import { getIsMobile } from "../utils/tools";
 import { trackMatomoEvent } from "../utils/matomo";
@@ -81,27 +83,37 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
-          ...(!isMobile ? [
-            <div key="header-search" className={cx(classes.searchContainer)}>
-              <AddressSearch
-                id="header-address-search"
-                placeholder="Rechercher une adresse..."
-                light
-                onValueSelected={(feature: AddressFeature | null) => {
-                  trackMatomoEvent("Action", "Header address search", "header-search-address");
-                  navigate({
-                    pathname: "/diagnostic",
-                    search: `?address=${encode(feature)}`,
-                  });
-                }}
-              />
-            </div>
-          ] : []),
+          ...(!isMobile
+            ? [
+                <div
+                  key="header-search"
+                  className={cx(classes.searchContainer)}
+                >
+                  <AddressSearch
+                    id="header-address-search"
+                    placeholder="Rechercher une adresse..."
+                    light
+                    onValueSelected={(feature: AddressFeature | null) => {
+                      trackMatomoEvent(
+                        "Action",
+                        "Header address search",
+                        "header-search-address",
+                      );
+                      navigate({
+                        pathname: "/diagnostic",
+                        search: `?address=${encode(feature)}`,
+                      });
+                    }}
+                  />
+                </div>,
+              ]
+            : []),
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
           <>
-            Intégrez les risques sonores dès la conception d'un projet immobilier
+            Intégrez les risques sonores dès la conception d'un projet
+            immobilier
           </>
         }
         operatorLogo={{
@@ -117,27 +129,27 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           {
             isActive: pathname === "/",
             linkProps: {
-              href: '/',
-              target: '_self'
+              href: "/",
+              target: "_self",
             },
-            text: 'Accueil'
+            text: "Accueil",
           },
           {
             isActive: pathname.startsWith("/diagnostic"),
             linkProps: {
-              href: '/diagnostic',
-              target: '_self'
+              href: "/diagnostic",
+              target: "_self",
             },
-            text: 'Diagnostiquer une parcelle'
+            text: "Diagnostiquer une parcelle",
           },
           {
             isActive: pathname.startsWith("/preco"),
             linkProps: {
-              href: '/preco',
-              target: '_self'
+              href: "/preco",
+              target: "_self",
             },
-            text: 'Se protéger du bruit'
-          }
+            text: "Se protéger du bruit",
+          },
         ]}
         id="fr-header-simple-header"
       />
@@ -173,6 +185,12 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             text: "Politique de confidentialité",
             linkProps: { href: "/privacy-policy" },
           },
+          {
+            text: "Documentation",
+            linkProps: {
+              href: "https://docs.numerique.gouv.fr/docs/da3f8dd6-f9f2-4a4c-9548-952e076f699d/",
+            },
+          },
         ]}
         contentDescription="diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
       />
@@ -199,8 +217,8 @@ const useStyles = tss.create(() => ({
       },
       width: "350px",
       a: {
-        marginBottom: fr.spacing("1v")
-      }
+        marginBottom: fr.spacing("1v"),
+      },
     },
   },
   searchContainer: {
@@ -211,7 +229,7 @@ const useStyles = tss.create(() => ({
     "&& .fr-btn:enabled": {
       backgroundColor: `${fr.colors.decisions.background.actionHigh.blueFrance.default} !important`,
       color: "#ffffff !important",
-    }
+    },
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,
