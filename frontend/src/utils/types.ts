@@ -68,10 +68,11 @@ export type Zone = {
 };
 
 export type AirIntersection = {
-  zone: ("A" | "B" | "C" | "D") | null;
-  legende: number;
-  nom: string;
-  ref_doc: string;
+  acoustic_zone: ("A" | "B" | "C" | "D") | null;
+  acoustic_db_value: number;
+  label: string;
+  campaign: string;
+  campaign_url: string;
   percent_impacted: number;
 };
 

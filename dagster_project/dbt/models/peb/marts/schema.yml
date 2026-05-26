@@ -4,9 +4,9 @@ models:
   - name: peb
     description: "Clean and validated PEB polygons projected to EPSG:4326 with geometry quality checks"
     columns:
-      - name: zone
+      - name: acoustic_zone
         description: "Noise exposure zone"
-      - name: legende
+      - name: acoustic_db_value
         description: "Legend code indicating noise level classification"
       - name: indldenext
         description: "Lden noise index - external level"
@@ -14,7 +14,7 @@ models:
         description: "Lden noise index - initial level"
       - name: code_oaci
         description: "ICAO code of the aerodrome"
-      - name: nom
+      - name: label
         description: "Name of the aerodrome or area"
       - name: date_arret
         description: "Decree or regulation date"
@@ -22,7 +22,7 @@ models:
         description: "Data producer organization"
       - name: date_maj
         description: "Last update date of the dataset"
-      - name: ref_doc
+      - name: campaign_url
         description: "Reference document related to the noise zone"
       - name: id_map
         description: "Map identifier from the original data"

@@ -6,28 +6,16 @@
 ) }}
 
 SELECT
-  zone,
+  acoustic_zone,
   CASE 
-    WHEN legende ~ '^[0-9]+(\.[0-9]+)?$' THEN CAST(legende AS float)
+    WHEN acoustic_db_value ~ '^[0-9]+(\.[0-9]+)?$' THEN CAST(acoustic_db_value AS float)
     ELSE NULL
-  END AS legende,
-  indldenext,
-  indldenint,
-  code_oaci,
-  nom,
-  date_arret,
-  producteur,
-  date_maj,
-  ref_doc,
-  id_map,
-  CAST(id_map || '_' || zone AS TEXT) AS polygon_id,
-  geometry,
-  area_m2,
-  srid,
-  original_is_valid,
-  original_validity_reason,
-  is_valid_now,
-  geometry_type
+  END AS acoustic_db_value,
+  label,
+  '2022' AS campaign,
+  campaign_url,
+  CAST(id_map || '_' || acoustic_zone AS TEXT) AS polygon_id,
+  geometry
 
 FROM {{ ref('int_peb_projected') }}
 WHERE COALESCE(area_m2, 0) > 0.0
