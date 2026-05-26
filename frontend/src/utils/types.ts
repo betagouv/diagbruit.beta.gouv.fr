@@ -51,12 +51,12 @@ export type DiagnosticFlags = {
 export type Cardinality = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW";
 
 export type LandIntersection = {
-  typeterr: string;
-  typesource: string;
-  indicetype: string;
+  acoustic_producer_kind: string;
+  kind: string;
+  acoustic_time_range: string;
   codeinfra: string | null;
-  legende: number;
-  cbstype: string;
+  acoustic_db_value: number;
+  acoustic_noisemap_kind: string;
   geometry_intersection: Geometry;
   percent_impacted: number;
   direction: Cardinality;
