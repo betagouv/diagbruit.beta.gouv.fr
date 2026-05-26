@@ -13,7 +13,7 @@ WITH geo_enriched AS (
 
     UNION ALL
 
-    SELECT 
+    SELECT
         n.*,
         LPAD(d.code, 3, '0') AS inferred_codedept
     FROM {{ ref('int_noisemap_fixed_clean') }} n
@@ -27,16 +27,16 @@ SELECT
     id,
     idcbs,
     uueid,
-    annee,
+    campaign,
     COALESCE(codedept, inferred_codedept) AS codedept,
-    typeterr,
+    acoustic_producer_kind,
     producteur,
     codeinfra,
-    typesource,
-    cbstype,
+    kind,
+    acoustic_noisemap_kind,
     zonedef,
-    legende,
-    indicetype,
+    acoustic_db_value,
+    acoustic_time_range,
     validedeb,
     validefin,
     original_is_valid,

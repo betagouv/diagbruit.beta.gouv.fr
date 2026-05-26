@@ -13,9 +13,6 @@ sources:
             description: "Department name"
           - name: geometry
             description: "Geometry data in WKT format"
-  - name: public_workspace
-    schema: public_workspace
-    tables:
       - name: raw_noisemap
         description: "Raw noise map data imported from shapefiles"
         columns:
@@ -25,25 +22,25 @@ sources:
             description: "CBS ID"
           - name: uueid
             description: "UUID"
-          - name: annee
+          - name: campaign
             description: "Year"
           - name: codedept
             description: "Department code"
-          - name: typeterr
+          - name: acoustic_producer_kind
             description: "Territory type"
           - name: producteur
             description: "Producer ID"
           - name: codeinfra
             description: "Infrastructure code"
-          - name: typesource
+          - name: kind
             description: "Source type"
-          - name: cbstype
+          - name: acoustic_noisemap_kind
             description: "CBS type"
           - name: zonedef
             description: "Zone definition"
-          - name: legende
+          - name: acoustic_db_value
             description: "Legend"
-          - name: indicetype
+          - name: acoustic_time_range
             description: "Indicator type"
           - name: validedeb
             description: "Validity start date"
