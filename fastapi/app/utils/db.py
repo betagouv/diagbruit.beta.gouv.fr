@@ -154,12 +154,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         intersection_geom = func.ST_Intersection(NoiseMapItem.geometry, safe_geom)
 
         stmt = db.query(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             func.sum(func.ST_Area(func.Geography(intersection_geom))).label("total_intersection_area_m2"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
             func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
@@ -168,12 +168,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
         ).group_by(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             intersection_geom
         )
 
@@ -185,11 +185,11 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             geometry_intersection = geometry_parsed["coordinates"]
             if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
                 result.append({
-                    "typeterr": r.typeterr,
-                    "typesource": r.typesource,
-                    "indicetype": r.indicetype,
-                    "cbstype": r.cbstype,
-                    "legende": r.legende,
+                    "acoustic_producer_kind": r.acoustic_producer_kind,
+                    "kind": r.kind,
+                    "acoustic_time_range": r.acoustic_time_range,
+                    "acoustic_noisemap_kind": r.acoustic_noisemap_kind,
+                    "acoustic_db_value": r.acoustic_db_value,
                     "codeinfra": r.codeinfra,
                     "geometry_intersection": geometry_intersection,
                     "percent_impacted": percent_impacted,
@@ -203,10 +203,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                     func.COALESCE(
                         func.ST_Union(
                             func.ST_Intersection(
-                                NoiseMapItem.geometry, 
+                                NoiseMapItem.geometry,
                                 safe_geom
                             )
-                        ).filter(NoiseMapItem.indicetype == 'LD'),
+                        ).filter(NoiseMapItem.acoustic_time_range == 'LD'),
                         func.ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)
                     )
                 ),
