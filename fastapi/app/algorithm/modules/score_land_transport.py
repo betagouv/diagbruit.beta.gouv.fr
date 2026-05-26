@@ -26,19 +26,19 @@ def load_land_levels(indicetype):
 
 def compute_intersection_score(intersection, levels, all_intersections):
     """
-    Computes the score of a single intersection based on its 'legende' value
+    Computes the score of a single intersection based on its 'acoustic_db_value'
     and specific conditions related to infrastructure type.
     """
-    legende = intersection.get("legende", 0)
+    acoustic_db_value = intersection.get("acoustic_db_value", 0)
     score = 0
 
     for level in levels:
-        if legende >= level["value_gte"]:
+        if acoustic_db_value >= level["value_gte"]:
             score = level["score"]
 
-    # Specific case: if score is 7 and there's a matching type C intersection for the same typesource, add +1
+    # Specific case: if score is 7 and there's a matching type C intersection for the same kind, add +1
     if score == 7 and any(
-        inf.get("cbstype") == "C" and inf.get("typesource") == intersection.get("typesource")
+        inf.get("acoustic_noisemap_kind") == "C" and inf.get("kind") == intersection.get("kind")
         for inf in all_intersections
     ):
         score += 1
@@ -47,14 +47,14 @@ def compute_intersection_score(intersection, levels, all_intersections):
 
 
 def compute_aggregated_score_for_intersections(intersections, levels, all_intersections, exclude_domination=False):
-    grouped_by_legende = defaultdict(list)
+    grouped_by_acoustic_db_value = defaultdict(list)
     for item in intersections:
-        grouped_by_legende[item['legende']].append(item)
+        grouped_by_acoustic_db_value[item['acoustic_db_value']].append(item)
 
-    all_items = [items[0] for items in grouped_by_legende.values()]
-    has_infra = any(item.get('typeterr') == 'INFRA' for item in all_items)
+    all_items = [items[0] for items in grouped_by_acoustic_db_value.values()]
+    has_infra = any(item.get('acoustic_producer_kind') == 'INFRA' for item in all_items)
     if has_infra:
-        filtered_items = [item for item in all_items if item.get('typeterr') != 'AGGLO']
+        filtered_items = [item for item in all_items if item.get('acoustic_producer_kind') != 'AGGLO']
     else:
         filtered_items = all_items
     reduced_list = sorted(filtered_items, key=lambda item: item.get('percent_impacted', 0), reverse=True)
@@ -76,24 +76,24 @@ def find_similar_intersections(item, intersections):
     """
     Return intersections that:
       - have a non-null codeinfra
-      - have the same typesource
+      - have the same kind
       - have a direction equal to, +45°, or -45° vs the given item
-      - have a legende within ±5 of the item's legende
+      - have an acoustic_db_value within ±5 of the item's acoustic_db_value
     Ordered by closeness: 0° first, then ±45°.
     """
     item_dir = item.get("direction")
-    item_legende = item.get("legende")
-    item_typesource = item.get("typesource")
+    item_acoustic_db_value = item.get("acoustic_db_value")
+    item_kind = item.get("kind")
 
     priority_map = DIRECTION_PRIORITIES.get(item_dir, {})
 
     candidates = [
         other for other in intersections
         if other.get("codeinfra") not in (None, "")
-        and other.get("typesource") == item_typesource
+        and other.get("kind") == item_kind
         and other.get("direction") in priority_map
-        and other.get("legende") is not None
-        and abs(other.get("legende") - item_legende) <= 5
+        and other.get("acoustic_db_value") is not None
+        and abs(other.get("acoustic_db_value") - item_acoustic_db_value) <= 5
     ]
 
     return sorted(candidates, key=lambda x: priority_map[x["direction"]])
@@ -114,11 +114,11 @@ def determine_codeinfra(item, intersections):
 
 def group_intersections_by_identifier(intersections):
     """
-    Groups intersections by a unique identifier based on the (typesource, codeinfra) pair.
+    Groups intersections by a unique identifier based on the (kind, codeinfra) pair.
     """
     grouped = defaultdict(list)
     for item in intersections:
-        identifier = f"{item['typesource']}_INTERSECTIONS_{determine_codeinfra(item, intersections)}"
+        identifier = f"{item['kind']}_INTERSECTIONS_{determine_codeinfra(item, intersections)}"
         grouped[identifier].append(item)
     return grouped
 
