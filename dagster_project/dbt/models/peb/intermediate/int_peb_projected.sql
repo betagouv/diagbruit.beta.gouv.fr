@@ -4,16 +4,16 @@
 ) }}
 
 SELECT
-    zone,
-    legende,
+    acoustic_zone,
+    acoustic_db_value,
     indldenext,
     indldenint,
     code_oaci,
-    nom,
+    label,
     date_arret,
     producteur,
     date_maj,
-    ref_doc,
+    campaign_url,
     id_map,
     {{ transform_to_epsg_4326('geometry', 3857) }} AS geometry,
     original_is_valid,

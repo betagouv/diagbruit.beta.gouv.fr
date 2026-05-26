@@ -4,16 +4,16 @@
 ) }}
 
 SELECT
-    zone,
-    indldenext as legende,
+    zone as acoustic_zone,
+    indldenext as acoustic_db_value,
     indldenext,
     indldenint,
     code_oaci,
-    nom,
+    nom as label,
     date_arret,
     producteur,
     date_maj,
-    ref_doc,
+    ref_doc as campaign_url,
     id_map,
     geometry
 FROM {{ source('public_workspace', 'raw_peb') }}

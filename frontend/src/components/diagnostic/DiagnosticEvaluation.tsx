@@ -224,8 +224,8 @@ const DiagnosticEvaluation = ({
                   air_intersections.map((intersection) => [
                     "Aérien",
                     "État",
-                    intersection.nom || "Non connu",
-                    intersection.legende + " dB",
+                    intersection.label || "Non connu",
+                    intersection.acoustic_db_value + " dB",
                     "-",
                   ])
                 )}

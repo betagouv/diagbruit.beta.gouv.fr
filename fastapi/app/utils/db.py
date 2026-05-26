@@ -355,10 +355,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
         intersection_geom = func.ST_Intersection(PebItem.geometry, safe_geom)
 
         stmt = db.query(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc,
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url,
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area")
         ).filter(
             func.ST_Intersects(
@@ -366,10 +367,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
                 safe_geom
             )
         ).group_by(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url
         )
 
         result = []
@@ -378,10 +380,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
             percent_impacted = round(r.intersection_area / safe_geom_area, 2)
             if percent_impacted > threshold:
                 result.append({
-                    "zone": r.zone,
-                    "legende": r.legende,
-                    "nom": r.nom,
-                    "ref_doc": r.ref_doc,
+                    "acoustic_zone": r.acoustic_zone,
+                    "acoustic_db_value": r.acoustic_db_value,
+                    "label": r.label,
+                    "campaign": r.campaign,
+                    "campaign_url": r.campaign_url,
                     "percent_impacted": percent_impacted
                 })
 

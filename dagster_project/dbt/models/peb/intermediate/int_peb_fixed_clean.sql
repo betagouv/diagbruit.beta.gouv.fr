@@ -5,16 +5,16 @@
 
 WITH exploded AS (
     SELECT
-        zone,
-        legende,
+        acoustic_zone,
+        acoustic_db_value,
         indldenext,
         indldenint,
         code_oaci,
-        nom,
+        label,
         date_arret,
         producteur,
         date_maj,
-        ref_doc,
+        campaign_url,
         id_map,
         geometry,
         original_is_valid,
@@ -28,16 +28,16 @@ WITH exploded AS (
 )
 
 SELECT
-    zone,
-    legende,
+    acoustic_zone,
+    acoustic_db_value,
     indldenext,
     indldenint,
     code_oaci,
-    nom,
+    label,
     date_arret,
     producteur,
     date_maj,
-    ref_doc,
+    campaign_url,
     id_map,
     original_is_valid,
     original_validity_reason,

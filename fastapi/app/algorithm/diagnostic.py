@@ -52,15 +52,12 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     distinct_typesources = list(dict.fromkeys(s.lstrip()[0] for s in grouped_ld if s.strip()))
 
     # Return max db lden
+    def _db_value(x):
+        return x.get('acoustic_db_value') or 0
+
     all_sources = land_intersections_ld_cbs_A + diagnostic['air_intersections']
-    diagnostic['max_db_lden'] = max(
-        all_sources,
-        key=lambda x: x['legende']
-    )['legende'] if len(all_sources) else 0
-    diagnostic['min_db_lden'] = min(
-        all_sources,
-        key=lambda x: x['legende']
-    )['legende'] if len(all_sources) else 0
+    diagnostic['max_db_lden'] = _db_value(max(all_sources, key=_db_value)) if len(all_sources) else 0
+    diagnostic['min_db_lden'] = _db_value(min(all_sources, key=_db_value)) if len(all_sources) else 0
 
     # Return equivalent sound environments
     diagnostic['equivalent_ambiences'] = get_sound_equivalents(diagnostic['max_db_lden'])

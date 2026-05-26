@@ -22,9 +22,9 @@ const RegulationPeb = ({ diagnosticItem }: RegulationPebProps) => {
   return (
     <div className={fr.cx("fr-mb-4v")}>
       <DiagnosticRegulationBox
-        label={`Zone ${diagnostic.air_intersections[0].zone}`}
+        label={`Zone ${diagnostic.air_intersections[0].acoustic_zone}`}
         content={
-          getPebRegulationTextFromZone(diagnostic.air_intersections[0].zone) ||
+          getPebRegulationTextFromZone(diagnostic.air_intersections[0].acoustic_zone) ||
           ""
         }
         source="PEB"
