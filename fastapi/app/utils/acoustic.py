@@ -101,7 +101,7 @@ def get_land_isolations(soundclassification_intersections: List) -> (int, int):
 
     max_val = max(
         get_land_intersection_isolation(
-            inter["sound_category"],
+            inter["acoustic_category"],
             inter["max_distance"],
             inter["farthest_correction"]
         )
@@ -110,7 +110,7 @@ def get_land_isolations(soundclassification_intersections: List) -> (int, int):
 
     min_val = max(
         get_land_intersection_isolation(
-            inter["sound_category"],
+            inter["acoustic_category"],
             inter["min_distance"],
             inter["closest_correction"]
         )
