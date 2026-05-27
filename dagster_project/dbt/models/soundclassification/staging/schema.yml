@@ -21,9 +21,9 @@ models:
         description: "Type of infrastructure (T = Tramway, F = Ferroviaire, R = Routier)"
       - name: codeinfra
         description: "Infrastructure identifier (id, ligne, numero or toponyme depending on the source)"
-      - name: buffer
+      - name: acoustic_buffer
         description: "Buffer distance or section width depending on the source"
-      - name: sound_category
+      - name: acoustic_category
         description: "Sound classification category (categorie, rang, cat_bruit, or cat)"
       - name: extra_fields
         description: "JSON object containing all source-specific fields"

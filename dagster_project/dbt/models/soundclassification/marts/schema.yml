@@ -8,13 +8,13 @@ models:
         description: "Primary key generated with generate_surrogate_key"
       - name: source
         description: "Original data source (tramway, fer, routier, lgv)"
-      - name: typesource
+      - name: kind
         description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
       - name: codeinfra
         description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
-      - name: buffer
+      - name: acoustic_buffer
         description: "Buffer width applied (in meters)"
-      - name: sound_category
+      - name: acoustic_category
         description: "Sound classification category"
       - name: geometry
         description: "Merged geometry in EPSG:4326, type POLYGON or MULTIPOLYGON"
@@ -26,7 +26,7 @@ models:
         description: "Primary key (minimum pk from merged records)"
       - name: source
         description: "Original data source (tramway, fer, routier, lgv)"
-      - name: typesource
+      - name: kind
         description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
       - name: codeinfra
         description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
