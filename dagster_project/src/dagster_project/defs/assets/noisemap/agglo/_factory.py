@@ -36,13 +36,15 @@ def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
         "codeinfra": {"value": ""},
         "idcbs": {"value": ""},
         "uueid": {"value": ""},
-        "producteur": {"value": ""},
+        "producer": {"value": ""},
         "zonedef": {"value": ""},
         "validedeb": {"value": ""},
         "validefin": {"value": ""},
     }
     if f.keep_source:
         mapping["source"] = True
+    else:
+        mapping["source"] = {"value": ""}
     return mapping
 
 
