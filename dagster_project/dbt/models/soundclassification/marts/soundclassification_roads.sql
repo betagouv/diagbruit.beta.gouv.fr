@@ -10,7 +10,7 @@
 SELECT
     MIN(pk) AS pk,
     source,
-    typesource,
+    kind,
     codeinfra,
     codedept,
     ST_Union(multilinestring) AS geometry
@@ -18,6 +18,6 @@ FROM {{ ref('int_soundclassification_merge') }}
 WHERE area_m2 > 0
 GROUP BY
     source,
-    typesource,
+    kind,
     codeinfra,
     codedept
