@@ -4,9 +4,9 @@ import shutil
 from typing import Callable
 
 from datetime import datetime, timezone
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.io import DAGSTER_ROOT
@@ -53,7 +53,7 @@ def rename_infra(file:str) -> dict:
             "idcbs": True,
             "uueid": True,
             "codedept": True,
-            "producteur": True,
+            "producer": {"from": "producteur"},
             "zonedef": True,
             "validedeb": True,
             "validefin": True,
@@ -64,6 +64,7 @@ def rename_infra(file:str) -> dict:
             "acoustic_noisemap_kind": {"from": "cbstype"},
             "acoustic_db_value": {"from": "legende"},
             "acoustic_time_range": {"from": "indicetype"},
+            "source": {"value": ""},
         },
     }
 
@@ -273,6 +274,20 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
             "files_downloaded": MetadataValue.int(0),
             "files_ingested": MetadataValue.int(0),
         })
+
+    # Guard: validate mapping target columns against the existing table schema before deleting any rows. 
+    # if no guard during mapping mismatch, the function will delete the old data.
+    engine = create_engine(db_url())
+    inspector = inspect(engine)
+    if db_table in inspector.get_table_names(schema="public_workspace"):
+        existing_cols = {col["name"] for col in inspector.get_columns(db_table, schema="public_workspace")}
+        target_cols = {col for entry in mapping for col in (entry.get("mapping") or {})}
+        missing = target_cols - existing_cols - {"geometry"}
+        if missing:
+            raise ValueError(
+                f"Schema mismatch — mapping targets columns not present in {db_table}: "
+                f"{sorted(missing)}. Re-run the launcher to regenerate the S3 mapping, then retry."
+            )
 
     # Idempotent re-ingest: clear prior rows for this dept before append.
     _delete_dept_rows(context, db_table=db_table, dept=dept)
