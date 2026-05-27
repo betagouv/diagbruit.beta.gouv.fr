@@ -28,7 +28,7 @@ sources:
             description: "Department code"
           - name: acoustic_producer_kind
             description: "Territory type"
-          - name: producteur
+          - name: producer
             description: "Producer ID"
           - name: codeinfra
             description: "Infrastructure code"

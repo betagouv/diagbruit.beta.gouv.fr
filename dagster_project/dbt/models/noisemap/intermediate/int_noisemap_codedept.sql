@@ -30,7 +30,7 @@ SELECT
     campaign,
     COALESCE(codedept, inferred_codedept) AS codedept,
     acoustic_producer_kind,
-    producteur,
+    producer,
     codeinfra,
     kind,
     acoustic_noisemap_kind,

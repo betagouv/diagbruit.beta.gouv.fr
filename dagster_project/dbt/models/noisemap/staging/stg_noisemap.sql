@@ -14,7 +14,7 @@ SELECT
     campaign,
     codedept,
     acoustic_producer_kind,
-    producteur,
+    producer,
     codeinfra,
     kind,
     acoustic_noisemap_kind,
