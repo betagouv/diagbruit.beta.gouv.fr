@@ -24,18 +24,18 @@ const DiagnosticSoundClassificationTable = ({
   ];
 
   const data = intersections
-    .sort((a, b) => b.sound_category - a.sound_category)
+    .sort((a, b) => b.acoustic_category - a.acoustic_category)
     .map(
       ({
-        typesource,
+        kind,
         codeinfra,
-        sound_category,
+        acoustic_category,
         min_distance,
         max_distance,
       }) => [
-          getReadableSource(typesource, true),
+          getReadableSource(kind, true),
           codeinfra || "-",
-          sound_category,
+          acoustic_category,
           `${min_distance.toString()} mètre${min_distance > 1 ? "s" : ""} *`,
           `${max_distance.toString()} mètre${max_distance > 1 ? "s" : ""} *`,
         ]
