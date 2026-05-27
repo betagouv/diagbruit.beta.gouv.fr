@@ -9,7 +9,7 @@ class SoundClassificationRoadsItem(Base):
     
     pk = Column(Integer, primary_key=True, index=True)
     source = Column(String)
-    typesource = Column(String(1), index=True)
+    kind = Column(String(1), index=True)
     codeinfra = Column(String, index=True)
     codedept = Column(String)
     geometry = Column(Geometry('MULTILINESTRING', srid=4326))
