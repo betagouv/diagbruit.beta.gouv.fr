@@ -5,7 +5,6 @@
 
 WITH exploded AS (
     SELECT
-        id,
         campaign,
         codedept,
         acoustic_producer_kind,
@@ -25,7 +24,6 @@ WITH exploded AS (
 )
 
 SELECT
-    id,
     campaign,
     codedept,
     acoustic_producer_kind,

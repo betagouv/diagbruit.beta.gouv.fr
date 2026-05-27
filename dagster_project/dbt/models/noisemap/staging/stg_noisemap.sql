@@ -8,7 +8,6 @@
 
 
 SELECT
-    id,
     campaign,
     codedept,
     acoustic_producer_kind,
