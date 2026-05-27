@@ -24,7 +24,6 @@ WITH geo_enriched AS (
 )
 
 SELECT
-    id,
     campaign,
     COALESCE(codedept, inferred_codedept) AS codedept,
     acoustic_producer_kind,

@@ -5,7 +5,6 @@
 
 WITH fixed_geometries AS (
     SELECT
-        id,
         campaign,
         codedept,
         acoustic_producer_kind,
@@ -22,7 +21,6 @@ WITH fixed_geometries AS (
 )
 
 SELECT
-    id,
     campaign,
     codedept,
     acoustic_producer_kind,
