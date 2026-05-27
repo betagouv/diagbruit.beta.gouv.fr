@@ -9,11 +9,10 @@
 
 SELECT
   id,
-  idcbs,
-  uueid,
+  campaign,
   codedept,
   acoustic_producer_kind,
-  codeinfra,
+  label,
   kind,
   acoustic_noisemap_kind,
   CAST(acoustic_db_value AS float) AS acoustic_db_value,

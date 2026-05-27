@@ -4,11 +4,15 @@ models:
   - name: noisemap
     description: "Clean noise map polygons with validated geometries"
     columns:
+      - name: id
+        description: "Noise zone ID"
+      - name: campaign
+        description: "Year"
       - name: codedept
         description: "Department code"
       - name: acoustic_producer_kind
         description: "Territory type (INFRA or AGGLO)"
-      - name: codeinfra
+      - name: label
         description: "Infrastructure code"
       - name: kind
         description: "Source type (F for railway, R for road)"

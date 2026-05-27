@@ -33,7 +33,7 @@ def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
         "campaign": {"value": t.annee},
         "codedept": {"value": t.dept},
         "acoustic_producer_kind": {"value": "AGGLO"},
-        "codeinfra": {"value": ""},
+        "label": {"value": ""},
         "idcbs": {"value": ""},
         "uueid": {"value": ""},
         "producer": {"value": ""},

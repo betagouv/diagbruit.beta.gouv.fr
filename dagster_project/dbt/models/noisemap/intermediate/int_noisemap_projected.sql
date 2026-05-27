@@ -5,20 +5,14 @@
 
 SELECT
     id,
-    idcbs,
-    uueid,
     campaign,
     codedept,
     acoustic_producer_kind,
-    producer,
-    codeinfra,
+    label,
     kind,
     acoustic_noisemap_kind,
-    zonedef,
     acoustic_db_value,
     acoustic_time_range,
-    validedeb,
-    validefin,
     geom_idx,
     -- Transform geometry to EPSG:4326 (WGS84)
     {{ transform_to_epsg_4326('geometry') }} AS geometry,
