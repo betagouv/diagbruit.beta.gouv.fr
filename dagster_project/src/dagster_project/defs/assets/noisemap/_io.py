@@ -57,7 +57,7 @@ def rename_infra(file:str) -> dict:
             "zonedef": True,
             "validedeb": True,
             "validefin": True,
-            "codeinfra": {"from": "codinfra"},
+            "label": {"from": "codinfra"},
             "campaign": {"from": "annee"},
             "acoustic_producer_kind": {"from": "typeterr"},
             "kind": {"from": "typesource"},
