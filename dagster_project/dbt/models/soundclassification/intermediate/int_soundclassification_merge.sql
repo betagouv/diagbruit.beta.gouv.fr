@@ -6,10 +6,10 @@
 SELECT
     MIN(pk) AS pk,
     source,
-    typesource,
+    kind,
     codeinfra,
-    buffer,
-    sound_category,
+    acoustic_buffer,
+    acoustic_category,
     codedept,
     array_agg(pk ORDER BY pk) AS merged_pks,
     ST_Union(geometry) AS geometry,
@@ -20,8 +20,8 @@ SELECT
 FROM {{ ref('int_soundclassification_with_pk') }}
 GROUP BY
     source,
-    typesource,
+    kind,
     codeinfra,
-    sound_category,
+    acoustic_category,
     codedept,
-    buffer
+    acoustic_buffer

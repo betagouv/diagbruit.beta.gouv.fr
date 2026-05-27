@@ -5,10 +5,10 @@
 SELECT
     pk,
     source,
-    typesource,
+    kind,
     codeinfra,
-    buffer,
-    sound_category,
+    acoustic_buffer,
+    acoustic_category,
     codedept,
     geometry,
     multilinestring as source_geometry
