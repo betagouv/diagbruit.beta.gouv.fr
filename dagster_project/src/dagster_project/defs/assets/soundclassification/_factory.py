@@ -44,7 +44,7 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "base_class": True,
         "publi_ap": True,
         "evol_class": True,
-        "acoustic_buffer": {"from":"sect_affect"},
+        "acoustic_buffer": {"from":"sect_affec"},
         "communes": True,
         "region": True,
         "dept": True,
