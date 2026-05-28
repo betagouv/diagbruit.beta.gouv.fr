@@ -20,7 +20,7 @@ SELECT
     'fer' AS source,
     'F' AS kind,
     label,
-    CAST(sect_affec AS bigint),
+    CAST(acoustic_buffer AS bigint),
     CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}

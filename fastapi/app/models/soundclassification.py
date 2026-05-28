@@ -12,6 +12,6 @@ class SoundClassificationItem(Base):
     source_geometry = Column(Geometry('MULTILINESTRINGZ', srid=2154))
     source = Column(String)
     kind = Column(String(1), index=True)
-    codeinfra = Column(String)
+    label = Column(String)
     acoustic_buffer = Column(Float)
     acoustic_category = Column(Integer)

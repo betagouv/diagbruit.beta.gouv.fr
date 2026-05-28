@@ -79,7 +79,7 @@ export type AirIntersection = {
 export type SoundClassificationIntersection = {
   source: string;
   kind: string;
-  codeinfra: string;
+  label: string;
   acoustic_category: number;
   min_distance: number;
   max_distance: number;

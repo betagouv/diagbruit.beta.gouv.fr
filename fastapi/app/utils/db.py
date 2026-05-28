@@ -256,7 +256,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
         stmt = db.query(
             SoundClassificationItem.source,
             SoundClassificationItem.kind,
-            SoundClassificationItem.codeinfra,
+            SoundClassificationItem.label,
             SoundClassificationItem.acoustic_category,
             cast(func.ST_AsGeoJSON(SoundClassificationRoadsItem.geometry), Text).label("geometry_source"),
             cast(
@@ -281,13 +281,13 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).join(
             SoundClassificationRoadsItem,
-            SoundClassificationItem.codeinfra == SoundClassificationRoadsItem.codeinfra
+            SoundClassificationItem.label == SoundClassificationRoadsItem.label
         ).filter(
             func.ST_Intersects(SoundClassificationItem.geometry, geom_4326)
         ).group_by(
             SoundClassificationItem.source,
             SoundClassificationItem.kind,
-            SoundClassificationItem.codeinfra,
+            SoundClassificationItem.label,
             SoundClassificationItem.acoustic_category,
             SoundClassificationRoadsItem.geometry,
             intersection_geom
@@ -320,7 +320,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             result.append({
                 "source": r.source,
                 "kind": r.kind,
-                "codeinfra": r.codeinfra,
+                "label": r.label,
                 "acoustic_category": r.acoustic_category,
                 "min_distance": r.min_distance,
                 "max_distance": r.max_distance,
