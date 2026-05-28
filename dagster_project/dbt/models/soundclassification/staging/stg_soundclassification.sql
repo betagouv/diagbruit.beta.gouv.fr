@@ -21,7 +21,7 @@ SELECT
     'F' AS kind,
     label,
     CAST(sect_affec AS bigint),
-    CAST(raacoustic_categoryng AS int),
+    CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
 WHERE rang IS NOT NULL 
