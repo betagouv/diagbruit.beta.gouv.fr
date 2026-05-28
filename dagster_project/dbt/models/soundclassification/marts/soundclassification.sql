@@ -3,7 +3,7 @@
 ) }}
 
 SELECT
-    pk,
+    id,
     source,
     kind,
     label,

@@ -4,13 +4,13 @@ models:
   - name: soundclassification
     description: "Clean sound classification polygons with merged geometries and simplified metadata"
     columns:
-      - name: pk
+      - name: id
         description: "Primary key generated with generate_surrogate_key"
       - name: source
         description: "Original data source (tramway, fer, routier, lgv)"
       - name: kind
         description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
-      - name: codeinfra
+      - name: label
         description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
       - name: acoustic_buffer
         description: "Buffer width applied (in meters)"
@@ -20,15 +20,15 @@ models:
         description: "Merged geometry in EPSG:4326, type POLYGON or MULTIPOLYGON"
 
   - name: soundclassification_roads
-    description: "Sound classification roads with merged multilinestrings grouped by codeinfra"
+    description: "Sound classification roads with merged multilinestrings grouped by label"
     columns:
-      - name: pk
-        description: "Primary key (minimum pk from merged records)"
+      - name: id
+        description: "Primary key (minimum id from merged records)"
       - name: source
         description: "Original data source (tramway, fer, routier, lgv)"
       - name: kind
         description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
-      - name: codeinfra
+      - name: label
         description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
       - name: codedept
         description: "Department code"

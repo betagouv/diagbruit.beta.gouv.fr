@@ -4,7 +4,7 @@
 ) }}
 
 SELECT
-    row_number() OVER () AS pk,
+    row_number() OVER () AS id,
     multilinestring,
     source,
     kind,
