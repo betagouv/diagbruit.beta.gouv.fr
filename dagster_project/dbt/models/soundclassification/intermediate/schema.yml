@@ -17,7 +17,7 @@ models:
     description: "Disaggregates MultiPolygons after geometries have been fixed with ST_MakeValid"
 
   - name: int_soundclassification_with_pk
-    description: "Adds a unique primary key (pk) to each disaggregated geometry row for the sound classification dataset"
+    description: "Adds a unique primary key (id) to each disaggregated geometry row for the sound classification dataset"
 
   - name: int_soundclassification_merge
     description: "Aggregates lines by codeinfra, source, and acoustic_category. Removes extra fields and stores merged primary keys in an array."

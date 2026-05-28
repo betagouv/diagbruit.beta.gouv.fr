@@ -24,8 +24,8 @@ SELECT
     CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
-WHERE rang IS NOT NULL 
-    AND rang ~ '^[0-9]+$'
+WHERE acoustic_category IS NOT NULL 
+    AND acoustic_category ~ '^[0-9]+$'
 
 UNION ALL
 
@@ -35,7 +35,7 @@ SELECT
     'R' AS kind,
     TRIM(SPLIT_PART(numero, ':', 1)) AS label,
     acoustic_buffer,
-    cat_bruit,
+    acoustic_category,
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_routier') }}
 
