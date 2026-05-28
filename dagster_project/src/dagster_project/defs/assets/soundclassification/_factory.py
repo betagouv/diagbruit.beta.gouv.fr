@@ -30,13 +30,11 @@ SOUNDCLASS_BY_DEPT: dict[str, SoundclassificationTerritory] = {
 
 SOUNDCLASS_PARTITIONS = StaticPartitionsDefinition([t.dept for t in SOUNDCLASSIFICATION_TERRITORIES])
 
-# Column mappings are kept intentionally wide (all shapefile columns preserved)
-# so dbt has full access to the raw data. The staging model selects only what it needs.
 _MODE_MAPPINGS: dict[str, dict] = {
     "fer": {
         "geometry": True,
-        "ligne": True,
-        "rang": True,
+        "label": {"from":"ligne"},
+        "acoustic_category": {"from":"rang"},
         "pkdebssseg": True,
         "pkfinssseg": True,
         "long_ssseg": True,
@@ -46,7 +44,7 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "base_class": True,
         "publi_ap": True,
         "evol_class": True,
-        "sect_affect": True,
+        "acoustic_buffer": {"from":"sect_affect"},
         "communes": True,
         "region": True,
         "dept": True,
@@ -59,12 +57,13 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "debutant": True,
         "finissant": True,
         "cls_commen": True,
-        "cat_bruit": True,
+        "acoustic_category": {"from":"cat_bruit"},
         "gestion": True,
         "horizon": True,
         "communes": True,
         "projet": True,
-        "larg_secte": True,
+        "acoustic_buffer": {"from":"larg_secte"},
+
     },
     "lgv": {
         "geometry": True,
@@ -79,20 +78,21 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "largeur": True,
         "nb_voies": True,
         "id_vfn": True,
-        "toponyme": True,
-        "cat": True,
-        "larg_secte": True,
+        "label": {"from":"toponyme"},
+        "acoustic_buffer": {"from":"larg_secte"},
+        "acoustic_category": {"from":"cat"},
+
     },
     "tramway": {
         "geometry": True,
-        "id": True,
+        "label": {"from":"id"},
         "nature": True,
         "etat": True,
         "electrifie": True,
         "largeur": True,
         "nb_voies": True,
-        "categorie": True,
-        "larg_secte": True,
+        "acoustic_buffer": {"from":"larg_secte"},
+        "acoustic_category": {"from":"categorie"},
     },
 }
 
@@ -172,6 +172,8 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
         "bucket": MetadataValue.text(S3_BUCKET),
         "modes_uploaded": MetadataValue.int(mode_count),
         "files_downloaded": MetadataValue.int(len(all_sha256)),
+        "mapping": MetadataValue.json(mapping_entries),
+        "manifest": MetadataValue.json(manifest),
     })
 
 

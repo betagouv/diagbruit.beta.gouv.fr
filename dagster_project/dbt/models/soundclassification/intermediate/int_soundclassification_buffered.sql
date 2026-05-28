@@ -32,7 +32,7 @@ SELECT
     polygon_geom,
     source,
     kind,
-    codeinfra,
+    label,
     buffer_filled AS acoustic_buffer,
     acoustic_category,
     codedept

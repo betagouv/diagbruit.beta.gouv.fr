@@ -18,7 +18,7 @@ SELECT
     multilinestring,
     source,
     kind,
-    codeinfra,
+    label,
     acoustic_buffer,
     acoustic_category,
     codedept
