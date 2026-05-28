@@ -3,6 +3,7 @@ import shutil
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
+from dagster_project.defs.resources.box import BoxResource
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.io import DAGSTER_ROOT
@@ -10,18 +11,35 @@ from dagster_project.io.db import db_url
 from dagster_project.io.manifest import manifest_file
 from dagster_project.io.s3 import S3_BUCKET, download_from_s3, s3
 
+BOX_FILE_ID_TERRASSES_067 = "2250761602923"
+
 @asset(
-    key="raw_full_stras_data",
-    group_name="strasbourg",
-    tags={"source": "local"},
-    kinds={"postgres"},
+    key="raw_full_osm_terrasses",
+    group_name="osm",
+    tags={"source": "box"},
+    kinds={"box", "postgres"},
 )
-def ingest_strasbourg(context: AssetExecutionContext):
-    """Ingest Strasbourg terrasses GeoJSON into public_workspace."""
-    file_path = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg" / "strasbourg-terrasses-autorisees-2025.geojson"
-    context.log.info(f"Ingesting {file_path.name} → raw_full_stras_data")
-    row_count = ingest_geojson(str(file_path), "raw_full_stras_data", db_url(), schema="public_workspace", if_exists="replace")
+def ingest_strasbourg(context: AssetExecutionContext, box: BoxResource):
+    """Download Strasbourg terrasses GeoJSON from Box and ingest into public_workspace."""
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "strasbourg"
+    local_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        client = box.get_client()
+        context.log.info(f"Downloading file {BOX_FILE_ID_TERRASSES_067} from Box")
+        stream = client.downloads.download_file(BOX_FILE_ID_TERRASSES_067)
+        content = stream.read()
+        file_path = local_dir / "strasbourg-terrasses.geojson"
+        file_path.write_bytes(content)
+        context.log.info(f"Downloaded {len(content)} bytes → {file_path.name}")
+
+        row_count = ingest_geojson(str(file_path), "raw_full_osm_terrasses", db_url(), schema="public_workspace", if_exists="replace", extra_columns={"codedept": "067"})
+        context.log.info(f"Ingested {row_count} rows → raw_full_osm_terrasses")
+    finally:
+        shutil.rmtree(local_dir, ignore_errors=True)
+
     return MaterializeResult(metadata={
+        "box_file_id": MetadataValue.text(BOX_FILE_ID_TERRASSES_067),
         "row_count": MetadataValue.int(row_count),
     })
 
