@@ -28,13 +28,13 @@ const DiagnosticSoundClassificationTable = ({
     .map(
       ({
         kind,
-        codeinfra,
+        label,
         acoustic_category,
         min_distance,
         max_distance,
       }) => [
           getReadableSource(kind, true),
-          codeinfra || "-",
+          label || "-",
           acoustic_category,
           `${min_distance.toString()} mètre${min_distance > 1 ? "s" : ""} *`,
           `${max_distance.toString()} mètre${max_distance > 1 ? "s" : ""} *`,

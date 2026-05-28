@@ -6,7 +6,7 @@ class SoundClassificationItem(BaseModel):
     pk: int
     source: Optional[str] = None
     kind: Optional[str] = None
-    codeinfra: Optional[str] = None
+    label: Optional[str] = None
     acoustic_buffer: Optional[float] = None
     acoustic_category: Optional[int] = None
 
