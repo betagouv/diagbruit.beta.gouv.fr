@@ -19,9 +19,10 @@ WITH osm_filtered AS (
         ) AS name_clean
     FROM {{ ref('int_foods_filter') }}
 ),
-stras AS (
+terrasses AS (
     SELECT
         name,
+        codedept,
         geometry,
         regexp_replace(
             regexp_replace(
@@ -32,7 +33,7 @@ stras AS (
             ),
             '[^a-z0-9]', '', 'g'
         ) AS name_clean
-    FROM {{ ref('noisesource_stras') }}
+    FROM {{ ref('int_terrasses_slug') }}
 )
 
 SELECT
@@ -44,20 +45,18 @@ SELECT
 
 FROM osm_filtered o
 WHERE o.name IS NOT NULL
-AND (
-    o.meta_code_dep != '067'
-    OR NOT EXISTS (
-        SELECT 1
-        FROM stras s
-        WHERE ST_DWithin(
-                s.geometry::geography,
-                o.geometry::geography,
-                20
-            )
-        AND (
-                o.name_clean LIKE '%' || s.name_clean || '%'
-             OR s.name_clean LIKE '%' || o.name_clean || '%'
-             OR similarity(o.name_clean, s.name_clean) > 0.40
-            )
-    )
+AND NOT EXISTS (
+    SELECT 1
+    FROM terrasses t
+    WHERE t.codedept = o.meta_code_dep
+    AND ST_DWithin(
+            t.geometry::geography,
+            o.geometry::geography,
+            20
+        )
+    AND (
+            o.name_clean LIKE '%' || t.name_clean || '%'
+         OR t.name_clean LIKE '%' || o.name_clean || '%'
+         OR similarity(o.name_clean, t.name_clean) > 0.40
+        )
 )

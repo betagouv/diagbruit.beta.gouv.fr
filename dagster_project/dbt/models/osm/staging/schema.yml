@@ -24,3 +24,14 @@ sources:
             description: "Name of the school"
           - name: geometry
             description: "PostGIS geometry data in EPSG:2154"
+      - name: raw_full_osm_terrasses
+        description: "Raw terrasses data for all supported departments"
+        columns:
+          - name: nom_enseigne
+            description: "Name of the establishment"
+          - name: adresse_etablissement
+            description: "Address of the establishment"
+          - name: codedept
+            description: "Department code (e.g. '067')"
+          - name: geometry
+            description: "PostGIS geometry data"
