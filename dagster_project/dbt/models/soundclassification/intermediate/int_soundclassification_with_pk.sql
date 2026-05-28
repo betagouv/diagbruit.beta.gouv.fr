@@ -8,7 +8,7 @@ SELECT
     multilinestring,
     source,
     kind,
-    label,
+    COALESCE(label, 'NOM DE ROUTE INCONNUE ' || row_number() OVER ()::text) AS label,
     acoustic_buffer,
     acoustic_category,
     codedept,
