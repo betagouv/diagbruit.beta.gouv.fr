@@ -7,7 +7,7 @@ SELECT
     MIN(pk) AS pk,
     source,
     kind,
-    codeinfra,
+    label,
     acoustic_buffer,
     acoustic_category,
     codedept,
@@ -21,7 +21,7 @@ FROM {{ ref('int_soundclassification_with_pk') }}
 GROUP BY
     source,
     kind,
-    codeinfra,
+    label,
     acoustic_category,
     codedept,
     acoustic_buffer
