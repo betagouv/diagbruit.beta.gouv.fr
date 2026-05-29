@@ -1,11 +1,11 @@
 {
   "intersections_agglo": [
     {
-      "typeterr": "AGGLO",
-      "typesource": "R",
-      "indicetype": "LN",
-      "cbstype": "A",
-      "legende": 60.0,
+      "acoustic_producer_kind": "AGGLO",
+      "kind": "R",
+      "acoustic_time_range": "LN",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 60.0,
       "codeinfra": null,
       "percent_impacted": 0.1,
       "direction": "W"
@@ -13,16 +13,16 @@
   ],
   "intersections_infra": [
     {
-      "typeterr": "INFRA",
-      "typesource": "F",
-      "indicetype": "LD",
-      "cbstype": "A",
-      "legende": 65.0,
+      "acoustic_producer_kind": "INFRA",
+      "kind": "F",
+      "acoustic_time_range": "LD",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 65.0,
       "codeinfra": "570000",
       "percent_impacted": 0.09,
       "direction": "NE"
     }
   ],
-  "indicetype": "LN",
+  "acoustic_time_range": "LN",
   "expected_score": 9
 }

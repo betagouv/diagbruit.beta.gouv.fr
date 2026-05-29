@@ -2,20 +2,20 @@
   "noisemap_intersections": [],
   "soundclassification_intersections": [],
   "peb_intersections": [
-      {
-        "zone": "C",
-        "legende": 55,
-        "nom": "B. MERIGNAC",
-        "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
-        "percent_impacted": 0.9
-      },
-      {
-        "zone": "B",
-        "legende": 62,
-        "nom": "B. MERIGNAC",
-        "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
-        "percent_impacted": 0.1
-      }
+    {
+      "zone": "C",
+      "acoustic_db_value": 55,
+      "nom": "B. MERIGNAC",
+      "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
+      "percent_impacted": 0.9
+    },
+    {
+      "zone": "B",
+      "acoustic_db_value": 62,
+      "nom": "B. MERIGNAC",
+      "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
+      "percent_impacted": 0.1
+    }
   ],
   "expected_score": 7
 }
