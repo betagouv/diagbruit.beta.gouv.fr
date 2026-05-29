@@ -51,7 +51,7 @@ def _peb_mapping() -> dict:
     kinds={"s3"},
 )
 def peb_launcher(context: AssetExecutionContext):
-    """Upload PEB SHP into S3 under peb/scope=.../campaign=.../_source/."""
+    """Upload PEB SHP into S3 under peb/scope=.../_source/."""
     t = _TERRITORY
     s3_path = _s3_prefix(t)
     input_dir = DAGSTER_ROOT / "ingestion" / "inputs" / t.local_dir
