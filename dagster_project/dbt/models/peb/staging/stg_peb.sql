@@ -15,6 +15,6 @@ SELECT
     date_maj,
     ref_doc as campaign_url,
     id_map,
-    REGEXP_SUBSTR(date_arret, '\d{4}') AS campaign,
+    TO_CHAR(date_arret, 'YYYY') AS campaign,
     geometry
 FROM {{ source('public_workspace', 'raw_peb') }}
