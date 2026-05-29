@@ -19,15 +19,15 @@ _TERRITORY: PebTerritory = PEB_TERRITORIES[0]
 
 
 def _s3_prefix(t: PebTerritory) -> str:
-    return f"peb/scope={t.scope}/campaign={t.campaign}/"
+    return f"peb/scope={t.scope}/"
 
 
-def _peb_mapping(t: PebTerritory) -> dict:
+def _peb_mapping() -> dict:
     """Mapping schema for raw_peb ingest.
 
-    Keeps every source column the dbt staging model reads, and injects
-    `campaign` as a constant per-row column so the value flows from the
-    asset registry through to the mart without being hard-coded in SQL.
+    Whitelists exactly the columns dbt staging reads. `campaign` is derived
+    per row in dbt from `date_arret`, so nothing campaign-related is injected
+    at ingest time.
     """
     return {
         "geometry": True,
@@ -41,7 +41,6 @@ def _peb_mapping(t: PebTerritory) -> dict:
         "date_maj": True,
         "ref_doc": True,
         "id_map": True,
-        "campaign": {"value": t.campaign},
     }
 
 
@@ -107,7 +106,7 @@ def peb_landing(context: AssetExecutionContext):
         })
 
     shp_file = next(iter(local_dir.rglob("*.shp")))
-    context.log.info(f"Ingesting {shp_file.name} → raw_peb (campaign={t.campaign})")
+    context.log.info(f"Ingesting {shp_file.name} → raw_peb (scope={t.scope})")
 
     success = ingest_shapefile(
         str(shp_file),
@@ -115,7 +114,7 @@ def peb_landing(context: AssetExecutionContext):
         db_url(),
         schema="public_workspace",
         if_exists="replace",
-        mapping=_peb_mapping(t),
+        mapping=_peb_mapping(),
         context=context,
     )
 
@@ -126,7 +125,6 @@ def peb_landing(context: AssetExecutionContext):
         "bucket": MetadataValue.text(S3_BUCKET),
         "prefix": MetadataValue.text(s3_path),
         "files_downloaded": MetadataValue.int(downloaded),
-        "campaign": MetadataValue.text(t.campaign),
         "scope": MetadataValue.text(t.scope),
         "success": MetadataValue.bool(success),
     })
