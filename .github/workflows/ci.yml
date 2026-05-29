@@ -2,7 +2,6 @@ name: CI pipeline - ingestion + dbt + tests
 
 on:
   pull_request:
-    branches: [main, preprod]
   push:
     branches: [main, preprod]
 
