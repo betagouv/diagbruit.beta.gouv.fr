@@ -1,6 +1,6 @@
 {
   "intersections_agglo": [],
   "intersections_infra": [],
-  "indicetype": "LN",
+  "acoustic_time_range": "LN",
   "expected_score": 0
 }
