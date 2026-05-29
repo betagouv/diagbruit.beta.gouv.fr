@@ -19,10 +19,12 @@ from dagster_project.defs.resources.box import BoxResource
 
 from dagster_project.defs.assets.soundclassification._registry import (
     SOUNDCLASSIFICATION_TERRITORIES,
+    SoundclassificationSource,
     SoundclassificationTerritory,
 )
 
 GROUP = "soundclassification"
+SOURCE = "box"
 
 SOUNDCLASS_BY_DEPT: dict[str, SoundclassificationTerritory] = {
     t.dept: t for t in SOUNDCLASSIFICATION_TERRITORIES
@@ -30,11 +32,11 @@ SOUNDCLASS_BY_DEPT: dict[str, SoundclassificationTerritory] = {
 
 SOUNDCLASS_PARTITIONS = StaticPartitionsDefinition([t.dept for t in SOUNDCLASSIFICATION_TERRITORIES])
 
-_MODE_MAPPINGS: dict[str, dict] = {
+_COLUMNS_BY_MODE: dict[str, dict] = {
     "fer": {
-        "geometry": True,
-        "label": {"from":"ligne"},
-        "acoustic_category": {"from":"rang"},
+        "label": {"from": "ligne"},
+        "acoustic_category": {"from": "rang"},
+        "acoustic_buffer": {"from": "sect_affec"},
         "pkdebssseg": True,
         "pkfinssseg": True,
         "long_ssseg": True,
@@ -44,29 +46,28 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "base_class": True,
         "publi_ap": True,
         "evol_class": True,
-        "acoustic_buffer": {"from":"sect_affec"},
         "communes": True,
         "region": True,
         "dept": True,
         "code_dept": True,
     },
     "routier": {
-        "geometry": True,
         "numero": True,
         "segment": {"from": "nom_tronc"},
+        "acoustic_category": {"from": "cat_bruit"},
+        "acoustic_buffer": {"from": "larg_secte"},
         "debutant": True,
         "finissant": True,
         "cls_commen": True,
-        "acoustic_category": {"from":"cat_bruit"},
         "gestion": True,
         "horizon": True,
         "communes": True,
         "projet": True,
-        "acoustic_buffer": {"from":"larg_secte"},
-
     },
     "lgv": {
-        "geometry": True,
+        "label": {"from": "toponyme"},
+        "acoustic_category": {"from": "cat"},
+        "acoustic_buffer": {"from": "larg_secte"},
         "id": True,
         "nature": True,
         "pos_sol": True,
@@ -78,21 +79,16 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "largeur": True,
         "nb_voies": True,
         "id_vfn": True,
-        "label": {"from":"toponyme"},
-        "acoustic_buffer": {"from":"larg_secte"},
-        "acoustic_category": {"from":"cat"},
-
     },
     "tramway": {
-        "geometry": True,
-        "label": {"from":"id"},
+        "label": {"from": "id"},
+        "acoustic_category": {"from": "categorie"},
+        "acoustic_buffer": {"from": "larg_secte"},
         "nature": True,
         "etat": True,
         "electrifie": True,
         "largeur": True,
         "nb_voies": True,
-        "acoustic_buffer": {"from":"larg_secte"},
-        "acoustic_category": {"from":"categorie"},
     },
 }
 
@@ -101,11 +97,32 @@ def s3_prefix(dept: str, campaign: str, mode: str) -> str:
     return f"soundclassification/dept={dept}/campaign={campaign}/mode={mode}/"
 
 
-def _build_mode_mapping(file: str, mode: str, dept: str) -> dict:
-    """Return the per-shapefile column mapping for a given mode, injecting codedept."""
-    mapping = dict(_MODE_MAPPINGS[mode])
-    mapping["codedept"] = {"value": dept}
-    return {"name": file, "mapping": mapping}
+def _mode_mapping(t: SoundclassificationTerritory, src: SoundclassificationSource) -> dict:
+    """Build the column mapping for one source mode, injecting territory-level values.
+
+    Per-source *_from overrides take precedence over the mode defaults in _COLUMNS_BY_MODE.
+    """
+    columns = dict(_COLUMNS_BY_MODE[src.mode])
+    if src.label_from is not None:
+        columns["label"] = {"from": src.label_from}
+    if src.acoustic_category_from is not None:
+        columns["acoustic_category"] = {"from": src.acoustic_category_from}
+    if src.acoustic_buffer_from is not None:
+        columns["acoustic_buffer"] = {"from": src.acoustic_buffer_from}
+    if src.segment_from is not None:
+        columns["segment"] = {"from": src.segment_from}
+    if src.numero_from is not None:
+        columns["numero"] = {"from": src.numero_from}
+    return {
+        "geometry": True,
+        "codedept": {"value": t.dept},
+        **columns,
+    }
+
+
+def build_territory_mapping(t: SoundclassificationTerritory) -> list[dict]:
+    """Return the full list of file mappings for a territory (one entry per source)."""
+    return [{"name": src.file, "mapping": _mode_mapping(t, src)} for src in t.sources]
 
 
 def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerritory, box: BoxResource) -> MaterializeResult:
@@ -130,6 +147,8 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
         context.log.info(f"Downloaded {len(all_sha256)} files from Box")
 
         mode_count = 0
+        all_mappings: dict[str, list] = {}
+
         for src in t.sources:
             path = s3_prefix(t.dept, t.campaign, src.mode)
             source_prefix = path + "_source/"
@@ -144,7 +163,7 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
                 context.log.info(f"Uploaded {local_file.name} → s3://{S3_BUCKET}/{source_prefix}{local_file.name}")
                 mode_sha256[local_file.name] = all_sha256[local_file.name]
                 if local_file.suffix == ".shp":
-                    mapping_entries.append(_build_mode_mapping(local_file.name, src.mode, t.dept))
+                    mapping_entries.append({"name": local_file.name, "mapping": _mode_mapping(t, src)})
 
             manifest = {
                 "provenance": f"box://folder/{t.box_id}",
@@ -162,6 +181,7 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
             context.log.info(
                 f"Mode {src.mode}: {len(mapping_entries)} mapping entries → s3://{S3_BUCKET}/{path}"
             )
+            all_mappings[src.mode] = mapping_entries
             mode_count += 1
 
     finally:
@@ -172,8 +192,7 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
         "bucket": MetadataValue.text(S3_BUCKET),
         "modes_uploaded": MetadataValue.int(mode_count),
         "files_downloaded": MetadataValue.int(len(all_sha256)),
-        "mapping": MetadataValue.json(mapping_entries),
-        "manifest": MetadataValue.json(manifest),
+        "mappings": MetadataValue.json(all_mappings),
     })
 
 
