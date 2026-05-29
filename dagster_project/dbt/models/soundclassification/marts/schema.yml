@@ -18,19 +18,5 @@ models:
         description: "Sound classification category"
       - name: geometry
         description: "Merged geometry in EPSG:4326, type POLYGON or MULTIPOLYGON"
-
-  - name: soundclassification_roads
-    description: "Sound classification roads with merged multilinestrings grouped by label"
-    columns:
-      - name: id
-        description: "Primary key (minimum id from merged records)"
-      - name: source
-        description: "Original data source (tramway, fer, routier, lgv)"
-      - name: kind
-        description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
-      - name: label
-        description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
-      - name: codedept
-        description: "Department code"
-      - name: geometry
-        description: "Merged multilinestring geometry in EPSG:4326, type MULTILINESTRING"
+      - name: road_geometry
+        description: "road_geometry in EPSG:4326, type LINESTRING or MULTISTRING"
