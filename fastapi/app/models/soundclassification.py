@@ -7,7 +7,7 @@ class SoundClassificationItem(Base):
     """Model representing classified sound buffer zones"""
     __tablename__ = "soundclassification"
     
-    pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    pk = Column("id", Integer, primary_key=True, index=True)
     geometry = Column(Geometry('POLYGON', srid=4326))
     road_geometry = Column(Geometry('MULTILINESTRINGZ', srid=2154))
     source = Column(String)
