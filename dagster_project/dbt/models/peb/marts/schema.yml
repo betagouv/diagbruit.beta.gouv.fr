@@ -4,6 +4,11 @@ models:
   - name: peb
     description: "Clean and validated PEB polygons projected to EPSG:4326 with geometry quality checks"
     columns:
+      - name: id
+        description: "Unique identifier generated per row at transform time"
+        tests:
+          - unique
+          - not_null
       - name: acoustic_zone
         description: "Noise exposure zone (A, B, C or D)"
       - name: acoustic_db_value
@@ -14,7 +19,5 @@ models:
         description: "Year of the PEB campaign"
       - name: campaign_url
         description: "URL of the reference document for the PEB campaign"
-      - name: polygon_id
-        description: "Unique identifier for each polygon (concatenation of id_map and acoustic_zone)"
       - name: geometry
         description: "Validated polygon geometry projected to EPSG:4326"
