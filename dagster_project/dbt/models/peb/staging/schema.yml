@@ -27,5 +27,7 @@ sources:
             description: "Reference document"
           - name: id_map
             description: "Unique map identifier"
+          - name: campaign
+            description: "Campaign identifier injected at ingest from the peb asset registry (Hive path scope/campaign)"
           - name: geometry
             description: "Geometry of the zone (SRID: 3857)"

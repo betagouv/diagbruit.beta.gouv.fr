@@ -16,7 +16,7 @@ models:
       - name: label
         description: "Name of the aerodrome or area"
       - name: campaign
-        description: "Year of the PEB campaign"
+        description: "PEB campaign identifier (date de l'arrêté préfectoral), sourced from the asset registry at ingest"
       - name: campaign_url
         description: "URL of the reference document for the PEB campaign"
       - name: geometry

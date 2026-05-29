@@ -15,5 +15,6 @@ SELECT
     date_maj,
     ref_doc as campaign_url,
     id_map,
+    campaign,
     geometry
 FROM {{ source('public_workspace', 'raw_peb') }}

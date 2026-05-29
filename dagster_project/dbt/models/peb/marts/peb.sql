@@ -10,7 +10,7 @@ SELECT
     ELSE NULL
   END AS acoustic_db_value,
   label,
-  '2022' AS campaign,
+  campaign,
   campaign_url,
   geometry
 
