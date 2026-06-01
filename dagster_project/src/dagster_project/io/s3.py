@@ -44,6 +44,37 @@ def download_from_s3(bucket: str, file_path: Path, s3_path: str, context: AssetE
     return downloaded
 
 
+def download_upload(url: str, local_dir: Path, source_prefix: str, context: AssetExecutionContext) -> tuple[str, str]:
+    """Download a single (non-archive) file from `url` into `local_dir`, upload to S3 under `source_prefix`.
+
+    Counterpart to `download_extract_upload` for plain files (e.g. GeoJSON) where
+    there is nothing to unzip. Returns (filename, sha256), sha256 computed before
+    any cleanup so the caller can build a manifest.
+    """
+    filename = url.split("/")[-1].split("?")[0]
+    local_dir.mkdir(parents=True, exist_ok=True)
+    local_path = local_dir / filename
+
+    start_time = time.time()
+    last_log_time = [start_time]
+
+    with urllib.request.urlopen(url) as response, open(local_path, "wb") as out:
+        while chunk := response.read(8192):
+            out.write(chunk)
+            block_count = local_path.stat().st_size // 8192
+            reporthook(block_count, 8192, -1, context, start_time, last_log_time)
+
+    content = local_path.read_bytes()
+    size_mb = len(content) / 1024 / 1024
+    context.log.info(f"Downloaded {filename} ({size_mb:.1f} MB) in {time.time() - start_time:.1f}s")
+
+    sha256 = hashlib.sha256(content).hexdigest()
+    key = f"{source_prefix}{filename}"
+    s3.upload_file(str(local_path), S3_BUCKET, key)
+    context.log.info(f"Uploaded {filename} → s3://{S3_BUCKET}/{key}")
+    return filename, sha256
+
+
 def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, context: AssetExecutionContext) -> tuple[list[str], dict[str, str]]:
     """Download a ZIP from url, extract to extract_dir, upload every file to S3 under source_prefix.
 

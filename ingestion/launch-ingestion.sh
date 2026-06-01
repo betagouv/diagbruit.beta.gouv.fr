@@ -31,7 +31,7 @@ download_batiment_files() {
   if [ "$need_download" = true ]; then
     echo "📥 Downloading batiment shapefile from S3..."
     mkdir -p "$target_dir"
-    
+
     for file in "${files[@]}"; do
       if [ ! -f "$target_dir/$file" ]; then
         echo "  → Downloading $file"
@@ -40,12 +40,41 @@ download_batiment_files() {
         echo "  ✓ $file already exists"
       fi
     done
-    
+
     echo "✅ Batiment shapefile download complete"
     echo '--------------------------------------------------------------------------'
   else
     echo "✓ Batiment shapefile already exists, skipping download"
   fi
+}
+
+download_peb_files() {
+  # National PEB zoning, published on data.gouv.fr split by zone (A/B/C/D).
+  # Columns are UPPERCASE in the source; ingest_shapefiles.py lowercases every
+  # column on read, so they match the lowercase dbt staging schema as-is.
+  local target_dir="inputs/PEB"
+  mkdir -p "$target_dir"
+
+  local files=(
+    "c-dgac-peb-metro-za.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202334/c-dgac-peb-metro-za.geojson"
+    "c-dgac-peb-metro-zb.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202306/c-dgac-peb-metro-zb.geojson"
+    "c-dgac-peb-metro-zc.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202327/c-dgac-peb-metro-zc.geojson"
+    "c-dgac-peb-metro-zd.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202316/c-dgac-peb-metro-zd.geojson"
+  )
+
+  echo "📥 Downloading PEB GeoJSON from data.gouv.fr..."
+  for entry in "${files[@]}"; do
+    local name="${entry%% *}"
+    local url="${entry#* }"
+    if [ ! -f "$target_dir/$name" ]; then
+      echo "  → Downloading $name"
+      curl -sfL -o "$target_dir/$name" "$url"
+    else
+      echo "  ✓ $name already exists"
+    fi
+  done
+  echo "✅ PEB GeoJSON download complete"
+  echo '--------------------------------------------------------------------------'
 }
 
 # Définition des options communes
@@ -113,7 +142,10 @@ FILES_SOUNDCLASS=(
 )
 
 FILES_PEB=(
-  "inputs/PEB/peb.shp raw_peb --if-exists replace"
+  "inputs/PEB/c-dgac-peb-metro-za.geojson raw_peb --if-exists replace"
+  "inputs/PEB/c-dgac-peb-metro-zb.geojson raw_peb --if-exists append"
+  "inputs/PEB/c-dgac-peb-metro-zc.geojson raw_peb --if-exists append"
+  "inputs/PEB/c-dgac-peb-metro-zd.geojson raw_peb --if-exists append"
 )
 
 FILES_TOPO=(
@@ -134,6 +166,9 @@ FILES_OSM_SCHOOLS=(
 
 # Download batiment files from S3 if needed
 download_batiment_files
+
+# Download PEB GeoJSON from data.gouv.fr if needed
+download_peb_files
 
 # Ingestion des données de base
 python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-exists skip

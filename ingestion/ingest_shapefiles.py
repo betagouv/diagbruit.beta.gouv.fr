@@ -2,6 +2,8 @@
 import geopandas as gpd
 from sqlalchemy import create_engine, text, inspect
 import argparse
+import io
+import json
 import os
 import sys
 from dotenv import load_dotenv
@@ -9,6 +11,43 @@ from shapely import transform
 
 def drop_z(geom):
     return transform(geom, lambda coords: coords, include_z=False)
+
+
+def _clean_polygon_rings(rings):
+    # Drop degenerate rings (<4 coords). rings[0] is the exterior: if it is
+    # degenerate the polygon is unrecoverable (None); degenerate holes are dropped.
+    if not rings or len(rings[0]) < 4:
+        return None
+    return [rings[0]] + [r for r in rings[1:] if len(r) >= 4]
+
+
+def _sanitize_geojson_geometry(geom):
+    if not geom:
+        return geom
+    t = geom.get("type")
+    if t == "Polygon":
+        cleaned = _clean_polygon_rings(geom["coordinates"])
+        return None if cleaned is None else {"type": "Polygon", "coordinates": cleaned}
+    if t == "MultiPolygon":
+        polys = [p for p in (_clean_polygon_rings(r) for r in geom["coordinates"]) if p]
+        return None if not polys else {"type": "MultiPolygon", "coordinates": polys}
+    return geom
+
+
+def _read_geo_file(file_path):
+    """Read a vector file. Some data.gouv.fr GeoJSON exports ship zero-area rings
+    that crash shapely on read; for GeoJSON we sanitize them and retry (lossless)."""
+    try:
+        return gpd.read_file(file_path)
+    except Exception as e:
+        if not file_path.lower().endswith((".geojson", ".json")):
+            raise
+        print(f"Read failed ({e}); sanitizing degenerate rings in {file_path}")
+        with open(file_path) as f:
+            data = json.load(f)
+        for feature in data.get("features", []):
+            feature["geometry"] = _sanitize_geojson_geometry(feature.get("geometry"))
+        return gpd.read_file(io.BytesIO(json.dumps(data).encode()))
 
 
 def create_schema_if_not_exists(engine, schema):
@@ -46,7 +85,7 @@ def parse_arg_columns(column_args):
 def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None):
     try:
         print(f"Reading shapefile: {file_path}")
-        gdf = gpd.read_file(file_path)
+        gdf = _read_geo_file(file_path)
         gdf.columns = [col.lower() for col in gdf.columns]
 
         gdf = gdf.to_crs(epsg=2154)
