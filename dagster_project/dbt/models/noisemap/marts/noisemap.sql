@@ -1,19 +1,17 @@
 {{ config(
     materialized='table',
     post_hook=[
-      "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS pk SERIAL PRIMARY KEY;",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_codedept; CREATE INDEX idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
     ]
 ) }}
 
 SELECT
-  id,
-  idcbs,
-  uueid,
+  ROW_NUMBER() OVER (ORDER BY codedept, label, kind, acoustic_time_range, acoustic_noisemap_kind) AS id,
+  campaign,
   codedept,
   acoustic_producer_kind,
-  codeinfra,
+  label,
   kind,
   acoustic_noisemap_kind,
   CAST(acoustic_db_value AS float) AS acoustic_db_value,

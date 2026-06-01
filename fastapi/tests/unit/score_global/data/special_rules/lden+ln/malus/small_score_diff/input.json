@@ -1,28 +1,27 @@
 {
   "noisemap_intersections": [
     {
-      "typeterr": "INFRA",
-      "typesource": "F",
-      "indicetype": "LD",
-      "cbstype": "A",
-      "legende": 70,
+      "acoustic_producer_kind": "INFRA",
+      "kind": "F",
+      "acoustic_time_range": "LD",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 70,
       "codeinfra": "570000",
       "percent_impacted": 0.8,
       "direction": "NE"
     },
     {
-      "typeterr": "INFRA",
-      "typesource": "F",
-      "indicetype": "LN",
-      "cbstype": "A",
-      "legende": 65,
+      "acoustic_producer_kind": "INFRA",
+      "kind": "F",
+      "acoustic_time_range": "LN",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 65,
       "codeinfra": "570000",
       "percent_impacted": 0.8,
       "direction": "NE"
     }
   ],
   "soundclassification_intersections": [],
-  "peb_intersections": [
-  ],
+  "peb_intersections": [],
   "expected_score": 10
 }

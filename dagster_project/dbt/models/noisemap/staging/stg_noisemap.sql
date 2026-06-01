@@ -7,22 +7,15 @@
 ) }}
 
 
-SELECT 
-    id,
-    idcbs,
-    uueid,
+SELECT
     campaign,
     codedept,
     acoustic_producer_kind,
-    producer,
-    codeinfra,
+    label,
     kind,
     acoustic_noisemap_kind,
-    zonedef,
     REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS acoustic_db_value,
     acoustic_time_range,
-    validedeb,
-    validefin,
     geometry
 
 FROM {{ source('public_workspace', 'raw_noisemap') }}

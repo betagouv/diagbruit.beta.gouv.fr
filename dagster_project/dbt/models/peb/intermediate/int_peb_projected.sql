@@ -15,6 +15,7 @@ SELECT
     date_maj,
     campaign_url,
     id_map,
+    campaign,
     {{ transform_to_epsg_4326('geometry', 3857) }} AS geometry,
     original_is_valid,
     original_validity_reason,

@@ -18,33 +18,21 @@ sources:
         columns:
           - name: id
             description: "Noise zone ID"
-          - name: idcbs
-            description: "CBS ID"
-          - name: uueid
-            description: "UUID"
           - name: campaign
             description: "Year"
           - name: codedept
             description: "Department code"
           - name: acoustic_producer_kind
-            description: "Territory type"
-          - name: producer
-            description: "Producer ID"
-          - name: codeinfra
+            description: "Territory type (INFRA or AGGLO)"
+          - name: label
             description: "Infrastructure code"
           - name: kind
             description: "Source type"
           - name: acoustic_noisemap_kind
-            description: "CBS type"
-          - name: zonedef
-            description: "Zone definition"
+            description: "CBS type (A, B, C priority zone)"
           - name: acoustic_db_value
-            description: "Legend"
+            description: "Noise level in dB"
           - name: acoustic_time_range
-            description: "Indicator type"
-          - name: validedeb
-            description: "Validity start date"
-          - name: validefin
-            description: "Validity end date"
+            description: "Time range indicator (LD for day, LN for night)"
           - name: geometry
             description: "Geometry data in WKT format"
