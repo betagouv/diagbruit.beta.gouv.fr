@@ -37,58 +37,21 @@ _COLUMNS_BY_MODE: dict[str, dict] = {
         "label": {"from": "ligne"},
         "acoustic_category": {"from": "rang"},
         "acoustic_buffer": {"from": "sect_affec"},
-        "pkdebssseg": True,
-        "pkfinssseg": True,
-        "long_ssseg": True,
-        "lidebssseg": True,
-        "lifinsseg": True,
-        "nvx_class": True,
-        "base_class": True,
-        "publi_ap": True,
-        "evol_class": True,
-        "communes": True,
-        "region": True,
-        "dept": True,
-        "code_dept": True,
     },
     "routier": {
         "numero": True,
-        "segment": {"from": "nom_tronc"},
         "acoustic_category": {"from": "cat_bruit"},
         "acoustic_buffer": {"from": "larg_secte"},
-        "debutant": True,
-        "finissant": True,
-        "cls_commen": True,
-        "gestion": True,
-        "horizon": True,
-        "communes": True,
-        "projet": True,
     },
     "lgv": {
         "label": {"from": "toponyme"},
         "acoustic_category": {"from": "cat"},
         "acoustic_buffer": {"from": "larg_secte"},
-        "id": True,
-        "nature": True,
-        "pos_sol": True,
-        "etat": True,
-        "date_creat": True,
-        "date_maj": True,
-        "date_conf": True,
-        "electrifie": True,
-        "largeur": True,
-        "nb_voies": True,
-        "id_vfn": True,
     },
     "tramway": {
         "label": {"from": "id"},
         "acoustic_category": {"from": "categorie"},
         "acoustic_buffer": {"from": "larg_secte"},
-        "nature": True,
-        "etat": True,
-        "electrifie": True,
-        "largeur": True,
-        "nb_voies": True,
     },
 }
 
@@ -202,7 +165,7 @@ def run_landing(context: AssetExecutionContext, t: SoundclassificationTerritory)
 
     for src in t.sources:
         path = s3_prefix(t.dept, t.campaign, src.mode)
-        result = s3_landing(context=context, path=path, db_table=src.db_table)
+        result = s3_landing(context=context, path=path, db_table=src.db_table, dept=t.dept)
         for key in total:
             if key in result.metadata:
                 total[key] += result.metadata[key].value
