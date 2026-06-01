@@ -49,14 +49,7 @@ def rename_infra(file:str) -> dict:
         "name": file,
         "mapping": {
             "geometry": True,
-            "id": {"from": "idzonbruit"},
-            "idcbs": True,
-            "uueid": True,
             "codedept": True,
-            "producer": {"from": "producteur"},
-            "zonedef": True,
-            "validedeb": True,
-            "validefin": True,
             "label": {"from": "codinfra"},
             "campaign": {"from": "annee"},
             "acoustic_producer_kind": {"from": "typeterr"},
@@ -64,7 +57,6 @@ def rename_infra(file:str) -> dict:
             "acoustic_noisemap_kind": {"from": "cbstype"},
             "acoustic_db_value": {"from": "legende"},
             "acoustic_time_range": {"from": "indicetype"},
-            "source": {"value": ""},
         },
     }
 
