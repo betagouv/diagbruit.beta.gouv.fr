@@ -24,8 +24,7 @@ SELECT
     CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
-WHERE acoustic_category IS NOT NULL 
-    AND acoustic_category ~ '^[0-9]+$'
+WHERE acoustic_category IS NOT NULL
 
 UNION ALL
 

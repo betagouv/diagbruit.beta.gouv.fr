@@ -163,7 +163,13 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         if if_exists == "append":
             inspector = inspect(engine)
             if table_name in inspector.get_table_names(schema=schema):
+                existing_types = {col["name"]: str(col["type"]).upper() for col in inspector.get_columns(table_name, schema=schema)}
+                float_cols = [c for c in gdf.select_dtypes(include="float").columns if c != "geometry"]
                 with engine.connect() as conn:
+                    for col in float_cols:
+                        if existing_types.get(col, "") in ("BIGINT", "INTEGER", "INT", "SMALLINT"):
+                            conn.execute(text(f'ALTER TABLE {schema}."{table_name}" ALTER COLUMN "{col}" TYPE DOUBLE PRECISION'))
+                            log(f"Upcasted column {col} from {existing_types[col]} to DOUBLE PRECISION")
                     conn.execute(text(
                         f"ALTER TABLE {schema}.{table_name} "
                         f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
