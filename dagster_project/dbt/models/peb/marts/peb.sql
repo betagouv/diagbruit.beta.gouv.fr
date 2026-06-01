@@ -16,3 +16,4 @@ SELECT
 
 FROM {{ ref('int_peb_projected') }}
 WHERE COALESCE(area_m2, 0) > 0.0
+  AND acoustic_zone IS NOT NULL
