@@ -1,38 +1,21 @@
 {{ config(
     materialized='table',
     post_hook=[
-      "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS pk SERIAL PRIMARY KEY;",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_codedept; CREATE INDEX idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
     ]
 ) }}
 
 SELECT
-  id,
-  idcbs,
-  uueid,
-  annee,
+  ROW_NUMBER() OVER (ORDER BY codedept, label, kind, acoustic_time_range, acoustic_noisemap_kind) AS id,
+  campaign,
   codedept,
-  typeterr,
-  producteur,
-  codeinfra,
-  typesource,
-  cbstype,
-  zonedef,
-  CAST(legende as float) AS legende,
-  indicetype,
-  validedeb,
-  validefin,
-  -- Generate a unique ID by concatenating existing ID with geometry index
-  id || '_' || geom_idx AS polygon_id,
-  geometry,
-  area_m2,
-  srid,
-  -- Keep validation info for reference
-  original_is_valid,
-  original_validity_reason,
-  is_valid_now,
-  geometry_type
+  acoustic_producer_kind,
+  label,
+  kind,
+  acoustic_noisemap_kind,
+  CAST(acoustic_db_value AS float) AS acoustic_db_value,
+  acoustic_time_range,
+  geometry
 FROM {{ ref('int_noisemap_projected') }}
--- Only filter out zero-area geometries
 WHERE COALESCE(area_m2, 0) > 0.0

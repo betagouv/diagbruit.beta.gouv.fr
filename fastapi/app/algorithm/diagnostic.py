@@ -25,19 +25,19 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
         intersections_INFRA_ld,
         intersections_INFRA_ln
     ) = get_filtered_land_intersections(noisemap_intersections)
-    typeterr_order = {"INFRA": 0, "AGGLO": 1}
+    acoustic_producer_kind_order = {"INFRA": 0, "AGGLO": 1}
     diagnostic['land_intersections_ld'] = sorted(
         intersections_AGGLO_ld + intersections_INFRA_ld,
         key=lambda x: (
-            -x["legende"],
-            typeterr_order.get(x["typeterr"], 99)
+            -x["acoustic_db_value"],
+            acoustic_producer_kind_order.get(x["acoustic_producer_kind"], 99)
         )
     )
     diagnostic['land_intersections_ln'] = sorted(
         intersections_AGGLO_ln + intersections_INFRA_ln,
         key=lambda x: (
-            -x["legende"],
-            typeterr_order.get(x["typeterr"], 99)
+            -x["acoustic_db_value"],
+            acoustic_producer_kind_order.get(x["acoustic_producer_kind"], 99)
         )
     )
 
@@ -45,8 +45,8 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['air_intersections'] = peb_intersections
 
     # Utils
-    land_intersections_ld_cbs_A = [x for x in diagnostic['land_intersections_ld'] if x.get('cbstype') == 'A']
-    land_intersections_ln_cbs_A = [x for x in diagnostic['land_intersections_ln'] if x.get('cbstype') == 'A']
+    land_intersections_ld_cbs_A = [x for x in diagnostic['land_intersections_ld'] if x.get('acoustic_noisemap_kind') == 'A']
+    land_intersections_ln_cbs_A = [x for x in diagnostic['land_intersections_ln'] if x.get('acoustic_noisemap_kind') == 'A']
     grouped_ld = group_intersections_by_identifier(land_intersections_ld_cbs_A)
     grouped_ln = group_intersections_by_identifier(land_intersections_ln_cbs_A)
     distinct_typesources = list(dict.fromkeys(s.lstrip()[0] for s in grouped_ld if s.strip()))
@@ -95,7 +95,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['flags']['isMultiExposedLandSources'] = len(grouped_ld) > 1
     diagnostic['flags']['isMultiExposedLandDistinctTypeSources'] = len(distinct_typesources) > 1
     diagnostic['flags']['isMultiExposedLdenLn'] = (1 if len(grouped_ld) > 0 else 0) + (1 if len(grouped_ln) > 0 else 0) > 1
-    diagnostic['flags']['isPriorityZone'] = any(item.get('cbstype') == "C" for item in noisemap_intersections)
+    diagnostic['flags']['isPriorityZone'] = any(item.get('acoustic_noisemap_kind') == "C" for item in noisemap_intersections)
     diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
     diagnostic['flags']['hasNoisemapWarning'] = len(noisemap_intersections) == 0 and len(soundclassification_intersections) > 0 and len(peb_intersections) == 0
 

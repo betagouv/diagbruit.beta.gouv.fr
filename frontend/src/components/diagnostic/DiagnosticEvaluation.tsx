@@ -43,10 +43,10 @@ const DiagnosticEvaluation = ({
     const dbBuffer = 10;
 
     const ldenDb = Math.max(
-      ...land_intersections_ld.map((item) => item.legende)
+      ...land_intersections_ld.map((item) => item.acoustic_db_value)
     );
     const lnDb =
-      Math.max(...land_intersections_ln.map((item) => item.legende)) + dbBuffer;
+      Math.max(...land_intersections_ln.map((item) => item.acoustic_db_value)) + dbBuffer;
 
     if (ldenDb === lnDb) {
       return ".";
@@ -67,7 +67,7 @@ const DiagnosticEvaluation = ({
       (intersection) => intersection.codeinfra === codeinfra
     );
 
-    return ln_intersection ? ln_intersection.legende + " dB" : "-";
+    return ln_intersection ? ln_intersection.acoustic_db_value + " dB" : "-";
   };
 
   const getPercentImpactedFromCodeInfra = (
@@ -77,7 +77,7 @@ const DiagnosticEvaluation = ({
     const computedPercentImpacted = landIntersections
       .filter(
         (intersection) =>
-          intersection.codeinfra === codeinfra && intersection.cbstype === "A"
+          intersection.codeinfra === codeinfra && intersection.acoustic_noisemap_kind === "A"
       )
       .reduce((acc, current) => acc + current.percent_impacted, 0);
 
@@ -92,11 +92,11 @@ const DiagnosticEvaluation = ({
     const maxLegendeByInfra: { [key: string]: LandIntersection } = {};
 
     land_intersections_ld.forEach((entry) => {
-      if (entry.cbstype === "A") {
-        const key = entry.codeinfra || `null_${entry.typesource}`;
+      if (entry.acoustic_noisemap_kind === "A") {
+        const key = entry.codeinfra || `null_${entry.kind}`;
         if (
           !maxLegendeByInfra[key] ||
-          entry.legende > maxLegendeByInfra[key].legende
+          entry.acoustic_db_value > maxLegendeByInfra[key].acoustic_db_value
         ) {
           maxLegendeByInfra[key] = entry;
         }
@@ -104,7 +104,7 @@ const DiagnosticEvaluation = ({
     });
 
     return Object.values(maxLegendeByInfra).sort(
-      (a, b) => b.legende - a.legende
+      (a, b) => b.acoustic_db_value - a.acoustic_db_value
     );
   };
 
@@ -132,7 +132,7 @@ const DiagnosticEvaluation = ({
                           land_intersections_ld.map(
                             (intersection) =>
                               `<b>${getReadableSource(
-                                intersection.typesource
+                                intersection.kind
                               )}</b>`
                           )
                         )
@@ -147,13 +147,13 @@ const DiagnosticEvaluation = ({
             <li
               dangerouslySetInnerHTML={{
                 __html:
-                  land_intersections_ld[0].typeterr === "INFRA"
+                  land_intersections_ld[0].acoustic_producer_kind === "INFRA"
                     ? replacePlaceholders(
                       EVALUATION_TEXTS.INFORMATIONS.CHARACTERISTICS
                         .MAIN_SOURCE_INFRA,
                       {
                         typesource: getReadableSource(
-                          land_intersections_ld[0].typesource
+                          land_intersections_ld[0].kind
                         ),
                         codinfra:
                           land_intersections_ld[0].codeinfra || "nom inconnu",
@@ -212,12 +212,12 @@ const DiagnosticEvaluation = ({
               noCaption
               bordered
               data={land_intersections_ld_unique_display
-                .filter((intersection) => intersection.cbstype === "A")
+                .filter((intersection) => intersection.acoustic_noisemap_kind === "A")
                 .map((intersection) => [
-                  getReadableSource(intersection.typesource, true),
-                  intersection.typeterr === "INFRA" ? "État" : "Agglomération",
+                  getReadableSource(intersection.kind, true),
+                  intersection.acoustic_producer_kind === "INFRA" ? "État" : "Agglomération",
                   intersection.codeinfra || "Non connu",
-                  intersection.legende + " dB",
+                  intersection.acoustic_db_value + " dB",
                   getLnCodeInfraLegende(intersection.codeinfra),
                 ])
                 .concat(

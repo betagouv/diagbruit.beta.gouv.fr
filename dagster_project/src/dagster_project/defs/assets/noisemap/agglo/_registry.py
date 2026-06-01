@@ -3,18 +3,12 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class AggloFile:
-    """One shapefile inside an agglo Box folder.
-
-    keep_source: whether the source shapefile has a `source` column that should
-    be preserved in raw_noisemap (true for Bordeaux's depassement-de-seuil files,
-    false everywhere else including Bordeaux's NoiseContours_* files).
-    """
+    """One shapefile inside an agglo Box folder."""
 
     name: str
     typesource: str  # "F" | "I" | "R" | "A"
     cbstype: str  # "A" | "C"
     indicetype: str  # "LD" | "LN"
-    keep_source: bool = False
 
 
 @dataclass(frozen=True)
@@ -38,34 +32,31 @@ AGGLO_TERRITORIES: list[AggloTerritory] = [
         legende_from="category",
         files=[
             AggloFile(
-                "fer_depassement_de_seuil_Lden.shp", "F", "C", "LD", keep_source=True
+                "fer_depassement_de_seuil_Lden.shp", "F", "C", "LD"
             ),
             AggloFile(
                 "industrie_depassement_de_seuil_Lden.shp",
                 "I",
                 "C",
                 "LD",
-                keep_source=True,
             ),
             AggloFile(
-                "route_depassement_de_seuil_Lden.shp", "R", "C", "LD", keep_source=True
+                "route_depassement_de_seuil_Lden.shp", "R", "C", "LD"
             ),
             AggloFile(
-                "fer_depassement_de_seuil_Lnight.shp", "F", "C", "LN", keep_source=True
+                "fer_depassement_de_seuil_Lnight.shp", "F", "C", "LN"
             ),
             AggloFile(
                 "industrie_depassement_de_seuil_Lnight.shp",
                 "I",
                 "C",
                 "LN",
-                keep_source=True,
             ),
             AggloFile(
                 "route_depassement_de_seuil_Lnight.shp",
                 "R",
                 "C",
                 "LN",
-                keep_source=True,
             ),
             AggloFile("NoiseContours_airportsInAgglomeration_Lden.shp", "A", "A", "LD"),
             AggloFile("NoiseContours_industryInAgglomeration_Lden.shp", "I", "A", "LD"),

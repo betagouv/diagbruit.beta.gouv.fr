@@ -23,26 +23,17 @@ def s3_prefix(t: AggloTerritory) -> str:
 
 
 def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
-    mapping = {
-        "id": True,
+    return {
         "geometry": True,
-        "legende": {"from": t.legende_from},
-        "typesource": {"value": f.typesource},
-        "cbstype": {"value": f.cbstype},
-        "indicetype": {"value": f.indicetype},
-        "annee": {"value": t.annee},
         "codedept": {"value": t.dept},
-        "typeterr": {"value": "AGGLO"},
-        "codeinfra": {"value": ""},
-        "idcbs": {"value": ""},
-        "producteur": {"value": ""},
-        "zonedef": {"value": ""},
-        "validedeb": {"value": ""},
-        "validefin": {"value": ""},
+        "label": {"value": ""},
+        "campaign": {"value": t.annee},
+        "acoustic_producer_kind": {"value": "AGGLO"},
+        "kind": {"value": f.typesource},
+        "acoustic_noisemap_kind": {"value": f.cbstype},
+        "acoustic_db_value": {"from": t.legende_from},
+        "acoustic_time_range": {"value": f.indicetype},
     }
-    if f.keep_source:
-        mapping["source"] = True
-    return mapping
 
 
 def build_territory_mapping(t: AggloTerritory) -> list[dict]:

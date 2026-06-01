@@ -49,24 +49,24 @@ download_batiment_files() {
 }
 
 # Définition des options communes
-RENAME_INFRA="--rename-column codinfra=codeinfra --rename-column idzonbruit=id"
+RENAME_INFRA="--rename-column codinfra=label --rename-column annee=campaign --rename-column typeterr=acoustic_producer_kind --rename-column typesource=kind --rename-column cbstype=acoustic_noisemap_kind --rename-column legende=acoustic_db_value --rename-column indicetype=acoustic_time_range"
 
-ADD_AGGLO_033="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO"
-ADD_TYPE_F="--add-column typesource=F"
-ADD_TYPE_I="--add-column typesource=I"
-ADD_TYPE_R="--add-column typesource=R"
-ADD_TYPE_A="--add-column typesource=A"
+ADD_AGGLO_033="--add-column campaign=2022 --add-column codedept=033 --add-column acoustic_producer_kind=AGGLO"
+ADD_TYPE_F="--add-column kind=F"
+ADD_TYPE_I="--add-column kind=I"
+ADD_TYPE_R="--add-column kind=R"
+ADD_TYPE_A="--add-column kind=A"
 
-ADD_CBS_A="--add-column cbstype=A"
-ADD_CBS_C="--add-column cbstype=C"
+ADD_CBS_A="--add-column acoustic_noisemap_kind=A"
+ADD_CBS_C="--add-column acoustic_noisemap_kind=C"
 
-ADD_LDEN="--add-column indicetype=LD"
-ADD_LNIGHT="--add-column indicetype=LN"
+ADD_LDEN="--add-column acoustic_time_range=LD"
+ADD_LNIGHT="--add-column acoustic_time_range=LN"
 
 ADD_SOUNDCLASSIFICATION_033="--add-column codedept=033"
 RENAME_SOUNDCLASSIFICATION_033_ROUTIER="--rename-column nom_tronc=segment"
 
-RENAME_AGGLO_033="--rename-column category=legende --ignore-column gid"
+RENAME_AGGLO_033="--rename-column category=acoustic_db_value --ignore-column gid --ignore-column id"
 RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
 
 # Fichiers à ingérer
