@@ -63,4 +63,17 @@ SOUNDCLASSIFICATION_TERRITORIES: list[SoundclassificationTerritory] = [
                                       acoustic_buffer_from="largeursec"),
         ),
     ),
+    SoundclassificationTerritory(
+        dept="059",
+        campaign="2022",
+        box_id="384762438911",
+        sources=(
+            SoundclassificationSource("troncon_fer_valide_59.shp", mode="fer", 
+                                      label_from="nomroute", acoustic_category_from="categorie", 
+                                      acoustic_buffer_from="largeur"),
+            SoundclassificationSource("troncons59.shp", mode="routier",
+                                      numero_from="nomtroncon",
+                                      acoustic_buffer_from="larg_sect"),
+        ),
+    ),
 ]
