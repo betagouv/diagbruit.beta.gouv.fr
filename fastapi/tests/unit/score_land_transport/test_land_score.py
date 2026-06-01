@@ -22,7 +22,7 @@ def test_get_land_score_from_sources_cases(input_path):
     result = get_land_score_from_sources(
         intersections_agglo=case["intersections_agglo"],
         intersections_infra=case["intersections_infra"],
-        indicetype=case["indicetype"],
+        indicetype=case["acoustic_time_range"],
         percent_unimpacted=0,
     )
 

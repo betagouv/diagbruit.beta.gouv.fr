@@ -16,6 +16,7 @@ WITH fixed_geometries AS (
         date_maj,
         campaign_url,
         id_map,
+        campaign,
         {{ repair_geometry('geometry', 'is_valid', 'structure') }} AS geometry,
         is_valid AS original_is_valid,
         validity_reason AS original_validity_reason
@@ -34,6 +35,7 @@ SELECT
     date_maj,
     campaign_url,
     id_map,
+    campaign,
     geometry,
     original_is_valid,
     original_validity_reason,
