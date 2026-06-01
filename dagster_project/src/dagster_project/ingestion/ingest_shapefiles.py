@@ -173,7 +173,16 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
                     log(f"Altered geometry column to geometry(Geometry,2154)")
 
         log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
-        gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+        try:
+            gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+        except Exception as create_err:
+            # Race condition: another concurrent partition created the table between our
+            # existence check and the CREATE TABLE. Retry as a plain append.
+            if if_exists == "append" and "already exists" in str(create_err).lower():
+                log(f"Concurrent table creation detected, retrying as append")
+                gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+            else:
+                raise
 
         log(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
         return True
