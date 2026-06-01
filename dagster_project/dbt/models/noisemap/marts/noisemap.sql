@@ -1,13 +1,13 @@
 {{ config(
     materialized='table',
     post_hook=[
-      "ALTER TABLE {{ this }} ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
       "DROP INDEX IF EXISTS idx_{{ this.name }}_codedept; CREATE INDEX idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
     ]
 ) }}
 
 SELECT
+  ROW_NUMBER() OVER (ORDER BY codedept, label, kind, acoustic_time_range, acoustic_noisemap_kind) AS id,
   campaign,
   codedept,
   acoustic_producer_kind,
