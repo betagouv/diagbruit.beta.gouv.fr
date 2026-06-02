@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy import create_engine, text, inspect
 import argparse
 import io
@@ -116,6 +117,23 @@ def _apply_mapping(gdf, mapping: dict):
     return gdf
 
 
+def _widen_columns(engine, schema, table_name, gdf, log):
+    """Widen existing table columns to accommodate incoming GDF before an append."""
+    existing_types = {col["name"]: str(col["type"]).upper() for col in inspect(engine).get_columns(table_name, schema=schema)}
+    float_cols = [c for c in gdf.select_dtypes(include="float").columns if c != "geometry"]
+    with engine.connect() as conn:
+        for col in float_cols:
+            if existing_types.get(col, "") in ("BIGINT", "INTEGER", "INT", "SMALLINT"):
+                conn.execute(text(f'ALTER TABLE {schema}."{table_name}" ALTER COLUMN "{col}" TYPE DOUBLE PRECISION'))
+                log(f"Upcasted column {col} from {existing_types[col]} to DOUBLE PRECISION")
+        conn.execute(text(
+            f"ALTER TABLE {schema}.{table_name} "
+            f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
+            f"USING geometry::geometry(Geometry,2154)"
+        ))
+        conn.commit()
+
+
 def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, context=None):
     log = context.log.info if context else print
     log_err = context.log.error if context else lambda msg: print(msg, file=sys.stderr)
@@ -146,6 +164,9 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
                 log(f"Renaming columns: {column_renames}")
                 gdf.rename(columns=column_renames, inplace=True)
 
+        if "acoustic_category" in gdf.columns:
+            gdf["acoustic_category"] = pd.to_numeric(gdf["acoustic_category"], errors="coerce")
+
         gdf["geometry"] = gdf["geometry"].apply(drop_z)
 
         engine = create_engine(db_url)
@@ -163,20 +184,7 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         if if_exists == "append":
             inspector = inspect(engine)
             if table_name in inspector.get_table_names(schema=schema):
-                existing_types = {col["name"]: str(col["type"]).upper() for col in inspector.get_columns(table_name, schema=schema)}
-                float_cols = [c for c in gdf.select_dtypes(include="float").columns if c != "geometry"]
-                with engine.connect() as conn:
-                    for col in float_cols:
-                        if existing_types.get(col, "") in ("BIGINT", "INTEGER", "INT", "SMALLINT"):
-                            conn.execute(text(f'ALTER TABLE {schema}."{table_name}" ALTER COLUMN "{col}" TYPE DOUBLE PRECISION'))
-                            log(f"Upcasted column {col} from {existing_types[col]} to DOUBLE PRECISION")
-                    conn.execute(text(
-                        f"ALTER TABLE {schema}.{table_name} "
-                        f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
-                        f"USING geometry::geometry(Geometry,2154)"
-                    ))
-                    conn.commit()
-                    log(f"Altered geometry column to geometry(Geometry,2154)")
+                _widen_columns(engine, schema, table_name, gdf, log)
 
         log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
         try:
@@ -185,7 +193,8 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
             # Race condition: another concurrent partition created the table between our
             # existence check and the CREATE TABLE. Retry as a plain append.
             if if_exists == "append" and "already exists" in str(create_err).lower():
-                log(f"Concurrent table creation detected, retrying as append")
+                log("Concurrent table creation detected, retrying as append")
+                _widen_columns(engine, schema, table_name, gdf, log)
                 gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
             else:
                 raise
