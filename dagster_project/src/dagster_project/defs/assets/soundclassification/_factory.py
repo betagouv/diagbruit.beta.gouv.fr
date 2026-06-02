@@ -33,8 +33,8 @@ SOUNDCLASS_PARTITIONS = StaticPartitionsDefinition([t.dept for t in SOUNDCLASSIF
 _MODE_MAPPINGS: dict[str, dict] = {
     "fer": {
         "geometry": True,
-        "label": {"from":"ligne"},
-        "acoustic_category": {"from":"rang"},
+        "label": {"from": "ligne"},
+        "acoustic_category": {"from": "rang"},
         "pkdebssseg": True,
         "pkfinssseg": True,
         "long_ssseg": True,
@@ -44,7 +44,7 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "base_class": True,
         "publi_ap": True,
         "evol_class": True,
-        "acoustic_buffer": {"from":"sect_affec"},
+        "acoustic_buffer": {"from": "sect_affec"},
         "communes": True,
         "region": True,
         "dept": True,
@@ -57,13 +57,12 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "debutant": True,
         "finissant": True,
         "cls_commen": True,
-        "acoustic_category": {"from":"cat_bruit"},
+        "acoustic_category": {"from": "cat_bruit"},
         "gestion": True,
         "horizon": True,
         "communes": True,
         "projet": True,
-        "acoustic_buffer": {"from":"larg_secte"},
-
+        "acoustic_buffer": {"from": "larg_secte"},
     },
     "lgv": {
         "geometry": True,
@@ -78,21 +77,20 @@ _MODE_MAPPINGS: dict[str, dict] = {
         "largeur": True,
         "nb_voies": True,
         "id_vfn": True,
-        "label": {"from":"toponyme"},
-        "acoustic_buffer": {"from":"larg_secte"},
-        "acoustic_category": {"from":"cat"},
-
+        "label": {"from": "toponyme"},
+        "acoustic_buffer": {"from": "larg_secte"},
+        "acoustic_category": {"from": "cat"},
     },
     "tramway": {
         "geometry": True,
-        "label": {"from":"id"},
+        "label": {"from": "id"},
         "nature": True,
         "etat": True,
         "electrifie": True,
         "largeur": True,
         "nb_voies": True,
-        "acoustic_buffer": {"from":"larg_secte"},
-        "acoustic_category": {"from":"categorie"},
+        "acoustic_buffer": {"from": "larg_secte"},
+        "acoustic_category": {"from": "categorie"},
     },
 }
 
