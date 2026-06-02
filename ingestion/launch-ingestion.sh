@@ -93,7 +93,10 @@ ADD_LDEN="--add-column acoustic_time_range=LD"
 ADD_LNIGHT="--add-column acoustic_time_range=LN"
 
 ADD_SOUNDCLASSIFICATION_033="--add-column codedept=033"
-RENAME_SOUNDCLASSIFICATION_033_ROUTIER="--rename-column nom_tronc=segment"
+RENAME_SOUNDCLASS_FER="--rename-column ligne=label --rename-column rang=acoustic_category --rename-column sect_affec=acoustic_buffer"
+RENAME_SOUNDCLASS_ROUTIER="--rename-column nom_tronc=segment --rename-column cat_bruit=acoustic_category --rename-column larg_secte=acoustic_buffer"
+RENAME_SOUNDCLASS_LGV="--rename-column toponyme=label --rename-column larg_secte=acoustic_buffer --rename-column cat=acoustic_category"
+RENAME_SOUNDCLASS_TRAMWAY="--rename-column id=label --rename-column larg_secte=acoustic_buffer --rename-column categorie=acoustic_category"
 
 RENAME_AGGLO_033="--rename-column category=acoustic_db_value --ignore-column gid --ignore-column id"
 RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
@@ -135,10 +138,10 @@ FILES_AGGLO_033=(
 )
 
 FILES_SOUNDCLASS=(
-  "inputs/soundclassification/AGGLO_033/FER/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_fer --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
-  "inputs/soundclassification/AGGLO_033/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASSIFICATION_033_ROUTIER"
-  "inputs/soundclassification/AGGLO_033/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
-  "inputs/soundclassification/AGGLO_033/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
+  "inputs/soundclassification/AGGLO_033/FER/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_fer --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_FER"
+  "inputs/soundclassification/AGGLO_033/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_ROUTIER"
+  "inputs/soundclassification/AGGLO_033/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_LGV"
+  "inputs/soundclassification/AGGLO_033/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_TRAMWAY"
 )
 
 FILES_PEB=(
