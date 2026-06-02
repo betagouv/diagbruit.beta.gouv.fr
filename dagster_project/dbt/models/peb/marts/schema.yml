@@ -4,41 +4,30 @@ models:
   - name: peb
     description: "Clean and validated PEB polygons projected to EPSG:4326 with geometry quality checks"
     columns:
+      - name: id
+        description: "Unique identifier generated per row at transform time"
+        tests:
+          - unique
+          - not_null
       - name: acoustic_zone
-        description: "Noise exposure zone"
+        description: "Noise exposure zone (A, B, C or D)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['A', 'B', 'C', 'D']
       - name: acoustic_db_value
-        description: "Legend code indicating noise level classification"
-      - name: indldenext
-        description: "Lden noise index - external level"
-      - name: indldenint
-        description: "Lden noise index - initial level"
-      - name: code_oaci
-        description: "ICAO code of the aerodrome"
+        description: "Noise level in dB (Lden), cast to float"
       - name: label
         description: "Name of the aerodrome or area"
-      - name: date_arret
-        description: "Decree or regulation date"
-      - name: producteur
-        description: "Data producer organization"
-      - name: date_maj
-        description: "Last update date of the dataset"
+        tests:
+          - not_null
+      - name: campaign
+        description: "Year of the prefectoral decree (date de l'arrêté), extracted per row from raw_peb.date_arret in stg_peb"
+        tests:
+          - not_null
       - name: campaign_url
-        description: "Reference document related to the noise zone"
-      - name: id_map
-        description: "Map identifier from the original data"
-      - name: polygon_id
-        description: "Unique identifier for each polygon (concatenation of id_map and zone)"
+        description: "URL of the reference document for the PEB campaign"
       - name: geometry
         description: "Validated polygon geometry projected to EPSG:4326"
-      - name: area_m2
-        description: "Area of the polygon in square meters"
-      - name: srid
-        description: "Spatial reference system identifier (expected to be 4326)"
-      - name: original_is_valid
-        description: "Indicates whether the original geometry was valid"
-      - name: original_validity_reason
-        description: "Explanation of why the original geometry was invalid, if applicable"
-      - name: is_valid_now
-        description: "Indicates whether the geometry is valid after repair"
-      - name: geometry_type
-        description: "Geometry type of the polygon (e.g., POLYGON, MULTIPOLYGON)"
+        tests:
+          - not_null

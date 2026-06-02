@@ -17,30 +17,34 @@ from dagster_project.defs.resources.box import BoxResource
 
 
 def _delete_dept_rows(
-    context: AssetExecutionContext, db_table: str, dept: str, schema: str = "public_workspace"
+    context: AssetExecutionContext,
+    db_table: str,
+    dept: str,
+    schema: str = "public_workspace",
+    producer_kind: str | None = None,
 ) -> int:
-    """Delete existing rows for `dept` from `schema.db_table` before re-ingesting.
+    """Delete existing rows for `dept` (and optionally `producer_kind`) before re-ingesting.
 
-    Idempotency primitive for partitioned re-runs — without it, re-materializing
-    a dept partition appends duplicate rows to raw_noisemap. Safe to call when
-    the table doesn't yet exist (returns 0 and swallows the error) since the
-    first-ever materialization will create the table via ingest_shapefile.
+    Pass `producer_kind` to scope the delete to only rows produced by one pipeline,
+    preventing pipelines that share the same dept from wiping each other's rows.
     """
     engine = create_engine(db_url())
-    sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept')
+    if producer_kind is not None:
+        sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept AND acoustic_producer_kind = :producer_kind')
+        params: dict = {"dept": dept, "producer_kind": producer_kind}
+        label = f"dept={dept}, acoustic_producer_kind={producer_kind}"
+    else:
+        sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept')
+        params = {"dept": dept}
+        label = f"dept={dept}"
     try:
         with engine.begin() as conn:
-            result = conn.execute(sql, {"dept": dept})
+            result = conn.execute(sql, params)
             deleted = result.rowcount or 0
-        context.log.info(
-            f"Deleted {deleted} existing rows for dept={dept} from {schema}.{db_table}"
-        )
+        context.log.info(f"Deleted {deleted} existing rows for {label} from {schema}.{db_table}")
         return deleted
     except Exception as e:
-        # Table may not exist yet on first run, or codedept column may not be present.
-        context.log.warning(
-            f"Pre-ingest DELETE skipped on {schema}.{db_table} (dept={dept}): {e}"
-        )
+        context.log.warning(f"Pre-ingest DELETE skipped on {schema}.{db_table} ({label}): {e}")
         return 0
 
 
@@ -49,14 +53,7 @@ def rename_infra(file:str) -> dict:
         "name": file,
         "mapping": {
             "geometry": True,
-            "id": {"from": "idzonbruit"},
-            "idcbs": True,
-            "uueid": True,
             "codedept": True,
-            "producer": {"from": "producteur"},
-            "zonedef": True,
-            "validedeb": True,
-            "validefin": True,
             "label": {"from": "codinfra"},
             "campaign": {"from": "annee"},
             "acoustic_producer_kind": {"from": "typeterr"},
@@ -64,7 +61,6 @@ def rename_infra(file:str) -> dict:
             "acoustic_noisemap_kind": {"from": "cbstype"},
             "acoustic_db_value": {"from": "legende"},
             "acoustic_time_range": {"from": "indicetype"},
-            "source": {"value": ""},
         },
     }
 
@@ -254,7 +250,7 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
         "manifest": MetadataValue.json(manifest),
     })
 
-def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,dept:str, db_table:str = "raw_noisemap",):
+def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str, dept: str, db_table: str = "raw_noisemap", producer_kind: str | None = None):
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -290,7 +286,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path:str, type:str,de
             )
 
     # Idempotent re-ingest: clear prior rows for this dept before append.
-    _delete_dept_rows(context, db_table=db_table, dept=dept)
+    _delete_dept_rows(context, db_table=db_table, dept=dept, producer_kind=producer_kind)
 
     ingested = 0
     skipped = 0

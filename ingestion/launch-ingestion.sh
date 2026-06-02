@@ -31,7 +31,7 @@ download_batiment_files() {
   if [ "$need_download" = true ]; then
     echo "📥 Downloading batiment shapefile from S3..."
     mkdir -p "$target_dir"
-    
+
     for file in "${files[@]}"; do
       if [ ! -f "$target_dir/$file" ]; then
         echo "  → Downloading $file"
@@ -40,7 +40,7 @@ download_batiment_files() {
         echo "  ✓ $file already exists"
       fi
     done
-    
+
     echo "✅ Batiment shapefile download complete"
     echo '--------------------------------------------------------------------------'
   else
@@ -48,25 +48,57 @@ download_batiment_files() {
   fi
 }
 
+download_peb_files() {
+  # National PEB zoning, published on data.gouv.fr split by zone (A/B/C/D).
+  # Columns are UPPERCASE in the source; ingest_shapefiles.py lowercases every
+  # column on read, so they match the lowercase dbt staging schema as-is.
+  local target_dir="inputs/PEB"
+  mkdir -p "$target_dir"
+
+  local files=(
+    "c-dgac-peb-metro-za.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202334/c-dgac-peb-metro-za.geojson"
+    "c-dgac-peb-metro-zb.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202306/c-dgac-peb-metro-zb.geojson"
+    "c-dgac-peb-metro-zc.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202327/c-dgac-peb-metro-zc.geojson"
+    "c-dgac-peb-metro-zd.geojson https://static.data.gouv.fr/resources/zonage-des-plan-dexposition-au-bruit-peb/20200602-202316/c-dgac-peb-metro-zd.geojson"
+  )
+
+  echo "📥 Downloading PEB GeoJSON from data.gouv.fr..."
+  for entry in "${files[@]}"; do
+    local name="${entry%% *}"
+    local url="${entry#* }"
+    if [ ! -f "$target_dir/$name" ]; then
+      echo "  → Downloading $name"
+      curl -sfL -o "$target_dir/$name" "$url"
+    else
+      echo "  ✓ $name already exists"
+    fi
+  done
+  echo "✅ PEB GeoJSON download complete"
+  echo '--------------------------------------------------------------------------'
+}
+
 # Définition des options communes
-RENAME_INFRA="--rename-column codinfra=codeinfra --rename-column idzonbruit=id"
+RENAME_INFRA="--rename-column codinfra=label --rename-column annee=campaign --rename-column typeterr=acoustic_producer_kind --rename-column typesource=kind --rename-column cbstype=acoustic_noisemap_kind --rename-column legende=acoustic_db_value --rename-column indicetype=acoustic_time_range"
 
-ADD_AGGLO_033="--add-column annee=2022 --add-column codedept=033 --add-column typeterr=AGGLO"
-ADD_TYPE_F="--add-column typesource=F"
-ADD_TYPE_I="--add-column typesource=I"
-ADD_TYPE_R="--add-column typesource=R"
-ADD_TYPE_A="--add-column typesource=A"
+ADD_AGGLO_033="--add-column campaign=2022 --add-column codedept=033 --add-column acoustic_producer_kind=AGGLO"
+ADD_TYPE_F="--add-column kind=F"
+ADD_TYPE_I="--add-column kind=I"
+ADD_TYPE_R="--add-column kind=R"
+ADD_TYPE_A="--add-column kind=A"
 
-ADD_CBS_A="--add-column cbstype=A"
-ADD_CBS_C="--add-column cbstype=C"
+ADD_CBS_A="--add-column acoustic_noisemap_kind=A"
+ADD_CBS_C="--add-column acoustic_noisemap_kind=C"
 
-ADD_LDEN="--add-column indicetype=LD"
-ADD_LNIGHT="--add-column indicetype=LN"
+ADD_LDEN="--add-column acoustic_time_range=LD"
+ADD_LNIGHT="--add-column acoustic_time_range=LN"
 
 ADD_SOUNDCLASSIFICATION_033="--add-column codedept=033"
-RENAME_SOUNDCLASSIFICATION_033_ROUTIER="--rename-column nom_tronc=segment"
+RENAME_SOUNDCLASS_FER="--rename-column ligne=label --rename-column rang=acoustic_category --rename-column sect_affec=acoustic_buffer"
+RENAME_SOUNDCLASS_ROUTIER="--rename-column nom_tronc=segment --rename-column cat_bruit=acoustic_category --rename-column larg_secte=acoustic_buffer"
+RENAME_SOUNDCLASS_LGV="--rename-column toponyme=label --rename-column larg_secte=acoustic_buffer --rename-column cat=acoustic_category"
+RENAME_SOUNDCLASS_TRAMWAY="--rename-column id=label --rename-column larg_secte=acoustic_buffer --rename-column categorie=acoustic_category"
 
-RENAME_AGGLO_033="--rename-column category=legende --ignore-column gid"
+RENAME_AGGLO_033="--rename-column category=acoustic_db_value --ignore-column gid --ignore-column id"
 RENAME_AGGLO_033_WITH_SOURCE="$RENAME_AGGLO_033 --ignore-column source"
 
 # Fichiers à ingérer
@@ -106,14 +138,17 @@ FILES_AGGLO_033=(
 )
 
 FILES_SOUNDCLASS=(
-  "inputs/soundclassification/AGGLO_033/FER/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_fer --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
-  "inputs/soundclassification/AGGLO_033/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASSIFICATION_033_ROUTIER"
-  "inputs/soundclassification/AGGLO_033/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
-  "inputs/soundclassification/AGGLO_033/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace $ADD_SOUNDCLASSIFICATION_033"
+  "inputs/soundclassification/AGGLO_033/FER/Class_sonore_DDTM33_SNCF.shp raw_soundclassification_fer --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_FER"
+  "inputs/soundclassification/AGGLO_033/ROUTIER/Class_sonore_DDTM33_routier.shp raw_soundclassification_routier --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_ROUTIER"
+  "inputs/soundclassification/AGGLO_033/LGV/Class_sonore_DDTM33_LGV-SEA_LISEA.shp raw_soundclassification_lgv --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_LGV"
+  "inputs/soundclassification/AGGLO_033/TRAMWAY/Class_sonore_DDTM33_tramway.shp raw_soundclassification_tramway --if-exists replace $ADD_SOUNDCLASSIFICATION_033 $RENAME_SOUNDCLASS_TRAMWAY"
 )
 
 FILES_PEB=(
-  "inputs/PEB/peb.shp raw_peb --if-exists replace"
+  "inputs/PEB/c-dgac-peb-metro-za.geojson raw_peb --if-exists replace"
+  "inputs/PEB/c-dgac-peb-metro-zb.geojson raw_peb --if-exists append"
+  "inputs/PEB/c-dgac-peb-metro-zc.geojson raw_peb --if-exists append"
+  "inputs/PEB/c-dgac-peb-metro-zd.geojson raw_peb --if-exists append"
 )
 
 FILES_TOPO=(
@@ -134,6 +169,9 @@ FILES_OSM_SCHOOLS=(
 
 # Download batiment files from S3 if needed
 download_batiment_files
+
+# Download PEB GeoJSON from data.gouv.fr if needed
+download_peb_files
 
 # Ingestion des données de base
 python ingest_shapefiles.py inputs/departments/depts.shp geo_departements --if-exists skip

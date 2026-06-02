@@ -7,8 +7,8 @@ WITH reprojected AS (
     SELECT *,
            ST_Transform(multilinestring, 2154) AS geom_lambert,
            CASE
-               WHEN buffer IS NULL THEN
-                   CASE sound_category
+               WHEN acoustic_buffer IS NULL THEN
+                   CASE acoustic_category
                        WHEN 1 THEN 300
                        WHEN 2 THEN 250
                        WHEN 3 THEN 100
@@ -16,7 +16,7 @@ WITH reprojected AS (
                        WHEN 5 THEN 10
                        ELSE NULL
                    END
-               ELSE buffer
+               ELSE acoustic_buffer
            END AS buffer_filled
     FROM {{ ref('int_soundclassification_multilines') }}
 ),
@@ -31,9 +31,9 @@ SELECT
     multilinestring,
     polygon_geom,
     source,
-    typesource,
-    codeinfra,
-    buffer_filled AS buffer,
-    sound_category,
+    kind,
+    label,
+    buffer_filled AS acoustic_buffer,
+    acoustic_category,
     codedept
 FROM buffered

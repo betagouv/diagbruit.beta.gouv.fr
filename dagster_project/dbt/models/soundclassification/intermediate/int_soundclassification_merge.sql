@@ -4,14 +4,14 @@
 ) }}
 
 SELECT
-    MIN(pk) AS pk,
+    MIN(id) AS id,
     source,
-    typesource,
-    codeinfra,
-    buffer,
-    sound_category,
+    kind,
+    label,
+    acoustic_buffer,
+    acoustic_category,
     codedept,
-    array_agg(pk ORDER BY pk) AS merged_pks,
+    array_agg(id ORDER BY id) AS merged_ids,
     ST_Union(geometry) AS geometry,
     ST_Union(multilinestring) AS multilinestring,
     ST_IsValid(ST_Union(geometry)) AS is_valid_now,
@@ -20,8 +20,8 @@ SELECT
 FROM {{ ref('int_soundclassification_with_pk') }}
 GROUP BY
     source,
-    typesource,
-    codeinfra,
-    sound_category,
+    kind,
+    label,
+    acoustic_category,
     codedept,
-    buffer
+    acoustic_buffer

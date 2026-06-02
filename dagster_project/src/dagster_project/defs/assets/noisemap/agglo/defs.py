@@ -45,4 +45,4 @@ def agglo_launcher(context: AssetExecutionContext, box: BoxResource):
 def agglo_landing(context: AssetExecutionContext):
     """Download agglo files from S3 and ingest into public_workspace.raw_noisemap."""
     t = AGGLO_BY_DEPT[context.partition_key]
-    return ingest_from_s3_landing(context, path=s3_prefix(t), type=KIND, dept=t.dept)
+    return ingest_from_s3_landing(context, path=s3_prefix(t), type=KIND, dept=t.dept, producer_kind="AGGLO")

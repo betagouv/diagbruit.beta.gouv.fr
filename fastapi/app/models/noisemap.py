@@ -7,7 +7,7 @@ class NoiseMapItem(Base):
     """Model representing noise map data items"""
     __tablename__ = "noisemap"
 
-    pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True)
     geometry = Column(Geometry('POLYGON', srid=4326))
     codedept = Column(String(3))
     acoustic_producer_kind = Column(String)

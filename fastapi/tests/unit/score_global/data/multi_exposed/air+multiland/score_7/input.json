@@ -24,10 +24,10 @@
   "soundclassification_intersections": [],
   "peb_intersections": [
     {
-      "zone": "C",
+      "acoustic_zone": "C",
       "acoustic_db_value": 55,
-      "nom": "B. MERIGNAC",
-      "ref_doc": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
+      "label": "B. MERIGNAC",
+      "campaign_url": "http://piece-jointe-carto.developpement-durable.gouv.fr/NAT003/PEB/PEB_LFBD_22_12_2004.pdf",
       "percent_impacted": 1
     }
   ],

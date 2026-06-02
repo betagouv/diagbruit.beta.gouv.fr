@@ -17,9 +17,9 @@ SELECT
     geometry,
     multilinestring,
     source,
-    typesource,
-    codeinfra,
-    buffer,
-    sound_category,
+    kind,
+    label,
+    acoustic_buffer,
+    acoustic_category,
     codedept
 FROM unified
