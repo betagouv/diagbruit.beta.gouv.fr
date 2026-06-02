@@ -24,11 +24,11 @@ WITH numbered AS (
 )
 
 SELECT
-    id,
+    row_number() OVER () AS id,
     multilinestring,
     source,
     kind,
-    COALESCE(label, 'NOM DE ROUTE INCONNU ' || id::text) AS label,
+    COALESCE(label, 'NOM DE ROUTE INCONNUE ' || row_number() OVER ()::text) AS label,
     acoustic_buffer,
     acoustic_category,
     codedept,
