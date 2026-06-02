@@ -19,4 +19,4 @@ models:
       - name: geometry
         description: "Merged geometry in EPSG:4326, type POLYGON or MULTIPOLYGON"
       - name: road_geometry
-        description: "road_geometry in EPSG:4326, type LINESTRING or MULTISTRING"
+        description: "Merged road centerlines in EPSG:2154, type MULTILINESTRING"
