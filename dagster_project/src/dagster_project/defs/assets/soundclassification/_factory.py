@@ -9,6 +9,7 @@ import hashlib
 import json
 import shutil
 from datetime import datetime, timezone
+from pathlib import Path
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, StaticPartitionsDefinition
 
@@ -60,6 +61,16 @@ def s3_prefix(dept: str, campaign: str, mode: str) -> str:
     return f"soundclassification/dept={dept}/campaign={campaign}/mode={mode}/"
 
 
+def _collect_box_files(client, folder_id):
+    """Recursively yield all file entries from a Box folder and its subfolders."""
+    items = client.folders.get_folder_items(folder_id)
+    for item in items.entries:
+        if item.type == "file":
+            yield item
+        elif item.type == "folder":
+            yield from _collect_box_files(client, item.id)
+
+
 def _mode_mapping(t: SoundclassificationTerritory, src: SoundclassificationSource) -> dict:
     """Build the column mapping for one source mode, injecting territory-level values.
 
@@ -95,13 +106,10 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
     local_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        # Download all files from the Box folder once
+        # Download all files from the Box folder (including subfolders) once
         all_sha256: dict[str, str] = {}
-        items = client.folders.get_folder_items(t.box_id)
-        for item in items.entries:
-            if item.type != "file":
-                continue
-            context.log.info(f"Downloading {item.name} from Box folder {t.box_id}")
+        for item in _collect_box_files(client, t.box_id):
+            context.log.info(f"Downloading {item.name} from Box")
             stream = client.downloads.download_file(item.id)
             content = stream.read()
             (local_dir / item.name).write_bytes(content)
