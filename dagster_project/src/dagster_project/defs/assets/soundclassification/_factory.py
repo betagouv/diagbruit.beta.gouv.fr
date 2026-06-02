@@ -35,24 +35,24 @@ SOUNDCLASS_PARTITIONS = StaticPartitionsDefinition([t.dept for t in SOUNDCLASSIF
 
 _COLUMNS_BY_MODE: dict[str, dict] = {
     "fer": {
-        "label": {"from": "ligne"},
-        "acoustic_category": {"from": "rang"},
-        "acoustic_buffer": {"from": "sect_affec"},
+        "label": {"value": ""},
+        "acoustic_category": {"value": ""},
+        "acoustic_buffer": {"value": ""},
     },
     "routier": {
-        "numero": True,
-        "acoustic_category": {"from": "cat_bruit"},
-        "acoustic_buffer": {"from": "larg_secte"},
+        "numero": {"value": ""},
+        "acoustic_category": {"value": ""},
+        "acoustic_buffer": {"value": ""},
     },
     "lgv": {
-        "label": {"from": "toponyme"},
-        "acoustic_category": {"from": "cat"},
-        "acoustic_buffer": {"from": "larg_secte"},
+        "label": {"value": ""},
+        "acoustic_category": {"value": ""},
+        "acoustic_buffer": {"value": ""},
     },
     "tramway": {
-        "label": {"from": "id"},
-        "acoustic_category": {"from": "categorie"},
-        "acoustic_buffer": {"from": "larg_secte"},
+        "label": {"value": ""},
+        "acoustic_category": {"value": ""},
+        "acoustic_buffer": {"value": ""},
     },
 }
 
