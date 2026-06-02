@@ -18,7 +18,7 @@ models:
       - name: source
         description: "Source of the data (tramway, fer, routier, lgv)"
       - name: kind
-        description: "Type of infrastructure (T = Tramway, F = Ferroviaire, R = Routier)"
+        description: "Type of infrastructure (F = Ferroviaire/LGV/Tramway, R = Routier)"
       - name: label
         description: "Infrastructure identifier (id, ligne, numero or toponyme depending on the source)"
       - name: acoustic_buffer

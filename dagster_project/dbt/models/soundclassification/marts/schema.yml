@@ -9,7 +9,7 @@ models:
       - name: source
         description: "Original data source (tramway, fer, routier, lgv)"
       - name: kind
-        description: "Source type: 'T' for tramway, 'F' for ferroviaire, 'R' for routier"
+        description: "Source type: 'F' for ferroviaire/LGV/tramway, 'R' for routier"
       - name: label
         description: "Infrastructure code, varies per source (e.g., id, ligne, numero, toponyme)"
       - name: acoustic_buffer
