@@ -105,13 +105,13 @@ def filter_land_intersections_by_codeinfra(intersections):
     return sorted_results
 
 
-def filter_soundclassification_by_codeinfra(intersections):
+def filter_soundclassification_by_label(intersections):
     filtered = {}
 
     for item in intersections:
-        codeinfra = item.get("codeinfra")
-        if codeinfra and codeinfra not in filtered:
-            filtered[codeinfra] = item
+        label = item.get("label")
+        if label and label not in filtered:
+            filtered[label] = item
 
     return list(filtered.values())
 

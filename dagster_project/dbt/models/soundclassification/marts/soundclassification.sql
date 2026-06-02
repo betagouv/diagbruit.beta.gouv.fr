@@ -3,14 +3,14 @@
 ) }}
 
 SELECT
-    pk,
+    id,
     source,
-    typesource,
-    codeinfra,
-    buffer,
-    sound_category,
+    kind,
+    label,
+    acoustic_buffer,
+    acoustic_category,
     codedept,
     geometry,
-    multilinestring as source_geometry
+    ST_Union(multilinestring) OVER (PARTITION BY source, kind, label, codedept) AS road_geometry
 FROM {{ ref('int_soundclassification_merge') }}
 WHERE area_m2 > 0

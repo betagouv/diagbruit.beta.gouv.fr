@@ -5,10 +5,10 @@ from typing import Optional, Any, Dict
 class SoundClassificationItem(BaseModel):
     pk: int
     source: Optional[str] = None
-    typesource: Optional[str] = None
-    codeinfra: Optional[str] = None
-    buffer: Optional[float] = None
-    sound_category: Optional[int] = None
+    kind: Optional[str] = None
+    label: Optional[str] = None
+    acoustic_buffer: Optional[float] = None
+    acoustic_category: Optional[int] = None
 
     class Config:
         orm_mode = True
