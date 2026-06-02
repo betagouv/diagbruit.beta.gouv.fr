@@ -9,7 +9,7 @@ class SoundClassificationItem(Base):
     
     pk = Column("id", Integer, primary_key=True, index=True)
     geometry = Column(Geometry('POLYGON', srid=4326))
-    road_geometry = Column(Geometry('MULTILINESTRINGZ', srid=2154))
+    road_geometry = Column(Geometry('MULTILINESTRING', srid=2154))
     source = Column(String)
     kind = Column(String(1), index=True)
     label = Column(String)
