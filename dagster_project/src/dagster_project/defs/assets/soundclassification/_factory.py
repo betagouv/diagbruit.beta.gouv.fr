@@ -114,9 +114,11 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
     local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / f"soundclassification_{t.dept}"
     local_dir.mkdir(parents=True, exist_ok=True)
 
+    all_mapping_entries: list[dict] = []
+    all_sha256: dict[str, str] = {}
+    mode_count = 0
+
     try:
-        # Download all files from the Box folder once
-        all_sha256: dict[str, str] = {}
         items = client.folders.get_folder_items(t.box_id)
         for item in items.entries:
             if item.type != "file":
@@ -129,13 +131,12 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
 
         context.log.info(f"Downloaded {len(all_sha256)} files from Box")
 
-        mode_count = 0
         for src in t.sources:
             path = s3_prefix(t.dept, t.campaign, src.mode)
             source_prefix = path + "_source/"
 
             mode_sha256: dict[str, str] = {}
-            mapping_entries = []
+            mode_mapping_entries: list[dict] = []
 
             for local_file in local_dir.iterdir():
                 if not local_file.is_file() or local_file.stem != src.file_stem:
@@ -144,35 +145,43 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
                 context.log.info(f"Uploaded {local_file.name} → s3://{S3_BUCKET}/{source_prefix}{local_file.name}")
                 mode_sha256[local_file.name] = all_sha256[local_file.name]
                 if local_file.suffix == ".shp":
-                    mapping_entries.append(_build_mode_mapping(local_file.name, src.mode, t.dept))
+                    mode_mapping_entries.append(_build_mode_mapping(local_file.name, src.mode, t.dept))
 
-            manifest = {
+            mode_manifest = {
                 "provenance": f"box://folder/{t.box_id}",
                 "pulled_at": datetime.now(timezone.utc).isoformat(),
                 "sha256": mode_sha256,
             }
             s3.put_object(
                 Bucket=S3_BUCKET, Key=path + "manifest.json",
-                Body=json.dumps(manifest, indent=2), ContentType="application/json",
+                Body=json.dumps(mode_manifest, indent=2), ContentType="application/json",
             )
             s3.put_object(
                 Bucket=S3_BUCKET, Key=path + "mapping.json",
-                Body=json.dumps(mapping_entries, indent=2), ContentType="application/json",
+                Body=json.dumps(mode_mapping_entries, indent=2), ContentType="application/json",
             )
             context.log.info(
-                f"Mode {src.mode}: {len(mapping_entries)} mapping entries → s3://{S3_BUCKET}/{path}"
+                f"Mode {src.mode}: {len(mode_mapping_entries)} mapping entries → s3://{S3_BUCKET}/{path}"
             )
+
+            all_mapping_entries.extend(mode_mapping_entries)
             mode_count += 1
 
     finally:
         shutil.rmtree(local_dir, ignore_errors=True)
 
+    manifest = {
+        "provenance": f"box://folder/{t.box_id}",
+        "pulled_at": datetime.now(timezone.utc).isoformat(),
+        "sha256": all_sha256,
+    }
+
     return MaterializeResult(metadata={
         "box_id": MetadataValue.text(t.box_id),
         "bucket": MetadataValue.text(S3_BUCKET),
         "modes_uploaded": MetadataValue.int(mode_count),
-        "files_downloaded": MetadataValue.int(len(all_sha256)),
-        "mapping": MetadataValue.json(mapping_entries),
+        "files_uploaded": MetadataValue.int(len(all_sha256)),
+        "mapping": MetadataValue.json(all_mapping_entries),
         "manifest": MetadataValue.json(manifest),
     })
 
