@@ -8,8 +8,8 @@ SELECT
     'tramway' AS source,
     'F' AS kind,
     label,
-    acoustic_buffer,
-    acoustic_category,
+    CAST(acoustic_buffer AS double precision),
+    CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_tramway') }}
 
@@ -20,7 +20,7 @@ SELECT
     'fer' AS source,
     'F' AS kind,
     label,
-    CAST(acoustic_buffer AS bigint),
+    CAST(acoustic_buffer AS double precision),
     CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_fer') }}
@@ -33,8 +33,8 @@ SELECT
     'routier' AS source,
     'R' AS kind,
     TRIM(SPLIT_PART(numero, ':', 1)) AS label,
-    acoustic_buffer,
-    acoustic_category,
+    CAST(acoustic_buffer AS double precision),
+    CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_routier') }}
 
@@ -45,7 +45,7 @@ SELECT
     'lgv' AS source,
     'F' AS kind,
     label,
-    acoustic_buffer,
-    acoustic_category,
+    CAST(acoustic_buffer AS double precision),
+    CAST(acoustic_category AS int),
     codedept
 FROM {{ source('public_workspace', 'raw_soundclassification_lgv') }}

@@ -164,8 +164,9 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
                 log(f"Renaming columns: {column_renames}")
                 gdf.rename(columns=column_renames, inplace=True)
 
-        if "acoustic_category" in gdf.columns:
-            gdf["acoustic_category"] = pd.to_numeric(gdf["acoustic_category"], errors="coerce")
+        for col in ("acoustic_category", "acoustic_buffer"):
+            if col in gdf.columns:
+                gdf[col] = pd.to_numeric(gdf[col], errors="coerce")
 
         gdf["geometry"] = gdf["geometry"].apply(drop_z)
 
