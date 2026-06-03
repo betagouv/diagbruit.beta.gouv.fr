@@ -11,11 +11,12 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, StaticPartitionsDefinition
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue
 
 from dagster_project.io import DAGSTER_ROOT
 from dagster_project.io.s3 import S3_BUCKET, s3
 from dagster_project.defs.assets.noisemap._io import s3_landing
+from dagster_project.defs.assets._partitions import ALL_DEPT_PARTITIONS
 from dagster_project.defs.resources.box import BoxResource
 
 from dagster_project.defs.assets.soundclassification._registry import (
@@ -31,7 +32,7 @@ SOUNDCLASS_BY_DEPT: dict[str, SoundclassificationTerritory] = {
     t.dept: t for t in SOUNDCLASSIFICATION_TERRITORIES
 }
 
-SOUNDCLASS_PARTITIONS = StaticPartitionsDefinition([t.dept for t in SOUNDCLASSIFICATION_TERRITORIES])
+SOUNDCLASS_PARTITIONS = ALL_DEPT_PARTITIONS
 
 _COLUMNS_BY_MODE: dict[str, dict] = {
     "fer": {
