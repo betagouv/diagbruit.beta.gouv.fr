@@ -54,7 +54,7 @@ jobs:
           ./launch-ingestion.sh
 
       # -----------------------------
-      # 2. Setup Python for DBT
+      # 2. Setup Python for DBT in Dagster
       # -----------------------------
       - name: Set up Python for DBT
         uses: actions/setup-python@v5
