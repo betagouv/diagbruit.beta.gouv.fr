@@ -72,12 +72,24 @@ cd ingestion
 ./launch-ingestion.sh
 ```
 
-## 🧪 DBT
+## ⚙️ Dagster + DBT (Orchestration)
+
+### From dagster_project folder
+
+```bash
+cd dagster_project
+```
 
 ### Launch dedicated Virtual Environment
 
 ```bash
-source dbt-venv/bin/activate
+source dagster-venv/bin/activate
+```
+
+### Install dependencies
+
+```bash
+uv sync
 ```
 
 ### Configure dbt Profile
@@ -88,23 +100,19 @@ source dbt-venv/bin/activate
 
 Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
 
-### From dbt folder
+### Authenticate with Box (first-time only)
 
 ```bash
-cd dbt
+uv run python box_auth.py
 ```
 
-### Verify Configuration
+### Start the Application
 
 ```bash
-dbt debug
+uv run dagster dev -p 3001
 ```
 
-### Run Models
-
-```bash
-dbt run
-```
+The Dagster UI will be available at http://localhost:3001
 
 ## 🚀 FastApi
 
