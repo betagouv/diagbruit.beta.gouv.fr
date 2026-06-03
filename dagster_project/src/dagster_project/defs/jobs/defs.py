@@ -89,10 +89,3 @@ strasbourg_job = define_asset_job(
     selection=AssetSelection.groups("strasbourg").downstream(),
     tags={"domain": "strasbourg", "scope": "pipeline"},
 )
-
-# ── Everything everywhere ─────────────────────────────────────────────────
-full_pipeline_job = define_asset_job(
-    "full_pipeline_job",
-    selection=AssetSelection.all(),
-    tags={"domain": "full", "scope": "pipeline"},
-)
