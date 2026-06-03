@@ -15,6 +15,7 @@ deactivate
 echo "Setting up Dagster environment..."
 python -m venv dagster-venv
 source dagster-venv/bin/activate
+cd dagster-project
 uv sync
 deactivate
 
