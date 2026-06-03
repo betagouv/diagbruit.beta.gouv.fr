@@ -15,6 +15,8 @@ or select the relevant assets directly from the Assets page.
 
 from dagster import AssetSelection, define_asset_job
 
+from dagster_project.defs.assets._partitions import ALL_DEPT_PARTITIONS
+
 _STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
     "stage", "landing"
 )
@@ -88,4 +90,22 @@ strasbourg_job = define_asset_job(
     "strasbourg_job",
     selection=AssetSelection.groups("strasbourg").downstream(),
     tags={"domain": "strasbourg", "scope": "pipeline"},
+)
+
+# Dev pipeline for dept 033: covers all domains for local end-to-end testing.
+# PEB and OSM are unpartitioned. All partitioned groups share ALL_DEPT_PARTITIONS
+# so a single --partition 033 flag applies to every partitioned asset in the run.
+dev_pipeline_033_job = define_asset_job(
+    "dev_pipeline_033_job",
+    selection=(
+        AssetSelection.groups("peb")
+        | AssetSelection.groups("osm")
+        | AssetSelection.groups("soundclassification")
+        | AssetSelection.groups("noisemap_agglo")
+        | AssetSelection.groups("noisemap_infra")
+        | AssetSelection.groups("noisemap_fastline")
+        | AssetSelection.groups("noisemap")
+    ),
+    partitions_def=ALL_DEPT_PARTITIONS,
+    tags={"domain": "dev", "scope": "pipeline_033"},
 )
