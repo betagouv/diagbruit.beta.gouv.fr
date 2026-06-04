@@ -3,9 +3,9 @@ from geoalchemy2 import Geometry
 from ..database import Base
 
 
-class TopoItem(Base):
-    """Model representing clean and validated topographic building data"""
-    __tablename__ = "topo"
+class BdnbItem(Base):
+    """Model representing clean and validated BDNB building data"""
+    __tablename__ = "bdnb"
     
     pk = Column(Integer, primary_key=True, index=True, autoincrement=True)
     fid = Column(Float)
