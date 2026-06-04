@@ -163,3 +163,12 @@ def bdnb_landing(context: AssetExecutionContext):
         "dept": MetadataValue.text(dept),
         "files_ingested": MetadataValue.int(ingested),
     })
+
+@asset(
+    group_name=GROUP,
+    key="raw_bdnb",
+    deps=["bdnb_landing"],
+)
+def raw_bdnb(context: AssetExecutionContext):
+    context.log.info("raw_bdnb fan-in: all upstream partitions ready")
+    return MaterializeResult(metadata={"status": MetadataValue.text("ok")})
