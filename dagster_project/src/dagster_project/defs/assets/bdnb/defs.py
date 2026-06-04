@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime, timezone
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, StaticPartitionsDefinition, asset
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, inspect, text
 
 from dagster_project.defs.resources.box import BoxResource
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
@@ -129,15 +129,15 @@ def bdnb_landing(context: AssetExecutionContext):
             context.log.info(f"Downloaded {filename}")
 
         engine = create_engine(db_url())
-        try:
+        if DB_TABLE in inspect(engine).get_table_names(schema=SCHEMA):
             with engine.begin() as conn:
                 result = conn.execute(
                     text(f'DELETE FROM {SCHEMA}."{DB_TABLE}" WHERE code_depar = :dept'),
                     {"dept": dept},
                 )
                 context.log.info(f"Deleted {result.rowcount} existing rows for dept={dept}")
-        except Exception as e:
-            context.log.warning(f"Pre-ingest DELETE skipped for dept={dept}: {e}")
+        else:
+            context.log.info(f"Table {DB_TABLE} does not exist yet — skipping pre-ingest DELETE")
 
         for shp_path in local_dir.rglob("*.shp"):
             context.log.info(f"Ingesting {shp_path.name} → {DB_TABLE}")
