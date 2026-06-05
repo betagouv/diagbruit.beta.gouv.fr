@@ -289,30 +289,52 @@ diagbruit/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── database.py
+│   │   ├── algorithm/
 │   │   ├── models/
+│   │   ├── references/
 │   │   ├── routes/
 │   │   ├── schemas/
 │   │   └── utils/
 │   ├── tests/
 │   │   ├── integration/
-│   │   ├── unit/
+│   │   └── unit/
 │   ├── .env.example
-│   ├── requirements.txt
-│
-├── dbt/
-│   ├── models/
-│   ├── macros/
-│   ├── tests/
-│   ├── dbt_project.yml
-│   ├── profiles.yml.example
 │   └── requirements.txt
+│
+├── dagster_project/
+│   ├── dbt/
+│   │   ├── models/
+│   │   │   ├── noisemap/
+│   │   │   ├── osm/
+│   │   │   ├── peb/
+│   │   │   ├── soundclassification/
+│   │   │   ├── strasbourg/
+│   │   │   └── topo/
+│   │   ├── macros/
+│   │   ├── dbt_project.yml
+│   │   └── profiles.yml.example
+│   ├── src/dagster_project/
+│   │   ├── defs/
+│   │   │   ├── assets/
+│   │   │   │   ├── noisemap/
+│   │   │   │   ├── osm/
+│   │   │   │   ├── peb/
+│   │   │   │   ├── soundclassification/
+│   │   │   │   └── defs.py
+│   │   │   ├── jobs/
+│   │   │   ├── resources/
+│   │   │   └── schedules/
+│   │   ├── ingestion/
+│   │   └── io/
+│   ├── box_auth.py
+│   └── pyproject.toml
 │
 ├── ingestion/
 │   ├── inputs/
-│   ├── .env.example
+│   ├── ingest_geojson.py
 │   ├── ingest_shapefiles.py
 │   └── requirements.txt
-|
+│
 ├── frontend/
 │   ├── .env.example
 │   ├── package.json
@@ -329,9 +351,12 @@ diagbruit/
 │   ├── src/
 │   └── types/
 │
+├── metabase/
+│
 ├── setup-dev.sh
 ├── setup-dbt.sh
-└── docker-compose.yml
+├── setup-ingestion-dev.sh
+└── docker-compose.yaml
 ```
 
 ## 🔧 Troubleshooting
