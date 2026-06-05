@@ -62,16 +62,16 @@ jobs:
           python-version: "3.12"
 
       - name: Install dbt dependencies
-        working-directory: dagster_project/dbt
+        working-directory: dagster/dbt
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Run dbt pipeline
-        working-directory: dagster_project/dbt
+        working-directory: dagster/dbt
         env:
-          DBT_PROFILES_DIR: ${{ github.workspace }}/dagster_project/dbt
+          DBT_PROFILES_DIR: ${{ github.workspace }}/dagster/dbt
         run: |
           source venv/bin/activate
           cp profiles.yml.example profiles.yml

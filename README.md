@@ -74,10 +74,10 @@ cd ingestion
 
 ## ⚙️ Dagster + DBT (Orchestration)
 
-### From dagster_project folder
+### From dagster folder
 
 ```bash
-cd dagster_project
+cd dagster
 ```
 
 ### Launch dedicated Virtual Environment
@@ -316,7 +316,7 @@ diagbruit/
 │   ├── .env.example
 │   └── requirements.txt
 │
-├── dagster_project/
+├── dagster/
 │   ├── dbt/
 │   │   ├── models/
 │   │   │   ├── noisemap/
