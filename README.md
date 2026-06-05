@@ -232,13 +232,18 @@ The GitHub Actions workflows require the `SCALINGO_SSH_PRIVATE_KEY` secret to be
 
 ```mermaid
 graph TD
-    subgraph Ingestion["Ingestion"]
-        A[Script d'ingestion]
+    subgraph Sources["Sources de données"]
+        BOX[Box]
+        S3[S3]
+    end
+
+    subgraph Dagster["Dagster — Orchestration"]
+        A[Assets d'ingestion]
+        B0[dbt : Transformations]
     end
 
     subgraph PostgreSQL["PostgreSQL - Database diagbruit"]
         PW[Données brutes : schema public_workspace]
-        B0[DBT: Traitements intermédiaires dans public_workspace]
         C[Données finales : schema public]
     end
 
@@ -257,27 +262,37 @@ graph TD
         F[Éditeur de préconisations]
     end
 
+    subgraph Metabase["Metabase"]
+        G[Tableaux de bord]
+    end
+
+    BOX --> A
+    S3 --> A
     A --> PW
     PW --> B0
     B0 --> C
-    D --> D2
+    C --> G
     D --> D1
-    D1 --> C
+    D --> D2
     D --> D3
+    D1 --> C
     D3 --> F
     E --> D
 
-    classDef ingestion fill:#1a936f,stroke:#88d498,stroke-width:2px,color:#f3e9d2
+    classDef sources fill:#e07b39,stroke:#c45e1a,stroke-width:2px,color:#fff
+    classDef dagster fill:#4f2d7f,stroke:#7c4dbd,stroke-width:2px,color:#e8d9ff
     classDef dbt fill:#114b5f,stroke:#456990,stroke-width:2px,color:#e4fde1
     classDef postgres fill:#f45b69,stroke:#6b2737,stroke-width:2px,color:#f6e8ea
     classDef fastapi fill:#540d6e,stroke:#9e0059,stroke-width:2px,color:#ffcbf2
     classDef frontend fill:#3a506b,stroke:#1c2541,stroke-width:2px,color:#c2dfe3
+    classDef metabase fill:#509ee3,stroke:#2d7cd0,stroke-width:2px,color:#fff
 
-    class A ingestion
-    class B0,B1,B2 dbt
+    class BOX,S3 sources
+    class A,B0 dagster
     class PW,C postgres
     class D,D1,D2,D3 fastapi
     class E frontend
+    class G metabase
 ```
 
 ## 🗂️ Project Structure
