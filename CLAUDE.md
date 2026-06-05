@@ -56,6 +56,6 @@ Path filters ensure only the affected component is deployed (e.g. changes in `fa
 Each component has its own `CLAUDE.md` with commands and architecture details:
 - `frontend/CLAUDE.md`
 - `fastapi/CLAUDE.md`
-- `dbt/CLAUDE.md`
 - `ingestion/CLAUDE.md`
 - `dagster/CLAUDE.md`
+- `dagster/dbt/CLAUDE.md`
