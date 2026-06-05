@@ -18,9 +18,14 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
     );
   }
 
+  const uniqueNoisezones = diagnostic.noisezone_intersections.filter(
+    (noisezone, index, self) =>
+      self.findIndex((n) => n.alert === noisezone.alert) === index,
+  );
+
   return (
     <>
-      {diagnostic.noisezone_intersections.map((noisezone, index) => (
+      {uniqueNoisezones.map((noisezone, index) => (
         <div key={index} className={fr.cx("fr-mb-4v")}>
           <DiagnosticRegulationBox
             label={noisezone.label}
