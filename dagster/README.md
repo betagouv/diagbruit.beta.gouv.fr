@@ -27,47 +27,71 @@ Every pipeline follows a **launcher → landing** pattern:
 
 ## Asset groups
 
-### `launcher`
-| Asset | Source | Dept | S3 path |
-|---|---|---|---|
-| `infra_033_launcher` | data.gouv.fr | 033 | `noisemap/cbs_infra/dept=033/campaign=2022/` |
-| `infra_044_launcher` | data.gouv.fr | 044 | `noisemap/cbs_infra/dept=044/campaign=2022/` |
-| `agglo_033_launcher` | Box | 033 | `noisemap/cbs_agglo/territory=bordeaux-metropole/campaign=2022/` |
-| `agglo_044_launcher` | Box | 044 | `noisemap/cbs_agglo/territory=nantes-metropole/campaign=2022/` |
-| `agglo_067_launcher` | Box | 067 | `noisemap/cbs_agglo/territory=strasbourg-metropole/campaign=2022/` |
-| `fastline_033_launcher` | Box | 033 | `noisemap/cbs_infra_fastlines/dept=033/campaign=2022/` |
-| `fastline_044_launcher` | Box | 044 | `noisemap/cbs_infra_fastlines/dept=044/campaign=2022/` |
-| `soundclass_033_launcher` | Local files | 033 | `soundclassification/dept=033/campaign=2022/mode=*/` |
-| `soundclass_044_launcher` | data.gouv.fr | 044 | `soundclassification/dept=044/campaign=2022/mode=*/` |
-| `osm_foods_launcher` | OSM API | — | `noisesource/osm/foods/` |
-| `osm_schools_launcher` | data.gouv.fr | — | `noisesource/osm/schools/` |
+Assets are grouped by **domain**. The launcher → landing stage is carried on a
+`stage` tag (not a group), which is what `full_launcher_job` / `full_landing_job`
+select on. Per-dept assets are partitioned and all share `ALL_DEPT_PARTITIONS`
+(see `defs/assets/_partitions.py`).
 
-### `landing`
-Each launcher has a corresponding landing asset that ingests into PostgreSQL. Noisemap landings all append to `public_workspace.raw_noisemap`. Sound classification landings go to `public_workspace.raw_soundclassification_<mode>`.
+| Group | Assets (launcher → landing) | Partitioned | Source | S3 prefix |
+|---|---|---|---|---|
+| `noisemap_agglo` | `agglo_launcher` → `agglo_landing` | by dept | Box | `noisemap/cbs_agglo/territory={slug}/campaign={campaign}/` |
+| `noisemap_infra` | `infra_launcher` → `infra_landing` | by dept | data.gouv.fr | `noisemap/cbs_infra/dept={dept}/campaign={campaign}/` |
+| `noisemap_fastline` | `fastline_launcher` → `fastline_landing` | by dept | Box | `noisemap/cbs_infra_fastlines/dept={dept}/campaign={campaign}/` |
+| `noisemap` | `raw_noisemap` (fan-in sentinel) | no | — | — |
+| `soundclassification` | `soundclassification_launcher` → `soundclassification_landing` | by dept | Box | `soundclassification/dept={dept}/campaign={campaign}/mode={mode}/` |
+| `soundclassification` | `raw_soundclassification_{tramway,fer,routier,lgv}` (fan-in markers) | no | — | — |
+| `osm` | `osm_foods_launcher` → `raw_full_osm_foods_data`; `osm_schools_launcher` → `raw_full_osm_schools_data` | no | data.gouv.fr | `noisesource/osm/{foods,schools}/` |
+| `peb` | `peb_launcher` → `raw_peb` | no | data.gouv.fr | `peb/scope={scope}/` |
+| `strasbourg` | `raw_full_stras_data` (direct ingest, no launcher) | no | local GeoJSON | — |
+| `maintenance` | `box_token_refresh` | no | — | — |
 
-### `noisemap`
-| Asset | Role |
-|---|---|
-| `raw_noisemap` | Sentinel asset that depends on all noisemap landing assets. Materializing it triggers the full noisemap ingestion. |
+**Partition depts** (all on the shared `ALL_DEPT_PARTITIONS` axis):
+- `noisemap_agglo` / `noisemap_infra` / `noisemap_fastline`: `013, 033, 035, 044, 059, 067`
+- `soundclassification`: adds `019` → `013, 019, 033, 035, 044, 059, 067`
 
-### `maintenance`
-| Asset | Role |
-|---|---|
-| `box_token_refresh` | Refreshes the Box OAuth token stored in the `box_tokens` database table. Triggered automatically by `box_token_refresh_sensor` every ~50 minutes. |
+> Because every partitioned asset shares one partition set, the picker offers a
+> dept even for a scope that has no territory for it (e.g. `019` for agglo).
+> Materializing such a partition raises `KeyError` — the per-dept asset bodies do
+> a direct `*_BY_DEPT[context.partition_key]` lookup.
+
+**Landing targets:** noisemap landings (agglo/infra/fastline) all append to
+`public_workspace.raw_noisemap`; soundclassification landings write
+`public_workspace.raw_soundclassification_<mode>`; osm/peb/strasbourg write their
+own `raw_*` tables. The fan-in markers (`raw_noisemap`, `raw_soundclassification_*`)
+are unpartitioned no-ops that depend on *all* partitions of their landing assets
+(`AllPartitionMapping()`); their keys match the dbt source names.
+
+**Maintenance:** `box_token_refresh` (group `maintenance`) refreshes the Box OAuth
+token in the `box_tokens` table; it runs via `box_token_refresh_job`, triggered by
+`box_token_refresh_sensor` (~every 50 minutes).
 
 ---
 
 ## Jobs
 
-| Job | Description |
+Naming: `<domain>_ingest_job` = ingest assets only (no dbt); bare `<domain>_job` =
+the whole domain incl. downstream dbt models.
+
+| Job | Selection |
 |---|---|
-| `full_launcher_job` | All assets in the `launcher` group |
-| `full_landing_job` | All assets in the `landing` group |
-| `raw_noisemap_job` | Full noisemap pipeline: all launchers + landings + `raw_noisemap` sentinel |
-| `full_noisemap_job` | Full pipeline including downstream dbt models |
-| `dept_033` | Launcher + landing for dept 033 agglo + infra |
-| `osm_full_job` | OSM foods launcher + landing |
-| `peb_job` | PEB launcher + landing |
+| `full_launcher_job` | every asset tagged `stage=launcher` |
+| `full_landing_job` | every asset tagged `stage=landing` |
+| `agglo_ingest_job` | `noisemap_agglo` group (launcher + landing) |
+| `infra_ingest_job` | `noisemap_infra` group (launcher + landing) |
+| `fastline_ingest_job` | `noisemap_fastline` group (launcher + landing) |
+| `osm_ingest_job` | `osm` group, ingest stages only |
+| `peb_ingest_job` | `peb` group, ingest stages only |
+| `soundclassification_ingest_job` | `soundclassification` group, ingest stages only |
+| `noisemap_job` | `raw_noisemap` + all upstream (full noisemap ingest, all scopes) |
+| `osm_job` | `noisesource` + all upstream (osm ingest + dbt) |
+| `peb_job` | `peb` mart + all upstream (peb ingest + dbt) |
+| `strasbourg_job` | `strasbourg` group + everything downstream (incl. dbt) |
+| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm, soundclassification, all noisemap scopes); run with `--partition 033` |
+| `box_token_refresh_job` | `box_token_refresh` (run by the sensor) |
+
+Noisemap ingest is split per source type because each used to carry its own dept
+partition set; run `agglo_ingest_job` / `infra_ingest_job` / `fastline_ingest_job`
+(or `dev_pipeline_033_job`) for a single dept.
 
 ---
 
