@@ -127,7 +127,7 @@ Copy `.env.example` to `.env` and fill in the values before running.
 
 ## Setup
 
-**Requires Python 3.10–3.14 and a running PostgreSQL 15 + PostGIS instance.**
+**Requires Python 3.10–3.13 and a running PostgreSQL 15 + PostGIS instance.** (dbt's toolchain does not yet support Python 3.14.)
 
 ```bash
 # Install dependencies
