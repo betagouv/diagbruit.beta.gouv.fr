@@ -35,6 +35,7 @@ venv/
 fastapi-venv/
 dbt-venv/
 ingestion-venv/
+dagster-venv/
 ENV/
 env/
 
