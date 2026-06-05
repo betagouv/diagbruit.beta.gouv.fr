@@ -18,7 +18,7 @@ SELECT
     geometry,
     CASE
         WHEN type = 'restaurant' THEN 'REST'
-        WHEN type IN ('bar', 'pub', 'cafe') THEN 'BAR'
+        WHEN type IN ('bar', 'pub') THEN 'BAR'
         ELSE NULL
     END AS category_slug
 

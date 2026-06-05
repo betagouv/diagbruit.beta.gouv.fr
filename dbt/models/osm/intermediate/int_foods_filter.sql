@@ -17,4 +17,4 @@ SELECT
     meta_code_dep,
     geometry
 FROM full_osm
-WHERE type IN ('restaurant', 'bar', 'pub', 'cafe') AND name IS NOT null
+WHERE type IN ('restaurant', 'bar', 'pub') AND name IS NOT null

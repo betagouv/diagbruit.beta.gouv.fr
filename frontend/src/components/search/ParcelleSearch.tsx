@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { tss } from "tss-react/dsfr";
 import { z } from "zod";
@@ -14,7 +14,7 @@ const parcelleSchema = z.object({
     .string()
     .regex(
       /^[A-Z0-9]{2}$/,
-      "Section (2 caractères : lettres majuscules et/ou chiffres)",
+      "Section (2 caractères : lettres majuscules et/ou chiffres)"
     ),
   numero: z.string().regex(/^\d{4}$/, "Numéro (4 chiffres)"),
 });
@@ -24,18 +24,16 @@ type ParcelleFormData = z.infer<typeof parcelleSchema>;
 interface ParcelleSearchProps {
   onParcelleRequested: (
     response: { data?: any; error?: any },
-    values: ParcelleFormData,
+    values: ParcelleFormData
   ) => void;
   onChange?: () => void;
   formValues?: ParcelleFormData;
-  autoSubmit?: boolean;
 }
 
 const ParcelleSearch = ({
   onParcelleRequested,
   onChange,
   formValues,
-  autoSubmit,
 }: ParcelleSearchProps) => {
   const { cx, classes } = useStyles();
 
@@ -58,9 +56,8 @@ const ParcelleSearch = ({
 
   const onSubmit = async (data: ParcelleFormData) => {
     const { codeInsee, section, numero, prefix } = data;
-    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${
-      prefix !== "000" ? `com_abs=${prefix}` : `code_insee=${codeInsee}`
-    }&section=${section}&numero=${numero}`;
+    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${prefix !== "000" ? `com_abs=${prefix}` : `code_insee=${codeInsee}`
+      }&section=${section}&numero=${numero}`;
 
     setIsLoading(true);
     try {
@@ -78,7 +75,7 @@ const ParcelleSearch = ({
   const handleInputChange = (
     field: any,
     fieldName: keyof ParcelleFormData,
-    value: string,
+    value: string
   ) => {
     let formattedValue = value;
     if (fieldName === "prefix" || fieldName === "numero") {
@@ -102,14 +99,6 @@ const ParcelleSearch = ({
     }
     trigger();
   }, [formValues, setValue, trigger]);
-
-  const hasAutoSubmittedRef = useRef(false);
-  useEffect(() => {
-    if (autoSubmit && isValid && !isLoading && !hasAutoSubmittedRef.current) {
-      hasAutoSubmittedRef.current = true;
-      handleSubmit(onSubmit)();
-    }
-  }, [autoSubmit, isValid, isLoading, handleSubmit]);
 
   return (
     <div className={cx(classes.container)}>

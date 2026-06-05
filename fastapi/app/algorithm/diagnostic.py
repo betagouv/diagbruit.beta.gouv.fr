@@ -85,10 +85,10 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic["isolation_min"] = None
     diagnostic["isolation_max"] = None
     if populate.isolation:
-        diagnostic["isolation_min"], diagnostic["isolation_max"] = compute_parcelle_isolations(
-            diagnostic["soundclassification_intersections"],
-            diagnostic["air_intersections"],
-        )
+        (land_isolation_min, land_isolation_max) = get_land_isolations(diagnostic["soundclassification_intersections"])
+        air_isolation = get_air_isolation(diagnostic['air_intersections'])
+        diagnostic["isolation_min"] = get_computed_isolation(land_isolation_min, air_isolation)
+        diagnostic["isolation_max"] = get_computed_isolation(land_isolation_max, air_isolation)
 
     # Flags
     diagnostic['flags']['isMultiExposedSources'] = ((1 if len(grouped_ld) > 0 else 0) + (1 if len(diagnostic['air_intersections']) > 0 else 0)) > 1

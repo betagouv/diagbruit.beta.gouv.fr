@@ -24,33 +24,6 @@ export default function DiagnosticLocalNoiseSources({
   const [selectedCategory, setSelectedCategory] =
     useState<SelectedCategory | null>(null);
 
-  const noisesourcesGrouped = useMemo(() => {
-    if (!noisesource_intersections) return [];
-    return Object.entries(
-      noisesource_intersections.reduce(
-        (acc, source) => {
-          if (!acc[source.category_slug]) {
-            acc[source.category_slug] = {
-              category_name: source.category_name,
-              category_description: source.category_description,
-              sources: [],
-            };
-          }
-          acc[source.category_slug].sources.push(source);
-          return acc;
-        },
-        {} as Record<
-          string,
-          {
-            category_name: string;
-            category_description: string;
-            sources: NoiseSourceIntersection[];
-          }
-        >,
-      ),
-    );
-  }, [noisesource_intersections]);
-
   const handleCategoryClick = (
     categoryName: string,
     categorySlug: string,
@@ -75,6 +48,32 @@ export default function DiagnosticLocalNoiseSources({
       </div>
     );
   }
+
+  const noisesourcesGrouped = useMemo(() => {
+    return Object.entries(
+      noisesource_intersections.reduce(
+        (acc, source) => {
+          if (!acc[source.category_slug]) {
+            acc[source.category_slug] = {
+              category_name: source.category_name,
+              category_description: source.category_description,
+              sources: [],
+            };
+          }
+          acc[source.category_slug].sources.push(source);
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            category_name: string;
+            category_description: string;
+            sources: NoiseSourceIntersection[];
+          }
+        >,
+      ),
+    );
+  }, [noisesource_intersections]);
 
   return (
     <>
