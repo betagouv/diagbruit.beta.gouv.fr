@@ -6,13 +6,6 @@ html,
   height: 100%;
 }
 
-/* Responsive zoom for small screens */
-@media (min-width: 768px) and (max-width: 1280px) {
-  body {
-    zoom: 0.7;
-  }
-}
-
 /* CKEditor image alignment */
 figure.image.image-style-align-left {
   float: left;

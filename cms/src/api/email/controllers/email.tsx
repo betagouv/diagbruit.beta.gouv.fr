@@ -7,11 +7,12 @@ import { factories } from "@strapi/strapi";
 import DiagnosticEmail from "../templates/DiagnosticEmail";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PARCEL_NUMBER_REGEX = /^\d{5}-[0-9A-Z]{1,3}-\d{4}$/;
 const ALLOWED_LINK_ORIGINS = [
   "https://diagbruit.beta.gouv.fr",
   "https://diagbruit.fr",
   "https://preprod.diagbruit.fr",
-  "http://localhost:3000",
+  process.env.NODE_ENV === "development" && "http://localhost:3000",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
@@ -19,6 +20,10 @@ function isValidEmail(email: string): boolean {
   return (
     typeof email === "string" && EMAIL_REGEX.test(email) && email.length <= 254
   );
+}
+
+function isValidParcelNumber(parcelNumber: string): boolean {
+  return typeof parcelNumber === "string" && PARCEL_NUMBER_REGEX.test(parcelNumber);
 }
 
 function isAllowedLink(link: string): boolean {
@@ -77,6 +82,10 @@ export default factories.createCoreController("api::email.email", () => ({
 
     if (!link || !isAllowedLink(link)) {
       return ctx.badRequest("Invalid or disallowed link");
+    }
+
+    if (!parcelNumber || !isValidParcelNumber(parcelNumber)) {
+      return ctx.badRequest("Invalid parcel number");
     }
 
     const html = await render(<DiagnosticEmail diagLink={link} />);
