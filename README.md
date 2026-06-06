@@ -98,7 +98,7 @@ uv sync
 ./setup-dbt.sh
 ```
 
-Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
+This creates `dagster/dbt/profiles.yml` from the example — where Dagster's dbt component reads it (not `~/.dbt`). Optional: edit it with your database credentials if you do not use the docker-compose db.
 
 ### Authenticate with Box (first-time only)
 

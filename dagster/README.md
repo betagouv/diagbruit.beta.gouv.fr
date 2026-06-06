@@ -137,9 +137,17 @@ uv sync
 source .venv/bin/activate   # macOS/Linux
 .venv\Scripts\activate    # Windows
 
+# Create the dbt profile (read by the DbtProjectComponent from dagster/dbt/)
+cp dbt/profiles.yml.example dbt/profiles.yml   # edit if your DB creds differ
+
 # Seed the Box OAuth token (one-time)
 python box_auth.py
 ```
+
+> The dbt profile must live at `dagster/dbt/profiles.yml` — the Dagster dbt
+> component reads it from the project directory, not from `~/.dbt`. Without it,
+> the code location fails to load. (From the repo root you can also run
+> `./setup-dbt.sh`.)
 
 ---
 
