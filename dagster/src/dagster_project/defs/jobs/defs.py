@@ -93,8 +93,13 @@ strasbourg_job = define_asset_job(
 )
 
 # Dev pipeline for dept 033: covers all domains for local end-to-end testing.
-# PEB and OSM are unpartitioned. All partitioned groups share ALL_DEPT_PARTITIONS
-# so a single --partition 033 flag applies to every partitioned asset in the run.
+# NOTE: only the partitioned groups (noisemap_agglo/infra/fastline, soundclassification)
+# are scoped to the dept passed via --partition. PEB and OSM are unpartitioned and
+# always ingest their full national datasets (all PEB zones, France-wide OSM
+# foods/schools) regardless of partition — so this is "full local end-to-end",
+# not a lightweight 033-only run.
+# All partitioned groups share ALL_DEPT_PARTITIONS so a single --partition 033 flag
+# applies to every partitioned asset in the run.
 dev_pipeline_033_job = define_asset_job(
     "dev_pipeline_033_job",
     selection=(

@@ -1,4 +1,4 @@
-from dagster import AssetExecutionContext, asset
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
 from dagster_project.defs.assets.noisemap._partitions import AGGLO_PARTITIONS
@@ -22,7 +22,10 @@ from dagster_project.defs.resources.box import BoxResource
 )
 def agglo_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload agglo files from Box to S3 (one dept per partition)."""
-    t = AGGLO_BY_DEPT[context.partition_key]
+    t = AGGLO_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no agglo territory for dept {context.partition_key}")})
     return box_to_s3_launcher(
         context=context,
         path=s3_prefix(t),
@@ -44,5 +47,8 @@ def agglo_launcher(context: AssetExecutionContext, box: BoxResource):
 )
 def agglo_landing(context: AssetExecutionContext):
     """Download agglo files from S3 and ingest into public_workspace.raw_noisemap."""
-    t = AGGLO_BY_DEPT[context.partition_key]
+    t = AGGLO_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no agglo territory for dept {context.partition_key}")})
     return ingest_from_s3_landing(context, path=s3_prefix(t), type=KIND, dept=t.dept, producer_kind="AGGLO")

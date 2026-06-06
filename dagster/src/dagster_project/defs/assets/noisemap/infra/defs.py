@@ -1,4 +1,4 @@
-from dagster import AssetExecutionContext, asset
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.defs.assets.noisemap._io import s3_landing, s3_launcher
 from dagster_project.defs.assets.noisemap._partitions import INFRA_PARTITIONS
@@ -23,7 +23,10 @@ def _s3_prefix(dept: str, campaign: str) -> str:
 )
 def infra_launcher(context: AssetExecutionContext):
     """Download infra ZIPs from data.gouv.fr, extract, upload to S3 (one dept per partition)."""
-    t = INFRA_BY_DEPT[context.partition_key]
+    t = INFRA_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no infra territory for dept {context.partition_key}")})
     return s3_launcher(context=context, path=_s3_prefix(t.dept, t.campaign), arr_url=[t.url])
 
 
@@ -37,7 +40,10 @@ def infra_launcher(context: AssetExecutionContext):
 )
 def infra_landing(context: AssetExecutionContext):
     """Download infra files from S3 and ingest into public_workspace.raw_noisemap."""
-    t = INFRA_BY_DEPT[context.partition_key]
+    t = INFRA_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no infra territory for dept {context.partition_key}")})
     return s3_landing(
         context=context,
         path=_s3_prefix(t.dept, t.campaign),

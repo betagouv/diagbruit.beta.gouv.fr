@@ -1,4 +1,4 @@
-from dagster import AssetExecutionContext, asset
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
 from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
 from dagster_project.defs.assets.noisemap._partitions import FASTLINE_PARTITIONS
@@ -25,7 +25,10 @@ def _s3_prefix(dept: str, campaign: str) -> str:
 )
 def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload fastline files from Box to S3 (one dept per partition)."""
-    t = FASTLINE_BY_DEPT[context.partition_key]
+    t = FASTLINE_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no fastline territory for dept {context.partition_key}")})
     return box_to_s3_launcher(
         context=context,
         path=_s3_prefix(t.dept, t.campaign),
@@ -46,5 +49,8 @@ def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
 )
 def fastline_landing(context: AssetExecutionContext):
     """Download fastline files from S3 and ingest into public_workspace.raw_noisemap."""
-    t = FASTLINE_BY_DEPT[context.partition_key]
+    t = FASTLINE_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no fastline territory for dept {context.partition_key}")})
     return ingest_from_s3_landing(context, path=_s3_prefix(t.dept, t.campaign), type=KIND, dept=t.dept)

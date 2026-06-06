@@ -19,7 +19,10 @@ from dagster_project.defs.resources.box import BoxResource
 )
 def soundclassification_launcher(context: AssetExecutionContext, box: BoxResource):
     """Upload soundclassification shapefiles from Box to S3 (one dept per partition)."""
-    t = SOUNDCLASS_BY_DEPT[context.partition_key]
+    t = SOUNDCLASS_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no soundclassification territory for dept {context.partition_key}")})
     return launch_from_box(context, t, box)
 
 
@@ -32,7 +35,10 @@ def soundclassification_launcher(context: AssetExecutionContext, box: BoxResourc
 )
 def soundclassification_landing(context: AssetExecutionContext):
     """Download soundclassification files from S3 and ingest into per-mode raw tables."""
-    t = SOUNDCLASS_BY_DEPT[context.partition_key]
+    t = SOUNDCLASS_BY_DEPT.get(context.partition_key)
+    if t is None:
+        return MaterializeResult(metadata={"status": MetadataValue.text(
+            f"skipped: no soundclassification territory for dept {context.partition_key}")})
     return run_landing(context, t)
 
 _LANDING_DEP = AssetDep("soundclassification_landing", partition_mapping=AllPartitionMapping())
