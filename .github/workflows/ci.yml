@@ -1,4 +1,4 @@
-name: CI pipeline - ingestion + dbt + tests
+name: CI pipeline - ingestion (dagster) + dbt + tests
 
 on:
   pull_request:
@@ -27,59 +27,61 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      DB_HOST: localhost
+      DB_PORT: "5433"
+      DB_NAME: diagbruit
+      DB_USER: user
+      DB_PASSWORD: password
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -----------------------------
-      # 1. Setup Python for ingestion
-      # -----------------------------
-      - name: Set up Python for ingestion
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Install ingestion dependencies
-        working-directory: ingestion
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+      - name: Create dbt profile (required for the Dagster code location to load)
+        run: cp dagster/dbt/profiles.yml.example dagster/dbt/profiles.yml
 
-      - name: Run ingestion script
-        working-directory: ingestion
-        run: |
-          source venv/bin/activate
-          chmod +x launch-ingestion.sh
-          ./launch-ingestion.sh
+      - name: Install Dagster dependencies
+        working-directory: dagster
+        run: uv sync
 
-      # -----------------------------
-      # 2. Setup Python for DBT
-      # -----------------------------
+      - name: Build dbt manifest (needed for the Dagster code location to load)
+        working-directory: dagster
+        run: uv run dbt parse --project-dir dbt --profiles-dir dbt
+
+      - name: Run Dagster ingestion (landing, dept 033)
+        working-directory: dagster
+        env:
+          PYTHONPATH: src
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-west-3
+          AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET || 'diagbruit-dagster' }}
+        run: uv run python ci_ingest.py ci_landing_033_job 033
+
       - name: Set up Python for DBT
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Install dbt dependencies
-        working-directory: dagster_project/dbt
+        working-directory: dagster/dbt
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Run dbt pipeline
-        working-directory: dagster_project/dbt
+        working-directory: dagster/dbt
         env:
-          DBT_PROFILES_DIR: ${{ github.workspace }}/dagster_project/dbt
+          DBT_PROFILES_DIR: ${{ github.workspace }}/dagster/dbt
         run: |
           source venv/bin/activate
-          cp profiles.yml.example profiles.yml
           dbt run
 
-      # -----------------------------
-      # 3. Run FastAPI tests
-      # -----------------------------
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5
         with:

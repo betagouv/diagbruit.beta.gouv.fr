@@ -18,23 +18,12 @@ dbt/dbt_modules/
 dbt/.user.yml
 dbt/profiles.yml
 
-dagster_project/dbt/logs/
-dagster_project/dbt/target/
-dagster_project/dbt/dbt_packages/
-dagster_project/dbt/dbt_modules/
-dagster_project/dbt/.user.yml
-dagster_project/dbt/profiles.yml
-
-# Ingestion
-ingestion/launch-ingestion-prod.sh
-ingestion/launch-ingestion-preprod.sh
-ingestion/inputs/**/AGGLO_*
-!ingestion/inputs/**/AGGLO_033
-ingestion/inputs/**/INFRA_*
-ingestion/inputs/topo
-ingestion/inputs/osm/*/
-!ingestion/inputs/**/INFRA_033
-!ingestion/inputs/**/INFRA_FASTLINES_033
+dagster/dbt/logs/
+dagster/dbt/target/
+dagster/dbt/dbt_packages/
+dagster/dbt/dbt_modules/
+dagster/dbt/.user.yml
+dagster/dbt/profiles.yml
 
 # Virtual environments
 .venv/

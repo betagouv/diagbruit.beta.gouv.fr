@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_bdnb
+        description: "Raw BDNB data imported from shapefiles"
+        columns:
+          - name: fid
+            description: "Feature identifier (float8)"
+          - name: batiment_c
+            description: "Building classification code (text)"
+          - name: batiment_g
+            description: "Building group identifier (text)"
+          - name: code_depar
+            description: "Department code (text)"
+          - name: code_iris
+            description: "IRIS statistical area code (text)"
+          - name: code_commu
+            description: "Commune code (text)"
+          - name: s_geom_cst
+            description: "Geometry constraint surface (int8)"
+          - name: hauteur
+            description: "Building height in meters (float8)"
+          - name: altitude_s
+            description: "Surface altitude in meters (float8)"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"

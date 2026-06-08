@@ -4,7 +4,7 @@ from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, BdnbItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -48,7 +48,7 @@ def get_soundclassification_intersection_corrections(
 ) -> Tuple[int, int]:
     """
     Compute the corrective value (in dB) based on the resulting view angle
-    after masking by TopoItem buildings around the source, for:
+    after masking by BdnbItem buildings around the source, for:
       - the SHORTEST connecting segment (closest)
       - the LONGEST  connecting segment (farthest)
 
@@ -79,8 +79,8 @@ def get_soundclassification_intersection_corrections(
         triangles = union_arms_to_triangles_cte(left, right)
         total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
 
-        # Count triangles that intersect at least one TopoItem
-        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now", codedept=codedept)
+        # Count triangles that intersect at least one BdnbItem
+        tri_hits = intersecting_triangle_groups_cte(triangles, BdnbItem, valid_col="is_valid_now", codedept=codedept)
         intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
 
         # Angle and dB correction

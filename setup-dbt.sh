@@ -1,32 +1,19 @@
 #!/bin/bash
-# setup-dbt.sh - Configures dbt environment for new developers
+# setup-dbt.sh - Creates the local dbt profile for the Dagster dbt project.
+#
+# The dbt project now lives in dagster/dbt and is loaded by Dagster's
+# DbtProjectComponent, which reads its profile from the project directory
+# (dagster/dbt/), NOT from ~/.dbt. So the profile must live there.
 
-# Create dbt config directory if it doesn't exist
-mkdir -p ~/.dbt
+set -e
 
-# Check if profiles.yml already exists
-if [ ! -f ~/.dbt/profiles.yml ]; then
-  cp dbt/profiles.yml.example ~/.dbt/profiles.yml
-  echo "Created profiles.yml template. Please edit ~/.dbt/profiles.yml with your database credentials."
+EXAMPLE="dagster/dbt/profiles.yml.example"
+PROFILE="dagster/dbt/profiles.yml"
+
+if [ -f "$PROFILE" ]; then
+  echo "$PROFILE already exists — leaving it unchanged."
 else
-  echo "~/.dbt/profiles.yml already exists."
-  echo "Would you like to update it with the project template? (y/n)"
-  read answer
-  if [ "$answer" == "y" ]; then
-    # Backup existing profile
-    cp ~/.dbt/profiles.yml ~/.dbt/profiles.yml.backup
-    echo "Existing profile backed up to ~/.dbt/profiles.yml.backup"
-    
-    # Merge or replace with new profile
-    cp dbt/profiles.yml.example ~/.dbt/profiles.yml
-    echo "Updated profiles.yml with project template. Please update your credentials."
-  else
-    echo "Leaving existing profiles.yml unchanged."
-  fi
+  cp "$EXAMPLE" "$PROFILE"
+  echo "Created $PROFILE from the example."
+  echo "Edit it if your database credentials differ from the docker-compose defaults (localhost:5433, user/password)."
 fi
-
-# Verify dbt can find the profile
-echo "Testing dbt configuration..."
-cd dbt && dbt debug --config-dir
-
-echo "Setup complete. If there were any errors, please fix them before continuing."
