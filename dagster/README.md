@@ -115,7 +115,7 @@ Uses boto3. The bucket and credentials are read from environment variables (see 
 | `DB_NAME` | `diagbruit` | Database name |
 | `DB_USER` | `user` | Database user |
 | `DB_PASSWORD` | `password` | Database password |
-| `AWS_S3_BUCKET` | `diagbruit` | S3 bucket name |
+| `AWS_S3_BUCKET` | `diagbruit-dagster` | S3 bucket name |
 | `AWS_DEFAULT_REGION` | `eu-west-3` | AWS region |
 | `AWS_ACCESS_KEY_ID` | — | AWS credentials |
 | `AWS_SECRET_ACCESS_KEY` | — | AWS credentials |

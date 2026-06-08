@@ -13,7 +13,7 @@ from dagster import AssetExecutionContext
 
 from dagster_project.io.manifest import reporthook
 
-S3_BUCKET: str = os.getenv("AWS_S3_BUCKET", "diagbruit")
+S3_BUCKET: str = os.getenv("AWS_S3_BUCKET", "diagbruit-dagster")
 
 s3 = boto3.client(
     "s3",
