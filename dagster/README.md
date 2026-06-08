@@ -86,7 +86,8 @@ the whole domain incl. downstream dbt models.
 | `osm_job` | `noisesource` + all upstream (osm ingest + dbt) |
 | `peb_job` | `peb` mart + all upstream (peb ingest + dbt) |
 | `strasbourg_job` | `strasbourg` group + everything downstream (incl. dbt) |
-| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm, soundclassification, all noisemap scopes); run with `--partition 033` |
+| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm, soundclassification, bdnb, all noisemap scopes, departements, strasbourg); run with `--partition 033` (uses Box launchers) |
+| `ci_landing_033_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + committed reference fixtures (`departements`, `strasbourg`). Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_033_job 033` |
 | `box_token_refresh_job` | `box_token_refresh` (run by the sensor) |
 
 Noisemap ingest is split per source type because each used to carry its own dept

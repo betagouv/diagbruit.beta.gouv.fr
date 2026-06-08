@@ -110,7 +110,49 @@ dev_pipeline_033_job = define_asset_job(
         | AssetSelection.groups("noisemap_infra")
         | AssetSelection.groups("noisemap_fastline")
         | AssetSelection.groups("noisemap")
+        | AssetSelection.groups("bdnb")
+        | AssetSelection.groups("departements")
+        | AssetSelection.groups("strasbourg")
     ),
     partitions_def=ALL_DEPT_PARTITIONS,
     tags={"domain": "dev", "scope": "pipeline_033"},
+)
+
+# CI pipeline for dept 033: landing-only (no launchers), so it runs with just AWS
+# creds and no Box OAuth. Reads the already-populated S3 `_source/` data into
+# PostGIS and rebuilds the reference fixtures (departements, strasbourg) from the
+# committed files. This produces every raw_* / geo_departements source table that
+# the dbt build consumes, so the FastAPI test DB can be provisioned without the
+# legacy launch-ingestion.sh path.
+#
+# Box-sourced launchers (agglo/fastline/soundclassification/bdnb) are intentionally
+# excluded: their 3-legged OAuth can't bootstrap headlessly in CI. The landing
+# assets read S3 instead, which only needs AWS_* credentials.
+_CI_LANDING_ASSETS = [
+    # noisemap landings (partitioned by dept)
+    "agglo_landing",
+    "infra_landing",
+    "fastline_landing",
+    # soundclassification + bdnb landings (partitioned by dept)
+    "soundclassification_landing",
+    "bdnb_landing",
+    # unpartitioned national / reference landings
+    "raw_peb",
+    "raw_full_osm_foods_data",
+    "raw_full_osm_schools_data",
+    "raw_full_stras_data",
+    "geo_departements",
+    # fan-in markers (keys match dbt source names)
+    "raw_noisemap",
+    "raw_soundclassification_tramway",
+    "raw_soundclassification_fer",
+    "raw_soundclassification_routier",
+    "raw_soundclassification_lgv",
+    "raw_bdnb",
+]
+ci_landing_033_job = define_asset_job(
+    "ci_landing_033_job",
+    selection=AssetSelection.assets(*_CI_LANDING_ASSETS),
+    partitions_def=ALL_DEPT_PARTITIONS,
+    tags={"domain": "ci", "scope": "landing_033"},
 )

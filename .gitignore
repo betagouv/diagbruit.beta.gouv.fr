@@ -25,17 +25,6 @@ dagster/dbt/dbt_modules/
 dagster/dbt/.user.yml
 dagster/dbt/profiles.yml
 
-# Ingestion
-ingestion/launch-ingestion-prod.sh
-ingestion/launch-ingestion-preprod.sh
-ingestion/inputs/**/AGGLO_*
-!ingestion/inputs/**/AGGLO_033
-ingestion/inputs/**/INFRA_*
-ingestion/inputs/topo
-ingestion/inputs/osm/*/
-!ingestion/inputs/**/INFRA_033
-!ingestion/inputs/**/INFRA_FASTLINES_033
-
 # Virtual environments
 .venv/
 venv/

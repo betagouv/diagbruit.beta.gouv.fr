@@ -3,9 +3,10 @@ import json
 import shutil
 from datetime import datetime, timezone
 
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, StaticPartitionsDefinition, asset
+from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 from sqlalchemy import create_engine, inspect, text
 
+from dagster_project.defs.assets._partitions import ALL_DEPT_PARTITIONS
 from dagster_project.defs.resources.box import BoxResource
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.io import DAGSTER_ROOT
@@ -18,7 +19,11 @@ SCHEMA = "public_workspace"
 BOX_ID = "386454836882"
 IGNORE_COLUMNS = ["fictive_ha", "fictive_ge"]
 
-BDNB_PARTITIONS = StaticPartitionsDefinition(["019", "033", "035", "044", "059", "067"])
+# Share the project-wide dept partition axis so bdnb can be selected alongside
+# the other partitioned landings in a single job (e.g. ci_landing_033_job). The
+# bdnb-specific depts (019/033/035/044/059/067) are a subset of ALL_DEPT_PARTITIONS;
+# a dept with no BDNB data simply lands zero rows.
+BDNB_PARTITIONS = ALL_DEPT_PARTITIONS
 
 
 def _s3_prefix(dept: str) -> str:

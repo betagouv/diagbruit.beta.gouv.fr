@@ -29,10 +29,12 @@ Copy `.env.example` to `.env`. Key vars: `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PAS
 
 **Package layout** — importable package stays `src/dagster_project/` (named to avoid colliding
 with the `dagster` library import; the *folder* is `dagster/`):
-- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm`, `peb`, `strasbourg`.
+- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm`, `peb`, `bdnb`, `strasbourg`, `departements`.
 - `defs/jobs/`, `defs/resources/` (`box.py` → `BoxResource`), `defs/schedules/` (`box_refresh.py` → `box_token_refresh_sensor`).
 - `ingestion/` — Dagster-agnostic GeoPandas → PostGIS ingest (`ingest_shapefiles.py`, `ingest_geojson.py`).
+- `reference_data/` — committed static fixtures (`departments/depts.shp`, strasbourg GeoJSON) ingested directly by the `departements` / `strasbourg` assets (no launcher).
 - `io/` — shared helpers; `DAGSTER_ROOT` (resolved from `__file__`), S3 client, DB URL.
+- `ci_ingest.py` (repo `dagster/` root) — runs an asset job to completion **in-process** (`execute_in_process`) and exits non-zero on failure; used by CI to provision the test DB. The `dg launch` / `dagster asset materialize` CLIs submit asynchronously and don't block, so they're unsuitable for CI.
 
 **Ingest pattern:** every source follows **launcher → landing**. The launcher uploads source files to
 S3 (`<path>_source/`) with a `mapping.json` (per-shapefile column map) + `manifest.json` (provenance +
@@ -53,6 +55,8 @@ ingest is complete. Their keys match the dbt source names.
 **Jobs** (`defs/jobs/defs.py`): per-scope ingest (`agglo_ingest_job`, `infra_ingest_job`,
 `fastline_ingest_job`, `osm_ingest_job`, `peb_ingest_job`, `soundclassification_ingest_job`),
 stage jobs (`full_launcher_job`, `full_landing_job`), domain pipelines (`noisemap_job`, `osm_job`,
-`peb_job`, `strasbourg_job`), and `dev_pipeline_033_job` (cross-domain local end-to-end for dept 033).
+`peb_job`, `strasbourg_job`), `dev_pipeline_033_job` (cross-domain local end-to-end for dept 033,
+includes Box launchers), and `ci_landing_033_job` (landing-only: S3 → PostGIS + committed fixtures, no
+Box — what CI runs via `ci_ingest.py`).
 
 See `README.md` for the full asset/source/S3-path catalog and ingest internals.

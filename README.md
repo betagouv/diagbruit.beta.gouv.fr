@@ -59,17 +59,19 @@ This will create and configure all virtual environments for the different compon
 
 ## 🥣 Data ingestion
 
-### Launch dedicated Virtual Environment
+Ingestion is orchestrated by Dagster (see the Dagster section below). There is no
+standalone ingestion component anymore — the legacy `ingestion/launch-ingestion.sh`
+was replaced by Dagster assets.
 
 ```bash
-source ingestion-venv/bin/activate
-```
+cd dagster
+uv sync
 
-### Launch seed raw data
+# Full local end-to-end for dept 033 (needs Box OAuth + AWS creds):
+uv run dg launch --job dev_pipeline_033_job --partition 033
 
-```bash
-cd ingestion
-./launch-ingestion.sh
+# Landing-only (S3 → PostGIS, no Box; what CI runs):
+PYTHONPATH=src uv run python ci_ingest.py ci_landing_033_job 033
 ```
 
 ## ⚙️ Dagster + DBT (Orchestration)
@@ -199,8 +201,8 @@ Tests are automatically run on each pull request or push to the main branch via 
 This CI pipeline performs the following steps:
 
 1. Launches a PostgreSQL database with PostGIS.
-2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
-3. Executes the dbt run pipeline in the /dbt folder.
+2. Runs the Dagster landing ingestion (`dagster/ci_ingest.py ci_landing_033_job 033`, S3 → PostGIS).
+3. Executes the dbt run pipeline in `dagster/dbt`.
 4. Runs all FastAPI tests located in fastapi/tests/.
 
 The badge at the top of the README reflects the status of this CI.
@@ -331,6 +333,7 @@ diagbruit/
 │   ├── src/dagster_project/
 │   │   ├── defs/
 │   │   │   ├── assets/
+│   │   │   │   ├── bdnb/
 │   │   │   │   ├── noisemap/
 │   │   │   │   ├── osm/
 │   │   │   │   ├── peb/
@@ -339,16 +342,12 @@ diagbruit/
 │   │   │   ├── jobs/
 │   │   │   ├── resources/
 │   │   │   └── schedules/
-│   │   ├── ingestion/
+│   │   ├── ingestion/         # GeoPandas → PostGIS helpers
+│   │   ├── reference_data/    # committed static fixtures (departments, strasbourg)
 │   │   └── io/
+│   ├── ci_ingest.py           # in-process job runner used by CI
 │   ├── box_auth.py
 │   └── pyproject.toml
-│
-├── ingestion/
-│   ├── inputs/
-│   ├── ingest_geojson.py
-│   ├── ingest_shapefiles.py
-│   └── requirements.txt
 │
 ├── frontend/
 │   ├── .env.example
