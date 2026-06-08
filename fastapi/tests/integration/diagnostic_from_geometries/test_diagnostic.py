@@ -9,8 +9,8 @@ def load_json(file_path):
         return json.load(f)
 
 test_cases = [
-    # ("simple_parcelle_geometry/input.json", "simple_parcelle_geometry/output.json"),
-    # ("double_parcelles_geometries/input.json", "double_parcelles_geometries/output.json")
+    ("simple_parcelle_geometry/input.json", "simple_parcelle_geometry/output.json"),
+    ("double_parcelles_geometries/input.json", "double_parcelles_geometries/output.json")
 ]
 
 @pytest.mark.asyncio
