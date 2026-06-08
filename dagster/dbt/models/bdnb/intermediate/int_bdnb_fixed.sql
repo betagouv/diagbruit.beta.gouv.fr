@@ -18,7 +18,7 @@ WITH fixed_geometries AS (
         {{ repair_geometry('geometry', 'is_valid', 'structure') }} AS geometry,
         is_valid AS original_is_valid,
         validity_reason AS original_validity_reason
-    FROM {{ ref('int_topo_validated') }}
+    FROM {{ ref('int_bdnb_validated') }}
 )
 
 SELECT

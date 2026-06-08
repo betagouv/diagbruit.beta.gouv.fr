@@ -4,8 +4,8 @@ sources:
   - name: public_workspace
     schema: public_workspace
     tables:
-      - name: raw_topo
-        description: "Raw topographic data imported from shapefiles"
+      - name: raw_bdnb
+        description: "Raw BDNB data imported from shapefiles"
         columns:
           - name: fid
             description: "Feature identifier (float8)"

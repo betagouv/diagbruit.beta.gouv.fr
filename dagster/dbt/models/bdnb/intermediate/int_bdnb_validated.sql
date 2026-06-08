@@ -16,7 +16,7 @@ WITH exploded_geometries AS (
         altitude_s,
         (ST_Dump(geometry)).geom AS geometry,
         (ST_Dump(geometry)).path[1] AS geom_idx
-    FROM {{ ref('stg_topo') }}
+    FROM {{ ref('stg_bdnb') }}
 )
 
 SELECT

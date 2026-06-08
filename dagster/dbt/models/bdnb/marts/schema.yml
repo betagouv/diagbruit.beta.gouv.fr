@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: topo
-    description: "Final topographic data table ready for consumption"
+  - name: bdnb
+    description: "Final BDNB data table ready for consumption"
     columns:
       - name: pk
         description: "Primary key"

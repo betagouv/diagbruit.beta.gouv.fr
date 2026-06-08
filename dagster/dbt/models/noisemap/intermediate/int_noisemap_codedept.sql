@@ -25,7 +25,7 @@ WITH geo_enriched AS (
 
 SELECT
     campaign,
-    COALESCE(codedept, inferred_codedept) AS codedept,
+    LPAD(COALESCE(codedept, inferred_codedept), 3, '0') AS codedept,
     acoustic_producer_kind,
     label,
     kind,

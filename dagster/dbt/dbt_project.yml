@@ -52,7 +52,7 @@ models:
       marts:
         +materialized: table
 
-    topo:
+    bdnb:
       staging:
         +materialized: table
       intermediate:

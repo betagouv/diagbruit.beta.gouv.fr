@@ -21,4 +21,4 @@ SELECT
     original_validity_reason,
     is_valid_now,
     geometry_type
-FROM {{ ref('int_topo_fixed') }}
+FROM {{ ref('int_bdnb_fixed') }}

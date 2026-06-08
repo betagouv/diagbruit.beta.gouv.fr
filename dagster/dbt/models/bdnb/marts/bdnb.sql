@@ -27,5 +27,5 @@ SELECT
   original_validity_reason,
   is_valid_now,
   geometry_type
-FROM {{ ref('int_topo_projected') }}
+FROM {{ ref('int_bdnb_projected') }}
 WHERE COALESCE(area_m2, 0) > 0.0

@@ -151,8 +151,8 @@ FILES_PEB=(
   "inputs/PEB/c-dgac-peb-metro-zd.geojson raw_peb --if-exists append"
 )
 
-FILES_TOPO=(
-  "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_topo --if-exists replace --ignore-column fictive_ge"
+FILES_BDNB=(
+  "inputs/topo/DEPT_033/batiment/export_batiment_construction_bdnb.shp raw_bdnb --if-exists replace --ignore-column fictive_ge"
 )
 
 FILES_STRAS=(
@@ -182,7 +182,7 @@ for cmd in "${FILES_INFRA_FASTLINES[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_AGGLO_033[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_SOUNDCLASS[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_PEB[@]}"; do run_ingest $cmd; done
-for cmd in "${FILES_TOPO[@]}"; do run_ingest $cmd; done
+for cmd in "${FILES_BDNB[@]}"; do run_ingest $cmd; done
 for cmd in "${FILES_STRAS[@]}"; do run_ingest_geojson $cmd; done
 for cmd in "${FILES_OSM_FOODS[@]}"; do run_ingest_geojson $cmd; done
 for cmd in "${FILES_OSM_SCHOOLS[@]}"; do run_ingest_geojson $cmd; done

@@ -15,5 +15,5 @@ PyJWT==2.10.1
 pytest==8.4.1
 pytest-asyncio==1.1.0
 pytest-cov==6.2.1
-pyproj==3.7.2
+pyproj==3.7.1
 coverage==7.9.2

@@ -18,4 +18,4 @@ SELECT
     altitude_s,
     geometry
 
-FROM {{ source('public_workspace', 'raw_topo') }}
+FROM {{ source('public_workspace', 'raw_bdnb') }}
