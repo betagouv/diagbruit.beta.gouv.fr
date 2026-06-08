@@ -38,8 +38,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Ingestion — landing-only Dagster job (S3 -> PostGIS, no Box).
-      #    Requires the S3 _source/ data for dept 033 to already exist.
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
@@ -49,6 +47,10 @@ jobs:
       - name: Install Dagster dependencies
         working-directory: dagster
         run: uv sync
+
+      - name: Build dbt manifest (needed for the Dagster code location to load)
+        working-directory: dagster
+        run: uv run dbt parse --project-dir dbt --profiles-dir dbt
 
       - name: Run Dagster ingestion (landing, dept 033)
         working-directory: dagster
@@ -60,7 +62,6 @@ jobs:
           AWS_S3_BUCKET: diagbruit
         run: uv run python ci_ingest.py ci_landing_033_job 033
 
-      # 2. dbt transforms (dagster/dbt)
       - name: Set up Python for DBT
         uses: actions/setup-python@v5
         with:
@@ -81,7 +82,6 @@ jobs:
           source venv/bin/activate
           dbt run
 
-      # 3. Run FastAPI tests
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5
         with:
