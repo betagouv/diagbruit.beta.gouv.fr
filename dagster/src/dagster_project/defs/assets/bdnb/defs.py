@@ -19,10 +19,8 @@ SCHEMA = "public_workspace"
 BOX_ID = "386454836882"
 IGNORE_COLUMNS = ["fictive_ha", "fictive_ge"]
 
-# Share the project-wide dept partition axis so bdnb can be selected alongside
-# the other partitioned landings in a single job (e.g. ci_landing_033_job). The
-# bdnb-specific depts (019/033/035/044/059/067) are a subset of ALL_DEPT_PARTITIONS;
-# a dept with no BDNB data simply lands zero rows.
+# Shared dept axis so bdnb can be selected alongside the other partitioned
+# landings in one job; a dept with no BDNB data lands zero rows.
 BDNB_PARTITIONS = ALL_DEPT_PARTITIONS
 
 

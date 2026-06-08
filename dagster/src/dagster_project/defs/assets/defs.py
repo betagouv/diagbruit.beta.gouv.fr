@@ -29,12 +29,7 @@ def ingest_strasbourg(context: AssetExecutionContext):
     kinds={"postgres"},
 )
 def ingest_departements(context: AssetExecutionContext):
-    """Ingest the French departments reference shapefile into public_workspace.
-
-    Static reference data (code/nom/geometry) committed under reference_data/.
-    Consumed by dbt to infer codedept on noisemap geometries and to scope OSM
-    schools per department.
-    """
+    """Ingest the French departments reference shapefile into public_workspace."""
     file_path = DAGSTER_ROOT / "reference_data" / "departments" / "depts.shp"
     context.log.info(f"Ingesting {file_path.name} → geo_departements")
     success = ingest_shapefile(

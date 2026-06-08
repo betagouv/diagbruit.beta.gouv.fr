@@ -1,21 +1,10 @@
 """Run a Dagster asset job to completion, in-process, for CI.
 
-Usage:
-    python ci_ingest.py <job_name> [partition_key]
+    python ci_ingest.py <job_name> [partition_key]   # run with PYTHONPATH=src
 
-Executes the job synchronously in a single process and exits non-zero if the
-run fails, so CI surfaces ingestion errors loudly. This replaces the legacy
-``ingestion/launch-ingestion.sh`` path: it provisions the ``public_workspace``
-raw_* / geo_departements tables that the dbt build (and in turn the FastAPI
-tests) consume.
-
-The CLI run launchers (``dg launch`` / ``dagster asset materialize``) submit a
-run asynchronously to a daemon and return before it finishes, which is unusable
-for CI. ``execute_in_process`` runs everything here and now and reports success.
-
-Requires the package importable as ``dagster_project`` (run with
-``PYTHONPATH=src``) and the DB_*/AWS_* environment variables set. Box is not
-needed: ``ci_landing_033_job`` is landing-only and reads source files from S3.
+Uses ``execute_in_process`` (not ``dg launch`` / ``dagster asset materialize``,
+which submit asynchronously and return before the run finishes) so the exit code
+reflects the run outcome.
 """
 
 import sys

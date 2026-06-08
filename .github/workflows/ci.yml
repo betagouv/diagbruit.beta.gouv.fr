@@ -38,19 +38,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ---------------------------------------------------------------
-      # 1. Ingestion via Dagster (landing-only, dept 033)
-      #
-      # Runs ci_landing_033_job: the landing assets read source files
-      # from S3 (_source/ prefixes) into public_workspace.raw_* and
-      # rebuild the committed reference fixtures (geo_departements,
-      # strasbourg). This replaces the legacy ingestion/launch-ingestion.sh.
-      #
-      # Box-sourced launchers are intentionally excluded — their 3-legged
-      # OAuth can't run headlessly — so this only needs AWS credentials.
-      # The S3 _source/ data for dept 033 must already be populated by a
-      # prior launcher run.
-      # ---------------------------------------------------------------
+      # 1. Ingestion — landing-only Dagster job (S3 -> PostGIS, no Box).
+      #    Requires the S3 _source/ data for dept 033 to already exist.
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
@@ -71,9 +60,7 @@ jobs:
           AWS_S3_BUCKET: diagbruit
         run: uv run python ci_ingest.py ci_landing_033_job 033
 
-      # ---------------------------------------------------------------
       # 2. dbt transforms (dagster/dbt)
-      # ---------------------------------------------------------------
       - name: Set up Python for DBT
         uses: actions/setup-python@v5
         with:
@@ -94,9 +81,7 @@ jobs:
           source venv/bin/activate
           dbt run
 
-      # ---------------------------------------------------------------
       # 3. Run FastAPI tests
-      # ---------------------------------------------------------------
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5
         with:
