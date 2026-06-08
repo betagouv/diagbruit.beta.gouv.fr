@@ -10,16 +10,18 @@ class InfraTerritory:
     default `rename_infra` callback (codinfra → codeinfra, idzonbruit → id).
     """
 
-    dept: str       # "033", "044", ...
-    campaign: str   # value used in S3 path partition campaign={campaign}
-    url: str        # single data.gouv.fr ZIP URL
+    dept: str            # "033", "044", ...
+    campaign: str        # value used in S3 path partition campaign={campaign}
+    url: str             # single data.gouv.fr ZIP URL
+    box_folder_id: str = ""  # Box folder ID (used by infra_launcher_box when temporarily sourcing from Box)
 
 
 INFRA_TERRITORIES: list[InfraTerritory] = [
     InfraTerritory(
         dept="033",
         campaign="2022",
-        url="https://www.data.gouv.fr/api/1/datasets/r/b4cf0f5e-4b99-4af3-916e-1d8c2625fce2",
+        url="",
+        box_folder_id="388255826325"
     ),
     InfraTerritory(
         dept="044",

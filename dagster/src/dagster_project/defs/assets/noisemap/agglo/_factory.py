@@ -29,6 +29,7 @@ def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
         "label": {"value": ""},
         "campaign": {"value": t.annee},
         "acoustic_producer_kind": {"value": "AGGLO"},
+        "noisemap_pipeline": {"value": "AGGLO"},
         "kind": {"value": f.typesource},
         "acoustic_noisemap_kind": {"value": f.cbstype},
         "acoustic_db_value": {"from": t.legende_from},

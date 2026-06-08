@@ -22,21 +22,30 @@ def _delete_dept_rows(
     dept: str,
     schema: str = "public_workspace",
     producer_kind: str | None = None,
+    noisemap_pipeline: str | None = None,
 ) -> int:
-    """Delete existing rows for `dept` (and optionally `producer_kind`) before re-ingesting.
+    """Delete existing rows for `dept` before re-ingesting.
 
-    Pass `producer_kind` to scope the delete to only rows produced by one pipeline,
-    preventing pipelines that share the same dept from wiping each other's rows.
+    Use `producer_kind` and/or `noisemap_pipeline` to narrow the delete to a specific
+    pipeline, preventing pipelines that share the same dept from wiping each other's rows.
     """
     engine = create_engine(db_url())
+    conditions = ["codedept = :dept"]
+    params: dict = {"dept": dept}
+    label_parts = [f"dept={dept}"]
+
     if producer_kind is not None:
-        sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept AND acoustic_producer_kind = :producer_kind')
-        params: dict = {"dept": dept, "producer_kind": producer_kind}
-        label = f"dept={dept}, acoustic_producer_kind={producer_kind}"
-    else:
-        sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE codedept = :dept')
-        params = {"dept": dept}
-        label = f"dept={dept}"
+        conditions.append("acoustic_producer_kind = :producer_kind")
+        params["producer_kind"] = producer_kind
+        label_parts.append(f"acoustic_producer_kind={producer_kind}")
+
+    if noisemap_pipeline is not None:
+        conditions.append("noisemap_pipeline = :noisemap_pipeline")
+        params["noisemap_pipeline"] = noisemap_pipeline
+        label_parts.append(f"noisemap_pipeline={noisemap_pipeline}")
+
+    label = ", ".join(label_parts)
+    sql = text(f'DELETE FROM "{schema}"."{db_table}" WHERE ' + " AND ".join(conditions))
     try:
         with engine.begin() as conn:
             result = conn.execute(sql, params)
@@ -48,7 +57,7 @@ def _delete_dept_rows(
         return 0
 
 
-def rename_infra(file:str) -> dict:
+def rename_infra(file: str) -> dict:
     return {
         "name": file,
         "mapping": {
@@ -61,6 +70,25 @@ def rename_infra(file:str) -> dict:
             "acoustic_noisemap_kind": {"from": "cbstype"},
             "acoustic_db_value": {"from": "legende"},
             "acoustic_time_range": {"from": "indicetype"},
+            "noisemap_pipeline": {"value": "INFRA"},
+        },
+    }
+
+
+def rename_fastline(file: str) -> dict:
+    return {
+        "name": file,
+        "mapping": {
+            "geometry": True,
+            "codedept": True,
+            "label": {"from": "codinfra"},
+            "campaign": {"from": "annee"},
+            "acoustic_producer_kind": {"from": "typeterr"},
+            "kind": {"from": "typesource"},
+            "acoustic_noisemap_kind": {"from": "cbstype"},
+            "acoustic_db_value": {"from": "legende"},
+            "acoustic_time_range": {"from": "indicetype"},
+            "noisemap_pipeline": {"value": "FASTLINE"},
         },
     }
 
@@ -200,7 +228,7 @@ def _box_walk(client, folder_id: str, local_dir, source_prefix: str, context: As
     return sha256, shp_files
 
 
-def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResource, type:str, dept:str, folder_id: str, mapping: list[dict] | None = None):
+def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResource, type:str, dept:str, folder_id: str, mapping: list[dict] | None = None, callback: Callable[..., dict] = rename_infra):
     client = box.get_client()
 
     source_prefix = path + "_source/"
@@ -227,7 +255,7 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
                 continue
             mapping_entries.append({**entry, "name": actual_name})
     else:
-        mapping_entries = [rename_infra(f) for f in shp_files]
+        mapping_entries = [callback(f) for f in shp_files]
     context.log.info(f"Built {len(mapping_entries)} mapping entries")
 
     manifest = {
@@ -250,7 +278,7 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
         "manifest": MetadataValue.json(manifest),
     })
 
-def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str, dept: str, db_table: str = "raw_noisemap", producer_kind: str | None = None):
+def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str, dept: str, db_table: str = "raw_noisemap", producer_kind: str | None = None, noisemap_pipeline: str | None = None):
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -286,7 +314,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str,
             )
 
     # Idempotent re-ingest: clear prior rows for this dept before append.
-    _delete_dept_rows(context, db_table=db_table, dept=dept, producer_kind=producer_kind)
+    _delete_dept_rows(context, db_table=db_table, dept=dept, producer_kind=producer_kind, noisemap_pipeline=noisemap_pipeline)
 
     ingested = 0
     skipped = 0
