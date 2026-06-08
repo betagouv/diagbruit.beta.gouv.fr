@@ -28,24 +28,23 @@ Models follow the standard dbt layered architecture under `models/<domain>/`:
 | `intermediate/` | view (schema: `workspace`) | Business logic, joins, filtering, deduplication |
 | `marts/` | table | Final output tables consumed by FastAPI |
 
-**Domains:** `noisemap`, `soundclassification`, `peb`, `topo`, `osm`, `strasbourg`
+**Domains:** `noisemap`, `soundclassification`, `peb`, `bdnb`, `osm` (foods, schools, terrasses)
 
-## Key Pipeline: OSM + Strasbourg → noisesource
+## Key Pipeline: OSM → noisesource
 
 The `noisesource` table (final mart in `osm/`) aggregates noise-emitting establishments:
 
 ```
-stg_stras → int_stras_slug → noisesource_stras (table)
-                                    ↓ (dedup reference)
+stg_terrasses → int_terrasses_slug ┐ (dedup reference, per codedept)
 stg_foods → int_foods_filter → int_foods_validate → int_foods_slug
 stg_schools → int_schools_filter → int_schools_dep → int_schools_slug
                                     ↓
-                              noisesource (UNION ALL of noisesource_stras + int_foods_slug + int_schools_slug)
+                              noisesource (UNION ALL of int_terrasses_slug + int_foods_slug + int_schools_slug)
 ```
 
-**Rule:** `noisesource_stras` must be built before any foods intermediate model — dbt enforces this via the `{{ ref('noisesource_stras') }}` dependency in `int_foods_validate`.
+**Rule:** `int_terrasses_slug` must be built before any foods intermediate model — dbt enforces this via the `{{ ref('int_terrasses_slug') }}` dependency in `int_foods_validate`.
 
-Foods deduplication (`int_foods_validate`) uses `pg_trgm` similarity + `ST_DWithin` to exclude foods establishments already present in Strasbourg data. Both extensions are created on-run-start in `dbt_project.yml`.
+Foods deduplication (`int_foods_validate`) uses `pg_trgm` similarity + `ST_DWithin` to exclude foods establishments already present in the terrasses data, matched per department (`codedept`). Both extensions are created on-run-start in `dbt_project.yml`.
 
 ## Extensions Required
 

@@ -1,12 +1,15 @@
+import hashlib
 import io
 import json
 import shutil
 import urllib.request
 import zipfile
 import time
+from datetime import datetime, timezone
 
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
+from dagster_project.defs.resources.box import BoxResource
 from dagster_project.ingestion.ingest_geojson import ingest_geojson
 from dagster_project.ingestion.ingest_shapefiles import ingest_shapefile
 from dagster_project.io import DAGSTER_ROOT
@@ -214,4 +217,91 @@ def osm_foods_landing(context: AssetExecutionContext):
         "prefix": MetadataValue.text(s3_path),
         "files_downloaded": MetadataValue.int(downloaded),
         "row_count": MetadataValue.int(row_count),
+    })
+
+BOX_FILE_ID_TERRASSES_067 = "2250761602923"
+TERRASSES_S3_PREFIX = "noisesource/osm/terrasses/"
+
+
+@asset(
+    key="terrasses_launcher",
+    group_name=GROUP,
+    tags={"stage": "launcher", "source": "box"},
+    kinds={"box", "s3"},
+)
+def terrasses_launcher(context: AssetExecutionContext, box: BoxResource):
+    """Download the terrasses GeoJSON from Box and upload it to S3 under _source/."""
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "terrasses"
+    local_dir.mkdir(parents=True, exist_ok=True)
+    source_prefix = TERRASSES_S3_PREFIX + "_source/"
+
+    try:
+        client = box.get_client()
+        context.log.info(f"Downloading Box file {BOX_FILE_ID_TERRASSES_067}")
+        content = client.downloads.download_file(BOX_FILE_ID_TERRASSES_067).read()
+        file_path = local_dir / "strasbourg-terrasses.geojson"
+        file_path.write_bytes(content)
+
+        key = source_prefix + file_path.name
+        s3.upload_file(str(file_path), S3_BUCKET, key)
+        context.log.info(f"Uploaded {file_path.name} → s3://{S3_BUCKET}/{key}")
+
+        manifest = {
+            "provenance": f"box://file/{BOX_FILE_ID_TERRASSES_067}",
+            "pulled_at": datetime.now(timezone.utc).isoformat(),
+            "sha256": {file_path.name: hashlib.sha256(content).hexdigest()},
+        }
+        s3.put_object(
+            Bucket=S3_BUCKET,
+            Key=TERRASSES_S3_PREFIX + "manifest.json",
+            Body=json.dumps(manifest, indent=2),
+            ContentType="application/json",
+        )
+    finally:
+        shutil.rmtree(local_dir, ignore_errors=True)
+
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(TERRASSES_S3_PREFIX),
+        "box_file_id": MetadataValue.text(BOX_FILE_ID_TERRASSES_067),
+    })
+
+
+@asset(
+    key="raw_full_osm_terrasses",
+    group_name=GROUP,
+    tags={"stage": "landing", "source": "box"},
+    kinds={"s3", "postgres"},
+    deps=["terrasses_launcher"],
+)
+def terrasses_landing(context: AssetExecutionContext):
+    """Download terrasses GeoJSON from S3 and ingest into raw_full_osm_terrasses (dept 067)."""
+    s3_path = TERRASSES_S3_PREFIX + "_source/"
+    local_dir = DAGSTER_ROOT / "ingestion" / "inputs" / "terrasses"
+    local_dir.mkdir(parents=True, exist_ok=True)
+
+    downloaded = download_from_s3(bucket=S3_BUCKET, file_path=local_dir, s3_path=s3_path, context=context)
+    if downloaded == 0:
+        raise FileNotFoundError(
+            f"No source files at s3://{S3_BUCKET}/{s3_path} — run the terrasses launcher to populate it"
+        )
+
+    geojson_files = list(local_dir.rglob("*.geojson"))
+    if not geojson_files:
+        raise FileNotFoundError(f"No .geojson file found in {local_dir}")
+    geojson_file = geojson_files[0]
+    context.log.info(f"Ingesting {geojson_file.name} → raw_full_osm_terrasses")
+
+    row_count = ingest_geojson(
+        str(geojson_file), "raw_full_osm_terrasses", db_url(),
+        schema="public_workspace", if_exists="replace", extra_columns={"codedept": "067"},
+    )
+
+    shutil.rmtree(local_dir, ignore_errors=True)
+
+    return MaterializeResult(metadata={
+        "bucket": MetadataValue.text(S3_BUCKET),
+        "prefix": MetadataValue.text(s3_path),
+        "row_count": MetadataValue.int(row_count),
+        "codedept": MetadataValue.text("067"),
     })

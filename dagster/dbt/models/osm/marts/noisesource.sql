@@ -10,8 +10,8 @@ SELECT
     label,
     geometry,
     category_slug,
-    meta_code_dep AS codedept
-FROM {{ ref('noisesource_stras') }}
+    codedept
+FROM {{ ref('int_terrasses_slug') }}
 
 UNION ALL
 

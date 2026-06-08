@@ -60,14 +60,6 @@ models:
       marts:
         +materialized: table
 
-    strasbourg:
-      staging:
-        materialized: view
-      intermediate:
-        materialized: view
-      marts:
-        materialized: view
-
     osm:
       staging:
         materialized: view

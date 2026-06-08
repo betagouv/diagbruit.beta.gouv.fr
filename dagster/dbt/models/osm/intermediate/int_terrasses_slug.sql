@@ -2,18 +2,19 @@
     schema='workspace',
 ) }}
 
-WITH full_stras AS (
+WITH full_terrasses AS (
     SELECT
         name,
         address,
+        codedept,
         geometry
-    FROM {{ ref('stg_stras') }}
+    FROM {{ ref('stg_terrasses') }}
 )
 
 SELECT
     name || ' | ' || address AS label,
     name,
     'BAR' AS category_slug,
+    codedept,
     geometry
-FROM full_stras
-
+FROM full_terrasses

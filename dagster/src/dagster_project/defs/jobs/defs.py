@@ -1,7 +1,7 @@
 """Job definitions.
 
 Naming convention: `<domain>_[<scope>_]job` where
-  - <domain>  = noisemap | osm | peb | strasbourg | soundclassification | full
+  - <domain>  = noisemap | osm | peb | soundclassification | full
   - <scope>   = optional: `ingest` (ingest assets only, no dbt), `launcher`,
                 `landing`, or a noisemap source-type (`agglo`, `infra`,
                 `fastline`).
@@ -86,12 +86,6 @@ peb_job = define_asset_job(
     selection=AssetSelection.assets("peb").upstream(),
     tags={"domain": "peb", "scope": "pipeline"},
 )
-strasbourg_job = define_asset_job(
-    "strasbourg_job",
-    selection=AssetSelection.groups("strasbourg").downstream(),
-    tags={"domain": "strasbourg", "scope": "pipeline"},
-)
-
 # Dev pipeline for dept 033: covers all domains for local end-to-end testing.
 # NOTE: only the partitioned groups (noisemap_agglo/infra/fastline, soundclassification)
 # are scoped to the dept passed via --partition. PEB and OSM are unpartitioned and
@@ -112,7 +106,6 @@ dev_pipeline_033_job = define_asset_job(
         | AssetSelection.groups("noisemap")
         | AssetSelection.groups("bdnb")
         | AssetSelection.groups("departements")
-        | AssetSelection.groups("strasbourg")
     ),
     partitions_def=ALL_DEPT_PARTITIONS,
     tags={"domain": "dev", "scope": "pipeline_033"},
@@ -129,7 +122,7 @@ _CI_LANDING_ASSETS = [
     "raw_peb",
     "raw_full_osm_foods_data",
     "raw_full_osm_schools_data",
-    "raw_full_stras_data",
+    "raw_full_osm_terrasses",
     "geo_departements",
     "raw_noisemap",
     "raw_soundclassification_tramway",

@@ -321,12 +321,11 @@ diagbruit/
 ├── dagster/
 │   ├── dbt/
 │   │   ├── models/
+│   │   │   ├── bdnb/
 │   │   │   ├── noisemap/
 │   │   │   ├── osm/
 │   │   │   ├── peb/
-│   │   │   ├── soundclassification/
-│   │   │   ├── strasbourg/
-│   │   │   └── topo/
+│   │   │   └── soundclassification/
 │   │   ├── macros/
 │   │   ├── dbt_project.yml
 │   │   └── profiles.yml.example
@@ -343,7 +342,7 @@ diagbruit/
 │   │   │   ├── resources/
 │   │   │   └── schedules/
 │   │   ├── ingestion/         # GeoPandas → PostGIS helpers
-│   │   ├── reference_data/    # committed static fixtures (departments, strasbourg)
+│   │   ├── reference_data/    # committed static fixtures (departments)
 │   │   └── io/
 │   ├── ci_ingest.py           # in-process job runner used by CI
 │   ├── box_auth.py

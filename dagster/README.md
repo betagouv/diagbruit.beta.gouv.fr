@@ -40,9 +40,8 @@ select on. Per-dept assets are partitioned and all share `ALL_DEPT_PARTITIONS`
 | `noisemap` | `raw_noisemap` (fan-in sentinel) | no | — | — |
 | `soundclassification` | `soundclassification_launcher` → `soundclassification_landing` | by dept | Box | `soundclassification/dept={dept}/campaign={campaign}/mode={mode}/` |
 | `soundclassification` | `raw_soundclassification_{tramway,fer,routier,lgv}` (fan-in markers) | no | — | — |
-| `osm` | `osm_foods_launcher` → `raw_full_osm_foods_data`; `osm_schools_launcher` → `raw_full_osm_schools_data` | no | data.gouv.fr | `noisesource/osm/{foods,schools}/` |
+| `osm` | `osm_foods_launcher` → `raw_full_osm_foods_data`; `osm_schools_launcher` → `raw_full_osm_schools_data`; `terrasses_launcher` → `raw_full_osm_terrasses` | no | data.gouv.fr / Box | `noisesource/osm/{foods,schools,terrasses}/` |
 | `peb` | `peb_launcher` → `raw_peb` | no | data.gouv.fr | `peb/scope={scope}/` |
-| `strasbourg` | `raw_full_stras_data` (direct ingest, no launcher) | no | local GeoJSON | — |
 | `maintenance` | `box_token_refresh` | no | — | — |
 
 **Partition depts** (all on the shared `ALL_DEPT_PARTITIONS` axis):
@@ -56,7 +55,7 @@ select on. Per-dept assets are partitioned and all share `ALL_DEPT_PARTITIONS`
 
 **Landing targets:** noisemap landings (agglo/infra/fastline) all append to
 `public_workspace.raw_noisemap`; soundclassification landings write
-`public_workspace.raw_soundclassification_<mode>`; osm/peb/strasbourg write their
+`public_workspace.raw_soundclassification_<mode>`; osm/peb write their
 own `raw_*` tables. The fan-in markers (`raw_noisemap`, `raw_soundclassification_*`)
 are unpartitioned no-ops that depend on *all* partitions of their landing assets
 (`AllPartitionMapping()`); their keys match the dbt source names.
@@ -85,9 +84,8 @@ the whole domain incl. downstream dbt models.
 | `noisemap_job` | `raw_noisemap` + all upstream (full noisemap ingest, all scopes) |
 | `osm_job` | `noisesource` + all upstream (osm ingest + dbt) |
 | `peb_job` | `peb` mart + all upstream (peb ingest + dbt) |
-| `strasbourg_job` | `strasbourg` group + everything downstream (incl. dbt) |
-| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm, soundclassification, bdnb, all noisemap scopes, departements, strasbourg); run with `--partition 033` (uses Box launchers) |
-| `ci_landing_033_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + committed reference fixtures (`departements`, `strasbourg`). Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_033_job 033` |
+| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm incl. terrasses, soundclassification, bdnb, all noisemap scopes, departements); run with `--partition 033` (uses Box launchers) |
+| `ci_landing_033_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + the committed `departements` fixture. Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_033_job 033` |
 | `box_token_refresh_job` | `box_token_refresh` (run by the sensor) |
 
 Noisemap ingest is split per source type because each used to carry its own dept

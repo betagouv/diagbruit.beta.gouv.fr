@@ -5,13 +5,17 @@ import argparse
 import os
 import sys
 
-def ingest_geojson(file_path, table_name, db_url, schema, if_exists):
+def ingest_geojson(file_path, table_name, db_url, schema, if_exists, extra_columns=None):
     try:
         TABLE_NAME = table_name
 
         engine = create_engine(db_url)
 
         geojson = gpd.read_file(file_path)
+
+        if extra_columns:
+            for col, val in extra_columns.items():
+                geojson[col] = val
 
         if if_exists == 'skip':
             inspector = inspect(engine)
