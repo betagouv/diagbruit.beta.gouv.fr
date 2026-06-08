@@ -87,12 +87,10 @@ def peb_landing(context: AssetExecutionContext):
     downloaded = download_from_s3(bucket=S3_BUCKET, file_path=local_dir, s3_path=s3_path, context=context)
 
     if downloaded == 0:
-        context.log.warning(f"No files found at s3://{S3_BUCKET}/{s3_path}")
         shutil.rmtree(local_dir, ignore_errors=True)
-        return MaterializeResult(metadata={
-            "files_downloaded": MetadataValue.int(0),
-            "files_ingested": MetadataValue.int(0),
-        })
+        raise FileNotFoundError(
+            f"No source files at s3://{S3_BUCKET}/{s3_path} — run the PEB launcher to populate it"
+        )
 
     ingested = 0
     # All zones share one table: replace on the first file, append the rest.

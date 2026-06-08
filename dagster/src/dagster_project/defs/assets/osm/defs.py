@@ -151,11 +151,9 @@ def osm_schools_landing(context: AssetExecutionContext):
     downloaded = download_from_s3(bucket=S3_BUCKET, file_path=file_path, s3_path=s3_path, context=context)
 
     if downloaded == 0:
-        context.log.info(f"No files found at s3://{S3_BUCKET}/{s3_path}")
-        return MaterializeResult(metadata={
-            "bucket": MetadataValue.text(S3_BUCKET),
-            "files_downloaded": MetadataValue.int(0),
-        })
+        raise FileNotFoundError(
+            f"No source files at s3://{S3_BUCKET}/{s3_path} — run the OSM launcher to populate it"
+        )
 
     context.log.info(f"Downloaded {downloaded} files from s3://{S3_BUCKET}/{s3_path}")
 
@@ -194,11 +192,9 @@ def osm_foods_landing(context: AssetExecutionContext):
     downloaded = download_from_s3(bucket=S3_BUCKET, file_path=file_path, s3_path=s3_path, context=context)
 
     if downloaded == 0:
-        context.log.info(f"No files found at s3://{S3_BUCKET}/{s3_path}")
-        return MaterializeResult(metadata={
-            "bucket": MetadataValue.text(S3_BUCKET),
-            "files_downloaded": MetadataValue.int(0),
-        })
+        raise FileNotFoundError(
+            f"No source files at s3://{S3_BUCKET}/{s3_path} — run the OSM launcher to populate it"
+        )
 
     context.log.info(f"Downloaded {downloaded} files from s3://{S3_BUCKET}/{s3_path}")
 
