@@ -1,6 +1,6 @@
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
-from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing  # s3_launcher used by commented-out infra_launcher
+from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
 from dagster_project.defs.assets.noisemap._partitions import INFRA_PARTITIONS
 from dagster_project.defs.assets.noisemap.infra._registry import INFRA_TERRITORIES
 from dagster_project.defs.resources.box import BoxResource
@@ -22,7 +22,7 @@ def _s3_prefix(dept: str, campaign: str) -> str:
     kinds={"box", "s3"},
 )
 def infra_launcher_box(context: AssetExecutionContext, box: BoxResource):
-    """Upload infra files from Box to S3 (one dept per partition). Temporary replacement for infra_launcher."""
+    """Upload infra files from Box to S3 (one dept per partition)."""
     t = INFRA_BY_DEPT.get(context.partition_key)
     if t is None:
         return MaterializeResult(metadata={"status": MetadataValue.text(
