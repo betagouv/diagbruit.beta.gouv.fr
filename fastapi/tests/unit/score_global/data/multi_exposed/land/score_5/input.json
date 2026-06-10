@@ -1,21 +1,21 @@
 {
   "noisemap_intersections": [
     {
-      "typeterr": "AGGLO",
-      "typesource": "R",
-      "indicetype": "LD",
-      "cbstype": "A",
-      "legende": 55.0,
+      "acoustic_producer_kind": "AGGLO",
+      "kind": "R",
+      "acoustic_time_range": "LD",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 55.0,
       "codeinfra": null,
       "percent_impacted": 0.33,
       "direction": "NE"
     },
     {
-      "typeterr": "INFRA",
-      "typesource": "F",
-      "indicetype": "LN",
-      "cbstype": "A",
-      "legende": 55.0,
+      "acoustic_producer_kind": "INFRA",
+      "kind": "F",
+      "acoustic_time_range": "LN",
+      "acoustic_noisemap_kind": "A",
+      "acoustic_db_value": 55.0,
       "codeinfra": "570000",
       "percent_impacted": 0.09,
       "direction": "NE"

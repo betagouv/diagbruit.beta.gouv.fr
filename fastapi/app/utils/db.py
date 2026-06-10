@@ -4,7 +4,7 @@ from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, BdnbItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
@@ -48,7 +48,7 @@ def get_soundclassification_intersection_corrections(
 ) -> Tuple[int, int]:
     """
     Compute the corrective value (in dB) based on the resulting view angle
-    after masking by TopoItem buildings around the source, for:
+    after masking by BdnbItem buildings around the source, for:
       - the SHORTEST connecting segment (closest)
       - the LONGEST  connecting segment (farthest)
 
@@ -79,8 +79,8 @@ def get_soundclassification_intersection_corrections(
         triangles = union_arms_to_triangles_cte(left, right)
         total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
 
-        # Count triangles that intersect at least one TopoItem
-        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now", codedept=codedept)
+        # Count triangles that intersect at least one BdnbItem
+        tri_hits = intersecting_triangle_groups_cte(triangles, BdnbItem, valid_col="is_valid_now", codedept=codedept)
         intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
 
         # Angle and dB correction
@@ -154,12 +154,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         intersection_geom = func.ST_Intersection(NoiseMapItem.geometry, safe_geom)
 
         stmt = db.query(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             func.sum(func.ST_Area(func.Geography(intersection_geom))).label("total_intersection_area_m2"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
             func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
@@ -168,12 +168,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
         ).group_by(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             intersection_geom
         )
 
@@ -185,11 +185,11 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             geometry_intersection = geometry_parsed["coordinates"]
             if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
                 result.append({
-                    "typeterr": r.typeterr,
-                    "typesource": r.typesource,
-                    "indicetype": r.indicetype,
-                    "cbstype": r.cbstype,
-                    "legende": r.legende,
+                    "acoustic_producer_kind": r.acoustic_producer_kind,
+                    "kind": r.kind,
+                    "acoustic_time_range": r.acoustic_time_range,
+                    "acoustic_noisemap_kind": r.acoustic_noisemap_kind,
+                    "acoustic_db_value": r.acoustic_db_value,
                     "codeinfra": r.codeinfra,
                     "geometry_intersection": geometry_intersection,
                     "percent_impacted": percent_impacted,
@@ -203,10 +203,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                     func.COALESCE(
                         func.ST_Union(
                             func.ST_Intersection(
-                                NoiseMapItem.geometry, 
+                                NoiseMapItem.geometry,
                                 safe_geom
                             )
-                        ).filter(NoiseMapItem.indicetype == 'LD'),
+                        ).filter(NoiseMapItem.acoustic_time_range == 'LD'),
                         func.ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)
                     )
                 ),
@@ -249,16 +249,16 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
         intersection_geom = func.ST_Intersection(SoundClassificationItem.geometry, geom_4326)
 
         closest_point_2154 = func.ST_ClosestPoint(
-            SoundClassificationRoadsItem.geometry,
+            SoundClassificationItem.road_geometry,
             geom_2154
         )
 
         stmt = db.query(
             SoundClassificationItem.source,
-            SoundClassificationItem.typesource,
-            SoundClassificationItem.codeinfra,
-            SoundClassificationItem.sound_category,
-            cast(func.ST_AsGeoJSON(SoundClassificationRoadsItem.geometry), Text).label("geometry_source"),
+            SoundClassificationItem.kind,
+            SoundClassificationItem.label,
+            SoundClassificationItem.acoustic_category,
+            cast(func.ST_AsGeoJSON(SoundClassificationItem.road_geometry), Text).label("geometry_source"),
             cast(
                 func.ST_AsGeoJSON(
                     func.ST_Transform(closest_point_2154, 4326)
@@ -267,7 +267,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             ).label("geometry_source_point"),
             func.round(
                 func.ST_Distance(
-                    SoundClassificationRoadsItem.geometry,
+                    SoundClassificationItem.road_geometry,
                     geom_2154
                 )
             ).label("min_distance"),
@@ -279,17 +279,14 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             ).label("max_distance"),
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area"),
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
-        ).join(
-            SoundClassificationRoadsItem,
-            SoundClassificationItem.codeinfra == SoundClassificationRoadsItem.codeinfra
         ).filter(
             func.ST_Intersects(SoundClassificationItem.geometry, geom_4326)
         ).group_by(
             SoundClassificationItem.source,
-            SoundClassificationItem.typesource,
-            SoundClassificationItem.codeinfra,
-            SoundClassificationItem.sound_category,
-            SoundClassificationRoadsItem.geometry,
+            SoundClassificationItem.kind,
+            SoundClassificationItem.label,
+            SoundClassificationItem.acoustic_category,
+            SoundClassificationItem.road_geometry,
             intersection_geom
         ).order_by("min_distance")
 
@@ -319,9 +316,9 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
 
             result.append({
                 "source": r.source,
-                "typesource": r.typesource,
-                "codeinfra": r.codeinfra,
-                "sound_category": r.sound_category,
+                "kind": r.kind,
+                "label": r.label,
+                "acoustic_category": r.acoustic_category,
                 "min_distance": r.min_distance,
                 "max_distance": r.max_distance,
                 "percent_impacted": percent_impacted,
@@ -355,10 +352,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
         intersection_geom = func.ST_Intersection(PebItem.geometry, safe_geom)
 
         stmt = db.query(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc,
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url,
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area")
         ).filter(
             func.ST_Intersects(
@@ -366,10 +364,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
                 safe_geom
             )
         ).group_by(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url
         )
 
         result = []
@@ -378,10 +377,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
             percent_impacted = round(r.intersection_area / safe_geom_area, 2)
             if percent_impacted > threshold:
                 result.append({
-                    "zone": r.zone,
-                    "legende": r.legende,
-                    "nom": r.nom,
-                    "ref_doc": r.ref_doc,
+                    "acoustic_zone": r.acoustic_zone,
+                    "acoustic_db_value": r.acoustic_db_value,
+                    "label": r.label,
+                    "campaign": r.campaign,
+                    "campaign_url": r.campaign_url,
                     "percent_impacted": percent_impacted
                 })
 

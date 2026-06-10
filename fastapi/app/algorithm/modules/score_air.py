@@ -42,9 +42,9 @@ def get_air_score_from_sources(intersections_peb):
         diff = top["percent_impacted"] - second["percent_impacted"]
 
         if diff >= threshold:
-            return zone_score_map[top["zone"]]
+            return zone_score_map[top["acoustic_zone"]]
 
-    zones = {item.get("zone") for item in intersections_peb if item.get("zone")}
+    zones = {item.get("acoustic_zone") for item in intersections_peb if item.get("acoustic_zone")}
     scores = [zone_score_map[zone] for zone in zones if zone in zone_score_map]
 
     return max(scores)

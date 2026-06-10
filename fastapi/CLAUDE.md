@@ -32,7 +32,7 @@ Copy `.env.example` to `.env`:
 **Entry point:** `app/main.py` — mounts routers, sets up CORS, initialises SQLAlchemy models.
 
 **Routers:**
-- `app/routes/diag.py` — `POST /diag/generate`: core diagnostic endpoint. Takes a GeoJSON geometry, intersects it against PostGIS tables (noisemap, soundclassification, peb, topo, noisesource), computes noise scores, fetches recommendations from Strapi.
+- `app/routes/diag.py` — `POST /diag/generate`: core diagnostic endpoint. Takes a GeoJSON geometry, intersects it against PostGIS tables (noisemap, soundclassification, peb, bdnb, noisesource), computes noise scores, fetches recommendations from Strapi.
 - `app/routes/metabase.py` — generates signed Metabase iframe URLs.
 
 **Database layer:** SQLAlchemy models in `app/models/`. Geometry columns use GeoAlchemy2. Raw spatial queries are in `app/utils/` — prefer Shapely/GeoAlchemy2 over raw ST_* SQL where possible.

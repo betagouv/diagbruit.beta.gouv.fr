@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: geo_departements
+        description: "French departments with their respective geometries"
+        columns:
+          - name: code
+            description: "Department code"
+          - name: nom
+            description: "Department name"
+          - name: geometry
+            description: "Geometry data in WKT format"
+      - name: raw_noisemap
+        description: "Raw noise map data imported from shapefiles"
+        columns:
+          - name: id
+            description: "Noise zone ID"
+          - name: campaign
+            description: "Year"
+          - name: codedept
+            description: "Department code"
+          - name: acoustic_producer_kind
+            description: "Territory type (INFRA or AGGLO)"
+          - name: label
+            description: "Infrastructure code"
+          - name: kind
+            description: "Source type"
+          - name: acoustic_noisemap_kind
+            description: "CBS type (A, B, C priority zone)"
+          - name: acoustic_db_value
+            description: "Noise level in dB"
+          - name: acoustic_time_range
+            description: "Time range indicator (LD for day, LN for night)"
+          - name: geometry
+            description: "Geometry data in WKT format"

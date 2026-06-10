@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_foods_filter
+    description: "Data with only restaurants, bars and pubs"
+  - name: int_terrasses_slug
+    description: "Terrasses data for all departments with label and category slug"
+    columns:
+      - name: label
+        description: "Label of the establishment (name | address)"
+      - name: name
+        description: "Name of the establishment"
+      - name: category_slug
+        description: "Category slug for the source, hardcoded to 'BAR'"
+      - name: codedept
+        description: "Department code (e.g. '067')"
+      - name: geometry
+        description: "Geometry in EPSG:4326, type MULTIPOLYGON or POLYGON"
+  - name: int_foods_validate
+    description: "Foods data deduplicated against terrasses per department (int_terrasses_slug)"
+  - name: int_foods_slug
+    description: "Data with added category slugs"
+  - name: int_schools_filter
+    description: "Data with only named schools"
+  - name: int_schools_dep
+    description: "Data with added department code and name columns"
+  - name: int_schools_slug
+    description: "Data with added category_slug 'SCH' column"

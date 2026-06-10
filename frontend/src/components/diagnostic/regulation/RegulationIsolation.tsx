@@ -52,12 +52,10 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         </p>
       )}
 
-      <div className="">
-        <FakeLinkComponent onClick={() => goToTab("legal")}>
-          Voir le détail du classement sonore{" "}
-          <i className={fr.cx("ri-arrow-right-line")} />
-        </FakeLinkComponent>
-      </div>
+      <FakeLinkComponent onClick={() => goToTab("legal")}>
+        Voir le détail du classement sonore{" "}
+        <i className={fr.cx("ri-arrow-right-line")} />
+      </FakeLinkComponent>
       <FakeLinkComponent onClick={() => goToTab("position")}>
         Voir la répartition sonore sur la parcelle{" "}
         <i className={fr.cx("ri-arrow-right-line")} />

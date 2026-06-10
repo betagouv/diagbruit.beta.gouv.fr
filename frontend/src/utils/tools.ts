@@ -103,10 +103,6 @@ export const getReadableSource = (
 export const getSummaryTextFromDiagnostic = (
   diagnostic: Diagnostic,
 ): string => {
-  if (diagnostic.flags.hasNoisemapWarning) {
-    return "Le <strong>risque de nuisance sonore</strong> ne peut pas être déterminé par diagBruit pour votre parcelle.<br/>Une <strong>visite des lieux</strong> peut aider à mieux appréhender la gêne occasionnée.";
-  }
-
   const risk = getRiskFromScore(diagnostic.score);
 
   switch (risk) {
@@ -481,10 +477,10 @@ export const getMaxIsolationFromSoundClassificationAffectedHelper = (
 ) => {
   return !!optimalZoneSoundClassificationHelper.length
     ? Math.max(
-        ...optimalZoneSoundClassificationHelper.map(
-          (helper) => helper.isolation,
-        ),
-      )
+      ...optimalZoneSoundClassificationHelper.map(
+        (helper) => helper.isolation,
+      ),
+    )
     : 0;
 };
 
@@ -492,18 +488,15 @@ export const getIsMobile = () => {
   const { breakpointsValues } = useBreakpointsValuesPx();
   const { windowInnerWidth } = useWindowInnerSize();
   return windowInnerWidth < breakpointsValues.md;
-};
+}
 
 export const normalize = (str: string) =>
-  str
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
+  str.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
 export const slugify = (str: string) =>
-  normalize(str)
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+  normalize(str).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export const imgUrl = (url: string) =>
-  url.startsWith("/") ? `${process.env.REACT_APP_CMS_URL}${url}` : url;
+  url.startsWith("/")
+    ? `${process.env.REACT_APP_CMS_URL}${url}`
+    : url

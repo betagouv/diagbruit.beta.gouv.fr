@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: peb
+    description: "Clean and validated PEB polygons projected to EPSG:4326 with geometry quality checks"
+    columns:
+      - name: id
+        description: "Unique identifier generated per row at transform time"
+        tests:
+          - unique
+          - not_null
+      - name: acoustic_zone
+        description: "Noise exposure zone (A, B, C or D)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['A', 'B', 'C', 'D']
+      - name: acoustic_db_value
+        description: "Noise level in dB (Lden), cast to float"
+      - name: label
+        description: "Name of the aerodrome or area"
+        tests:
+          - not_null
+      - name: campaign
+        description: "Year of the prefectoral decree (date de l'arrêté), extracted per row from raw_peb.date_arret in stg_peb"
+        tests:
+          - not_null
+      - name: campaign_url
+        description: "URL of the reference document for the PEB campaign"
+      - name: geometry
+        description: "Validated polygon geometry projected to EPSG:4326"
+        tests:
+          - not_null

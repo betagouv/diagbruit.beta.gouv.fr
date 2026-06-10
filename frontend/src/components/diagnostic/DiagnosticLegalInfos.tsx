@@ -67,12 +67,12 @@ const DiagnosticLegalInfos = ({
                   ? "plusieurs secteurs"
                   : "un secteur"}{" "}
                 du Plan d’Exposition au Bruit de "
-                <b>{air_intersections[0].nom}</b>" :
+                <b>{air_intersections[0].label}</b>" :
               </p>
               <ul>
                 {air_intersections.map((intersection, index) => (
                   <li key={index}>
-                    zone <b>{intersection.zone}</b>
+                    zone <b>{intersection.acoustic_zone}</b>
                     {air_intersections.length > 1 && (
                       <>
                         {" sur "}

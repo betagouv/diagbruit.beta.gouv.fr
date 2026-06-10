@@ -36,7 +36,7 @@ const PEB_TEXTS: Record<string, string> = {
 };
 
 export const getPebRegulationTextFromZone = (
-  zone: AirIntersection["zone"],
+  zone: AirIntersection["acoustic_zone"],
 ): string | null => {
   if (!zone) return null;
   return PEB_TEXTS[zone] ?? null;

@@ -2,10 +2,10 @@ def get_classification_warning(noisemap_intersections, soundclassification_inter
     """
     Return the classification warning boolean.
     """
-    noisemap_typesources = {
-        item["typesource"]
+    noisemap_kinds = {
+        item["kind"]
         for item in noisemap_intersections
-        if item.get("cbstype") == "A" and "typesource" in item and item["typesource"] in ['F', 'R']
+        if item.get("acoustic_noisemap_kind") == "A" and "kind" in item and item["kind"] in ['F', 'R']
     }
-    classification_typesources = {item["typesource"] for item in soundclassification_intersections if "typesource" in item}
-    return not noisemap_typesources.issubset(classification_typesources)
+    classification_kinds = {item["kind"] for item in soundclassification_intersections if "kind" in item}
+    return not noisemap_kinds.issubset(classification_kinds)
