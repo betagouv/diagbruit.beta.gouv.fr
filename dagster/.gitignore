@@ -204,4 +204,6 @@ __marimo__/
 
 src/dagster_project/ingestion/inputs/
 .telemetry
+.nux
+.logs_queue
 storage
