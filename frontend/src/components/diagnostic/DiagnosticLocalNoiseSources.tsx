@@ -33,22 +33,6 @@ export default function DiagnosticLocalNoiseSources({
     modal.open();
   };
 
-  if (!noisesource_intersections || noisesource_intersections.length === 0) {
-    return (
-      <div className={classes.container}>
-        <h4 className={cx(classes.title, fr.cx("fr-h6", "fr-mb-2v"))}>
-          Aucune information pour le moment
-        </h4>
-        <p className={fr.cx("fr-mb-0")}>
-          À ce jour, aucune source de nuisance sonore n'a été identifiée à
-          proximité de votre parcelle. Cela n'exclut pas l'existence de
-          nuisances non référencées. Une visite sur place reste le meilleur
-          moyen de vous faire votre propre avis.
-        </p>
-      </div>
-    );
-  }
-
   const noisesourcesGrouped = useMemo(() => {
     return Object.entries(
       noisesource_intersections.reduce(
@@ -74,6 +58,22 @@ export default function DiagnosticLocalNoiseSources({
       ),
     );
   }, [noisesource_intersections]);
+
+  if (!noisesource_intersections || noisesource_intersections.length === 0) {
+    return (
+      <div className={classes.container}>
+        <h4 className={cx(classes.title, fr.cx("fr-h6", "fr-mb-2v"))}>
+          Aucune information pour le moment
+        </h4>
+        <p className={fr.cx("fr-mb-0")}>
+          À ce jour, aucune source de nuisance sonore n'a été identifiée à
+          proximité de votre parcelle. Cela n'exclut pas l'existence de
+          nuisances non référencées. Une visite sur place reste le meilleur
+          moyen de vous faire votre propre avis.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
