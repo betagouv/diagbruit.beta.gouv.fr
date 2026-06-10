@@ -118,10 +118,22 @@ def _apply_mapping(gdf, mapping: dict):
 
 
 def _widen_columns(engine, schema, table_name, gdf, log):
-    """Widen existing table columns to accommodate incoming GDF before an append."""
+    """Widen existing table columns and add any new columns before an append."""
     existing_types = {col["name"]: str(col["type"]).upper() for col in inspect(engine).get_columns(table_name, schema=schema)}
     float_cols = [c for c in gdf.select_dtypes(include="float").columns if c != "geometry"]
     with engine.connect() as conn:
+        for col in [c for c in gdf.columns if c != "geometry" and c not in existing_types]:
+            dtype = gdf[col].dtype
+            if pd.api.types.is_bool_dtype(dtype):
+                pg_type = "BOOLEAN"
+            elif pd.api.types.is_integer_dtype(dtype):
+                pg_type = "BIGINT"
+            elif pd.api.types.is_float_dtype(dtype):
+                pg_type = "DOUBLE PRECISION"
+            else:
+                pg_type = "TEXT"
+            conn.execute(text(f'ALTER TABLE "{schema}"."{table_name}" ADD COLUMN IF NOT EXISTS "{col}" {pg_type}'))
+            log(f"Added missing column {col} ({pg_type}) to {schema}.{table_name}")
         for col in float_cols:
             if existing_types.get(col, "") in ("BIGINT", "INTEGER", "INT", "SMALLINT"):
                 conn.execute(text(f'ALTER TABLE {schema}."{table_name}" ALTER COLUMN "{col}" TYPE DOUBLE PRECISION'))

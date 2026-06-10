@@ -1,6 +1,6 @@
 from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
-from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing
+from dagster_project.defs.assets.noisemap._io import box_to_s3_launcher, ingest_from_s3_landing, rename_fastline
 from dagster_project.defs.assets.noisemap._partitions import FASTLINE_PARTITIONS
 from dagster_project.defs.assets.noisemap.infra_fastlines._registry import FASTLINE_TERRITORIES
 from dagster_project.defs.resources.box import BoxResource
@@ -36,6 +36,7 @@ def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
         dept=t.dept,
         box=box,
         folder_id=t.box_folder_id,
+        callback=rename_fastline,
     )
 
 
@@ -53,4 +54,4 @@ def fastline_landing(context: AssetExecutionContext):
     if t is None:
         return MaterializeResult(metadata={"status": MetadataValue.text(
             f"skipped: no fastline territory for dept {context.partition_key}")})
-    return ingest_from_s3_landing(context, path=_s3_prefix(t.dept, t.campaign), type=KIND, dept=t.dept)
+    return ingest_from_s3_landing(context, path=_s3_prefix(t.dept, t.campaign), type=KIND, dept=t.dept, noisemap_pipeline="FASTLINE")
