@@ -6,9 +6,9 @@ class AggloFile:
     """One shapefile inside an agglo Box folder."""
 
     name: str
-    typesource: str  # "F" | "I" | "R" | "A"
-    cbstype: str  # "A" | "C"
-    indicetype: str  # "LD" | "LN"
+    typesource: str = ""  # "F" | "I" | "R" | "A"
+    cbstype: str = ""  # "A" | "C"
+    indicetype: str = ""  # "LD" | "LN"
 
 
 @dataclass(frozen=True)
@@ -20,6 +20,8 @@ class AggloTerritory:
     box_folder_id: str
     legende_from: str  # source column name mapped onto `legende`
     files: list[AggloFile]
+    kind_from: str = ""  # if set, read `kind` from this source column instead of AggloFile.typesource
+    acoustic_noisemap_kind_from: str = ""  # if set, read `acoustic_noisemap_kind` from this source column instead of AggloFile.cbstype
 
 
 AGGLO_TERRITORIES: list[AggloTerritory] = [
@@ -77,27 +79,15 @@ AGGLO_TERRITORIES: list[AggloTerritory] = [
     AggloTerritory(
         slug="nantes-metropole",
         dept="044",
-        annee="2022",
+        annee="2023",
         campaign="2022",
         box_folder_id="380266508680",
-        legende_from="db_lo",
+        legende_from="dba",
+        kind_from="source_typ",
+        acoustic_noisemap_kind_from="cbs_type",
         files=[
-            AggloFile("EMS_2022_Aero_A_Lden.shp", "A", "A", "LD"),
-            AggloFile("EMS_2022_Aero_A_Ln.shp", "A", "A", "LN"),
-            AggloFile("EMS_2022_Aero_C_Lden.shp", "A", "C", "LD"),
-            AggloFile("EMS_2022_Aero_C_Ln.shp", "A", "C", "LN"),
-            AggloFile("EMS_2022_Fer_A_Lden.shp", "F", "A", "LD"),
-            AggloFile("EMS_2022_Fer_A_Ln.shp", "F", "A", "LN"),
-            AggloFile("EMS_2022_Fer_C_Lden.shp", "F", "C", "LD"),
-            AggloFile("EMS_2022_Fer_C_Ln.shp", "F", "C", "LN"),
-            AggloFile("EMS_2022_ICPE_A_Lden.shp", "I", "A", "LD"),
-            AggloFile("EMS_2022_ICPE_A_Ln.shp", "I", "A", "LN"),
-            AggloFile("EMS_2022_ICPE_C_Lden.shp", "I", "C", "LD"),
-            AggloFile("EMS_2022_ICPE_C_Ln.shp", "I", "C", "LN"),
-            AggloFile("EMS_2022_Route_A_Lden.shp", "R", "A", "LD"),
-            AggloFile("EMS_2022_Route_A_Ln.shp", "R", "A", "LN"),
-            AggloFile("EMS_2022_Route_C_Lden.shp", "R", "C", "LD"),
-            AggloFile("EMS_2022_Route_C_Ln.shp", "R", "C", "LN"),
+            AggloFile(name="bridge.bruit_lden_2023_s_polygon.shp", indicetype="LD"),
+            AggloFile(name="bridge.bruit_ln_2023_s_polygon.shp", indicetype="LN"),
         ],
     ),
     AggloTerritory(
