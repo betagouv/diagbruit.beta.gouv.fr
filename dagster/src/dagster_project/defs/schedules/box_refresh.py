@@ -1,5 +1,6 @@
 from dagster import (
     AssetExecutionContext,
+    Config,
     DefaultSensorStatus,
     MaterializeResult,
     MetadataValue,
@@ -30,10 +31,23 @@ box_token_refresh_job = define_asset_job(
 )
 
 
-@sensor(
-    job=box_token_refresh_job,
-    minimum_interval_seconds=3000,
-    default_status=DefaultSensorStatus.RUNNING,
+class BoxFolderInspectConfig(Config):
+    folder_id: str
+
+
+@asset(
+    key="box_folder_inspect",
+    group_name="maintenance",
+    kinds={"box"},
 )
-def box_token_refresh_sensor(context):
-    yield RunRequest()
+def box_folder_inspect(context: AssetExecutionContext, config: BoxFolderInspectConfig, box: BoxResource):
+    client = box.get_client()
+    items = client.folders.get_folder_items("380266508680")
+    names = [item.name for item in items.entries]
+    for name in names:
+        context.log.info(name)
+    return MaterializeResult(metadata={
+        "folder_id": MetadataValue.text(config.folder_id),
+        "file_count": MetadataValue.int(len(names)),
+        "files": MetadataValue.json(names),
+    })

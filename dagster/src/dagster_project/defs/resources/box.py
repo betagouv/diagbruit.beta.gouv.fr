@@ -1,5 +1,6 @@
 from dagster import ConfigurableResource
-from box_sdk_gen import BoxClient, BoxOAuth, OAuthConfig, AccessToken
+from box_sdk_gen import BoxClient, BoxCCGAuth, CCGConfig
+from box_sdk_gen import AccessToken
 from box_sdk_gen.box.token_storage import TokenStorage
 from sqlalchemy import create_engine, text
 
@@ -43,14 +44,14 @@ class PostgresTokenStorage(TokenStorage):
 class BoxResource(ConfigurableResource):
     client_id: str
     client_secret: str
-    db_url: str
+    user_id: str
 
     def get_client(self) -> BoxClient:
-        auth = BoxOAuth(
-            config=OAuthConfig(
+        auth = BoxCCGAuth(
+            config=CCGConfig(
                 client_id=self.client_id,
                 client_secret=self.client_secret,
-                token_storage=PostgresTokenStorage(self.db_url),
+                user_id=self.user_id,
             )
         )
         return BoxClient(auth=auth)
