@@ -30,8 +30,8 @@ def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
         "campaign": {"value": t.annee},
         "acoustic_producer_kind": {"value": "AGGLO"},
         "noisemap_pipeline": {"value": "AGGLO"},
-        "kind": {"value": f.typesource},
-        "acoustic_noisemap_kind": {"value": f.cbstype},
+        "kind": {"from": t.kind_from} if t.kind_from else {"value": f.typesource},
+        "acoustic_noisemap_kind": {"from": t.acoustic_noisemap_kind_from} if t.acoustic_noisemap_kind_from else {"value": f.cbstype},
         "acoustic_db_value": {"from": t.legende_from},
         "acoustic_time_range": {"value": f.indicetype},
     }
