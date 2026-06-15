@@ -24,7 +24,7 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
         <div key={index} className={fr.cx("fr-mb-4v")}>
           <DiagnosticRegulationBox
             label={noisezone.label}
-            content={noisezone.alert}
+            content={noisezone.alert_slug}
             source="PLU"
           />
         </div>

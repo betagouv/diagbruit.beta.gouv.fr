@@ -16,5 +16,5 @@ class NoiseZoneItem(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     label = Column(Enum(ZoneLabel), nullable=False)
-    alert = Column(String)
+    alert_slug = Column(String)
     geometry = Column(Geometry('GEOMETRY', srid=4326))

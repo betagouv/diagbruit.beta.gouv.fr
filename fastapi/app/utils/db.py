@@ -568,7 +568,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for noise zone features that intersect with the given WKT geometry.
-    Returns intersecting NoiseZoneItem records with their label, alert, and intersection geometry.
+    Returns intersecting NoiseZoneItem records with their label, alert_slug, and intersection geometry.
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
@@ -578,7 +578,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         stmt = db.query(
             NoiseZoneItem.id,
             NoiseZoneItem.label,
-            NoiseZoneItem.alert,
+            NoiseZoneItem.alert_slug,
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).filter(
             func.ST_Intersects(NoiseZoneItem.geometry, safe_geom)
@@ -595,7 +595,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
 
             result.append({
                 "label": r.label.value if hasattr(r.label, 'value') else r.label,
-                "alert": r.alert,
+                "alert_slug": r.alert_slug,
                 "geometry": geometry_intersection
             })
 
