@@ -63,6 +63,11 @@ _original_uvicorn_run = uvicorn.run
 
 
 def _run_with_auth(app, **kwargs):
+    # Scalingo's buildpack sets WEB_CONCURRENCY from container memory; uvicorn
+    # reads it as workers>1 and sys.exit(1)s on a non-string app. Force one
+    # in-process worker (dagster-webserver is single-process anyway).
+    kwargs["workers"] = 1
+    kwargs["reload"] = False
     _original_uvicorn_run(BasicAuthMiddleware(app), **kwargs)
 
 
