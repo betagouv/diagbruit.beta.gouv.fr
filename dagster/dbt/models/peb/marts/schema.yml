@@ -14,8 +14,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              arguments:
-                values: ['A', 'B', 'C', 'D']
+              values: ['A', 'B', 'C', 'D']
       - name: acoustic_db_value
         description: "Noise level in dB (Lden), cast to float"
       - name: label
