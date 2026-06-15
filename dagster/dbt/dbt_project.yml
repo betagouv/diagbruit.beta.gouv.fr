@@ -67,11 +67,3 @@ models:
         materialized: view
       marts:
         materialized: table
-        
-    schools:
-      staging:
-        materialized: view
-      intermediate:
-        materialized: view
-      marts:
-        materialized: table
