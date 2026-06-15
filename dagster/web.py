@@ -11,6 +11,7 @@ Required env vars:
 
 import base64
 import os
+import secrets
 import sys
 
 import uvicorn
@@ -29,7 +30,9 @@ def _check_basic_auth(auth_header: bytes) -> bool:
         if scheme.lower() != b"basic":
             return False
         user, pwd = base64.b64decode(credentials).decode().split(":", 1)
-        return user == _USER and pwd == _PASSWORD
+        return bool(
+            secrets.compare_digest(user, _USER) & secrets.compare_digest(pwd, _PASSWORD)
+        )
     except Exception:
         return False
 
@@ -39,9 +42,13 @@ class BasicAuthMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] == "http":
+        # WebSocket included: Dagster serves GraphQL subscriptions over it.
+        if scope["type"] in ("http", "websocket"):
             headers = dict(scope.get("headers", []))
             if not _check_basic_auth(headers.get(b"authorization", b"")):
+                if scope["type"] == "websocket":
+                    await send({"type": "websocket.close", "code": 1008})
+                    return
                 response = Response(
                     "Unauthorized",
                     status_code=401,
@@ -59,6 +66,8 @@ def _run_with_auth(app, **kwargs):
     _original_uvicorn_run(BasicAuthMiddleware(app), **kwargs)
 
 
+# Relies on dagster-webserver (dagster==1.13.0) starting via uvicorn.run(); if a
+# future version bypasses it, auth silently no-ops — re-verify on any upgrade.
 uvicorn.run = _run_with_auth
 
 from dagster_webserver.cli import main

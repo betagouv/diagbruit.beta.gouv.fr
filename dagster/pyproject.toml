@@ -13,11 +13,13 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "sqlalchemy>=2.0.49",
     "boxsdk>=10.7.0",
+    "dagster-webserver==1.13.0",
+    "uvicorn",
+    "starlette",
 ]
 
 [dependency-groups]
 dev = [
-    "dagster-webserver",
     "dagster-dg-cli",
 ]
 
