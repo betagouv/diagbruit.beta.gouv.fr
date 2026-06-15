@@ -16,7 +16,7 @@ dbt test                           # run schema tests
 dbt run --full-refresh             # force recreate tables
 ```
 
-Profile is read from `~/.dbt/profiles.yml`. Run `../setup-dbt.sh` to configure it (or copy `profiles.yml.example` manually).
+Profile is read from `dagster/dbt/profiles.yml` (the dbt project dir, where Dagster's dbt component looks — not `~/.dbt`). It is committed and env-templated: it defaults to the docker-compose DB and reads `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD` when set.
 
 ## Model Structure
 

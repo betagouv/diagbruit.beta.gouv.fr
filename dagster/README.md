@@ -143,10 +143,10 @@ cp dbt/profiles.yml.example dbt/profiles.yml   # edit if your DB creds differ
 python box_auth.py
 ```
 
-> The dbt profile must live at `dagster/dbt/profiles.yml` — the Dagster dbt
-> component reads it from the project directory, not from `~/.dbt`. Without it,
-> the code location fails to load. (From the repo root you can also run
-> `./setup-dbt.sh`.)
+> The dbt profile lives at `dagster/dbt/profiles.yml` — the Dagster dbt
+> component reads it from the project directory, not from `~/.dbt`. It is
+> committed and env-templated (defaults to the docker-compose DB, reads `DB_*`
+> when set), so no setup step is needed.
 
 ---
 
