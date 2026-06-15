@@ -29,10 +29,10 @@ docker-compose up -d
 
 # Create all Python virtual environments
 ./setup-dev.sh
-
-# Configure dbt profiles
-./setup-dbt.sh
 ```
+
+The dbt profile (`dagster/dbt/profiles.yml`) is committed and env-templated; it
+defaults to the docker-compose DB, so no extra setup step is needed.
 
 Local ports: frontend `:3000`, fastapi `:8000`, cms `:1337`, database `:5433`, dagster `:3001` (run `dagster dev -p 3001` to avoid conflict with frontend).
 Default DB credentials: `user` / `password` / `diagbruit`.

@@ -23,7 +23,6 @@ dagster/dbt/target/
 dagster/dbt/dbt_packages/
 dagster/dbt/dbt_modules/
 dagster/dbt/.user.yml
-dagster/dbt/profiles.yml
 
 # Virtual environments
 .venv/

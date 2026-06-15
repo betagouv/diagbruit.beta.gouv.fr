@@ -94,13 +94,9 @@ source dagster-venv/bin/activate
 uv sync
 ```
 
-### Configure dbt Profile
+### dbt Profile
 
-```bash
-./setup-dbt.sh
-```
-
-This creates `dagster/dbt/profiles.yml` from the example — where Dagster's dbt component reads it (not `~/.dbt`). Optional: edit it with your database credentials if you do not use the docker-compose db.
+The dbt profile (`dagster/dbt/profiles.yml`, where Dagster's dbt component reads it — not `~/.dbt`) is committed and env-templated. It defaults to the docker-compose db and reads `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` when set, so no setup step is required.
 
 ### Authenticate with Box (first-time only)
 
@@ -367,7 +363,6 @@ diagbruit/
 ├── metabase/
 │
 ├── setup-dev.sh
-├── setup-dbt.sh
 ├── setup-ingestion-dev.sh
 └── docker-compose.yaml
 ```
