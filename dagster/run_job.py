@@ -9,7 +9,7 @@ it is safe to invoke from a one-off `scalingo run` container:
 
     scalingo --app diag-bruit-dagster run \
         -e DB_HOST=<target> -e DB_NAME=<target> ... \
-        uv run python run_job.py noisemap_job 033
+        python run_job.py noisemap_job 033
 """
 
 import sys
