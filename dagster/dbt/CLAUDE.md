@@ -4,16 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-```bash
-source ../dbt-venv/bin/activate
-cd dbt
+dbt is managed by the dagster `uv` environment (dbt 1.11) — no separate venv. Run from `dagster/`:
 
-dbt debug                          # verify DB connection
-dbt run                            # run all models
-dbt run --select osm               # run a single domain
-dbt run --select noisesource       # run a single model
-dbt test                           # run schema tests
-dbt run --full-refresh             # force recreate tables
+```bash
+uv run dbt debug --project-dir dbt --profiles-dir dbt   # verify DB connection
+uv run dbt run   --project-dir dbt --profiles-dir dbt   # run all models
+uv run dbt run   --project-dir dbt --profiles-dir dbt --select osm          # one domain
+uv run dbt run   --project-dir dbt --profiles-dir dbt --select noisesource  # one model
+uv run dbt test  --project-dir dbt --profiles-dir dbt   # schema tests
+uv run dbt run   --project-dir dbt --profiles-dir dbt --full-refresh        # recreate tables
 ```
 
 Profile is read from `dagster/dbt/profiles.yml` (the dbt project dir, where Dagster's dbt component looks — not `~/.dbt`). It is committed and env-templated: it defaults to the docker-compose DB and reads `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD` when set.

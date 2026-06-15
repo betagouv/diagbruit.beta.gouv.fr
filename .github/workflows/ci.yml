@@ -62,25 +62,9 @@ jobs:
           AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET || 'diagbruit-dagster' }}
         run: uv run python ci_ingest.py ci_landing_033_job 033
 
-      - name: Set up Python for DBT
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dbt dependencies
-        working-directory: dagster/dbt
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-
       - name: Run dbt pipeline
-        working-directory: dagster/dbt
-        env:
-          DBT_PROFILES_DIR: ${{ github.workspace }}/dagster/dbt
-        run: |
-          source venv/bin/activate
-          dbt run
+        working-directory: dagster
+        run: uv run dbt run --project-dir dbt --profiles-dir dbt
 
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5
