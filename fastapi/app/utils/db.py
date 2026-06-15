@@ -565,10 +565,43 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
+def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
+    
+    if not slug:
+        return None
+
+    strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
+    url = f"{strapi_url}/api/noisezone-alerts"
+    params = {"filters[alert_slug][$eq]": slug}
+
+    try:
+        response = httpx.get(url, params=params, timeout=10.0)
+        response.raise_for_status()
+        entries = response.json().get("data", [])
+    except Exception as e:
+        logger.error(f"Error fetching noisezone alert '{slug}' from Strapi: {str(e)}")
+        return None
+
+    if not entries:
+        logger.warning(f"No noisezone alert found in Strapi for slug '{slug}'")
+        return None
+
+    entry = entries[0]
+    return {
+        "content": entry.get("content"),
+        "title": entry.get("title"),
+        "source": entry.get("source"),
+        "reference": entry.get("reference"),
+    }
+
+
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for noise zone features that intersect with the given WKT geometry.
-    Returns intersecting NoiseZoneItem records with their label, alert_slug, and intersection geometry.
+
+    Each intersecting NoiseZoneItem carries an `alert_slug`; this resolves the slug
+    against the Strapi `noisezone-alerts` collection so the response includes the
+    HTML `content` (plus title/source/reference) alongside the intersection geometry.
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
@@ -585,6 +618,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         )
 
         result = []
+        alert_cache: Dict[str, Any] = {}  # avoid refetching the same slug within one request
         for r in stmt.all():
             try:
                 geometry_parsed = json.loads(r.geometry_intersection)
@@ -593,9 +627,18 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 logger.warning(f"Could not parse noisezone geometry_intersection: {parse_err}")
                 geometry_intersection = None
 
+            slug = r.alert_slug
+            if slug not in alert_cache:
+                alert_cache[slug] = fetch_noisezone_alert_content(slug)
+            alert = alert_cache[slug] or {}
+
             result.append({
                 "label": r.label.value if hasattr(r.label, 'value') else r.label,
-                "alert_slug": r.alert_slug,
+                "alert_slug": slug,
+                "content": alert.get("content"),
+                "title": alert.get("title"),
+                "source": alert.get("source"),
+                "reference": alert.get("reference"),
                 "geometry": geometry_intersection
             })
 
