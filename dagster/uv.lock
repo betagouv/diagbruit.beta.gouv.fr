@@ -553,6 +553,19 @@ wheels = [
 ]
 
 [[package]]
+name = "dagster-postgres"
+version = "0.29.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dagster" },
+    { name = "psycopg2-binary" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/50/59/07ec126a4d697461bf5fed9bc4ee6ec385deda7a3342ba86656d1f5e393e/dagster_postgres-0.29.0.tar.gz", hash = "sha256:bfe6b0f399862aa5bf1b4c4e70e2b6c2fef4246c8e013900d49bd7af48cdfa8b", size = 280141, upload-time = "2026-04-09T18:15:11.403Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e7/69/23322e24f6abf59bd675e2370d2b6408c99c1dd4de072c63b98df1f2e56f/dagster_postgres-0.29.0-py3-none-any.whl", hash = "sha256:6718152936bd5c862b601cc0a20aece3fb6e0fe02434f0c24b9d0e542600d494", size = 22379, upload-time = "2026-04-09T18:15:09.903Z" },
+]
+
+[[package]]
 name = "dagster-project"
 version = "0.1.0"
 source = { editable = "." }
@@ -561,6 +574,7 @@ dependencies = [
     { name = "boxsdk" },
     { name = "dagster" },
     { name = "dagster-dbt" },
+    { name = "dagster-postgres" },
     { name = "dagster-webserver" },
     { name = "dbt-postgres" },
     { name = "geoalchemy2" },
@@ -583,6 +597,7 @@ requires-dist = [
     { name = "boxsdk", specifier = ">=10.7.0" },
     { name = "dagster", specifier = "==1.13.0" },
     { name = "dagster-dbt", specifier = ">=0.29.0" },
+    { name = "dagster-postgres", specifier = "==0.29.0" },
     { name = "dagster-webserver", specifier = "==1.13.0" },
     { name = "dbt-postgres", specifier = ">=1.10.0" },
     { name = "geoalchemy2", specifier = ">=0.19.0" },
