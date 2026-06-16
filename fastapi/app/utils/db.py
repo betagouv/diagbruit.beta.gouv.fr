@@ -565,6 +565,25 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
+def fetch_zone_labels(label: str) -> Dict[str, Any] | None:
+    strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
+    url = f"{strapi_url}/api/zone-labels"
+
+    try:
+        response = httpx.get(url, params={"populate": "*"}, timeout=10.0)
+        response.raise_for_status()
+        entries = response.json().get("data", [])
+    except Exception as e:
+        logger.error(f"Error fetching zone-labels from Strapi: {str(e)}")
+        return None
+
+    for entry in entries:
+        for pair in entry.get("zonelabel", []) or []:
+            if pair.get("label") == label:
+                return pair
+    return None
+
+
 def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
 
     if not slug:
