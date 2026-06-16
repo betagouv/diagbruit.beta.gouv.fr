@@ -3,7 +3,7 @@
 ) }}
 
 SELECT
-  ROW_NUMBER() OVER (ORDER BY codedept, label, alert_slug) AS id,
+  ROW_NUMBER() OVER (ORDER BY codedept, alert_slug) AS id,
   codedept,
   alert_slug,
   geometry

@@ -13,7 +13,6 @@ GROUP = "noisezone"
 SOURCE = "box"
 
 BOX_FOLDER_ID = "390359250129"
-LABEL_FROM = "label"
 ALERT_SLUG_FROM = "alert_slug"
 
 _S3_PREFIX = "noisezone/"
@@ -23,7 +22,6 @@ _MAPPING = [
         "name": "",
         "mapping": {
             "geometry": True,
-            "label": {"from": LABEL_FROM},
             "alert_slug": {"from": ALERT_SLUG_FROM},
         },
     }

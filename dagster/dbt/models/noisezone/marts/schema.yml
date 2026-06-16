@@ -8,10 +8,6 @@ models:
         description: "Department code (3 digits, left-padded with zeros)"
         tests:
           - not_null
-      - name: label
-        description: "Identifier or name of the noise zone"
-        tests:
-          - not_null
       - name: alert_slug
         description: "Slug used to link the zone to an alert or recommendation"
       - name: geometry
