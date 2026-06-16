@@ -7,12 +7,14 @@ type DiagnosticRegulationBoxProps = {
   label: string;
   content: ReactNode | string;
   source?: string;
+  reference?: string;
 };
 
 const DiagnosticRegulationBox = ({
   label,
   content,
   source,
+  reference
 }: DiagnosticRegulationBoxProps) => {
   const { cx, classes } = useStyles();
 
@@ -34,6 +36,11 @@ const DiagnosticRegulationBox = ({
       {source && (
         <p className={cx(fr.cx("fr-mb-0"), classes.source)}>
           Source : {source}
+        </p>
+      )}
+      {reference && (
+        <p className={cx(fr.cx("fr-mb-0"), classes.source)}>
+          Référence : {reference}
         </p>
       )}
     </div>
