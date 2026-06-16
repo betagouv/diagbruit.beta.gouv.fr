@@ -104,6 +104,7 @@ dev_pipeline_033_job = define_asset_job(
         | AssetSelection.groups("noisemap_infra")
         | AssetSelection.groups("noisemap_fastline")
         | AssetSelection.groups("noisemap")
+        | AssetSelection.groups("noisezone")
         | AssetSelection.groups("bdnb")
         | AssetSelection.groups("departements")
     ),
@@ -125,6 +126,7 @@ _CI_LANDING_ASSETS = [
     "raw_full_osm_terrasses",
     "geo_departements",
     "raw_noisemap",
+    "raw_noisezone",
     "raw_soundclassification_tramway",
     "raw_soundclassification_fer",
     "raw_soundclassification_routier",
