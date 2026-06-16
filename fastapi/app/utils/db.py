@@ -565,7 +565,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
-def fetch_zone_labels(label: str) -> Dict[str, Any] | None:
+def fetch_zone_labels() -> Dict[str, Dict[str, Any]]:
     strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
     url = f"{strapi_url}/api/zone-labels"
 
@@ -575,13 +575,15 @@ def fetch_zone_labels(label: str) -> Dict[str, Any] | None:
         entries = response.json().get("data", [])
     except Exception as e:
         logger.error(f"Error fetching zone-labels from Strapi: {str(e)}")
-        return None
+        return {}
 
+    mapping: Dict[str, Dict[str, Any]] = {}
     for entry in entries:
         for pair in entry.get("zonelabel", []) or []:
-            if pair.get("label") == label:
-                return pair
-    return None
+            label = pair.get("label")
+            if label is not None:
+                mapping[label] = pair
+    return mapping
 
 
 def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
@@ -611,7 +613,7 @@ def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
         "title": entry.get("title"),
         "source": entry.get("source"),
         "reference": entry.get("reference"),
-        "zone_label": fetch_zone_labels(entry.get("label")),
+        "label": entry.get("label"),
     }
 
 
@@ -637,7 +639,8 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         )
 
         result = []
-        alert_cache: Dict[str, Any] = {}  # avoid refetching the same slug within one request
+        zone_labels = fetch_zone_labels()
+        alert_cache: Dict[str, Any] = {} 
         for r in stmt.all():
             try:
                 geometry_parsed = json.loads(r.geometry_intersection)
@@ -651,7 +654,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 alert_cache[slug] = fetch_noisezone_alert_content(slug)
             alert = alert_cache[slug] or {}
 
-            zone_label = alert.get("zone_label") or {}
+            zone_label = zone_labels.get(alert.get("label")) or {}
             result.append({
                 "alert_slug": slug,
                 "content": alert.get("content"),
