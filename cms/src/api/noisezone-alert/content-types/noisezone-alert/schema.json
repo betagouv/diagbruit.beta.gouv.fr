@@ -16,7 +16,8 @@
     },
     "alert_slug": {
       "type": "uid",
-      "targetField": "title"
+      "targetField": "title",
+      "required": true
     },
     "content": {
       "type": "customField",
@@ -26,10 +27,21 @@
       "customField": "plugin::ckeditor5.CKEditor"
     },
     "source": {
-      "type": "string"
+      "type": "string",
+      "required": true,
+      "default": "Plan Local d'Urbanisme"
     },
     "reference": {
       "type": "string"
+    },
+    "label": {
+      "type": "enumeration",
+      "enum": [
+        "NOISE_ZONE",
+        "QUIET_ZONE"
+      ],
+      "default": "NOISE_ZONE",
+      "required": true
     }
   }
 }

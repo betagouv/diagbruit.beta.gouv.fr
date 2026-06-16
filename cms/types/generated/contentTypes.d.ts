@@ -678,7 +678,7 @@ export interface ApiNoisezoneAlertNoisezoneAlert
     draftAndPublish: true;
   };
   attributes: {
-    alert_slug: Schema.Attribute.UID<'title'>;
+    alert_slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     content: Schema.Attribute.RichText &
       Schema.Attribute.CustomField<
         'plugin::ckeditor5.CKEditor',
@@ -689,6 +689,9 @@ export interface ApiNoisezoneAlertNoisezoneAlert
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    label: Schema.Attribute.Enumeration<['NOISE_ZONE', 'QUIET_ZONE']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'NOISE_ZONE'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -697,7 +700,9 @@ export interface ApiNoisezoneAlertNoisezoneAlert
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     reference: Schema.Attribute.String;
-    source: Schema.Attribute.String;
+    source: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<"Plan Local d'Urbanisme">;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
