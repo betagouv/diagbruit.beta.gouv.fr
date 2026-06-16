@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "zone_labels",
+  "info": {
+    "singularName": "zone-label",
+    "pluralName": "zone-labels",
+    "displayName": "ZoneLabel",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "zonelabel": {
+      "displayName": "zone-label",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.zone-label",
+      "required": true
+    }
+  }
+}

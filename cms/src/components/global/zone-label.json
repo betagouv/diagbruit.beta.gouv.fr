@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_global_zone_labels",
+  "info": {
+    "displayName": "zone-label"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "displayLabel": {
+      "type": "string"
+    }
+  }
+}
