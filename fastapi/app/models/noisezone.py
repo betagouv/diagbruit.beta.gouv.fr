@@ -1,13 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text, Enum
+from sqlalchemy import Column, Integer, String
 from geoalchemy2 import Geometry
 from ..database import Base
-import enum
-
-
-class ZoneLabel(str, enum.Enum):
-    """Enum for noise zone labels"""
-    QUIET_ZONE = "Zone calme"
-    NOISE_ZONE = "Zone soumise au bruit"
 
 
 class NoiseZoneItem(Base):
@@ -15,6 +8,5 @@ class NoiseZoneItem(Base):
     __tablename__ = "noisezone"
     
     id = Column(Integer, primary_key=True, index=True)
-    label = Column(Enum(ZoneLabel), nullable=False)
     alert_slug = Column(String)
     geometry = Column(Geometry('GEOMETRY', srid=4326))

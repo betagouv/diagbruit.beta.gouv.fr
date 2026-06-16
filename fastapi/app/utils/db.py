@@ -566,7 +566,7 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
 
 
 def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
-    
+
     if not slug:
         return None
 
@@ -610,7 +610,6 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
 
         stmt = db.query(
             NoiseZoneItem.id,
-            NoiseZoneItem.label,
             NoiseZoneItem.alert_slug,
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).filter(
@@ -633,7 +632,6 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
             alert = alert_cache[slug] or {}
 
             result.append({
-                "label": r.label.value if hasattr(r.label, 'value') else r.label,
                 "alert_slug": slug,
                 "content": alert.get("content"),
                 "title": alert.get("title"),

@@ -17,7 +17,6 @@ WITH geo_enriched AS (
 
 SELECT
     codedept,
-    label,
     alert_slug,
     geometry
 FROM geo_enriched

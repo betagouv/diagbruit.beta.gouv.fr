@@ -4,7 +4,6 @@
 ) }}
 
 SELECT
-    label,
     codedept,
     alert_slug,
     {{ transform_to_epsg_4326('geometry', 2154) }} AS geometry,
