@@ -31,7 +31,7 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
       {uniqueNoisezones.map((noisezone) => (
         <div key={noisezone.alert_slug} className={fr.cx("fr-mb-4v")}>
           <DiagnosticRegulationBox
-            label={noisezone.label}
+            label={noisezone.display_label ?? ""}
             content={noisezone.content ?? ""}
             source={noisezone.source ?? ""}
             reference={noisezone.reference ?? ""}

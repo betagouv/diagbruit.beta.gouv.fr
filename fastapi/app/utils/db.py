@@ -611,6 +611,7 @@ def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
         "title": entry.get("title"),
         "source": entry.get("source"),
         "reference": entry.get("reference"),
+        "zone_label": fetch_zone_labels(entry.get("label")),
     }
 
 
@@ -650,12 +651,15 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 alert_cache[slug] = fetch_noisezone_alert_content(slug)
             alert = alert_cache[slug] or {}
 
+            zone_label = alert.get("zone_label") or {}
             result.append({
                 "alert_slug": slug,
                 "content": alert.get("content"),
                 "title": alert.get("title"),
                 "source": alert.get("source"),
                 "reference": alert.get("reference"),
+                "label": zone_label.get("label"),
+                "display_label": zone_label.get("displayLabel"),
                 "geometry": geometry_intersection
             })
 
