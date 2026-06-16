@@ -689,9 +689,11 @@ export interface ApiNoisezoneAlertNoisezoneAlert
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    label: Schema.Attribute.Enumeration<['NOISE_ZONE', 'QUIET_ZONE']> &
+    label: Schema.Attribute.Enumeration<
+      ['ZONE SOUMISE AU BRUIT', 'ZONE CALME']
+    > &
       Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'NOISE_ZONE'>;
+      Schema.Attribute.DefaultTo<'ZONE SOUMISE AU BRUIT'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -823,36 +825,6 @@ export interface ApiSettingSetting extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-  };
-}
-
-export interface ApiZoneLabelZoneLabel extends Struct.CollectionTypeSchema {
-  collectionName: 'zone_labels';
-  info: {
-    description: '';
-    displayName: 'ZoneLabel';
-    pluralName: 'zone-labels';
-    singularName: 'zone-label';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::zone-label.zone-label'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    zonelabel: Schema.Attribute.Component<'global.zone-label', true> &
-      Schema.Attribute.Required;
   };
 }
 
@@ -1377,7 +1349,6 @@ declare module '@strapi/strapi' {
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;
-      'api::zone-label.zone-label': ApiZoneLabelZoneLabel;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

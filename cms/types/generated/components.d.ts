@@ -191,17 +191,6 @@ export interface GlobalTitleTextArray extends Struct.ComponentSchema {
   };
 }
 
-export interface GlobalZoneLabel extends Struct.ComponentSchema {
-  collectionName: 'components_global_zone_labels';
-  info: {
-    displayName: 'zone-label';
-  };
-  attributes: {
-    displayLabel: Schema.Attribute.String;
-    label: Schema.Attribute.String;
-  };
-}
-
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -218,7 +207,6 @@ declare module '@strapi/strapi' {
       'global.stats': GlobalStats;
       'global.stats-and-quiz': GlobalStatsAndQuiz;
       'global.title-text-array': GlobalTitleTextArray;
-      'global.zone-label': GlobalZoneLabel;
     }
   }
 }

@@ -37,11 +37,11 @@
     "label": {
       "type": "enumeration",
       "enum": [
-        "NOISE_ZONE",
-        "QUIET_ZONE"
+        "ZONE SOUMISE AU BRUIT",
+        "ZONE CALME"
       ],
-      "default": "NOISE_ZONE",
-      "required": true
+      "required": true,
+      "default": "ZONE SOUMISE AU BRUIT"
     }
   }
 }

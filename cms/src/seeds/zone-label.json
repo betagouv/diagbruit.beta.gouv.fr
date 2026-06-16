@@ -1,6 +1,0 @@
-{
-  "zonelabel": [
-    { "label": "NOISE_ZONE", "displayLabel": "Zone soumise au bruit" },
-    { "label": "QUIET_ZONE", "displayLabel": "Zone calme" }
-  ]
-}

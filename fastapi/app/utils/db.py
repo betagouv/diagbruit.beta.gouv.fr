@@ -565,27 +565,6 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
-def fetch_zone_labels() -> Dict[str, Dict[str, Any]]:
-    strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
-    url = f"{strapi_url}/api/zone-labels"
-
-    try:
-        response = httpx.get(url, params={"populate": "*"}, timeout=10.0)
-        response.raise_for_status()
-        entries = response.json().get("data", [])
-    except Exception as e:
-        logger.error(f"Error fetching zone-labels from Strapi: {str(e)}")
-        return {}
-
-    mapping: Dict[str, Dict[str, Any]] = {}
-    for entry in entries:
-        for pair in entry.get("zonelabel", []) or []:
-            label = pair.get("label")
-            if label is not None:
-                mapping[label] = pair
-    return mapping
-
-
 def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
 
     if not slug:
@@ -639,7 +618,6 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         )
 
         result = []
-        zone_labels = fetch_zone_labels()
         alert_cache: Dict[str, Any] = {} 
         for r in stmt.all():
             try:
@@ -653,16 +631,14 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
             if slug not in alert_cache:
                 alert_cache[slug] = fetch_noisezone_alert_content(slug)
             alert = alert_cache[slug] or {}
-
-            zone_label = zone_labels.get(alert.get("label")) or {}
+            
             result.append({
                 "alert_slug": slug,
                 "content": alert.get("content"),
                 "title": alert.get("title"),
                 "source": alert.get("source"),
                 "reference": alert.get("reference"),
-                "label": zone_label.get("label"),
-                "display_label": zone_label.get("displayLabel"),
+                "label": alert.get("label"),
                 "geometry": geometry_intersection
             })
 
