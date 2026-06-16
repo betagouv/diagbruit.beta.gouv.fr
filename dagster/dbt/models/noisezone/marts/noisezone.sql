@@ -9,4 +9,4 @@ SELECT
   alert_slug,
   geometry
 
-FROM {{ ref('int_noisezone_codedept') }}
+FROM {{ ref('int_noisezone_projected') }}

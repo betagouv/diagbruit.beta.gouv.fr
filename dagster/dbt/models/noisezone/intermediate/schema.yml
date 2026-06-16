@@ -1,6 +1,9 @@
 version: 2
 
 models:
+  - name: int_noisezone_validated
+    description: "Validates geometry and provides validation information"
+
   - name: int_noisezone_codedept
     description: "Enriches noise zone geometries with a department code inferred via spatial join against geo_departements"
     columns:
@@ -18,3 +21,25 @@ models:
         description: "Geometry of the noise zone polygon"
         tests:
           - not_null
+
+  - name: int_noisezone_projected
+    description: "Transforms geometries to EPSG:4326 (WGS84) coordinate system"
+    columns:
+      - name: codedept
+        description: "Department code (3 digits, left-padded with zeros)"
+        tests:
+          - not_null
+      - name: label
+        description: "Identifier or name of the noise zone"
+        tests:
+          - not_null
+      - name: alert_slug
+        description: "Slug used to link the zone to an alert or recommendation"
+      - name: geometry
+        description: "Noise zone polygon geometry projected to EPSG:4326 (WGS84)"
+        tests:
+          - not_null
+      - name: srid
+        description: "Target SRID of the projected geometry (4326)"
+      - name: original_srid
+        description: "SRID of the source geometry before projection"
