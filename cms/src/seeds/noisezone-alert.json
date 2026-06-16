@@ -1,0 +1,10 @@
+[
+  {
+    "title": "lille-speer3",
+    "alert_slug": "lille-speer3",
+    "content": "<p>Secteur de Performance Énergétique et Environnementale Renforcé (SPEER Niveau 3, zone soumise à plus de 65 dB(A)). Le porteur de projet a obligation de <strong>démontrer la limitation des nuisances sonores à l'intérieur et l'extérieur </strong>pour :&nbsp;</p><ul><li>🏢 Logements collectifs de plus de 10 unités </li><li>🏫 Établissements scolaires et de santé </li><li>💼 Bâtiments tertiaires de plus de 500 m² </li><li>🗺️ Toute opération d'aménagement&nbsp;</li></ul><p>Nous préconisons la <strong>réalisation d'une étude acoustique </strong>intégrant un diagnostic terrain et une modélisation 3D du bâtiment.</p>",
+    "reference": "Livre I, Titre 1, Section VI, Chapitre 3, C, Point 5",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "NOISE_ZONE"
+  }
+]
