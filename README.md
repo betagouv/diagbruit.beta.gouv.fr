@@ -68,10 +68,10 @@ cd dagster
 uv sync
 
 # Full local end-to-end for dept 033 (needs Box OAuth + AWS creds):
-uv run dg launch --job dev_pipeline_033_job --partition 033
+uv run dg launch --job dev_pipeline_by_codedept_job --partition 033
 
 # Landing-only (S3 → PostGIS, no Box; what CI runs):
-PYTHONPATH=src uv run python ci_ingest.py ci_landing_033_job 033
+PYTHONPATH=src uv run python ci_ingest.py ci_landing_by_codedept_job 033
 ```
 
 ## ⚙️ Dagster + DBT (Orchestration)
@@ -197,7 +197,7 @@ Tests are automatically run on each pull request or push to the main branch via 
 This CI pipeline performs the following steps:
 
 1. Launches a PostgreSQL database with PostGIS.
-2. Runs the Dagster landing ingestion (`dagster/ci_ingest.py ci_landing_033_job 033`, S3 → PostGIS).
+2. Runs the Dagster landing ingestion (`dagster/ci_ingest.py ci_landing_by_codedept_job 033`, S3 → PostGIS).
 3. Executes the dbt run pipeline in `dagster/dbt`.
 4. Runs all FastAPI tests located in fastapi/tests/.
 

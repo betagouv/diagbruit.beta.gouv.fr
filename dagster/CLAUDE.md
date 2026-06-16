@@ -14,7 +14,7 @@ uv run python box_auth.py                            # seed Box OAuth token (one
 uv run dagster dev -p 3001                           # Dagster UI on :3001 (avoids frontend :3000)
 
 # Launch a job from the CLI (dg = dagster-dg-cli)
-uv run dg launch --job dev_pipeline_033_job --partition 033
+uv run dg launch --job dev_pipeline_by_codedept_job --partition 033
 ```
 
 ## Environment Variables
@@ -55,8 +55,8 @@ ingest is complete. Their keys match the dbt source names.
 **Jobs** (`defs/jobs/defs.py`): per-scope ingest (`agglo_ingest_job`, `infra_ingest_job`,
 `fastline_ingest_job`, `osm_ingest_job`, `peb_ingest_job`, `soundclassification_ingest_job`),
 stage jobs (`full_launcher_job`, `full_landing_job`), domain pipelines (`noisemap_job`, `osm_job`,
-`peb_job`), `dev_pipeline_033_job` (cross-domain local end-to-end for dept 033,
-includes Box launchers), and `ci_landing_033_job` (landing-only: S3 → PostGIS + committed fixtures, no
+`peb_job`), `dev_pipeline_by_codedept_job` (cross-domain local end-to-end for dept 033,
+includes Box launchers), and `ci_landing_by_codedept_job` (landing-only: S3 → PostGIS + committed fixtures, no
 Box — what CI runs via `ci_ingest.py`).
 
 See `README.md` for the full asset/source/S3-path catalog and ingest internals.

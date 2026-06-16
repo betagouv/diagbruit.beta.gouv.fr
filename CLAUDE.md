@@ -40,7 +40,7 @@ Default DB credentials: `user` / `password` / `diagbruit`.
 ## CI Pipeline
 
 `.github/workflows/ci.yml` runs on PRs and pushes to `main`/`preprod`:
-1. Ingestion: `uv sync` in `dagster/` → `python ci_ingest.py ci_landing_033_job 033`
+1. Ingestion: `uv sync` in `dagster/` → `python ci_ingest.py ci_landing_by_codedept_job 033`
    (landing-only Dagster job: reads S3 `_source/` data + committed reference
    fixtures into `public_workspace.raw_*` / `geo_departements`). Needs the
    `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` repository secrets; no Box.
