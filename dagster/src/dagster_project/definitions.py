@@ -14,7 +14,7 @@ def defs():
                 "box": BoxResource(
                     client_id=EnvVar("BOX_CLIENT_ID"),
                     client_secret=EnvVar("BOX_CLIENT_SECRET"),
-                    user_id=EnvVar("BOX_USER_ID"),
+                    enterprise_id=EnvVar("BOX_ENTREPRISE_ID"),
                 )
             }
         ),
