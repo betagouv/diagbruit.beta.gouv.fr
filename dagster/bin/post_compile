@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Scalingo/Heroku Python buildpack hook: runs at the end of the build, after
+# dependencies are installed. dagster-dbt's DbtProjectComponent needs
+# dbt/target/manifest.json to exist when the code location loads, and target/
+# is gitignored (not deployed). `dbt parse` regenerates it offline (no DB).
+set -euo pipefail
+
+echo "-----> Generating dbt manifest (dbt parse)"
+cd dbt
+dbt parse --profiles-dir . --project-dir .

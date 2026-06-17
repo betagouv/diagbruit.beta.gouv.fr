@@ -1,0 +1,13 @@
+# Production Dagster instance config (DAGSTER_HOME=/app on Scalingo).
+# Run/event/schedule storage live in the metadata PostgreSQL addon so history
+# survives container restarts. Compute logs stay on local (ephemeral) disk.
+# No daemon is deployed: run coordinator and launcher are left at their
+# defaults so manually launched runs execute immediately.
+
+storage:
+  postgres:
+    postgres_url:
+      env: DAGSTER_POSTGRES_URL
+
+telemetry:
+  enabled: false
