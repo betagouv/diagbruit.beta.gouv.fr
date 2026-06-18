@@ -1,5 +1,7 @@
 {{ config(
-    materialized='table',
+    materialized='incremental',
+    incremental_strategy='delete+insert',
+    unique_key='codedept',
     post_hook=[
       "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);"
     ],
@@ -19,5 +21,10 @@ SELECT
     geometry
 
 FROM {{ source('public_workspace', 'raw_noisemap') }}
-WHERE (acoustic_time_range = 'LN' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 50)
-   OR (acoustic_time_range = 'LD' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 55)
+WHERE (
+       (acoustic_time_range = 'LN' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 50)
+    OR (acoustic_time_range = 'LD' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 55)
+)
+{% if is_incremental() and var('codedept', none) is not none %}
+  AND codedept = '{{ var("codedept") }}'
+{% endif %}
