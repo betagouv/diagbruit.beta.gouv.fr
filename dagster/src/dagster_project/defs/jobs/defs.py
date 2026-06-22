@@ -135,5 +135,5 @@ ci_landing_by_codedept_job = define_asset_job(
     "ci_landing_by_codedept_job",
     selection=AssetSelection.assets(*_CI_LANDING_ASSETS),
     partitions_def=ALL_DEPT_PARTITIONS,
-    tags={"domain": "ci", "scope": "landing_033"},
+    tags={"domain": "ci", "scope": "landing"},
 )
