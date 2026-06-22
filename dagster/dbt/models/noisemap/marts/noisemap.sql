@@ -2,6 +2,7 @@
     materialized='incremental',
     incremental_strategy='delete+insert',
     unique_key='codedept',
+    on_schema_change='sync_all_columns',
     pre_hook=[
       "CREATE SEQUENCE IF NOT EXISTS {{ this.schema }}.{{ this.name }}_id_seq"
     ],

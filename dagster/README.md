@@ -132,15 +132,18 @@ use `--dept all`). A dept absent from a domain's registry is a no-op skip.
 | Flag | Effect |
 |---|---|
 | `--with-launcher` | also run the Box launcher stage (Box → S3). Default is landing-only (S3 → PostGIS): no Box, reprocesses existing source. |
-| `--full-refresh` | pass `--full-refresh` to dbt (drop & recreate). Use after a DB wipe. |
+| `--full-refresh` | full-refresh the incremental **noisemap** dbt models (drop & rebuild). No-op for other domains (their models aren't incremental). |
 | `--skip-dbt` | ingestion only, no dbt. |
 | `--fail-fast` | stop at the first failing unit. Default: continue and report a summary at the end. |
 | `--dry-run` | print the plan (units + asset keys + dbt selection) without running anything. |
 
-Multi-unit runs (`--domain all` or `--dept all`) spawn one **subprocess per unit**
-for fault isolation, then run the domain-scoped dbt **once**. Runs use the
-configured DagsterInstance, so they appear in the Dagster UI. If any ingestion unit
-fails, dbt is skipped (fix the units and rerun, or rerun dbt manually).
+**Everything runs through Dagster** — both ingestion and dbt are materialised via
+the implicit global asset job on the configured DagsterInstance, so **every step is
+visible in the Dagster UI**. Ingestion fans out one **subprocess per unit** (fault
+isolation); dbt then runs per domain — **noisemap dbt is partitioned, so it runs per
+dept** (incremental per codedept), other domains' dbt runs once. dbt tests run as
+part of `dbt build`. If any ingestion unit fails, dbt is skipped (fix the units and
+rerun, or rerun dbt manually).
 
 ### On Scalingo (target a specific database)
 
