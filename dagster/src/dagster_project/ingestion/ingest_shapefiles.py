@@ -138,6 +138,18 @@ def _widen_columns(engine, schema, table_name, gdf, log):
             if existing_types.get(col, "") in ("BIGINT", "INTEGER", "INT", "SMALLINT"):
                 conn.execute(text(f'ALTER TABLE {schema}."{table_name}" ALTER COLUMN "{col}" TYPE DOUBLE PRECISION'))
                 log(f"Upcasted column {col} from {existing_types[col]} to DOUBLE PRECISION")
+        # Widen a numeric acoustic_db_value to TEXT: appending free-text into a numeric
+        # column fails and silently drops every row.
+        if "acoustic_db_value" in gdf.columns:
+            existing_db_type = existing_types.get("acoustic_db_value", "")
+            text_types = ("TEXT", "VARCHAR", "CHARACTER VARYING", "CHAR", "CHARACTER")
+            if existing_db_type and not any(t in existing_db_type for t in text_types):
+                conn.execute(text(
+                    f'ALTER TABLE {schema}."{table_name}" '
+                    f'ALTER COLUMN acoustic_db_value TYPE TEXT '
+                    f'USING acoustic_db_value::text'
+                ))
+                log(f"Converted column acoustic_db_value from {existing_db_type} to TEXT")
         conn.execute(text(
             f"ALTER TABLE {schema}.{table_name} "
             f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
@@ -179,6 +191,13 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         for col in ("acoustic_category", "acoustic_buffer"):
             if col in gdf.columns:
                 gdf[col] = pd.to_numeric(gdf[col], errors="coerce")
+
+        # acoustic_db_value is free-text (ranges, suffixes, labels) parsed downstream
+        # in dbt, so force it to TEXT here while keeping NaN/None as SQL NULL.
+        if "acoustic_db_value" in gdf.columns:
+            gdf["acoustic_db_value"] = [
+                None if pd.isna(v) else str(v) for v in gdf["acoustic_db_value"]
+            ]
 
         gdf["geometry"] = gdf["geometry"].apply(drop_z)
 

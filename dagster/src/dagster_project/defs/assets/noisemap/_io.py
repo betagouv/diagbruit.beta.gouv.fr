@@ -318,6 +318,7 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str,
 
     ingested = 0
     skipped = 0
+    failed: list[str] = []
 
     for entry in mapping:
         shp_path = local_dir / entry["name"]
@@ -339,10 +340,21 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str,
         if success:
             ingested += 1
         else:
+            failed.append(entry["name"])
             context.log.error(f"Failed to ingest {entry['name']} → {db_table} (path: {shp_path})")
 
     shutil.rmtree(local_dir)
     context.log.info(f"Cleaned up {local_dir}")
+
+    # Fail loudly: dept rows were already deleted, so any ingest failure leaves
+    # raw_noisemap incomplete. Surface it as a run failure instead of silent success.
+    attempted = ingested + len(failed)
+    if failed:
+        raise RuntimeError(
+            f"{len(failed)}/{attempted} shapefile(s) failed to ingest into "
+            f"{db_table} (dept={dept}): {failed}. raw_noisemap is now incomplete for "
+            f"this dept — check the per-file errors above."
+        )
 
     return MaterializeResult(metadata={
         "files_downloaded": MetadataValue.int(downloaded),
