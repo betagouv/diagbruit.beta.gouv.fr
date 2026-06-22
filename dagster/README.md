@@ -148,12 +148,15 @@ Both Dagster and dbt read the connection from env vars (`DB_HOST`/`DB_PORT`/
 `DB_NAME`/`DB_USER`/`DB_PASSWORD`) — there is no connection string in the command.
 A one-off container inherits the app's env; pass `-e` to override/target explicitly:
 
+On Scalingo `uv` is build-only (not on the runtime PATH), so call `python`
+directly — the venv is already active and `dbt` is on PATH:
+
 ```bash
-scalingo --app diag-bruit-dagster run \
+scalingo --app diag-bruit-dagster --region osc-fr1 run \
   -e DB_HOST=<target> -e DB_PORT=<target> -e DB_NAME=<target> \
   -e DB_USER=<target> -e DB_PASSWORD=<target> \
-  --size L \
-  'cd dagster && uv run python run_pipelines.py --domain all --dept all --full-refresh'
+  --size XL \
+  'cd dagster && python run_pipelines.py --domain all --dept all --full-refresh'
 ```
 
 ---
