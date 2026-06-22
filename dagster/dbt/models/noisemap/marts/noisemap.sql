@@ -2,6 +2,9 @@
     materialized='incremental',
     incremental_strategy='delete+insert',
     unique_key='codedept',
+    pre_hook=[
+      "CREATE SEQUENCE IF NOT EXISTS {{ this.schema }}.{{ this.name }}_id_seq"
+    ],
     post_hook=[
       "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
       "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
@@ -9,8 +12,7 @@
 ) }}
 
 SELECT
-  CAST(codedept AS INTEGER) * 1000000
-    + ROW_NUMBER() OVER (PARTITION BY codedept ORDER BY label, kind, acoustic_time_range, acoustic_noisemap_kind) AS id,
+  CAST(nextval('{{ this.schema }}.{{ this.name }}_id_seq') AS INTEGER) AS id,
   campaign,
   codedept,
   acoustic_producer_kind,
