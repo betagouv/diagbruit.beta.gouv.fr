@@ -23,4 +23,4 @@ SELECT
     -- Add SRID info for reference
     4326 AS srid,
     ST_SRID(geometry) AS original_srid
-FROM {{ ref('int_noisemap_codedept') }}
+FROM {{ ref('int_noisemap_fixed_clean') }}

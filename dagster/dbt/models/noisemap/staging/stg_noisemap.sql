@@ -11,7 +11,7 @@
 
 SELECT
     campaign,
-    codedept,
+    LPAD(codedept, 3, '0') AS codedept,
     acoustic_producer_kind,
     label,
     kind,
@@ -26,5 +26,5 @@ WHERE (
     OR (acoustic_time_range = 'LD' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 55)
 )
 {% if is_incremental() and var('codedept', none) is not none %}
-  AND codedept = '{{ var("codedept") }}'
+  AND LPAD(codedept, 3, '0') = '{{ var("codedept") }}'
 {% endif %}
