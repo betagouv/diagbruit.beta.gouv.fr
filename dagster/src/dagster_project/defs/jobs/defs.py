@@ -1,16 +1,18 @@
 """Job definitions.
 
-Naming convention: `<domain>_[<scope>_]job` where
-  - <domain>  = noisemap | osm | peb | soundclassification | full
-  - <scope>   = optional: `ingest` (ingest assets only, no dbt), `launcher`,
-                `landing`, or a noisemap source-type (`agglo`, `infra`,
-                `fastline`).
-  - bare `<domain>_job` = the whole domain, dbt included.
+These are convenience handles for launching individual ingest scopes from the
+Dagster UI. End-to-end relaunches/resets (ingestion + dbt, by domain and dept)
+go through `run_pipelines.py`, which selects assets dynamically and owns the dbt
+step — so there are intentionally no per-domain "ingest + dbt" jobs here.
+
+Naming convention: `<scope>_ingest_job` ingests one scope (launcher + landing),
+`full_<stage>_job` cross-cuts a stage across every domain, and
+`ci_landing_by_codedept_job` is the landing-only job CI runs.
 
 Noisemap ingest is split per source type (`agglo_ingest_job`, `infra_ingest_job`,
-`fastline_ingest_job`) because each source has its own dept partition set. To
-ingest "all noisemap data for dept 033" run the three jobs with partition 033,
-or select the relevant assets directly from the Assets page.
+`fastline_ingest_job`). All partitioned assets share `ALL_DEPT_PARTITIONS` and
+skip departments absent from their own registry, so a dept that doesn't apply to
+a scope is a no-op, not an error.
 """
 
 from dagster import AssetSelection, define_asset_job
@@ -65,51 +67,6 @@ soundclassification_ingest_job = define_asset_job(
     "soundclassification_ingest_job",
     selection=AssetSelection.groups("soundclassification") & _STAGE_INGEST,
     tags={"domain": "soundclassification", "scope": "ingest"},
-)
-
-# ── Per-domain "everything" (ingest + dbt) ────────────────────────────────
-# noisemap_job spans the 3 source-type partition defs + unpartitioned dbt.
-# Dagster handles this by treating each partitioned asset on its own axis at
-# launch time. For a focused single-source run use the per-source ingest jobs.
-noisemap_job = define_asset_job(
-    "noisemap_job",
-    selection=AssetSelection.assets("noisemap").upstream(),
-    tags={"domain": "noisemap", "scope": "pipeline"},
-)
-osm_job = define_asset_job(
-    "osm_job",
-    selection=AssetSelection.assets("noisesource").upstream(),
-    tags={"domain": "osm", "scope": "pipeline"},
-)
-peb_job = define_asset_job(
-    "peb_job",
-    selection=AssetSelection.assets("peb").upstream(),
-    tags={"domain": "peb", "scope": "pipeline"},
-)
-# Dev pipeline for dept 033: covers all domains for local end-to-end testing.
-# NOTE: only the partitioned groups (noisemap_agglo/infra/fastline, soundclassification)
-# are scoped to the dept passed via --partition. PEB and OSM are unpartitioned and
-# always ingest their full national datasets (all PEB zones, France-wide OSM
-# foods/schools) regardless of partition — so this is "full local end-to-end",
-# not a lightweight 033-only run.
-# All partitioned groups share ALL_DEPT_PARTITIONS so a single --partition 033 flag
-# applies to every partitioned asset in the run.
-dev_pipeline_by_codedept_job = define_asset_job(
-    "dev_pipeline_by_codedept_job",
-    selection=(
-        AssetSelection.groups("peb")
-        | AssetSelection.groups("osm")
-        | AssetSelection.groups("soundclassification")
-        | AssetSelection.groups("noisemap_agglo")
-        | AssetSelection.groups("noisemap_infra")
-        | AssetSelection.groups("noisemap_fastline")
-        | AssetSelection.groups("noisemap")
-        | AssetSelection.groups("noisezone")
-        | AssetSelection.groups("bdnb")
-        | AssetSelection.groups("departements")
-    ),
-    partitions_def=ALL_DEPT_PARTITIONS,
-    tags={"domain": "dev", "scope": "pipeline"},
 )
 
 # Landing-only (no launchers): reads S3 into PostGIS + the committed reference

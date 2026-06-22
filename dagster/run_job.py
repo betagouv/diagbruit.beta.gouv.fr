@@ -9,7 +9,10 @@ it is safe to invoke from a one-off `scalingo run` container:
 
     scalingo --app diag-bruit-dagster run \
         -e DB_HOST=<target> -e DB_NAME=<target> ... \
-        python run_job.py noisemap_job 033
+        python run_job.py agglo_ingest_job 033
+
+For relaunching a whole domain (or everything) end-to-end including dbt, prefer
+run_pipelines.py — this script runs a single named job for one partition.
 """
 
 import sys

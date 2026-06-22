@@ -15,6 +15,7 @@ from dagster_project.defs.resources.box import BoxResource
     name="soundclassification_launcher",
     partitions_def=SOUNDCLASS_PARTITIONS,
     group_name=GROUP,
+    tags={"stage": "launcher"},
     kinds={"box", "s3"},
 )
 def soundclassification_launcher(context: AssetExecutionContext, box: BoxResource):
@@ -30,6 +31,7 @@ def soundclassification_launcher(context: AssetExecutionContext, box: BoxResourc
     name="soundclassification_landing",
     partitions_def=SOUNDCLASS_PARTITIONS,
     group_name=GROUP,
+    tags={"stage": "landing"},
     kinds={"s3", "postgres"},
     deps=["soundclassification_launcher"],
 )
