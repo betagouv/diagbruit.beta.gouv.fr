@@ -5,11 +5,19 @@ from sqlalchemy import create_engine, text, inspect
 import argparse
 import io
 import json
+import math
 import os
 import sys
 from dotenv import load_dotenv
 from shapely import transform
 from geoalchemy2 import Geometry
+from geopandas.io.sql import _convert_linearring_to_linestring, _convert_to_ewkb
+
+# Rows per COPY batch. Bounds peak memory during ingestion (no giant single
+# INSERT / parameter list), so large departments fit in smaller containers.
+# Override with INGEST_CHUNKSIZE.
+INGEST_CHUNKSIZE = int(os.getenv("INGEST_CHUNKSIZE", "50000"))
+INGEST_SRID = 2154
 
 def drop_z(geom):
     return transform(geom, lambda coords: coords, include_z=False)
@@ -146,6 +154,74 @@ def _widen_columns(engine, schema, table_name, gdf, log):
         conn.commit()
 
 
+def _copy_escape(value):
+    """Escape one value for a PostgreSQL ``COPY ... FORMAT text`` stream."""
+    if value is None or value is pd.NA:
+        return r"\N"
+    if isinstance(value, float) and math.isnan(value):
+        return r"\N"
+    s = str(value)
+    return (
+        s.replace("\\", "\\\\")
+        .replace("\t", "\\t")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+    )
+
+
+def _copy_gdf_to_postgis(gdf, table_name, engine, schema, if_exists, srid, chunksize, log):
+    """Write a GeoDataFrame to PostGIS via chunked ``COPY`` (bounded memory, fast).
+
+    The table structure is created/replaced from an empty frame so the schema —
+    including the geometry column type — is identical to ``GeoDataFrame.to_postgis``;
+    rows are then streamed in ``chunksize`` batches through ``COPY ... FROM STDIN``,
+    so peak memory is one batch rather than the whole (serialised) dataset.
+    """
+    geom_name = gdf.geometry.name
+
+    # 1) Ensure the destination table exists with the right schema.
+    #    Empty-frame to_postgis: replace -> drop+create; append -> create if missing.
+    try:
+        gdf.iloc[:0].to_postgis(
+            table_name, engine, schema=schema, if_exists=if_exists,
+            dtype={geom_name: Geometry(geometry_type="GEOMETRY", srid=srid)},
+        )
+    except Exception as create_err:
+        # Concurrent partition created the table between check and CREATE — fine for append.
+        if not (if_exists == "append" and "already exists" in str(create_err).lower()):
+            raise
+
+    if len(gdf) == 0:
+        return
+
+    # 2) Encode geometry to SRID-aware EWKB hex (vectorised, geopandas-native).
+    df = _convert_linearring_to_linestring(gdf, geom_name)
+    df = _convert_to_ewkb(df, geom_name, srid)
+    columns = list(df.columns)
+    collist = ", ".join(f'"{c}"' for c in columns)
+    copy_sql = f'COPY "{schema}"."{table_name}" ({collist}) FROM STDIN WITH (FORMAT text)'
+
+    # 3) Stream rows to COPY in bounded chunks.
+    raw = engine.raw_connection()
+    try:
+        total = len(df)
+        for start in range(0, total, chunksize):
+            buf = io.StringIO()
+            for row in df.iloc[start:start + chunksize].itertuples(index=False, name=None):
+                buf.write("\t".join(_copy_escape(v) for v in row))
+                buf.write("\n")
+            buf.seek(0)
+            with raw.cursor() as cur:
+                cur.copy_expert(copy_sql, buf)
+            log(f"  COPY {min(start + chunksize, total)}/{total} rows → {schema}.{table_name}")
+        raw.commit()
+    except Exception:
+        raw.rollback()
+        raise
+    finally:
+        raw.close()
+
+
 def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, context=None):
     log = context.log.info if context else print
     log_err = context.log.error if context else lambda msg: print(msg, file=sys.stderr)
@@ -199,18 +275,11 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
             if table_name in inspector.get_table_names(schema=schema):
                 _widen_columns(engine, schema, table_name, gdf, log)
 
-        log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
-        try:
-            gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
-        except Exception as create_err:
-            # Race condition: another concurrent partition created the table between our
-            # existence check and the CREATE TABLE. Retry as a plain append.
-            if if_exists == "append" and "already exists" in str(create_err).lower():
-                log("Concurrent table creation detected, retrying as append")
-                _widen_columns(engine, schema, table_name, gdf, log)
-                gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
-            else:
-                raise
+        log(f"Ingesting {len(gdf)} records to {schema}.{table_name} (if_exists={if_exists}, chunked COPY)")
+        _copy_gdf_to_postgis(
+            gdf, table_name, engine, schema, if_exists,
+            srid=INGEST_SRID, chunksize=INGEST_CHUNKSIZE, log=log,
+        )
 
         log(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
         return True
