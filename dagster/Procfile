@@ -1,1 +1,2 @@
 web: python web.py
+daemon: dagster-daemon run -m dagster_project.definitions
