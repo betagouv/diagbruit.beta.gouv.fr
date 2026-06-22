@@ -38,10 +38,10 @@ Ignore les doublons silencieusement.
 Ingère chaque nouveau dataset dans la base correspondant à sa catégorie :
 
 **→ Classement sonore** (data_source_id: `0f1e9954-4932-4db5-a550-04473a65dc4b`) :
-Champs : Nom, Organisation, Nombre de ressources, Tags, URL, ID dataset, Année, Code départemental, Catégorie.
+Champs : Nom, Organisation, Nombre de ressources, URL, ID dataset, Année, Code départemental, Catégorie.
 
 **→ Données infra** (data_source_id: `0a8bc359-b474-4c50-ae41-6e363f90e2cc`) :
-Champs : Nom, Organisation, Nombre de ressources, Tags, URL, ID dataset, Année, Code départemental.
+Champs : Nom, Organisation, Nombre de ressources, URL, ID dataset, Année, Code départemental.
 
 ## Étape 5 — Résumé
 Affiche un bilan final :
