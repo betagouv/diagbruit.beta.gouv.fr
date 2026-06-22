@@ -16,14 +16,14 @@ SELECT
     label,
     kind,
     acoustic_noisemap_kind,
-    REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS acoustic_db_value,
+    REGEXP_SUBSTR(acoustic_db_value::text, '\d{2}') AS acoustic_db_value,
     acoustic_time_range,
     geometry
 
 FROM {{ source('public_workspace', 'raw_noisemap') }}
 WHERE (
-       (acoustic_time_range = 'LN' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 50)
-    OR (acoustic_time_range = 'LD' AND CAST(REGEXP_SUBSTR(acoustic_db_value, '\d{2}') AS INTEGER) >= 55)
+       (acoustic_time_range = 'LN' AND CAST(REGEXP_SUBSTR(acoustic_db_value::text, '\d{2}') AS INTEGER) >= 50)
+    OR (acoustic_time_range = 'LD' AND CAST(REGEXP_SUBSTR(acoustic_db_value::text, '\d{2}') AS INTEGER) >= 55)
 )
 {% if is_incremental() and var('codedept', none) is not none %}
   AND LPAD(codedept, 3, '0') = '{{ var("codedept") }}'
