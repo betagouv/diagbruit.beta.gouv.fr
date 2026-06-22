@@ -21,18 +21,20 @@ Flags
 -----
 --with-launcher   also run the Box launcher stage (Box -> S3). Default: landing-only
                   (S3 -> PostGIS), which needs no Box and reprocesses existing source.
---full-refresh    pass --full-refresh to dbt (drop & recreate). Use after a wipe.
+--full-refresh    full-refresh the incremental noisemap dbt models (drop & rebuild).
+                  No-op for other domains (their models aren't incremental).
 --skip-dbt        ingestion only, no dbt.
 --fail-fast       stop at the first failing unit. Default: continue and report at end.
 --dry-run         print the plan (units + asset keys + dbt selection) without running.
 
 Mechanics
 ---------
-The runner selects assets by `group + stage tag` and materialises them through the
-implicit global asset job (`asset_selection`), one partition at a time. For multi-unit
-runs (`--domain all` or `--dept all`) it spawns one subprocess per unit (fault
-isolation), then runs the domain-scoped dbt once. Runs use the configured
-DagsterInstance, so they appear in the Dagster UI (like run_job.py).
+Both ingestion AND dbt run through the implicit global asset job (`asset_selection`)
+on the configured DagsterInstance, so every step shows up in the Dagster UI. Ingestion
+assets are selected by `group + stage tag`; dbt models by their `group` (= domain).
+For multi-unit runs (`--domain all` / `--dept all`) ingestion fans out one subprocess
+per unit (fault isolation); dbt then runs per domain — noisemap dbt is partitioned so
+it runs per dept (incremental), other domains' dbt runs once.
 
 The target database is selected purely by env vars (DB_HOST/DB_PORT/DB_NAME/DB_USER/
 DB_PASSWORD) — on Scalingo, pass them with `-e` on the one-off `scalingo run`.
@@ -40,6 +42,7 @@ See dagster/README.md "Relaunching pipelines" for the full guide.
 """
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -65,8 +68,9 @@ PARTITIONED_DOMAINS = {"noisemap", "soundclassification", "bdnb"}
 NATIONAL_DOMAINS = {"osm", "peb", "noisezone", "departements"}
 ALL_DOMAINS = list(DOMAIN_GROUPS)
 
-# Logical domain -> dbt selector. None = no dbt models (source only).
-DOMAIN_DBT_SELECT = {
+# Logical domain -> dbt asset group (the dbt models live under models/<group>/,
+# keyed by model name, grouped by folder). None = no dbt models (source only).
+DOMAIN_DBT_GROUP = {
     "noisemap": "noisemap",
     "soundclassification": "soundclassification",
     "bdnb": "bdnb",
@@ -75,6 +79,9 @@ DOMAIN_DBT_SELECT = {
     "noisezone": "noisezone",
     "departements": None,
 }
+# Only the noisemap dbt models are partitioned (by codedept, incremental per dept);
+# every other domain's dbt models are unpartitioned and rebuild from the full raw_*.
+DBT_PARTITIONED_DOMAINS = {"noisemap"}
 
 
 def _load_defs():
@@ -101,6 +108,21 @@ def _domain_partition_keys(defs, domain):
         if pdef is not None:
             keys.update(pdef.get_partition_keys())
     return sorted(keys)
+
+
+def _domain_dbt_assets(defs, domain):
+    """[(AssetKey, partitions_def_or_None)] for the dbt-model assets of `domain`."""
+    group = DOMAIN_DBT_GROUP.get(domain)
+    if not group:
+        return []
+    graph = defs.resolve_asset_graph()
+    out = []
+    for key in graph.get_all_asset_keys():
+        node = graph.get(key)
+        kinds = getattr(node, "kinds", None) or set()
+        if "dbt" in kinds and getattr(node, "group_name", None) == group:
+            out.append((key, getattr(node, "partitions_def", None)))
+    return out
 
 
 def _stages(with_launcher):
@@ -176,20 +198,80 @@ def spawn(domain, dept, args):
     return subprocess.run(cmd, cwd=_DAGSTER_DIR).returncode == 0
 
 
-# ── dbt ───────────────────────────────────────────────────────────────────────
-def run_dbt(domains, full_refresh, dry_run):
-    selects = [DOMAIN_DBT_SELECT[d] for d in domains if DOMAIN_DBT_SELECT.get(d)]
-    if not selects:
+# ── dbt (materialised through Dagster so runs show in the UI) ─────────────────
+def _materialise_dbt(job, keys, partition_key, instance, label, dry_run):
+    if dry_run:
+        print(f"  [dry-run] {label}: " + ", ".join(k.to_user_string() for k in keys))
+        return True
+    print(f"→ {label} ({len(keys)} models)…")
+    result = job.execute_in_process(
+        asset_selection=keys, partition_key=partition_key,
+        instance=instance, raise_on_error=False,
+    )
+    if not result.success:
+        print(f"❌ {label} failed:")
+        for event in result.get_step_failure_events():
+            err = getattr(event.event_specific_data, "error", None)
+            print(f"  • {event.step_key}: {err.to_string() if err else '<no error info>'}")
+    return result.success
+
+
+def run_dbt(defs, domains, dept, full_refresh, fail_fast, dry_run):
+    """Materialise each ran domain's dbt models through the implicit asset job.
+
+    noisemap dbt is partitioned (incremental per codedept) so it runs per dept;
+    other domains' dbt is unpartitioned and runs once. Runs use the configured
+    DagsterInstance, so they appear in the Dagster UI alongside the ingestion.
+    """
+    job = defs.resolve_implicit_global_asset_job_def()
+    instance = None if dry_run else DagsterInstance.get()
+    if full_refresh and not dry_run:
+        # Honoured by noisemap_dbt_assets (the only incremental models).
+        os.environ["DBT_FULL_REFRESH"] = "1"
+
+    failures, ran_any = [], False
+    for domain in domains:
+        assets = _domain_dbt_assets(defs, domain)
+        if not assets:
+            continue
+        keys = [k for k, _ in assets]
+        partitioned = domain in DBT_PARTITIONED_DOMAINS and any(p is not None for _, p in assets)
+
+        if partitioned:
+            valid = set(next(p for _, p in assets if p is not None).get_partition_keys())
+            if full_refresh:
+                # --full-refresh rebuilds the whole incremental table (ignores the
+                # codedept var), so a single run suffices.
+                runs = [dept if dept != "all" and dept in valid else sorted(valid)[0]]
+            elif dept == "all":
+                runs = sorted(valid)
+            else:
+                runs = [dept] if dept in valid else []
+            if not runs:
+                print(f"  [skip] dbt {domain}: dept '{dept}' not in partitions")
+                continue
+            for pk in runs:
+                ran_any = True
+                label = f"dbt {domain} [{pk}]" + (" --full-refresh" if full_refresh else "")
+                if not _materialise_dbt(job, keys, pk, instance, label, dry_run):
+                    failures.append(f"{domain} [{pk}]")
+                    if fail_fast:
+                        break
+        else:
+            ran_any = True
+            if not _materialise_dbt(job, keys, None, instance, f"dbt {domain}", dry_run):
+                failures.append(domain)
+        if failures and fail_fast:
+            break
+
+    if not ran_any:
         print("dbt: nothing to build for the selected domain(s); skipping")
         return True
-    cmd = ["dbt", "run", "--project-dir", "dbt", "--profiles-dir", "dbt", "--select", *sorted(set(selects))]
-    if full_refresh:
-        cmd.append("--full-refresh")
-    if dry_run:
-        print(f"  [dry-run] dbt: {' '.join(cmd)}")
-        return True
-    print(f"→ dbt: {' '.join(cmd)}")
-    return subprocess.run(cmd, cwd=_DAGSTER_DIR).returncode == 0
+    if failures:
+        print("\n── dbt summary ─────────────────────────")
+        for f in failures:
+            print(f"  ❌ dbt {f}")
+    return not failures
 
 
 def main() -> int:
@@ -197,7 +279,7 @@ def main() -> int:
     parser.add_argument("--domain", required=True, choices=["all", *ALL_DOMAINS])
     parser.add_argument("--dept", required=True, help="'all' or a department code (e.g. 033)")
     parser.add_argument("--with-launcher", action="store_true", help="also run the Box launcher stage")
-    parser.add_argument("--full-refresh", action="store_true", help="pass --full-refresh to dbt")
+    parser.add_argument("--full-refresh", action="store_true", help="full-refresh the incremental noisemap dbt models (drop & rebuild)")
     parser.add_argument("--skip-dbt", action="store_true", help="ingestion only, no dbt")
     parser.add_argument("--fail-fast", action="store_true", help="stop at the first failing unit")
     parser.add_argument("--dry-run", action="store_true", help="print the plan without running")
@@ -247,7 +329,7 @@ def main() -> int:
         print("   or rerun dbt manually once raw_* is complete.")
         return 1
 
-    dbt_ok = run_dbt(domains_run, args.full_refresh, args.dry_run)
+    dbt_ok = run_dbt(defs, domains_run, args.dept, args.full_refresh, args.fail_fast, args.dry_run)
     return 0 if dbt_ok else 1
 
 

@@ -1,4 +1,5 @@
 import json
+import os
 from collections.abc import Mapping
 from typing import Any, Optional
 
@@ -42,4 +43,10 @@ def noisemap_dbt_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     # The partition key is a codedept (e.g. "033"); pass it to dbt so the
     # incremental noisemap models only (re)process that department.
     dbt_vars = {"codedept": context.partition_key}
-    yield from dbt.cli(["build", "--vars", json.dumps(dbt_vars)], context=context).stream()
+    args = ["build", "--vars", json.dumps(dbt_vars)]
+    # run_pipelines.py --full-refresh sets this to drop & rebuild the incremental
+    # models (stg_noisemap, noisemap mart); it then rebuilds the full table and
+    # ignores the codedept filter, so a single partitioned run is enough.
+    if os.getenv("DBT_FULL_REFRESH") == "1":
+        args.append("--full-refresh")
+    yield from dbt.cli(args, context=context).stream()
