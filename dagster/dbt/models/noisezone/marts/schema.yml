@@ -2,12 +2,8 @@ version: 2
 
 models:
   - name: noisezone
-    description: "Final noise zone polygons with department codes, ready for consumption by the API"
+    description: "Final noise zone polygons, ready for consumption by the API"
     columns:
-      - name: codedept
-        description: "Department code (3 digits, left-padded with zeros)"
-        tests:
-          - not_null
       - name: alert_slug
         description: "Slug used to link the zone to an alert or recommendation"
       - name: geometry

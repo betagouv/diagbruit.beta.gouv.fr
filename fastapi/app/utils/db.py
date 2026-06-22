@@ -18,12 +18,11 @@ from .sig import (
     determine_cardinality
 )
 from .acoustic import (correction_from_angle)
+from .strapi import cached_strapi_get
 import asyncio
 import logging
 import yaml
 import json
-import os
-import httpx
 from pathlib import Path
 from typing import Tuple
 from sqlalchemy import select
@@ -454,18 +453,11 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
     4. Apply specific buffer per category and filter intersecting features
     """
     try:
-        strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
-        categories_url = f"{strapi_url}/api/noise-source-categories"
-        
-        try:
-            response = httpx.get(categories_url, timeout=10.0)
-            response.raise_for_status()
-            categories_data = response.json()
-            categories = categories_data.get("data", [])
-        except Exception as e:
-            logger.error(f"Error fetching noise source categories from Strapi: {str(e)}")
+        categories_data = cached_strapi_get("/api/noise-source-categories")
+        if categories_data is None:
             return {"intersections": []}
-        
+        categories = categories_data.get("data", [])
+
         if not categories:
             logger.warning("No noise source categories found in Strapi")
             return {"intersections": []}
@@ -566,22 +558,14 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
 
 
 def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
-
     if not slug:
         return None
 
-    strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
-    url = f"{strapi_url}/api/noisezone-alerts"
-    params = {"filters[alert_slug][$eq]": slug}
-
-    try:
-        response = httpx.get(url, params=params, timeout=10.0)
-        response.raise_for_status()
-        entries = response.json().get("data", [])
-    except Exception as e:
-        logger.error(f"Error fetching noisezone alert '{slug}' from Strapi: {str(e)}")
-        return None
-
+    data = cached_strapi_get(
+        "/api/noisezone-alerts",
+        params={"filters[alert_slug][$eq]": slug},
+    )
+    entries = data.get("data", []) if data else []
     if not entries:
         logger.warning(f"No noisezone alert found in Strapi for slug '{slug}'")
         return None
@@ -618,7 +602,6 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
         )
 
         result = []
-        alert_cache: Dict[str, Any] = {} 
         for r in stmt.all():
             try:
                 geometry_parsed = json.loads(r.geometry_intersection)
@@ -628,10 +611,8 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 geometry_intersection = None
 
             slug = r.alert_slug
-            if slug not in alert_cache:
-                alert_cache[slug] = fetch_noisezone_alert_content(slug)
-            alert = alert_cache[slug] or {}
-            
+            alert = fetch_noisezone_alert_content(slug) or {}
+
             result.append({
                 "alert_slug": slug,
                 "content": alert.get("content"),

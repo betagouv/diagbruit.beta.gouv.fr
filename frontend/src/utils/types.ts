@@ -105,7 +105,6 @@ export type NoiseZoneIntersection = {
   source: string | null;
   reference: string | null;
   label: string | null;
-  display_label: string | null;
   geometry: Geometry;
 };
 
