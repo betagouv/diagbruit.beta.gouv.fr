@@ -68,29 +68,96 @@ token in the `box_tokens` table; it runs via `box_token_refresh_job`, triggered 
 
 ## Jobs
 
-Naming: `<domain>_ingest_job` = ingest assets only (no dbt); bare `<domain>_job` =
-the whole domain incl. downstream dbt models.
+These jobs are convenience handles for launching one ingest scope from the
+**Dagster UI**. For end-to-end relaunches/resets (ingestion + dbt, by domain and
+dept), use [`run_pipelines.py`](#relaunching-pipelines) instead — it selects assets
+dynamically and owns the dbt step, so there are no per-domain "ingest + dbt" jobs.
 
 | Job | Selection |
 |---|---|
-| `full_launcher_job` | every asset tagged `stage=launcher` |
-| `full_landing_job` | every asset tagged `stage=landing` |
+| `full_launcher_job` | every asset tagged `stage=launcher` (all domains) |
+| `full_landing_job` | every asset tagged `stage=landing` (all domains) |
 | `agglo_ingest_job` | `noisemap_agglo` group (launcher + landing) |
 | `infra_ingest_job` | `noisemap_infra` group (launcher + landing) |
 | `fastline_ingest_job` | `noisemap_fastline` group (launcher + landing) |
 | `osm_ingest_job` | `osm` group, ingest stages only |
 | `peb_ingest_job` | `peb` group, ingest stages only |
 | `soundclassification_ingest_job` | `soundclassification` group, ingest stages only |
-| `noisemap_job` | `raw_noisemap` + all upstream (full noisemap ingest, all scopes) |
-| `osm_job` | `noisesource` + all upstream (osm ingest + dbt) |
-| `peb_job` | `peb` mart + all upstream (peb ingest + dbt) |
-| `dev_pipeline_by_codedept_job` | cross-domain local end-to-end for one dept (peb, osm incl. terrasses, soundclassification, bdnb, all noisemap scopes, departements); run with `--partition 033` (uses Box launchers) |
 | `ci_landing_by_codedept_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + the committed `departements` fixture. Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_by_codedept_job 033` |
 | `box_token_refresh_job` | `box_token_refresh` (run by the sensor) |
 
-Noisemap ingest is split per source type because each used to carry its own dept
-partition set; run `agglo_ingest_job` / `infra_ingest_job` / `fastline_ingest_job`
-(or `dev_pipeline_by_codedept_job`) for a single dept.
+Run a single named job for one partition from the CLI with
+`uv run python run_job.py <job_name> 033`.
+
+---
+
+## Relaunching pipelines
+
+`run_pipelines.py` is the one entrypoint for relaunching ingestion **and** the
+matching dbt models, parameterised by two axes — domain and department. Both flags
+are **required** (no implicit "everything"), so a full reset must be typed out.
+
+```bash
+uv run python run_pipelines.py --domain <DOMAIN> --dept <DEPT> [flags]
+```
+
+| | `--domain` | `--dept` |
+|---|---|---|
+| values | `all`, `noisemap`, `soundclassification`, `bdnb`, `osm`, `peb`, `noisezone`, `departements` | `all`, or a code like `033` |
+
+The four use cases:
+
+```bash
+# 1. Relaunch every pipeline, every department (full reset)
+uv run python run_pipelines.py --domain all --dept all --full-refresh
+
+# 2. Relaunch one pipeline, every department
+uv run python run_pipelines.py --domain noisemap --dept all
+
+# 3. Relaunch all (dept-scoped) pipelines for one department
+uv run python run_pipelines.py --domain all --dept 033
+
+# 4. Relaunch one pipeline for one department
+uv run python run_pipelines.py --domain noisemap --dept 033
+```
+
+**Department semantics.** A department only exists for the dept-scoped domains
+(`noisemap`, `soundclassification`, `bdnb`). So `--dept <code>` runs *only* those;
+national domains (`osm`, `peb`, `noisezone`, `departements`) are skipped under
+`--domain all` and rejected if named directly (`--domain peb --dept 033` errors —
+use `--dept all`). A dept absent from a domain's registry is a no-op skip.
+
+**Flags.**
+
+| Flag | Effect |
+|---|---|
+| `--with-launcher` | also run the Box launcher stage (Box → S3). Default is landing-only (S3 → PostGIS): no Box, reprocesses existing source. |
+| `--full-refresh` | pass `--full-refresh` to dbt (drop & recreate). Use after a DB wipe. |
+| `--skip-dbt` | ingestion only, no dbt. |
+| `--fail-fast` | stop at the first failing unit. Default: continue and report a summary at the end. |
+| `--dry-run` | print the plan (units + asset keys + dbt selection) without running anything. |
+
+Multi-unit runs (`--domain all` or `--dept all`) spawn one **subprocess per unit**
+for fault isolation, then run the domain-scoped dbt **once**. Runs use the
+configured DagsterInstance, so they appear in the Dagster UI. If any ingestion unit
+fails, dbt is skipped (fix the units and rerun, or rerun dbt manually).
+
+### On Scalingo (target a specific database)
+
+Both Dagster and dbt read the connection from env vars (`DB_HOST`/`DB_PORT`/
+`DB_NAME`/`DB_USER`/`DB_PASSWORD`) — there is no connection string in the command.
+A one-off container inherits the app's env; pass `-e` to override/target explicitly:
+
+On Scalingo `uv` is build-only (not on the runtime PATH), so call `python`
+directly — the venv is already active and `dbt` is on PATH:
+
+```bash
+scalingo --app diag-bruit-dagster --region osc-fr1 run \
+  -e DB_HOST=<target> -e DB_PORT=<target> -e DB_NAME=<target> \
+  -e DB_USER=<target> -e DB_PASSWORD=<target> \
+  --size XL \
+  'cd dagster && python run_pipelines.py --domain all --dept all --full-refresh'
+```
 
 ---
 

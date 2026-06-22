@@ -51,6 +51,7 @@ def _download_box_folder(client, folder_id: str, local_dir) -> dict[str, str]:
     name="bdnb_launcher",
     partitions_def=BDNB_PARTITIONS,
     group_name=GROUP,
+    tags={"stage": "launcher"},
     kinds={"box", "s3"},
 )
 def bdnb_launcher(context: AssetExecutionContext, box: BoxResource):
@@ -110,6 +111,7 @@ def bdnb_launcher(context: AssetExecutionContext, box: BoxResource):
     name="bdnb_landing",
     partitions_def=BDNB_PARTITIONS,
     group_name=GROUP,
+    tags={"stage": "landing"},
     kinds={"s3", "postgres"},
     deps=["bdnb_launcher"],
 )

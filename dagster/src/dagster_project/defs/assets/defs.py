@@ -8,7 +8,7 @@ from dagster_project.io.db import db_url
 @asset(
     key="geo_departements",
     group_name="departements",
-    tags={"source": "local"},
+    tags={"source": "local", "stage": "landing"},
     kinds={"postgres"},
 )
 def ingest_departements(context: AssetExecutionContext):

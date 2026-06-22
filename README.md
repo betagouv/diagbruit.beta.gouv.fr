@@ -67,12 +67,17 @@ was replaced by Dagster assets.
 cd dagster
 uv sync
 
-# Full local end-to-end for dept 033 (needs Box OAuth + AWS creds):
-uv run dg launch --job dev_pipeline_by_codedept_job --partition 033
+# Relaunch pipelines by domain × department (landing-only from S3 by default).
+# Locally you only need one dept — 033 by tradition (the first dept injected):
+uv run python run_pipelines.py --domain all --dept 033          # all dept-scoped domains for 033
+uv run python run_pipelines.py --domain noisemap --dept 033     # one domain for 033
 
-# Landing-only (S3 → PostGIS, no Box; what CI runs):
-PYTHONPATH=src uv run python ci_ingest.py ci_landing_by_codedept_job 033
+# Landing-only CI provisioning (S3 → PostGIS, no Box; what CI runs):
+uv run python ci_ingest.py ci_landing_by_codedept_job 033
 ```
+
+See [`dagster/README.md`](dagster/README.md#relaunching-pipelines) for the full
+relaunch/reset guide (all departments, `--with-launcher`, `--full-refresh`, Scalingo).
 
 ## ⚙️ Dagster + DBT (Orchestration)
 
