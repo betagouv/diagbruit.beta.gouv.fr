@@ -15,7 +15,7 @@ import dagster_project.definitions as definitions_module
 
 
 def main() -> int:
-    job_name = sys.argv[1] if len(sys.argv) > 1 else "ci_landing_033_job"
+    job_name = sys.argv[1] if len(sys.argv) > 1 else "ci_landing_by_codedept_job"
     partition_key = sys.argv[2] if len(sys.argv) > 2 else None
 
     defs = definitions_module.defs

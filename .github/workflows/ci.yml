@@ -60,7 +60,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-west-3
           AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET || 'diagbruit-dagster' }}
-        run: uv run python ci_ingest.py ci_landing_033_job 033
+        run: uv run python ci_ingest.py ci_landing_by_codedept_job 033
 
       - name: Run dbt pipeline
         working-directory: dagster

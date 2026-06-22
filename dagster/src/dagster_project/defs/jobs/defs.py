@@ -94,8 +94,8 @@ peb_job = define_asset_job(
 # not a lightweight 033-only run.
 # All partitioned groups share ALL_DEPT_PARTITIONS so a single --partition 033 flag
 # applies to every partitioned asset in the run.
-dev_pipeline_033_job = define_asset_job(
-    "dev_pipeline_033_job",
+dev_pipeline_by_codedept_job = define_asset_job(
+    "dev_pipeline_by_codedept_job",
     selection=(
         AssetSelection.groups("peb")
         | AssetSelection.groups("osm")
@@ -108,7 +108,7 @@ dev_pipeline_033_job = define_asset_job(
         | AssetSelection.groups("departements")
     ),
     partitions_def=ALL_DEPT_PARTITIONS,
-    tags={"domain": "dev", "scope": "pipeline_033"},
+    tags={"domain": "dev", "scope": "pipeline"},
 )
 
 # Landing-only (no launchers): reads S3 into PostGIS + the committed reference
@@ -131,9 +131,9 @@ _CI_LANDING_ASSETS = [
     "raw_soundclassification_lgv",
     "raw_bdnb",
 ]
-ci_landing_033_job = define_asset_job(
-    "ci_landing_033_job",
+ci_landing_by_codedept_job = define_asset_job(
+    "ci_landing_by_codedept_job",
     selection=AssetSelection.assets(*_CI_LANDING_ASSETS),
     partitions_def=ALL_DEPT_PARTITIONS,
-    tags={"domain": "ci", "scope": "landing_033"},
+    tags={"domain": "ci", "scope": "landing"},
 )

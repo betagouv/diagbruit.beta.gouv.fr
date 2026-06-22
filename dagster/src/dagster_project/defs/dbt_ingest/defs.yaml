@@ -2,6 +2,7 @@ type: dagster_dbt.DbtProjectComponent
 
 attributes:
   project: '{{ context.project_root }}/dbt'
+  exclude: "noisemap"
   translation:
       key: '{{ node.name }}'
       group_name: '{{ node.fqn[1] }}'

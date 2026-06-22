@@ -84,13 +84,13 @@ the whole domain incl. downstream dbt models.
 | `noisemap_job` | `raw_noisemap` + all upstream (full noisemap ingest, all scopes) |
 | `osm_job` | `noisesource` + all upstream (osm ingest + dbt) |
 | `peb_job` | `peb` mart + all upstream (peb ingest + dbt) |
-| `dev_pipeline_033_job` | cross-domain local end-to-end for one dept (peb, osm incl. terrasses, soundclassification, bdnb, all noisemap scopes, departements); run with `--partition 033` (uses Box launchers) |
-| `ci_landing_033_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + the committed `departements` fixture. Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_033_job 033` |
+| `dev_pipeline_by_codedept_job` | cross-domain local end-to-end for one dept (peb, osm incl. terrasses, soundclassification, bdnb, all noisemap scopes, departements); run with `--partition 033` (uses Box launchers) |
+| `ci_landing_by_codedept_job` | landing-only (no launchers): S3 `_source/` → PostGIS for one dept + the committed `departements` fixture. Needs only AWS creds. Run in CI via `python ci_ingest.py ci_landing_by_codedept_job 033` |
 | `box_token_refresh_job` | `box_token_refresh` (run by the sensor) |
 
 Noisemap ingest is split per source type because each used to carry its own dept
 partition set; run `agglo_ingest_job` / `infra_ingest_job` / `fastline_ingest_job`
-(or `dev_pipeline_033_job`) for a single dept.
+(or `dev_pipeline_by_codedept_job`) for a single dept.
 
 ---
 
