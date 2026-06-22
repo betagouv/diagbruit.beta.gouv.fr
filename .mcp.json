@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "data-gouv": {
+      "type": "http",
+      "url": "https://mcp.data.gouv.fr/mcp"
+    }
+  }
+}
