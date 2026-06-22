@@ -18,12 +18,11 @@ from .sig import (
     determine_cardinality
 )
 from .acoustic import (correction_from_angle)
+from .strapi import cached_strapi_get
 import asyncio
 import logging
 import yaml
 import json
-import os
-import httpx
 from pathlib import Path
 from typing import Tuple
 from sqlalchemy import select
@@ -454,18 +453,11 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
     4. Apply specific buffer per category and filter intersecting features
     """
     try:
-        strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
-        categories_url = f"{strapi_url}/api/noise-source-categories"
-        
-        try:
-            response = httpx.get(categories_url, timeout=10.0)
-            response.raise_for_status()
-            categories_data = response.json()
-            categories = categories_data.get("data", [])
-        except Exception as e:
-            logger.error(f"Error fetching noise source categories from Strapi: {str(e)}")
+        categories_data = cached_strapi_get("/api/noise-source-categories")
+        if categories_data is None:
             return {"intersections": []}
-        
+        categories = categories_data.get("data", [])
+
         if not categories:
             logger.warning("No noise source categories found in Strapi")
             return {"intersections": []}
@@ -565,10 +557,36 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
+def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
+    if not slug:
+        return None
+
+    data = cached_strapi_get(
+        "/api/noisezone-alerts",
+        params={"filters[alert_slug][$eq]": slug},
+    )
+    entries = data.get("data", []) if data else []
+    if not entries:
+        logger.warning(f"No noisezone alert found in Strapi for slug '{slug}'")
+        return None
+
+    entry = entries[0]
+    return {
+        "content": entry.get("content"),
+        "title": entry.get("title"),
+        "source": entry.get("source"),
+        "reference": entry.get("reference"),
+        "label": entry.get("label"),
+    }
+
+
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for noise zone features that intersect with the given WKT geometry.
-    Returns intersecting NoiseZoneItem records with their label, alert, and intersection geometry.
+
+    Each intersecting NoiseZoneItem carries an `alert_slug`; this resolves the slug
+    against the Strapi `noisezone-alerts` collection so the response includes the
+    HTML `content` (plus title/source/reference) alongside the intersection geometry.
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
@@ -577,8 +595,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
 
         stmt = db.query(
             NoiseZoneItem.id,
-            NoiseZoneItem.label,
-            NoiseZoneItem.alert,
+            NoiseZoneItem.alert_slug,
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).filter(
             func.ST_Intersects(NoiseZoneItem.geometry, safe_geom)
@@ -593,9 +610,16 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 logger.warning(f"Could not parse noisezone geometry_intersection: {parse_err}")
                 geometry_intersection = None
 
+            slug = r.alert_slug
+            alert = fetch_noisezone_alert_content(slug) or {}
+
             result.append({
-                "label": r.label.value if hasattr(r.label, 'value') else r.label,
-                "alert": r.alert,
+                "alert_slug": slug,
+                "content": alert.get("content"),
+                "title": alert.get("title"),
+                "source": alert.get("source"),
+                "reference": alert.get("reference"),
+                "label": alert.get("label"),
                 "geometry": geometry_intersection
             })
 

@@ -7,12 +7,14 @@ type DiagnosticRegulationBoxProps = {
   label: string;
   content: ReactNode | string;
   source?: string;
+  reference?: string;
 };
 
 const DiagnosticRegulationBox = ({
   label,
   content,
   source,
+  reference
 }: DiagnosticRegulationBoxProps) => {
   const { cx, classes } = useStyles();
 
@@ -33,7 +35,12 @@ const DiagnosticRegulationBox = ({
       </div>
       {source && (
         <p className={cx(fr.cx("fr-mb-0"), classes.source)}>
-          Source : {source}
+          Doc Source : <i>{source}</i>
+        </p>
+      )}
+      {reference && (
+        <p className={cx(fr.cx("fr-mb-0"), classes.source)}>
+          Référence : <i>{reference}</i>
         </p>
       )}
     </div>
@@ -50,7 +57,8 @@ const useStyles = tss.create(() => ({
     backgroundColor: fr.colors.decisions.background.contrast.grey.default,
   },
   source: {
-    color: fr.colors.decisions.text.mention.grey.default,
+    textAlign: "right",
+    fontSize: "smaller"
   },
   content: {
     ul: {

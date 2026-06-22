@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_noisezone
+        description: "Raw noise zone data imported from shapefiles"
+        columns:
+          - name: alert_slug
+            description: "Slug used to link the zone to an alert or recommendation"
+          - name: geometry
+            description: "Geometry of the noise zone polygon"
+
+models:
+  - name: stg_noisezone
+    description: "Staging model selecting label, alert_slug, and geometry from raw_noisezone"
+    columns:
+      - name: alert_slug
+        description: "Slug used to link the zone to an alert or recommendation"
+      - name: geometry
+        description: "Geometry of the noise zone polygon"
+        tests:
+          - not_null

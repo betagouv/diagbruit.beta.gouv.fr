@@ -99,8 +99,12 @@ export type NoiseSourceIntersection = {
 };
 
 export type NoiseZoneIntersection = {
-  label: "Zone de calme" | "Zone soumise au bruit";
-  alert: string;
+  alert_slug: string;
+  content: string | null;
+  title: string | null;
+  source: string | null;
+  reference: string | null;
+  label: string | null;
   geometry: Geometry;
 };
 

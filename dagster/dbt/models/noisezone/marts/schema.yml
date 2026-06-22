@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: noisezone
+    description: "Final noise zone polygons, ready for consumption by the API"
+    columns:
+      - name: alert_slug
+        description: "Slug used to link the zone to an alert or recommendation"
+      - name: geometry
+        description: "Valid noise zone polygon geometry"
+        tests:
+          - not_null

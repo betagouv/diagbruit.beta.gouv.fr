@@ -665,6 +665,53 @@ export interface ApiNoiseSourceCategoryNoiseSourceCategory
   };
 }
 
+export interface ApiNoisezoneAlertNoisezoneAlert
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'noisezone_alerts';
+  info: {
+    description: '';
+    displayName: 'NoisezoneAlert';
+    pluralName: 'noisezone-alerts';
+    singularName: 'noisezone-alert';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alert_slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    label: Schema.Attribute.Enumeration<
+      ['ZONE SOUMISE AU BRUIT', 'ZONE CALME']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'ZONE SOUMISE AU BRUIT'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::noisezone-alert.noisezone-alert'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    reference: Schema.Attribute.String;
+    source: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<"Plan Local d'Urbanisme">;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPrivacyPolicyPrivacyPolicy extends Struct.SingleTypeSchema {
   collectionName: 'privacy_policies';
   info: {
@@ -1298,6 +1345,7 @@ declare module '@strapi/strapi' {
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
       'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
+      'api::noisezone-alert.noisezone-alert': ApiNoisezoneAlertNoisezoneAlert;
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;

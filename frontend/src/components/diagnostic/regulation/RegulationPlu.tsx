@@ -8,9 +8,17 @@ type RegulationPluProps = {
 
 const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
   const { diagnostic } = diagnosticItem;
-  const hasIntersections = diagnostic.noisezone_intersections.length > 0;
 
-  if (!hasIntersections) {
+  const uniqueNoisezones = Array.from(
+    new Map(
+      diagnostic.noisezone_intersections.map((noisezone) => [
+        noisezone.alert_slug,
+        noisezone,
+      ]),
+    ).values(),
+  );
+
+  if (uniqueNoisezones.length === 0) {
     return (
       <p className={fr.cx("fr-text--lg", "fr-mb-4v")}>
         Aucune spécificité locale inscrite au PLU.
@@ -20,12 +28,13 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
 
   return (
     <>
-      {diagnostic.noisezone_intersections.map((noisezone, index) => (
-        <div key={index} className={fr.cx("fr-mb-4v")}>
+      {uniqueNoisezones.map((noisezone) => (
+        <div key={noisezone.alert_slug} className={fr.cx("fr-mb-4v")}>
           <DiagnosticRegulationBox
-            label={noisezone.label}
-            content={noisezone.alert}
-            source="PLU"
+            label={noisezone.label ?? ""}
+            content={noisezone.content ?? ""}
+            source={noisezone.source ?? ""}
+            reference={noisezone.reference ?? ""}
           />
         </div>
       ))}
