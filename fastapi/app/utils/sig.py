@@ -99,9 +99,9 @@ def intersecting_triangle_groups_cte(triangles_cte: CTE, bdnb_table, valid_col="
     ]
 
     if codedept is not None:
-        codedept_no_leading_zero = codedept.lstrip('0') if codedept.lstrip('0') else '0'
+        codedept_variants = {codedept, codedept.lstrip('0') or '0', codedept.zfill(3)}
         conditions.append(
-            (bdnb_table.code_depar == codedept_no_leading_zero)
+            bdnb_table.code_depar.in_(list(codedept_variants))
         )
 
     tri_hits = (
