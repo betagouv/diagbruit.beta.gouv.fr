@@ -478,73 +478,67 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         if codedept is not None:
             dept_filter.append(NoiseSourceItem.codedept == codedept)
 
+        # Per-category buffer (metres), picked per row via a CASE on the slug, so
+        # the category-specific intersection test AND the distance are computed in
+        # this single query instead of two extra round-trips per candidate row.
+        buffer_case = case(
+            *[(NoiseSourceItem.category_slug == slug, info["buffer"]) for slug, info in category_info.items()],
+            else_=None,
+        )
+        buffered_4326 = func.ST_Transform(
+            func.ST_Buffer(func.ST_Transform(NoiseSourceItem.geometry, 2154), buffer_case), 4326
+        )
+
         stmt = db.query(
-            NoiseSourceItem.pk,
             NoiseSourceItem.label,
             NoiseSourceItem.category_slug,
             cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry"),
-            cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point")
+            cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point"),
+            func.ST_Intersects(buffered_4326, safe_geom).label("cat_intersects"),
+            func.round(
+                func.ST_Distance(geom_2154, func.ST_Transform(NoiseSourceItem.geometry, 2154))
+            ).label("distance"),
         ).filter(*dept_filter)
-        
+
         result = []
         for r in stmt.all():
             category_slug = r.category_slug
-            print(r)
-            
+
             if category_slug not in category_info:
                 logger.warning(f"Category slug '{category_slug}' not found in Strapi categories")
                 continue
-            
+
+            # Category-specific buffer didn't reach the parcelle → not impacted.
+            if not r.cat_intersects:
+                continue
+
             category_data = category_info[category_slug]
-            buffer_distance = category_data["buffer"]
             category_name = category_data["name"]
             category_description = category_data["description"]
-            
-            point_2154 = func.ST_Transform(NoiseSourceItem.geometry, 2154)
-            buffered_point = func.ST_Buffer(point_2154, buffer_distance)
-            buffered_point_4326 = func.ST_Transform(buffered_point, 4326)
-            
-            intersects = db.query(
-                func.ST_Intersects(buffered_point_4326, safe_geom)
-            ).filter(
-                NoiseSourceItem.pk == r.pk
-            ).scalar()
-            
-            if intersects:
-                try:
-                    geometry_parsed = json.loads(r.geometry)
-                    geometry = geometry_parsed["coordinates"]
-                except Exception as parse_err:
-                    logger.warning(f"Could not parse geometry: {parse_err}")
-                    geometry = None
 
-                try:
-                    geometry_point_parsed = json.loads(r.geometry_point)
-                    geometry_point = geometry_point_parsed["coordinates"]
-                except Exception as parse_err:
-                    logger.warning(f"Could not parse geometry_point: {parse_err}")
-                    geometry_point = None
-                
-                distance = db.query(
-                    func.round(
-                        func.ST_Distance(
-                            func.ST_Transform(safe_geom, 2154),
-                            func.ST_Transform(NoiseSourceItem.geometry, 2154)
-                        )
-                    )
-                ).filter(
-                    NoiseSourceItem.pk == r.pk
-                ).scalar()
-                
-                result.append({
-                    "label": r.label,
-                    "category_slug": category_slug,
-                    "category_name": category_name,
-                    "category_description": category_description,
-                    "distance": int(distance) if distance else 0,
-                    "geometry": geometry,
-                    "geometry_point": geometry_point
-                })
+            try:
+                geometry_parsed = json.loads(r.geometry)
+                geometry = geometry_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse geometry: {parse_err}")
+                geometry = None
+
+            try:
+                geometry_point_parsed = json.loads(r.geometry_point)
+                geometry_point = geometry_point_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse geometry_point: {parse_err}")
+                geometry_point = None
+
+            result.append({
+                "label": r.label,
+                "category_slug": category_slug,
+                "category_name": category_name,
+                "category_description": category_description,
+                "distance": int(r.distance) if r.distance else 0,
+                "geometry": geometry,
+                "geometry_point": geometry_point
+            })
         
         logger.debug(f"Found {len(result)} noise sources intersecting with geometry")
         
