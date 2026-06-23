@@ -1844,7 +1844,7 @@
                             ]
                         ],
                         "closest_correction": 0,
-                        "farthest_correction": 0
+                        "farthest_correction": -9
                     },
                     {
                         "source": "routier",
@@ -1903,7 +1903,7 @@
                             ]
                         ],
                         "closest_correction": 0,
-                        "farthest_correction": 0
+                        "farthest_correction": -9
                     },
                     {
                         "source": "routier",
@@ -1981,8 +1981,8 @@
                                 ]
                             ]
                         ],
-                        "closest_correction": 0,
-                        "farthest_correction": 0
+                        "closest_correction": -3,
+                        "farthest_correction": -3
                     },
                     {
                         "source": "routier",
@@ -2029,7 +2029,7 @@
                             ]
                         ],
                         "closest_correction": 0,
-                        "farthest_correction": 0
+                        "farthest_correction": -9
                     },
                     {
                         "source": "fer",
@@ -2107,8 +2107,8 @@
                                 ]
                             ]
                         ],
-                        "closest_correction": 0,
-                        "farthest_correction": 0
+                        "closest_correction": -9,
+                        "farthest_correction": -9
                     },
                     {
                         "source": "routier",
@@ -2174,8 +2174,8 @@
                                 ]
                             ]
                         ],
-                        "closest_correction": 0,
-                        "farthest_correction": 0
+                        "closest_correction": -3,
+                        "farthest_correction": -3
                     }
                 ],
                 "noisesource_intersections": [ ],
