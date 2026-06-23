@@ -62,7 +62,6 @@ def bdnb_launcher(context: AssetExecutionContext, box: BoxResource):
     local_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        # Find the matching DEPT_XXX subfolder in Box
         items = client.folders.get_folder_items(BOX_ID)
         dept_folder = next(
             (item for item in items.entries if item.type == "folder" and item.name.split("_", 1)[-1] == dept),
