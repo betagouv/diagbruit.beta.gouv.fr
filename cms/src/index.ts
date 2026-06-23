@@ -27,7 +27,7 @@ export default {
     const certificateUid = 'api::acoustic-certificate.acoustic-certificate';
     const existingCertificate = await strapi.documents(certificateUid).findFirst();
     if (!existingCertificate) {
-      strapi.log.info(`[seed] No acoustic-certificate found, seeding ${acousticCertification}...`);
+      strapi.log.info('[seed] No acoustic-certificate found, seeding...');
       await strapi.documents(certificateUid).create({ data: acousticCertification as any, status: 'published' });
       strapi.log.info('[seed] acoustic-certificate seeded.');
     }

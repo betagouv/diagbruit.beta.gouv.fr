@@ -18,6 +18,10 @@
       },
       "required": true,
       "customField": "plugin::ckeditor5.CKEditor"
+    },
+    "cardSlug": {
+      "type": "string",
+      "required": false
     }
   }
 }
