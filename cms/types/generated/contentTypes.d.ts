@@ -738,7 +738,7 @@ export interface ApiNoisezoneAlertNoisezoneAlert
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    reference: Schema.Attribute.String;
+    reference: Schema.Attribute.String & Schema.Attribute.Required;
     source: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<"Plan Local d'Urbanisme">;
