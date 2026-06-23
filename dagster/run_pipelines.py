@@ -129,7 +129,6 @@ def _stages(with_launcher):
     return {"landing", "launcher"} if with_launcher else {"landing"}
 
 
-# ── leaf execution: one domain, one unit ──────────────────────────────────────
 def run_leaf(defs, domain, dept, with_launcher, dry_run):
     assets = _domain_landing_assets(defs, domain, _stages(with_launcher))
     if not assets:
@@ -167,7 +166,6 @@ def run_leaf(defs, domain, dept, with_launcher, dry_run):
     return result.success
 
 
-# ── orchestration: expand to units and spawn one subprocess each ──────────────
 def plan_units(defs, domain, dept):
     """Return [(domain, child_dept)] for a multi-unit run, logging skips."""
     domains = ALL_DOMAINS if domain == "all" else [domain]
@@ -198,7 +196,6 @@ def spawn(domain, dept, args):
     return subprocess.run(cmd, cwd=_DAGSTER_DIR).returncode == 0
 
 
-# ── dbt (materialised through Dagster so runs show in the UI) ─────────────────
 def _materialise_dbt(job, keys, partition_key, instance, label, dry_run):
     if dry_run:
         print(f"  [dry-run] {label}: " + ", ".join(k.to_user_string() for k in keys))

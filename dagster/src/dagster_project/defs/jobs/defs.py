@@ -23,7 +23,6 @@ _STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
     "stage", "landing"
 )
 
-# ── Stage cross-cuts (across every domain) ────────────────────────────────
 full_launcher_job = define_asset_job(
     "full_launcher_job",
     selection=AssetSelection.tag("stage", "launcher"),
@@ -35,7 +34,6 @@ full_landing_job = define_asset_job(
     tags={"domain": "full", "scope": "landing"},
 )
 
-# ── Noisemap per-source ingest (each its own dept partition set) ──────────
 agglo_ingest_job = define_asset_job(
     "agglo_ingest_job",
     selection=AssetSelection.groups("noisemap_agglo"),
@@ -52,7 +50,6 @@ fastline_ingest_job = define_asset_job(
     tags={"domain": "noisemap", "scope": "fastline"},
 )
 
-# ── Other per-domain ingest-only ──────────────────────────────────────────
 osm_ingest_job = define_asset_job(
     "osm_ingest_job",
     selection=AssetSelection.groups("osm") & _STAGE_INGEST,

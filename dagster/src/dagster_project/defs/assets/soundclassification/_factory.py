@@ -107,7 +107,6 @@ def launch_from_box(context: AssetExecutionContext, t: SoundclassificationTerrit
     local_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        # Download all files from the Box folder (including subfolders) once
         all_sha256: dict[str, str] = {}
         for item in _collect_box_files(client, t.box_id):
             context.log.info(f"Downloading {item.name} from Box")

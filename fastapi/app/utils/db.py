@@ -82,7 +82,6 @@ def get_soundclassification_intersection_corrections(
         tri_hits = intersecting_triangle_groups_cte(triangles, BdnbItem, valid_col="is_valid_now", codedept=codedept)
         intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
 
-        # Angle and dB correction
         angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
         correction_db = correction_from_angle(angle_view)
 
@@ -462,7 +461,6 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
             logger.warning("No noise source categories found in Strapi")
             return {"intersections": []}
         
-        # Build category lookup: slug -> {buffer, name}
         category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"], "description": cat["description"]} for cat in categories}
         max_buffer = max(info["buffer"] for info in category_info.values())
         

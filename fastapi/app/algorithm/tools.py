@@ -65,7 +65,6 @@ def get_filtered_land_intersections(noisemap_intersections):
 def normalize_codeinfra(value):
     if not value:
         return ""
-    # Lowercase, remove accents, replace dashes with space, remove extra spaces
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
     value = value.lower()
     value = value.replace('-', ' ')
