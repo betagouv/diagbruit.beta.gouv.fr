@@ -2522,7 +2522,7 @@
                         "percentage_impacted": 0.42
                     }
                 ],
-                "isolation_min": 35,
+                "isolation_min": 30,
                 "isolation_max": 42
             }
         }
