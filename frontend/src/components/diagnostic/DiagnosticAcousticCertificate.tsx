@@ -17,21 +17,25 @@ const DiagnosticAcousticCertificate = () => {
             });
     }, []);
 
-    return (<>
+    return (<div className={fr.cx("fr-mb-4v")}>
         {content && (
-            <Accordion
-                titleAs="h3"
-                label={
-                    <>
-                        <i className={fr.cx("fr-mr-1v", "fr-icon-checkbox-circle-line")} />
-                        Attestation acoustique
-                    </>
-                }
-            >
-                <div dangerouslySetInnerHTML={{ __html: content.content }}></div>
-            </Accordion>
+            <>
+                <h4 className={fr.cx("fr-h6", "fr-mb-3v")}>Concernant votre projet</h4>
+                <Accordion
+                    titleAs="h3"
+                    label={
+                        <>
+                            <i className={fr.cx("fr-mr-1v", "fr-icon-checkbox-circle-line")} />
+                            Attestation acoustique
+                        </>
+                    }
+                >
+                    <div dangerouslySetInnerHTML={{ __html: content.content }}></div>
+                </Accordion>
+            </>
+
         )}
-    </>)
+    </div>)
 }
 
 export default DiagnosticAcousticCertificate;

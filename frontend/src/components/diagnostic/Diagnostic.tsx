@@ -75,8 +75,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="Réglementations"
           />
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
-          <h4>Autres sources de bruit à proximité</h4>
           <DiagnosticAcousticCertificate />
+          <h4>Autres sources de bruit à proximité</h4>
           <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
         </>
       ),
