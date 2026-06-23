@@ -117,8 +117,8 @@ def correction_counts_query(
         func.ST_Intersects(bdnb_table.geometry, triangles.c.geom),
     ]
     if codedept is not None:
-        codedept_no_leading_zero = codedept.lstrip("0") or "0"
-        conditions.append(bdnb_table.code_depar == codedept_no_leading_zero)
+        codedept_variants = {codedept, codedept.lstrip("0") or "0", codedept.zfill(3)}
+        conditions.append(bdnb_table.code_depar.in_(list(codedept_variants)))
 
     hits = (
         select(triangles.c.kind, triangles.c.arm, triangles.c.step)
