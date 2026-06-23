@@ -102,6 +102,7 @@ const DiagnosticRegulation = ({
 
   return (
     <div className={cx(fr.cx("fr-accordions-group"), classes.container)}>
+      <h4>Concernant votre parcelle</h4>
       {accordions.map((accordion, index) => (
         <Accordion
           key={index}
