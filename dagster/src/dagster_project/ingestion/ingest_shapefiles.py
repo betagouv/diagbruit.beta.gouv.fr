@@ -11,6 +11,13 @@ from dotenv import load_dotenv
 from shapely import transform
 from geoalchemy2 import Geometry
 
+# Insert rows in batches so large departments (e.g. 013) don't build one giant
+# INSERT in memory (the cause of OOM). Bounds peak memory without changing how
+# column types are inferred (to_postgis still samples the full frame).
+# Override with INGEST_CHUNKSIZE.
+INGEST_CHUNKSIZE = int(os.getenv("INGEST_CHUNKSIZE", "50000"))
+
+
 def drop_z(geom):
     return transform(geom, lambda coords: coords, include_z=False)
 
@@ -220,14 +227,14 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
 
         log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
         try:
-            gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+            gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
         except Exception as create_err:
             # Race condition: another concurrent partition created the table between our
             # existence check and the CREATE TABLE. Retry as a plain append.
             if if_exists == "append" and "already exists" in str(create_err).lower():
                 log("Concurrent table creation detected, retrying as append")
                 _widen_columns(engine, schema, table_name, gdf, log)
-                gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+                gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
             else:
                 raise
 
