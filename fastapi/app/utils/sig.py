@@ -82,39 +82,51 @@ def build_arm_cte(
     return arm
 
 
-def union_arms_to_triangles_cte(left_cte: CTE, right_cte: CTE) -> CTE:
-    triangles = union_all(
-        select(literal('L').label("arm"), left_cte.c.step.label("step"),
-               func.ST_Transform(left_cte.c.tri, 4326).label("geom")),
-        select(literal('R').label("arm"), right_cte.c.step,
-               func.ST_Transform(right_cte.c.tri, 4326).label("geom"))
-    ).cte("triangles")
-    return triangles
+def correction_counts_query(
+    *, closest_values, farthest_values, road_2154, steps: int,
+    subangle_deg: float, far_length: float, bdnb_table,
+    codedept=None, valid_col: str = "is_valid_now",
+):
+    """One query returning ``(kind, intersecting_count)`` for kind in
+    ('closest', 'farthest'): builds both arms of both kinds, unions their
+    triangles tagged by kind, and counts the distinct (kind, arm, step) triangles
+    that intersect a building."""
+    arms = []
+    for kind, vals in (("closest", closest_values), ("farthest", farthest_values)):
+        for direction, arm_label in (("left", "L"), ("right", "R")):
+            cte = build_arm_cte(
+                name=f"{kind}_{arm_label}_tri", steps=steps,
+                pa=vals["pa"], pb=vals["pb"], az0=vals["az0"],
+                road_2154=road_2154, subangle_deg=subangle_deg,
+                direction=direction, far_length=far_length,
+            )
+            arms.append((kind, arm_label, cte))
 
+    triangles = union_all(*[
+        select(
+            literal(kind).label("kind"),
+            literal(arm_label).label("arm"),
+            cte.c.step.label("step"),
+            func.ST_Transform(cte.c.tri, 4326).label("geom"),
+        )
+        for kind, arm_label, cte in arms
+    ]).cte("triangles")
 
-def intersecting_triangle_groups_cte(triangles_cte: CTE, bdnb_table, valid_col="is_valid_now", codedept=None) -> CTE:
     conditions = [
         getattr(bdnb_table, valid_col) == True,
-        func.ST_Intersects(bdnb_table.geometry, triangles_cte.c.geom)
+        func.ST_Intersects(bdnb_table.geometry, triangles.c.geom),
     ]
-
     if codedept is not None:
-        codedept_no_leading_zero = codedept.lstrip('0') if codedept.lstrip('0') else '0'
-        conditions.append(
-            (bdnb_table.code_depar == codedept_no_leading_zero)
-        )
+        codedept_no_leading_zero = codedept.lstrip("0") or "0"
+        conditions.append(bdnb_table.code_depar == codedept_no_leading_zero)
 
-    tri_hits = (
-        select(triangles_cte.c.arm, triangles_cte.c.step)
-        .select_from(
-            triangles_cte.join(
-                bdnb_table,
-                and_(*conditions)
-            )
-        )
-        .group_by(triangles_cte.c.arm, triangles_cte.c.step)
-    ).cte("tri_hits")
-    return tri_hits
+    hits = (
+        select(triangles.c.kind, triangles.c.arm, triangles.c.step)
+        .select_from(triangles.join(bdnb_table, and_(*conditions)))
+        .group_by(triangles.c.kind, triangles.c.arm, triangles.c.step)
+    ).cte("hits")
+
+    return select(hits.c.kind, func.count().label("n")).group_by(hits.c.kind)
 
 
 def angle_view_from_counts(full_angle: float, sub_angle: float, intersecting_count: int) -> float:

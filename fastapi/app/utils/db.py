@@ -11,9 +11,7 @@ from ..utils.geometry import create_multipolygon_from_coordinates
 from ..version import get_api_version
 from .sig import (
     base_geoms,
-    build_arm_cte,
-    union_arms_to_triangles_cte,
-    intersecting_triangle_groups_cte,
+    correction_counts_query,
     angle_view_from_counts,
     determine_cardinality
 )
@@ -40,7 +38,7 @@ logger = logging.getLogger('uvicorn.error')
 
 def get_soundclassification_intersection_corrections(
     db: "Session",
-    wkt_geometry: str,
+    buffered_wkt_geometry: str,
     source_point_geom: ColumnElement,
     geometry_source: ColumnElement,
     codedept: str
@@ -51,83 +49,38 @@ def get_soundclassification_intersection_corrections(
       - the SHORTEST connecting segment (closest)
       - the LONGEST  connecting segment (farthest)
 
+    buffered_wkt_geometry is the parcelle WKT already buffered (identical for every
+    row), so the caller buffers once and passes it in.
     Returns (closest_correction_db, farthest_correction_db).
     """
 
     FULL_ANGLE = 140.0
-    SUB_ANGLE  = 5.0
+    SUB_ANGLE = 5.0
     STEPS = int(FULL_ANGLE / SUB_ANGLE / 2)
     FAR_LEN = 1_000_000.0
 
-    def compute_correction_for(*, pa, pb, az0, name_prefix: str, road_2154) -> int:
-        # Build recursive CTEs for left and right arms (triangles in 2154)
-        left = build_arm_cte(
-            name=f"{name_prefix}_left_tri",
-            steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE,
-            direction="left", far_length=FAR_LEN
-        )
-        right = build_arm_cte(
-            name=f"{name_prefix}_right_tri",
-            steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE,
-            direction="right", far_length=FAR_LEN
-        )
-
-        # Count total triangles generated (stops early if q becomes NULL)
-        triangles = union_arms_to_triangles_cte(left, right)
-        total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
-
-        # Count triangles that intersect at least one BdnbItem
-        tri_hits = intersecting_triangle_groups_cte(triangles, BdnbItem, valid_col="is_valid_now", codedept=codedept)
-        intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
-
-        angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
-        correction_db = correction_from_angle(angle_view)
-
-        logger.debug(
-            f"[{name_prefix}] Triangles: total={total}, hits={intersecting} | "
-            f"view_angle={angle_view:.1f}° -> correction={correction_db} dB"
-        )
-        return correction_db
-
     try:
-        # Apply 5-meter buffer to the WKT geometry to avoid scanning geometry's building
-        buffered_wkt_geom = func.ST_AsText(
-            func.ST_Transform(
-                func.ST_Buffer(
-                    func.ST_Transform(
-                        func.ST_GeomFromText(wkt_geometry, 4326),
-                        2154
-                    ),
-                    2
-                ),
-                4326
-            )
-        )
-        buffered_wkt_geometry = db.execute(select(buffered_wkt_geom)).scalar()
-        
         _, _, road_2154, closest_values, farthest_values = base_geoms(
             buffered_wkt_geometry, source_point_geom, geometry_source
         )
 
-        closest_correction_db = compute_correction_for(
-            pa=closest_values['pa'],
-            pb=closest_values['pb'],
-            az0=closest_values['az0'],
-            name_prefix="closest",
-            road_2154=road_2154
+        counts_query = correction_counts_query(
+            closest_values=closest_values,
+            farthest_values=farthest_values,
+            road_2154=road_2154,
+            steps=STEPS,
+            subangle_deg=SUB_ANGLE,
+            far_length=FAR_LEN,
+            bdnb_table=BdnbItem,
+            codedept=codedept,
         )
+        masked_counts = {row.kind: int(row.n or 0) for row in db.execute(counts_query).all()}
 
-        farthest_correction_db = compute_correction_for(
-            pa=farthest_values['pa'],
-            pb=farthest_values['pb'],
-            az0=farthest_values['az0'],
-            name_prefix="farthest",
-            road_2154=road_2154
-        )
+        def correction_for(kind: str) -> int:
+            angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, masked_counts.get(kind, 0))
+            return correction_from_angle(angle_view)
 
-        return (closest_correction_db, farthest_correction_db)
+        return (correction_for("closest"), correction_for("farthest"))
 
     except Exception as e:
         logger.error(f"Error while computing sound corrections: {str(e)}")
@@ -288,6 +241,17 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             intersection_geom
         ).order_by("min_distance")
 
+        # The masking buffer is the parcelle geometry, identical for every row, so
+        # buffer it once here and reuse it for every per-row correction.
+        buffered_wkt_geometry = None
+        if include_isolation:
+            buffered_wkt_geometry = db.execute(
+                select(func.ST_AsText(func.ST_Transform(
+                    func.ST_Buffer(func.ST_Transform(func.ST_GeomFromText(wkt_geometry, 4326), 2154), 2),
+                    4326
+                )))
+            ).scalar()
+
         result = []
         for r in stmt.all():
             closest_correction = None
@@ -310,7 +274,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 source_point_geom = None
 
             if include_isolation and source_point_geom is not None and codedept is not None:
-                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source, codedept)
+                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, buffered_wkt_geometry, source_point_geom, r.geometry_source, codedept)
 
             result.append({
                 "source": r.source,
