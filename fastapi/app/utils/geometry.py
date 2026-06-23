@@ -1,3 +1,17 @@
+from functools import lru_cache
+
+import pyproj
+from shapely import wkt
+from shapely.ops import transform
+
+
+@lru_cache(maxsize=None)
+def _utm_transform(epsg: int):
+    """Cache the (4326 -> UTM) Transformer per EPSG zone — France is ~1 zone,
+    so building it once instead of per call avoids the CRS lookup overhead."""
+    return pyproj.Transformer.from_crs("EPSG:4326", f"EPSG:{epsg}", always_xy=True).transform
+
+
 def create_multipolygon_from_coordinates(coordinates) -> str:
     """
     Convert coordinates to WKT MULTIPOLYGON.
@@ -64,15 +78,10 @@ def get_area_m2_from_wkt(polygon_wkt: str) -> float:
     Returns:
         Area in square meters
     """
-    from shapely import wkt
-    from shapely.ops import transform
-    import pyproj
-    
     geom = wkt.loads(polygon_wkt)
     rep = geom.representative_point()
     lon, lat = rep.x, rep.y
     zone = int((lon + 180) // 6) + 1
     epsg = (32600 if lat >= 0 else 32700) + zone
-    project = pyproj.Transformer.from_crs("EPSG:4326", f"EPSG:{epsg}", always_xy=True).transform
-    geom_m = transform(project, geom)
+    geom_m = transform(_utm_transform(epsg), geom)
     return geom_m.area
