@@ -1,5 +1,8 @@
 {{ config(
-    materialized='table'
+    materialized='table',
+    post_hook=[
+      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);"
+    ]
 ) }}
 
 SELECT
