@@ -408,9 +408,10 @@ export interface ApiAccessibilityAccessibility extends Struct.SingleTypeSchema {
 }
 
 export interface ApiAcousticCertificateAcousticCertificate
-  extends Struct.CollectionTypeSchema {
+  extends Struct.SingleTypeSchema {
   collectionName: 'acoustic_certificates';
   info: {
+    description: '';
     displayName: 'AcousticCertificate';
     pluralName: 'acoustic-certificates';
     singularName: 'acoustic-certificate';

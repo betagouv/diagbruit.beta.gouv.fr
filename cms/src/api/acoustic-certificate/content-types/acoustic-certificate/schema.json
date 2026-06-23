@@ -1,10 +1,11 @@
 {
-  "kind": "collectionType",
+  "kind": "singleType",
   "collectionName": "acoustic_certificates",
   "info": {
     "singularName": "acoustic-certificate",
     "pluralName": "acoustic-certificates",
-    "displayName": "AcousticCertificate"
+    "displayName": "AcousticCertificate",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
