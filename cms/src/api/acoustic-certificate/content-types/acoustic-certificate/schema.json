@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "acoustic_certificates",
+  "info": {
+    "singularName": "acoustic-certificate",
+    "pluralName": "acoustic-certificates",
+    "displayName": "AcousticCertificate"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "content": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "required": true,
+      "customField": "plugin::ckeditor5.CKEditor"
+    }
+  }
+}

@@ -407,6 +407,42 @@ export interface ApiAccessibilityAccessibility extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAcousticCertificateAcousticCertificate
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'acoustic_certificates';
+  info: {
+    displayName: 'AcousticCertificate';
+    pluralName: 'acoustic-certificates';
+    singularName: 'acoustic-certificate';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::acoustic-certificate.acoustic-certificate'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiChangelogChangelog extends Struct.CollectionTypeSchema {
   collectionName: 'changelogs';
   info: {
@@ -1338,6 +1374,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::accessibility.accessibility': ApiAccessibilityAccessibility;
+      'api::acoustic-certificate.acoustic-certificate': ApiAcousticCertificateAcousticCertificate;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;
