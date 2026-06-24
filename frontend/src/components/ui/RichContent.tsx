@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { tss } from "tss-react/dsfr";
 
@@ -54,45 +54,49 @@ export const RichContent = ({ html, className }: RichContentProps) => {
   const [zoomedSrc, setZoomedSrc] = useState<string | null>(null);
   const [zoomedAlt, setZoomedAlt] = useState<string>("");
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const nodes = Array.from(doc.body.childNodes);
+  const segments = useMemo(() => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const nodes = Array.from(doc.body.childNodes);
 
-  const segments: Array<
-    { type: "html"; content: string } | { type: "table"; table: ParsedTable }
-  > = [];
+    const result: Array<
+      { type: "html"; content: string } | { type: "table"; table: ParsedTable }
+    > = [];
 
-  let htmlBuffer = "";
+    let htmlBuffer = "";
 
-  for (const node of nodes) {
-    const el = node as Element;
-    const isCKTable =
-      node.nodeType === Node.ELEMENT_NODE &&
-      (el.tagName === "TABLE" ||
-        (el.tagName === "FIGURE" && el.classList.contains("table")));
+    for (const node of nodes) {
+      const el = node as Element;
+      const isCKTable =
+        node.nodeType === Node.ELEMENT_NODE &&
+        (el.tagName === "TABLE" ||
+          (el.tagName === "FIGURE" && el.classList.contains("table")));
 
-    if (isCKTable) {
-      if (htmlBuffer) {
-        segments.push({ type: "html", content: htmlBuffer });
-        htmlBuffer = "";
+      if (isCKTable) {
+        if (htmlBuffer) {
+          result.push({ type: "html", content: htmlBuffer });
+          htmlBuffer = "";
+        }
+        const tableEl =
+          el.tagName === "TABLE"
+            ? (el as HTMLTableElement)
+            : (el.querySelector("table") as HTMLTableElement);
+        if (tableEl) {
+          result.push({ type: "table", table: parseTable(tableEl) });
+        }
+      } else {
+        const div = document.createElement("div");
+        div.appendChild(node.cloneNode(true));
+        htmlBuffer += div.innerHTML;
       }
-      const tableEl =
-        el.tagName === "TABLE"
-          ? (el as HTMLTableElement)
-          : (el.querySelector("table") as HTMLTableElement);
-      if (tableEl) {
-        segments.push({ type: "table", table: parseTable(tableEl) });
-      }
-    } else {
-      const div = document.createElement("div");
-      div.appendChild(node.cloneNode(true));
-      htmlBuffer += div.innerHTML;
     }
-  }
 
-  if (htmlBuffer) {
-    segments.push({ type: "html", content: htmlBuffer });
-  }
+    if (htmlBuffer) {
+      result.push({ type: "html", content: htmlBuffer });
+    }
+
+    return result;
+  }, [html]);
 
   useEffect(() => {
     const container = containerRef.current;
