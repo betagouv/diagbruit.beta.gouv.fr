@@ -121,7 +121,14 @@ export const RichContent = ({ html, className }: RichContentProps) => {
       if (event.key === "Escape") setZoomedSrc(null);
     };
     document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [zoomedSrc]);
 
   return (
