@@ -85,6 +85,8 @@ const DiagnosticAcousticCertificate = () => {
 
 const useStyles = tss.create(() => ({
     badge: {
+        backgroundColor: fr.colors.decisions.background.contrast.purpleGlycine.default,
+        color: fr.colors.decisions.text.label.purpleGlycine.default
     }
 }));
 
