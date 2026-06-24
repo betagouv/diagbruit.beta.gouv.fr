@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { tss } from "tss-react/dsfr";
 
 interface ParsedTable {
   caption: string;
@@ -45,68 +47,152 @@ interface RichContentProps {
 }
 
 export const RichContent = ({ html, className }: RichContentProps) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const nodes = Array.from(doc.body.childNodes);
+  const { cx, classes } = useStyles();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [zoomedSrc, setZoomedSrc] = useState<string | null>(null);
+  const [zoomedAlt, setZoomedAlt] = useState<string>("");
 
-  const segments: Array<
-    { type: "html"; content: string } | { type: "table"; table: ParsedTable }
-  > = [];
+  const segments = useMemo(() => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const nodes = Array.from(doc.body.childNodes);
 
-  let htmlBuffer = "";
+    const result: Array<
+      { type: "html"; content: string } | { type: "table"; table: ParsedTable }
+    > = [];
 
-  for (const node of nodes) {
-    const el = node as Element;
-    const isCKTable =
-      node.nodeType === Node.ELEMENT_NODE &&
-      (el.tagName === "TABLE" ||
-        (el.tagName === "FIGURE" && el.classList.contains("table")));
+    let htmlBuffer = "";
 
-    if (isCKTable) {
-      if (htmlBuffer) {
-        segments.push({ type: "html", content: htmlBuffer });
-        htmlBuffer = "";
+    for (const node of nodes) {
+      const el = node as Element;
+      const isCKTable =
+        node.nodeType === Node.ELEMENT_NODE &&
+        (el.tagName === "TABLE" ||
+          (el.tagName === "FIGURE" && el.classList.contains("table")));
+
+      if (isCKTable) {
+        if (htmlBuffer) {
+          result.push({ type: "html", content: htmlBuffer });
+          htmlBuffer = "";
+        }
+        const tableEl =
+          el.tagName === "TABLE"
+            ? (el as HTMLTableElement)
+            : (el.querySelector("table") as HTMLTableElement);
+        if (tableEl) {
+          result.push({ type: "table", table: parseTable(tableEl) });
+        }
+      } else {
+        const div = document.createElement("div");
+        div.appendChild(node.cloneNode(true));
+        htmlBuffer += div.innerHTML;
       }
-      const tableEl =
-        el.tagName === "TABLE"
-          ? (el as HTMLTableElement)
-          : (el.querySelector("table") as HTMLTableElement);
-      if (tableEl) {
-        segments.push({ type: "table", table: parseTable(tableEl) });
-      }
-    } else {
-      const div = document.createElement("div");
-      div.appendChild(node.cloneNode(true));
-      htmlBuffer += div.innerHTML;
     }
-  }
 
-  if (htmlBuffer) {
-    segments.push({ type: "html", content: htmlBuffer });
-  }
+    if (htmlBuffer) {
+      result.push({ type: "html", content: htmlBuffer });
+    }
+
+    return result;
+  }, [html]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.tagName === "IMG") {
+        const img = target as HTMLImageElement;
+        setZoomedSrc(img.currentSrc || img.src);
+        setZoomedAlt(img.alt || "");
+      }
+    };
+
+    container.addEventListener("click", handleClick);
+    return () => container.removeEventListener("click", handleClick);
+  }, [html]);
+
+  useEffect(() => {
+    if (!zoomedSrc) return;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setZoomedSrc(null);
+    };
+    document.addEventListener("keydown", handleKey);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [zoomedSrc]);
 
   return (
     <>
-      {segments.map((segment, i) => {
-        if (segment.type === "html") {
+      <div ref={containerRef} className={cx(classes.container)}>
+        {segments.map((segment, i) => {
+          if (segment.type === "html") {
+            return (
+              <div
+                key={i}
+                className={className}
+                dangerouslySetInnerHTML={{ __html: segment.content }}
+              />
+            );
+          }
+          const { headers, data } = segment.table;
           return (
-            <div
+            <Table
               key={i}
-              className={className}
-              dangerouslySetInnerHTML={{ __html: segment.content }}
+              headers={headers}
+              data={data}
+              bordered
             />
           );
-        }
-        const { headers, data } = segment.table;
-        return (
-          <Table
-            key={i}
-            headers={headers}
-            data={data}
-            bordered
+        })}
+      </div>
+
+      {zoomedSrc && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image agrandie"
+          onClick={() => setZoomedSrc(null)}
+          className={cx(classes.zoomedImageOverlay)}
+        >
+          <img
+            src={zoomedSrc}
+            alt={zoomedAlt}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+              boxShadow: "0 0 40px rgba(0, 0, 0, 0.5)",
+            }}
           />
-        );
-      })}
+        </div>
+      )}
     </>
   );
 };
+
+const useStyles = tss.create(() => ({
+  container: {
+    "& img": {
+      cursor: "zoom-in",
+    },
+  },
+  zoomedImageOverlay: {
+    position: "fixed",
+    inset: 0,
+    zIndex: 2000,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "2rem",
+    background: "rgba(0, 0, 0, 0.85)",
+    cursor: "zoom-out",
+  }
+}));
