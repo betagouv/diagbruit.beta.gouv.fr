@@ -46,8 +46,6 @@ interface RichContentProps {
   className?: string;
 }
 
-
-
 export const RichContent = ({ html, className }: RichContentProps) => {
   const { cx, classes } = useStyles();
   const containerRef = useRef<HTMLDivElement>(null);
