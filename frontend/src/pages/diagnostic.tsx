@@ -225,6 +225,7 @@ function DiagnosticPage() {
           typeof addressFeature === "object" &&
           "geometry" in addressFeature
         ) {
+          reset();
           if (mapMethodsRef.current?.map) {
             setAddressDefaultValue(addressFeature);
             mapMethodsRef.current.map.flyTo({
