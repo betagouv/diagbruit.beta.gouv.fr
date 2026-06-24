@@ -211,6 +211,17 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           )}
           <DiagnosticReceiveByMail
             parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+            summary={{
+              score: diagnosticItem.diagnostic.score,
+              maxDbLden: diagnosticItem.diagnostic.max_db_lden,
+              flags: {
+                isMultiExposedSources:
+                  diagnosticItem.diagnostic.flags.isMultiExposedSources,
+                isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
+                hasClassificationWarning:
+                  diagnosticItem.diagnostic.flags.hasClassificationWarning,
+              },
+            }}
           />
         </div>
       )}

@@ -47,14 +47,26 @@ const selectOptions = [
 	{ value: "autre", label: "Autre" },
 ];
 
+export type DiagnosticEmailSummary = {
+	score: number;
+	maxDbLden?: number;
+	flags: {
+		isMultiExposedSources: boolean;
+		isPriorityZone: boolean;
+		hasClassificationWarning: boolean;
+	};
+};
+
 export default function DiagnosticEmailForm({
 	onSuccess,
 	onClose,
-	parcelNumber
+	parcelNumber,
+	summary,
 }: {
 	onSuccess?: (email: string) => void;
 	onClose?: () => void;
 	parcelNumber?: string;
+	summary?: DiagnosticEmailSummary;
 }) {
 	const { cx, classes } = useStyles();
 
@@ -100,7 +112,7 @@ export default function DiagnosticEmailForm({
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber }),
+				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber, summary }),
 			},
 		);
 		if (!mailResponse.ok) {

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { CheckTexts } from "../utils/CheckTexts";
-import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
+import DiagnosticEmailForm, { modal, type DiagnosticEmailSummary } from "./DiagnosticEmailForm";
 
 const MODAL_DISMISSED_COOKIE = "diagbruit_modal_dismissed";
 
@@ -22,8 +22,10 @@ function isModalDismissed(): boolean {
 
 export default function DiagnosticReceiveByMail({
   parcelNumber,
+  summary,
 }: {
   parcelNumber?: string;
+  summary?: DiagnosticEmailSummary;
 }) {
   const { cx, classes } = useStyles();
   const [successEmail, setSuccessEmail] = useState<string | null>(null);
@@ -85,6 +87,7 @@ export default function DiagnosticReceiveByMail({
           setModalDismissedCookie();
         }}
         parcelNumber={parcelNumber}
+        summary={summary}
       />
       {successEmail && (
         <Alert

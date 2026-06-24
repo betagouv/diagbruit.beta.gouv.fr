@@ -3,10 +3,12 @@ import { Body, Button, Column, Container, Head, Html, Img, Link, Preview, Row, S
 
 interface EmailProps {
   diagLink?: string;
+  pdfUrl?: string;
 }
 
 export default function DiagnosticEmail({
   diagLink = "https://diagbruit.fr",
+  pdfUrl,
 }: EmailProps) {
   const previewText = `Vous avez demandé à recevoir le diagnostic acoustique de votre parcelle.`;
 
@@ -43,6 +45,17 @@ export default function DiagnosticEmail({
               </Column>
             </Row>
           </Button>
+          {pdfUrl && (
+            <Section style={{ marginTop: "8px" }}>
+              <Text style={paragraph}>
+                Vous pouvez également{" "}
+                <Link href={pdfUrl} target="_blank" style={linkStyle}>
+                  télécharger le résumé de votre diagnostic au format PDF
+                </Link>
+                .
+              </Text>
+            </Section>
+          )}
           <Section>
             <Text style={paragraph}>
               Ce diagnostic vous permet de consulter les réglementations en
