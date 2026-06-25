@@ -2147,10 +2147,6 @@
                     {
                         "alert_slug": "alert-BordeauxMetropole-derogation-implantation-generale",
                         "content": null,
-                        "title": null,
-                        "source": null,
-                        "reference": null,
-                        "label": null,
                         "geometry": [
                             [
                                 [
@@ -2210,15 +2206,15 @@
                                     44.829620075
                                 ]
                             ]
-                        ]
+                        ],
+                        "label": null,
+                        "reference": null,
+                        "source": null,
+                        "title": null
                     },
                     {
                         "alert_slug": "alert-BordeauxMetropole-isolation-dedans-dehors",
                         "content": null,
-                        "title": null,
-                        "source": null,
-                        "reference": null,
-                        "label": null,
                         "geometry": [
                             [
                                 [
@@ -2278,7 +2274,11 @@
                                     44.829620075
                                 ]
                             ]
-                        ]
+                        ],
+                        "label": null,
+                        "reference": null,
+                        "source": null,
+                        "title": null
                     }
                 ],
                 "zones": [
@@ -3764,66 +3764,66 @@
                     {
                         "alert_slug": "alert-BordeauxMetropole-derogation-implantation-generale",
                         "content": null,
-                        "title": null,
-                        "source": null,
-                        "reference": null,
-                        "label": null,
                         "geometry": [
                             [
                                 [
                                     -0.555997789,
-                                    44.829577274
+                                    44.829578225
                                 ],
                                 [
                                     -0.556475222,
-                                    44.829056058
+                                    44.829057009
                                 ],
                                 [
                                     -0.556515455,
-                                    44.829073178
+                                    44.829074129
                                 ],
                                 [
-                                    -0.55609569,
-                                    44.829622928
+                                    -0.556097031,
+                                    44.829623879
                                 ],
                                 [
                                     -0.555997789,
-                                    44.829577274
+                                    44.829578225
                                 ]
                             ]
-                        ]
+                        ],
+                        "label": null,
+                        "reference": null,
+                        "source": null,
+                        "title": null
                     },
                     {
                         "alert_slug": "alert-BordeauxMetropole-isolation-dedans-dehors",
                         "content": null,
-                        "title": null,
-                        "source": null,
-                        "reference": null,
-                        "label": null,
                         "geometry": [
                             [
                                 [
                                     -0.555997789,
-                                    44.829577274
+                                    44.829578225
                                 ],
                                 [
                                     -0.556475222,
-                                    44.829056058
+                                    44.829057009
                                 ],
                                 [
                                     -0.556515455,
-                                    44.829073178
+                                    44.829074129
                                 ],
                                 [
-                                    -0.55609569,
-                                    44.829622928
+                                    -0.556097031,
+                                    44.829623879
                                 ],
                                 [
                                     -0.555997789,
-                                    44.829577274
+                                    44.829578225
                                 ]
                             ]
-                        ]
+                        ],
+                        "label": null,
+                        "reference": null,
+                        "source": null,
+                        "title": null
                     }
                 ],
                 "zones": [
