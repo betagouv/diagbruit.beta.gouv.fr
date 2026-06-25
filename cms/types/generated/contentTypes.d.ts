@@ -420,7 +420,6 @@ export interface ApiAcousticCertificateAcousticCertificate
     draftAndPublish: true;
   };
   attributes: {
-    cardSlug: Schema.Attribute.String;
     content: Schema.Attribute.RichText &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<

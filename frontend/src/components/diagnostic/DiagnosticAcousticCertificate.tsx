@@ -5,48 +5,54 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
+import { PrecoProps } from "../../hooks/usePreco";
+
+type AcoustiCertificateType = {
+    id: number;
+    documentId: string;
+    content: string;
+    recommendation: PrecoProps | null;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+};
 
 const DiagnosticAcousticCertificate = () => {
     const { cx, classes } = useStyles();
 
-    const [content, setContent] = useState<any>(null);
-    const [recommendation, setRecommendation] = useState<any>(null);
+    const [response, setResponse] = useState<AcoustiCertificateType | null>(null);
+    const [recommendation, setRecommendation] = useState<PrecoProps | null>(null);
 
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/acoustic-certificate`)
+            .get(`${process.env.REACT_APP_CMS_URL}/api/acoustic-certificate`, {
+                params: {
+                    populate: {
+                        recommendation: {
+                            populate: {
+                                imageBanner: true,
+                                imageThumbnail: true,
+                            },
+                        },
+                    },
+                },
+            })
             .then((res) => {
-                setContent(res.data.data);
+                setResponse(res.data.data);
+                setRecommendation(res.data.data.recommendation);
             })
             .catch((err) => {
                 console.error(err);
             });
     }, []);
 
-    useEffect(() => {
-        if (!content?.cardSlug) return;
-        axios
-            .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
-                params: {
-                    populate: "*",
-                    filters: { slug: { $eq: content.cardSlug } },
-                },
-            })
-            .then((res) => {
-                setRecommendation(res.data.data[0] ?? null);
-                console.log("recommendation", res.data.data[0] ?? null);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }, [content?.cardSlug]);
 
-    if (!content) {
+    if (!response) {
         return <></>;
     }
 
     return (<div className={fr.cx("fr-mb-4v")}>
-        {content.content && (
+        {response.content && (
             <>
                 <h4 className={fr.cx("fr-h6", "fr-mb-3v")}>Concernant votre projet</h4>
                 <Accordion
@@ -58,7 +64,7 @@ const DiagnosticAcousticCertificate = () => {
                         </>
                     }
                 >
-                    <div dangerouslySetInnerHTML={{ __html: content.content }}></div>
+                    <div dangerouslySetInnerHTML={{ __html: response.content }}></div>
                     {recommendation && (
                         <Card
                             background
@@ -66,7 +72,7 @@ const DiagnosticAcousticCertificate = () => {
                             enlargeLink
                             horizontal
                             imageAlt={recommendation.imageBanner?.alternativeText ?? ""}
-                            imageUrl={`${process.env.REACT_APP_CMS_URL}${recommendation.imageBanner.url}`}
+                            imageUrl={recommendation.imageBanner?.url ? `${process.env.REACT_APP_CMS_URL}${recommendation.imageBanner.url}` : "/images/imgPlaceholder.png"}
                             linkProps={{
                                 href: `/preco/${recommendation.slug}`,
                                 target: "_blank",
