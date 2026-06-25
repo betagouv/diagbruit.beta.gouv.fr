@@ -22,6 +22,11 @@
     "cardSlug": {
       "type": "string",
       "required": false
+    },
+    "recommendation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::recommendation.recommendation"
     }
   }
 }

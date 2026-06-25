@@ -439,6 +439,10 @@ export interface ApiAcousticCertificateAcousticCertificate
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    recommendation: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::recommendation.recommendation'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
