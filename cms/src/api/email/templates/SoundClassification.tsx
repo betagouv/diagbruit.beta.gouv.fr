@@ -1,0 +1,66 @@
+import { Text, View } from "@react-pdf/renderer";
+import { ReferencesBox, styles, type RegulationData } from "./DiagnosticPdf";
+
+const TERRESTRE_REFERENCES = [
+  { label: "Arrêté du 30 mai 1996", url: "https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027804837" },
+  { label: "Arrêté du 23 juillet 2013", url: "https://www.legifrance.gouv.fr/loda/id/LEGIARTI000027789290" },
+  {
+    label: "Arrêté du 3 septembre 2013",
+    url: "https://www.bulletin-officiel.developpement-durable.gouv.fr/documents/Bulletinofficiel-0027104/met_20130017_0100_0006.pdf",
+  },
+];
+
+
+export default function SoundClassification({
+  soundClassification,
+}: {
+  soundClassification: RegulationData["soundClassification"];
+}) {
+  if (!soundClassification.exposed) return null;
+  const { rows } = soundClassification;
+  const maxCategory = rows.reduce(
+    (m, r) => Math.max(m, Number(r.category) || 0),
+    0,
+  );
+  return (
+    <View style={styles.regSection}>
+      <View style={styles.regSectionHeader}>
+        <Text style={styles.regSectionTitle}>
+          Nationale Terrestre (Classement sonore)
+        </Text>
+        <Text style={styles.exposedBadge}>Parcelle exposée</Text>
+      </View>
+      <View style={styles.regCard}>
+        <View style={styles.badgeRow}>
+          <Text style={styles.sourceBadge}>Source : Classement sonore</Text>
+        </View>
+        <Text style={styles.regParagraph}>
+          La parcelle est exposée à {rows.length} source
+          {rows.length > 1 ? "s" : ""} de bruit de catégorie {maxCategory}.
+        </Text>
+      </View>
+      <View style={styles.table}>
+        <View style={styles.tableHeaderRow}>
+          <Text style={[styles.th, styles.colType]}>Type de source</Text>
+          <Text style={[styles.th, styles.colName]}>Nom de la source</Text>
+          <Text style={[styles.th, styles.colCat]}>Catégorie</Text>
+          <Text style={[styles.th, styles.colDist]}>Distance minimum*</Text>
+          <Text style={[styles.th, styles.colDist]}>Distance maximum*</Text>
+        </View>
+        {rows.map((r, i) => (
+          <View key={i} style={styles.tableRow}>
+            <Text style={[styles.td, styles.colType]}>{r.type}</Text>
+            <Text style={[styles.td, styles.colName]}>{r.name}</Text>
+            <Text style={[styles.td, styles.colCat]}>{r.category}</Text>
+            <Text style={[styles.td, styles.colDist]}>{r.minDistance} mètres</Text>
+            <Text style={[styles.td, styles.colDist]}>{r.maxDistance} mètres</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.tableNote}>
+        *Distances estimées à partir du centre de la source de bruit.
+      </Text>
+      <ReferencesBox links={TERRESTRE_REFERENCES} />
+    </View>
+  );
+}

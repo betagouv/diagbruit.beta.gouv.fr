@@ -10,7 +10,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import DiagnosticEmail from "../templates/DiagnosticEmail";
-import DiagnosticPdf, { type DiagnosticPdfData } from "../templates/DiagnosticPdf";
+import DiagnosticPdf, { type DiagnosticPdfData, type RegulationData } from "../templates/DiagnosticPdf";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ALLOWED_LINK_ORIGINS = [
@@ -82,6 +82,35 @@ async function generateAndUploadDiagnosticPdf(
   }
 }
 
+/**
+ * Validate/coerce the client-provided regulation payload into RegulationData.
+ * Everything is coerced so malformed input can't break PDF rendering; returns
+ * undefined when there's nothing usable (page 2 then renders empty/omitted).
+ */
+function coerceRegulation(raw: any): RegulationData | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const zone = raw.peb?.zone;
+  const rows = Array.isArray(raw.soundClassification?.rows)
+    ? raw.soundClassification.rows.slice(0, 50).map((r: any) => ({
+        type: String(r?.type ?? ""),
+        name: String(r?.name ?? "-"),
+        category: r?.category ?? "",
+        minDistance: Number(r?.minDistance) || 0,
+        maxDistance: Number(r?.maxDistance) || 0,
+      }))
+    : [];
+  return {
+    peb: {
+      exposed: Boolean(raw.peb?.exposed),
+      zone: ["A", "B", "C", "D"].includes(zone) ? zone : null,
+    },
+    soundClassification: {
+      exposed: Boolean(raw.soundClassification?.exposed),
+      rows,
+    },
+  };
+}
+
 export default factories.createCoreController("api::email.email", () => ({
   async subscribe(ctx) {
     const { email, profile } = ctx.request.body;
@@ -148,6 +177,7 @@ export default factories.createCoreController("api::email.email", () => ({
         },
         link,
         generatedAt: new Date().toLocaleDateString("fr-FR"),
+        regulation: coerceRegulation(summary.regulation),
       };
       pdfUrl = await generateAndUploadDiagnosticPdf(pdfData);
     }

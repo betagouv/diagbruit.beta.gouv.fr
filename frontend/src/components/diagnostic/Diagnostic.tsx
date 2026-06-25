@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
+import { getReadableSource } from "../../utils/tools";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -220,6 +221,28 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                 isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
                 hasClassificationWarning:
                   diagnosticItem.diagnostic.flags.hasClassificationWarning,
+              },
+              regulation: {
+                peb: {
+                  exposed: diagnosticItem.diagnostic.air_intersections.length > 0,
+                  zone:
+                    diagnosticItem.diagnostic.air_intersections[0]?.acoustic_zone ??
+                    null,
+                },
+                soundClassification: {
+                  exposed:
+                    diagnosticItem.diagnostic.soundclassification_intersections
+                      .length > 0,
+                  rows: [...diagnosticItem.diagnostic.soundclassification_intersections]
+                    .sort((a, b) => b.acoustic_category - a.acoustic_category)
+                    .map((s) => ({
+                      type: getReadableSource(s.kind, true),
+                      name: s.label || "-",
+                      category: s.acoustic_category,
+                      minDistance: s.min_distance,
+                      maxDistance: s.max_distance,
+                    })),
+                },
               },
             }}
           />

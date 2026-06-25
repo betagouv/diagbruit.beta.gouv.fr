@@ -55,6 +55,19 @@ export type DiagnosticEmailSummary = {
 		isPriorityZone: boolean;
 		hasClassificationWarning: boolean;
 	};
+	regulation?: {
+		peb: { exposed: boolean; zone: string | null };
+		soundClassification: {
+			exposed: boolean;
+			rows: {
+				type: string;
+				name: string;
+				category: number;
+				minDistance: number;
+				maxDistance: number;
+			}[];
+		};
+	};
 };
 
 export default function DiagnosticEmailForm({
