@@ -7,39 +7,9 @@
       "CREATE SEQUENCE IF NOT EXISTS {{ this.schema }}.{{ this.name }}_id_seq"
     ],
     post_hook=[
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_codedept; CREATE INDEX idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
     ]
 ) }}
 
-WITH features AS MATERIALIZED (
-  SELECT
-    CAST(nextval('{{ this.schema }}.{{ this.name }}_id_seq') AS INTEGER) AS id,
-    campaign,
-    codedept,
-    acoustic_producer_kind,
-    label,
-    kind,
-    acoustic_noisemap_kind,
-    CAST(acoustic_db_value AS float) AS acoustic_db_value,
-    acoustic_time_range,
-    geometry
-  FROM {{ ref('int_noisemap_projected') }}
-  WHERE COALESCE(area_m2, 0) > 0.0
-  {% if is_incremental() and var('codedept', none) is not none %}
-    AND codedept = '{{ var("codedept") }}'
-  {% endif %}
-)
-
-SELECT
-  id,
-  campaign,
-  codedept,
-  acoustic_producer_kind,
-  label,
-  kind,
-  acoustic_noisemap_kind,
-  acoustic_db_value,
-  acoustic_time_range,
-  ST_Subdivide(geometry, 256) AS geometry
-FROM features
+{{ subdivide_noisemap_features(ref('int_noisemap_projected')) }}
