@@ -12,19 +12,34 @@
     ]
 ) }}
 
+WITH features AS MATERIALIZED (
+  SELECT
+    CAST(nextval('{{ this.schema }}.{{ this.name }}_id_seq') AS INTEGER) AS id,
+    campaign,
+    codedept,
+    acoustic_producer_kind,
+    label,
+    kind,
+    acoustic_noisemap_kind,
+    CAST(acoustic_db_value AS float) AS acoustic_db_value,
+    acoustic_time_range,
+    geometry
+  FROM {{ ref('int_noisemap_projected') }}
+  WHERE COALESCE(area_m2, 0) > 0.0
+  {% if is_incremental() and var('codedept', none) is not none %}
+    AND codedept = '{{ var("codedept") }}'
+  {% endif %}
+)
+
 SELECT
-  CAST(nextval('{{ this.schema }}.{{ this.name }}_id_seq') AS INTEGER) AS id,
+  id,
   campaign,
   codedept,
   acoustic_producer_kind,
   label,
   kind,
   acoustic_noisemap_kind,
-  CAST(acoustic_db_value AS float) AS acoustic_db_value,
+  acoustic_db_value,
   acoustic_time_range,
-  geometry
-FROM {{ ref('int_noisemap_projected') }}
-WHERE COALESCE(area_m2, 0) > 0.0
-{% if is_incremental() and var('codedept', none) is not none %}
-  AND codedept = '{{ var("codedept") }}'
-{% endif %}
+  ST_Subdivide(geometry, 256) AS geometry
+FROM features
