@@ -1,6 +1,7 @@
 import type { Core } from '@strapi/strapi';
 import homePageContentSeed from './seeds/home-page-content.json';
 import noisezoneAlertSeed from './seeds/noisezone-alert.json';
+import acousticCertification from './seeds/acoustic-certificate.json'
 
 export default {
   register(/* { strapi }: { strapi: Core.Strapi } */) { },
@@ -22,6 +23,13 @@ export default {
         await strapi.documents(alertUid).create({ data: data as any, status: 'published' });
       }
       strapi.log.info('[seed] noisezone-alert seeded.');
+    }
+    const certificateUid = 'api::acoustic-certificate.acoustic-certificate';
+    const existingCertificate = await strapi.documents(certificateUid).findFirst();
+    if (!existingCertificate) {
+      strapi.log.info('[seed] No acoustic-certificate found, seeding...');
+      await strapi.documents(certificateUid).create({ data: acousticCertification as any, status: 'published' });
+      strapi.log.info('[seed] acoustic-certificate seeded.');
     }
   },
 };
