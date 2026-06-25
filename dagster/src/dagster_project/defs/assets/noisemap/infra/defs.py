@@ -60,4 +60,5 @@ def infra_landing(context: AssetExecutionContext):
         type=KIND,
         dept=t.dept,
         noisemap_pipeline="INFRA",
+        exclude_name_substrings=("_INFRA_R_",),
     )

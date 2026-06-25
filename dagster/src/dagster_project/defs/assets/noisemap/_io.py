@@ -278,7 +278,7 @@ def box_to_s3_launcher(context: AssetExecutionContext, path: str, box: BoxResour
         "manifest": MetadataValue.json(manifest),
     })
 
-def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str, dept: str, db_table: str = "raw_noisemap", producer_kind: str | None = None, noisemap_pipeline: str | None = None):
+def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str, dept: str, db_table: str = "raw_noisemap", producer_kind: str | None = None, noisemap_pipeline: str | None = None, exclude_name_substrings: tuple[str, ...] = ()):
     source_s3_path = path + "_source/"
     mapping_s3_key = path + "mapping.json"
 
@@ -288,6 +288,15 @@ def ingest_from_s3_landing(context: AssetExecutionContext, path: str, type: str,
     mapping_obj = s3.get_object(Bucket=S3_BUCKET, Key=mapping_s3_key)
     mapping = json.loads(mapping_obj["Body"].read())
     context.log.info(f"Loaded mapping: {len(mapping)} entries from s3://{S3_BUCKET}/{mapping_s3_key}")
+
+    # Drop files owned by another pipeline. The infra source folder also carries the
+    # routier (_INFRA_R_) shapefiles, which are the fastline pipeline's data; ingesting
+    # them here would duplicate every road polygon in raw_noisemap.
+    if exclude_name_substrings:
+        kept = [e for e in mapping if not any(s in e["name"] for s in exclude_name_substrings)]
+        if len(kept) != len(mapping):
+            context.log.info(f"Excluded {len(mapping) - len(kept)} mapping entries matching {exclude_name_substrings}")
+        mapping = kept
 
     downloaded = download_from_s3(bucket=S3_BUCKET, file_path=local_dir, s3_path=source_s3_path, context=context)
 
