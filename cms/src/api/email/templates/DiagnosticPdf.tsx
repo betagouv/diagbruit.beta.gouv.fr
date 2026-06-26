@@ -2,6 +2,10 @@ import { Document, Font, Link, Page, StyleSheet, Text, View, Image } from "@reac
 import path from "path";
 import Peb from "./Peb";
 import SoundClassification from "./SoundClassification";
+import Plu from "./Plu";
+import Isolation from "./Isolation";
+import NoiseMap from "./NoiseMap";
+import Contact from "./Contact";
 
 const FONTS_DIR = path.join(process.cwd(), "public", "fonts");
 Font.register({
@@ -24,11 +28,52 @@ export interface DiagnosticPdfData {
   };
   link: string;
   generatedAt: string;
+  address?: string | null;
   regulation?: RegulationData;
+  isolation?: IsolationData;
+  plu?: PluData;
+  noiseMap?: NoiseMapData;
+}
+
+// One row of the "Cartes de bruit" synthesis table; values are pre-formatted
+// strings built on the frontend (e.g. "70 dB", "-").
+export interface NoiseMapRow {
+  type: string;
+  producer: string;
+  name: string;
+  dayLevel: string;
+  nightLevel: string;
+}
+
+export interface NoiseMapData {
+  rows: NoiseMapRow[];
+}
+
+// One PLU "noise zone" entry. `content` is HTML authored in the CMS editor and
+// rendered into native @react-pdf nodes by the Plu component's parser.
+export interface PluZone {
+  label: string;
+  content: string;
+  source: string;
+  reference: string;
+}
+
+export interface PluData {
+  zones: PluZone[];
+  references: { label: string; url: string }[];
+}
+
+// Regulatory sound-isolation requirement (dB) plus the exposure flags used to
+// phrase the requirement sentence (mirrors the frontend's RegulationIsolation).
+export interface IsolationData {
+  min: number | null;
+  max: number | null;
+  hasPeb: boolean;
+  hasCls: boolean;
 }
 
 export interface RegulationSoundRow {
-  type: string; // already-readable, e.g. "Route"
+  type: string;
   name: string;
   category: number | string;
   minDistance: number;
@@ -40,8 +85,6 @@ export interface RegulationData {
   soundClassification: { exposed: boolean; rows: RegulationSoundRow[] };
 }
 
-// A run of inline text with optional bold, used to build paragraphs that
-// preserve inline emphasis (see renderRuns / the Peb component).
 export type Run = { text: string; bold?: boolean };
 
 const dsfr = {
@@ -85,7 +128,7 @@ export const styles = StyleSheet.create({
     gap: dsfr.spacing(2),
   },
   headerLogo: {
-    height: 24, // fixed size so the row can center it against the text
+    height: 24,
     width: 24,
   },
   brand: {
@@ -97,7 +140,7 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: "Marianne",
     fontWeight: 700,
-    lineHeight: 1, // tight line-box so it centers cleanly in the row
+    lineHeight: 1,
   },
   subtitle: {
     fontSize: dsfr.fontSize.xxs,
@@ -180,6 +223,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: dsfr.colors.blueFrance,
     color: dsfr.colors.defaultGrey,
+    fontSize: dsfr.fontSize.xs,
+    lineHeight: 1.5,
   },
   reco: {
     marginTop: dsfr.spacing(6),
@@ -218,7 +263,6 @@ export const styles = StyleSheet.create({
   recoParagraph: {
     fontSize: dsfr.fontSize.xxs,
     color: dsfr.colors.blueFrance,
-    marginBottom: dsfr.spacing(3),
     fontWeight: 400,
     lineHeight: 1.5,
   },
@@ -227,7 +271,23 @@ export const styles = StyleSheet.create({
     fontWeight: 700,
   },
 
-  // --- Page 2: regulation sections ---
+  contactBox: {
+    marginTop: dsfr.spacing(6),
+    padding: dsfr.spacing(6),
+    borderWidth: 1,
+    borderColor: dsfr.colors.blueFrance,
+    borderRadius: dsfr.spacing(1),
+  },
+  contactIcon: {
+    width: 16,
+    height: 16,
+  },
+  contactLink: {
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.blueFrance,
+    textDecoration: "underline",
+  },
+
   regSection: {
     marginBottom: dsfr.spacing(8),
   },
@@ -244,6 +304,7 @@ export const styles = StyleSheet.create({
     fontSize: dsfr.fontSize.xs,
     fontFamily: "Marianne",
     fontWeight: 400,
+    lineHeight: 1.5,
     color: dsfr.colors.blueFrance,
   },
   exposedBadge: {
@@ -254,11 +315,11 @@ export const styles = StyleSheet.create({
     color: "#b34000",
     backgroundColor: "#ffe9e6",
     paddingVertical: 2,
+    lineHeight: 1.5,
     paddingHorizontal: dsfr.spacing(2),
   },
   regIntro: {
     fontSize: dsfr.fontSize.xxs,
-    marginBottom: dsfr.spacing(3),
   },
   regCard: {
     borderWidth: 1,
@@ -279,6 +340,7 @@ export const styles = StyleSheet.create({
     color: "#ce0500",
     backgroundColor: "#ffe9e6",
     paddingVertical: 2,
+    lineHeight: 1.5,
     paddingHorizontal: dsfr.spacing(2),
   },
   sourceBadge: {
@@ -289,11 +351,11 @@ export const styles = StyleSheet.create({
     color: dsfr.colors.defaultGrey,
     backgroundColor: "#eeeeee",
     paddingVertical: 2,
+    lineHeight: 1.5,
     paddingHorizontal: dsfr.spacing(2),
   },
   regParagraph: {
     fontSize: dsfr.fontSize.xxs,
-    marginBottom: dsfr.spacing(3),
     lineHeight: 1.5,
   },
   bold: {
@@ -302,11 +364,13 @@ export const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: "row",
+    alignItems: "flex-start",
     marginBottom: dsfr.spacing(1),
     paddingLeft: dsfr.spacing(2),
   },
   bulletDot: {
     fontSize: dsfr.fontSize.xxs,
+    lineHeight: 1.5,
     marginRight: dsfr.spacing(2),
   },
   listText: {
@@ -353,20 +417,23 @@ export const styles = StyleSheet.create({
   refBox: {
     borderWidth: 1,
     borderColor: dsfr.colors.borderGrey,
-    padding: dsfr.spacing(4),
+    padding: dsfr.spacing(2),
   },
   refTitle: {
-    fontSize: dsfr.fontSize.sm,
+    fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
     fontWeight: 700,
-    marginBottom: dsfr.spacing(2),
+    color: dsfr.colors.mentionGrey,
+    paddingBottom: dsfr.spacing(1),
+
   },
   refLinks: {
-    fontSize: dsfr.fontSize.xs,
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.mentionGrey,
   },
   refLink: {
-    fontSize: dsfr.fontSize.xs,
-    color: dsfr.colors.blueFrance,
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.mentionGrey,
     textDecoration: "underline",
   },
   footer: {
@@ -401,6 +468,37 @@ export const renderRuns = (runs: Run[], key?: number) => (
   </Text>
 );
 
+const getRiskSummaryRuns = (score: number): Run[] => {
+  if (score > 8) {
+    return [
+      { text: "Votre parcelle est exposée à un " },
+      { text: "risque extrême de nuisance sonore.", bold: true },
+      {
+        text:
+          " Les projets de construction ou de rénovation sont soumis à des ",
+      },
+      { text: "obligations réglementaires", bold: true },
+      { text: "." },
+    ];
+  }
+  const level = score > 6 ? "fort" : score > 3 ? "moyen" : "faible";
+  return [
+    { text: "Votre parcelle est exposée à un " },
+    { text: `risque ${level} de nuisance sonore.`, bold: true }
+  ];
+};
+
+const renderInlineRuns = (runs: Run[]) =>
+  runs.map((r, i) =>
+    r.bold ? (
+      <Text key={i} style={styles.bold}>
+        {r.text}
+      </Text>
+    ) : (
+      r.text
+    ),
+  );
+
 export const ReferencesBox = ({ links }: { links: { label: string; url: string }[] }) => (
   <View style={styles.refBox}>
     <Text style={styles.refTitle}>Références</Text>
@@ -408,7 +506,7 @@ export const ReferencesBox = ({ links }: { links: { label: string; url: string }
       {links.map((l, i) => (
         <Text key={i}>
           {i > 0 ? "   |   " : ""}
-          <Link src={l.url} style={styles.refLink}>{l.label}</Link>
+          <Link src={l.url} style={styles.refLink}>{l.label} </Link>
         </Text>
       ))}
     </Text>
@@ -428,12 +526,12 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
         <View style={styles.sonoscore}>
           <View style={styles.sonoscoreLeft}>
             <Text style={styles.sonoTitle}>Diagnostic complet sur les risques sonores</Text>
-            <Text style={styles.sonoParcelle}>Parcelle n°0046</Text>
-            <Text style={styles.sonoAddress}>Quai Président Wilson, 44200 Nantes</Text>
+            <Text style={styles.sonoParcelle}>Parcelle n°{data.parcelNumber}</Text>
+            {data.address && <Text style={styles.sonoAddress}>{data.address}</Text>}
             <Text style={styles.sonoDate}>Édité le {data.generatedAt}</Text>
           </View>
           <View style={styles.sonoscoreRight}>
-            <Text>Votre parcelle est exposée à un risque extrême de nuisance sonore par le classement sonore et le bruit aérien. Les projets de construction ou de rénovation sont soumis à des obligations réglementaires.</Text>
+            <Text>{renderInlineRuns(getRiskSummaryRuns(data.score))}</Text>
           </View>
         </View>
 
@@ -499,11 +597,17 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           />
         )}
       </Page>
+      {(data.plu || data.isolation) &&
+        <Page size="A4" style={styles.page}>
+          <Header />
+          {data.plu && <Plu plu={data.plu} />}
+          {data.isolation && <Isolation isolation={data.isolation} />}
+        </Page>
+      }
       <Page size="A4" style={styles.page}>
         <Header />
-        <Text style={styles.title}>
-          Cartes de bruits
-        </Text>
+        {data.noiseMap && <NoiseMap noiseMap={data.noiseMap} />}
+        <Contact />
       </Page>
       <Page size="A4" style={styles.page}>
         <Header />

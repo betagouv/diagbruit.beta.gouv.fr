@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
-import { getReadableSource } from "../../utils/tools";
+import { getNoiseMapRows, getReadableSource } from "../../utils/tools";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -245,6 +245,31 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                       maxDistance: s.max_distance,
                     })),
                 },
+              },
+              isolation: {
+                min: diagnosticItem.diagnostic.isolation_min,
+                max: diagnosticItem.diagnostic.isolation_max,
+                hasPeb: diagnosticItem.diagnostic.air_intersections.length > 0,
+                hasCls:
+                  diagnosticItem.diagnostic.soundclassification_intersections
+                    .length > 0,
+              },
+              plu: {
+                zones: Array.from(
+                  new Map(
+                    diagnosticItem.diagnostic.noisezone_intersections.map(
+                      (nz) => [nz.alert_slug, nz],
+                    ),
+                  ).values(),
+                ).map((nz) => ({
+                  label: nz.label ?? "",
+                  content: nz.content ?? "",
+                  source: nz.source ?? "",
+                  reference: nz.reference ?? "",
+                })),
+              },
+              noiseMap: {
+                rows: getNoiseMapRows(diagnosticItem.diagnostic),
               },
             }}
           />

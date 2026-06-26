@@ -68,6 +68,29 @@ export type DiagnosticEmailSummary = {
 			}[];
 		};
 	};
+	isolation?: {
+		min: number | null;
+		max: number | null;
+		hasPeb: boolean;
+		hasCls: boolean;
+	};
+	plu?: {
+		zones: {
+			label: string;
+			content: string;
+			source: string;
+			reference: string;
+		}[];
+	};
+	noiseMap?: {
+		rows: {
+			type: string;
+			producer: string;
+			name: string;
+			dayLevel: string;
+			nightLevel: string;
+		}[];
+	};
 };
 
 export default function DiagnosticEmailForm({
