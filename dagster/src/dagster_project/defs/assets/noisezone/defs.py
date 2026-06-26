@@ -35,7 +35,7 @@ _MAPPING = [
     kinds={"box", "s3"},
 )
 def noisezone_launcher(context: AssetExecutionContext, box: BoxResource):
-    """Download the noisezone shapefile from Box and upload to S3."""
+    """Download the noisezone sources from Box and upload to S3."""
     return box_to_s3_launcher(
         context=context,
         path=_S3_PREFIX,
@@ -55,7 +55,7 @@ def noisezone_launcher(context: AssetExecutionContext, box: BoxResource):
     deps=["noisezone_launcher"],
 )
 def noisezone_landing(context: AssetExecutionContext):
-    """Download the noisezone shapefile from S3 and ingest into public_workspace.raw_noisezone."""
+    """Download the noisezone sources from S3 and ingest into public_workspace.raw_noisezone."""
     s3_path = _S3_PREFIX + "_source/"
     _LOCAL_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -67,18 +67,22 @@ def noisezone_landing(context: AssetExecutionContext):
             f"No source files at s3://{S3_BUCKET}/{s3_path} — run noisezone_launcher first"
         )
 
+    # ingest_shapefile reads both .shp and .geojson via geopandas and reprojects to
+    # EPSG:2154, so mixed-format sources land in raw_noisezone with a single SRID.
+    sources = sorted([*_LOCAL_DIR.rglob("*.shp"), *_LOCAL_DIR.rglob("*.geojson")])
+
     ingested = 0
-    for i, shp in enumerate(sorted(_LOCAL_DIR.rglob("*.shp"))):
+    for i, src in enumerate(sources):
         if_exists = "replace" if i == 0 else "append"
-        context.log.info(f"Ingesting {shp.name} → raw_noisezone (if_exists={if_exists})")
+        context.log.info(f"Ingesting {src.name} → raw_noisezone (if_exists={if_exists})")
         success = ingest_shapefile(
-            str(shp), "raw_noisezone", db_url(),
+            str(src), "raw_noisezone", db_url(),
             schema="public_workspace", if_exists=if_exists, context=context,
         )
         if success:
             ingested += 1
         else:
-            context.log.error(f"Failed to ingest {shp.name} → raw_noisezone")
+            context.log.error(f"Failed to ingest {src.name} → raw_noisezone")
 
     shutil.rmtree(_LOCAL_DIR, ignore_errors=True)
 

@@ -15,6 +15,8 @@ class FastlineTerritory:
     box_folder_id: str  # Box folder ID containing the .shp files
 
 
+# Fastline data only genuinely exists for 033 and 044. Other depts are covered
+# by the infra pipeline (their cbs_infra source carries the routier shapefiles).
 FASTLINE_TERRITORIES: list[FastlineTerritory] = [
     FastlineTerritory(
         dept="033",
@@ -25,25 +27,5 @@ FASTLINE_TERRITORIES: list[FastlineTerritory] = [
         dept="044",
         campaign="2022",
         box_folder_id="380219303992",
-    ),
-    FastlineTerritory(
-        dept="013",
-        campaign="2022",
-        box_folder_id="381493761417",
-    ),
-    FastlineTerritory(
-        dept="035",
-        campaign="2022",
-        box_folder_id="381494198290",
-    ),
-    FastlineTerritory(
-        dept="059",
-        campaign="2022",
-        box_folder_id="381494579423",
-    ),
-    FastlineTerritory(
-        dept="067",
-        campaign="2022",
-        box_folder_id="381496213487",
     ),
 ]
