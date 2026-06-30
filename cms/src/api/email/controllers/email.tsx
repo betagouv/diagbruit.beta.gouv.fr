@@ -261,7 +261,7 @@ export default factories.createCoreController("api::email.email", () => ({
     }
 
     const html = await render(
-      <DiagnosticEmail diagLink={link} pdfUrl={pdfUrl ?? undefined} />,
+      <DiagnosticEmail diagLink={link} pdfUrl={pdfUrl ?? undefined} parcelNumber={parcelNumber} />,
     );
 
     await strapi.plugins.email.services.email.send({
