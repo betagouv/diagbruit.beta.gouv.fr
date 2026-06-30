@@ -223,6 +223,25 @@ function DiagnosticPage() {
           typeof parcelleFeature === "object" &&
           "geometry" in parcelleFeature
         ) {
+          const parcelleKey = (props: any) => {
+            const commune = props?.commune ?? props?.code_insee;
+            const section = props?.section;
+            const numero = props?.numero;
+            if (commune == null || section == null || numero == null)
+              return null;
+            return `${commune}-${String(section).padStart(2, "0")}-${String(
+              numero,
+            ).padStart(4, "0")}`;
+          };
+          const currentKey = parcelleKey(
+            mapMethodsRef.current?.parcelle?.properties,
+          );
+          const incomingKey = parcelleKey(
+            (parcelleFeature as { properties?: unknown }).properties,
+          );
+          if (currentKey && incomingKey && currentKey === incomingKey) {
+            return;
+          }
           setIsLoading(true);
           onParcelleSelected(parcelleFeature);
         } else {
@@ -295,7 +314,7 @@ function DiagnosticPage() {
           checked={showParcelleSearch}
           onChange={checked => {
             setShowParcelleSearch(checked);
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(window.location.search);
             if (checked) {
               params.set("parcelleSearch", encode(checked));
             } else {

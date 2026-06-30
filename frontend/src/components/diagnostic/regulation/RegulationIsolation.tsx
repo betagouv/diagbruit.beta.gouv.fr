@@ -9,10 +9,13 @@ type RegulationIsolationProps = {
 
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const { diagnostic } = diagnosticItem;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
-  const goToTab = (str: string) =>
-    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
+  const goToTab = (str: string) => {
+    const next = new URLSearchParams(window.location.search);
+    next.set("tab", str);
+    setSearchParams(next);
+  };
 
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
