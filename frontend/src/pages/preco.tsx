@@ -31,7 +31,23 @@ export const PrecoPage = () => {
       .slice(0, 160)
     : undefined;
 
-  usePageMeta(preco?.title ?? "Préconisation", plainText);
+  const precoImage =
+    preco?.imageBanner?.url ? imgUrl(preco.imageBanner.url) : undefined;
+
+  usePageMeta(preco?.title ?? "Préconisation", plainText, {
+    type: "article",
+    image: precoImage,
+    jsonLd: preco
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: preco.title,
+          description: plainText,
+          ...(precoImage ? { image: precoImage } : {}),
+          dateModified: preco.updatedAt,
+        }
+      : undefined,
+  });
 
   if (isLoading) {
     return (
