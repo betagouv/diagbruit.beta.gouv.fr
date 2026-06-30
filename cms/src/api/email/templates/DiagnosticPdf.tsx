@@ -227,33 +227,51 @@ export const styles = StyleSheet.create({
     fontSize: dsfr.fontSize.xs,
     lineHeight: 1.5,
   },
-  reco: {
+  info: {
     marginTop: dsfr.spacing(6),
-    padding: dsfr.spacing(6),
-    backgroundColor: dsfr.colors.contrastBlueFrance,
+    borderWidth: 1,
+    borderColor: dsfr.colors.borderGrey,
     borderRadius: dsfr.spacing(1),
+    overflow: "hidden",
   },
+  infoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+    backgroundColor: dsfr.colors.borderGrey,
+    paddingVertical: dsfr.spacing(2),
+    paddingHorizontal: dsfr.spacing(4),
+  },
+  infoBody: {
+    padding: dsfr.spacing(2),
+  },
+  infoIcon: {
+    width: 10,
+    height: 10,
+    borderRadius: 7,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoIconText: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+  infoTitle: {
+    fontSize: dsfr.fontSize.xs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+
+  // Blue header/title/text reused by the Contact ("Conseils diagBruit") box.
   recoHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: dsfr.spacing(2),
     marginBottom: dsfr.spacing(4),
-  },
-  recoIcon: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1.5,
-    borderColor: dsfr.colors.blueFrance,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  recoIconText: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.blueFrance,
-    lineHeight: 1,
   },
   recoTitle: {
     fontSize: dsfr.fontSize.xs,
@@ -266,10 +284,6 @@ export const styles = StyleSheet.create({
     color: dsfr.colors.blueFrance,
     fontWeight: 400,
     lineHeight: 1.5,
-  },
-  recoBold: {
-    fontFamily: "Marianne",
-    fontWeight: 700,
   },
 
   contactBox: {
@@ -593,31 +607,45 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           <Link src={data.link} style={styles.link}>Diagnostic complet en ligne</Link>
         </View>
 
-        <View style={styles.reco}>
-          <View style={styles.recoHeader}>
-            <View style={styles.recoIcon}>
-              <Text style={styles.recoIconText}>i</Text>
+        <View style={styles.info}>
+          <View style={styles.infoHeader}>
+            <View style={styles.infoIcon}>
+              <Text style={styles.infoIconText}>i</Text>
             </View>
-            <Text style={styles.recoTitle}>Recommandations</Text>
+            <Text style={styles.infoTitle}>Informations</Text>
           </View>
-          <Text style={styles.recoParagraph}>
-            Nous vous conseillons de{" "}
-            <Text style={styles.recoBold}>vous rendre sur place</Text> afin
-            d'évaluer l'environnement sonore en fonction de vos usages et de
-            votre sensibilité au bruit.
-          </Text>
-          <Text style={styles.recoParagraph}>
-            Notre analyse s'appuie sur les cartes de bruit réglementaires pour
-            estimer l'exposition aux nuisances sonores. Pour une évaluation plus
-            précise, nous vous recommandons de{" "}
-            <Text style={styles.recoBold}>
-              faire appel à un acousticien certifié ou à un bureau d'études
-            </Text>{" "}
-            spécialisé avant le dépôt du permis de construire. Cette étude
-            permettra notamment de prendre en compte l'orientation et la hauteur
-            du bâtiment, ainsi que la mise en œuvre éventuelle de protections
-            acoustiques adaptées.
-          </Text>
+          <View style={styles.infoBody}>
+            <View style={styles.listItem}>
+              <Text style={styles.bulletDot}>•</Text>
+              <Text style={styles.listText}>
+                diagBruit est un service public d'information qui s'appuie sur des
+                données officielles.{" "}
+                <Text style={styles.bold}>
+                  Les résultats fournis sont des recommandations et n'ont pas de
+                  valeur juridique opposable.
+                </Text>
+              </Text>
+            </View>
+            <View style={styles.listItem}>
+              <Text style={styles.bulletDot}>•</Text>
+              <Text style={styles.listText}>
+                Le risque est évalué grâce aux{" "}
+                <Text style={styles.bold}>cartes de bruit</Text>,{" "}
+                <Text style={styles.bold}>la présence de bâtiments</Text>{" "}
+                susceptibles de faire écran au bruit (indépendamment de leur
+                hauteur), et{" "}
+                <Text style={styles.bold}>
+                  la part de votre parcelle réellement exposée
+                </Text>{" "}
+                aux nuisances. C'est la combinaison de ces critères qui explique
+                que{" "}
+                <Text style={styles.bold}>
+                  deux parcelles, même voisines, puissent afficher des niveaux de
+                  risque différents.
+                </Text>
+              </Text>
+            </View>
+          </View>
         </View>
 
         <Text style={styles.footer}>
