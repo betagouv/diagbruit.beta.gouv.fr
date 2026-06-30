@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import type React from "react";
 import { tss } from "tss-react/dsfr";
 import DiagnosticIsolationBadge from "./DiagnosticIsolationBadge";
-import { useSearchParams } from "react-router-dom";
+import { useGoToTab } from "../../hooks/useGoToTab";
 
 type DiagnosticIsolationRangeProps = {
   isolation_min: number | null;
@@ -15,13 +15,7 @@ const DiagnosticIsolationRange: React.FC<DiagnosticIsolationRangeProps> = ({
 }) => {
   const { cx, classes } = useStyles();
 
-  const [, setSearchParams] = useSearchParams();
-
-  const goToTab = (str: string) => {
-    const next = new URLSearchParams(window.location.search);
-    next.set("tab", str);
-    setSearchParams(next);
-  };
+  const goToTab = useGoToTab();
 
   return (
     <div>
