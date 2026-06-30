@@ -107,7 +107,7 @@ export const PrecoPage = () => {
             </div>
           )}
 
-          <div className={h2Links.length > 0 ? "fr-col-lg-9" : "fr-col-12"}>
+          <div className={h2Links.length > 0 ? "fr-col-9" : "fr-col-12"}>
             {preco.aRetenir && (
               <Alert
                 className={fr.cx("fr-mb-8v", "fr-py-4v", "fr-pl-14v")}
@@ -131,14 +131,13 @@ export const PrecoPage = () => {
                   className={fr.cx(
                     "fr-grid-row",
                     "fr-grid-row--gutters",
-                    "fr-mb-4v"
+                    "fr-mb-4v",
                   )}
                 >
                   {preco.keyPoints.map((k, index) => (
                     <div
                       className={fr.cx(
-                        `fr-col-sm-${Math.max(4, Math.min(12, 12 / preco.keyPoints!.length))}` as FrCxArg,
-                        "fr-col-12"
+                        `fr-col-${Math.max(4, Math.min(12, 12 / preco.keyPoints!.length))}` as FrCxArg,
                       )}
                       key={`keyPoint-${k.title}-${index}`}
                     >
