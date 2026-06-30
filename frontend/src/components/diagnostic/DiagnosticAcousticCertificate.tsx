@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { PrecoProps } from "../../hooks/usePreco";
+import { imgUrl } from "../../utils/tools";
 
 type AcoustiCertificateType = {
     id: number;
@@ -72,7 +73,7 @@ const DiagnosticAcousticCertificate = () => {
                             enlargeLink
                             horizontal
                             imageAlt={recommendation.imageBanner?.alternativeText ?? ""}
-                            imageUrl={recommendation.imageBanner?.url ? `${process.env.REACT_APP_CMS_URL}${recommendation.imageBanner.url}` : "/images/imgPlaceholder.png"}
+                            imageUrl={recommendation.imageBanner?.url ? imgUrl(recommendation.imageBanner.url) : "/images/imgPlaceholder.png"}
                             linkProps={{
                                 href: `/preco/${recommendation.slug}`,
                                 target: "_blank",
