@@ -6,6 +6,7 @@ import Plu from "./Plu";
 import Isolation from "./Isolation";
 import NoiseMap from "./NoiseMap";
 import Contact from "./Contact";
+import IsolationBanner from "./IsolationBanner";
 
 const FONTS_DIR = path.join(process.cwd(), "public", "fonts");
 Font.register({
@@ -284,6 +285,46 @@ export const styles = StyleSheet.create({
   },
   contactLink: {
     fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.blueFrance,
+    textDecoration: "underline",
+  },
+
+  // --- "Besoin de conseils pour vous isoler du bruit ?" promo banner ---
+  banner: {
+    marginTop: dsfr.spacing(6),
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: dsfr.colors.borderGrey,
+    borderRadius: dsfr.spacing(1),
+    overflow: "hidden",
+  },
+  bannerImageWrap: {
+    width: 180,
+    flexDirection: "row",
+  },
+  bannerImage: {
+    flex: 1,
+    height: "100%",
+    objectFit: "cover",
+  },
+  bannerText: {
+    flex: 1,
+    padding: dsfr.spacing(6),
+    justifyContent: "center",
+  },
+  bannerTitle: {
+    fontSize: dsfr.fontSize.lg,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.titleGrey,
+    marginBottom: dsfr.spacing(3),
+  },
+  bannerBody: {
+    fontSize: dsfr.fontSize.xs,
+    color: dsfr.colors.blueFrance,
+  },
+  bannerLink: {
+    fontSize: dsfr.fontSize.xs,
     color: dsfr.colors.blueFrance,
     textDecoration: "underline",
   },
@@ -608,6 +649,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
         <Header />
         {data.noiseMap && <NoiseMap noiseMap={data.noiseMap} />}
         <Contact />
+        <IsolationBanner />
       </Page>
       <Page size="A4" style={styles.page}>
         <Header />
