@@ -118,7 +118,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname === "/",
             linkProps: {
               href: '/',
-              target: '_self'
             },
             text: 'Accueil'
           },
@@ -126,7 +125,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname.startsWith("/diagnostic"),
             linkProps: {
               href: '/diagnostic',
-              target: '_self'
             },
             text: 'Diagnostiquer une parcelle'
           },
@@ -134,7 +132,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname.startsWith("/preco"),
             linkProps: {
               href: '/preco',
-              target: '_self'
             },
             text: 'Se protéger du bruit'
           }

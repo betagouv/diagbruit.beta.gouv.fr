@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./index.css";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import ScrollToTop from "./components/utils/ScrollToTop";
@@ -16,7 +16,13 @@ import Stats from "./pages/stats";
 import reportWebVitals from "./reportWebVitals";
 import SearchPrecoPage from "./pages/searchPreco";
 
-startReactDsfr({ defaultColorScheme: "light" });
+declare module "@codegouvfr/react-dsfr/spa" {
+  interface RegisterLink {
+    Link: typeof Link;
+  }
+}
+
+startReactDsfr({ defaultColorScheme: "light", Link });
 
 const App = () => {
   // Keep non-production environments (preprod uses REACT_APP_ENVIRONMENT=test)
