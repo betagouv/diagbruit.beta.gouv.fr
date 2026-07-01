@@ -118,7 +118,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname === "/",
             linkProps: {
               href: '/',
-              target: '_self'
             },
             text: 'Accueil'
           },
@@ -126,7 +125,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname.startsWith("/diagnostic"),
             linkProps: {
               href: '/diagnostic',
-              target: '_self'
             },
             text: 'Diagnostiquer une parcelle'
           },
@@ -134,7 +132,6 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             isActive: pathname.startsWith("/preco"),
             linkProps: {
               href: '/preco',
-              target: '_self'
             },
             text: 'Se protéger du bruit'
           }
@@ -172,6 +169,13 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           {
             text: "Politique de confidentialité",
             linkProps: { href: "/privacy-policy" },
+          },
+          {
+            text: "Documentation",
+            linkProps: {
+              target: "_blank",
+              href: "https://docs.numerique.gouv.fr/docs/da3f8dd6-f9f2-4a4c-9548-952e076f699d/",
+            },
           },
         ]}
         contentDescription="diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."

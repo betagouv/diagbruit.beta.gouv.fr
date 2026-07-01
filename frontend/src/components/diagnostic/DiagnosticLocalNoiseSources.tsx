@@ -24,16 +24,8 @@ export default function DiagnosticLocalNoiseSources({
   const [selectedCategory, setSelectedCategory] =
     useState<SelectedCategory | null>(null);
 
-  const handleCategoryClick = (
-    categoryName: string,
-    categorySlug: string,
-    sources: NoiseSourceIntersection[],
-  ) => {
-    setSelectedCategory({ categoryName, categorySlug, sources });
-    modal.open();
-  };
-
   const noisesourcesGrouped = useMemo(() => {
+    if (!noisesource_intersections) return [];
     return Object.entries(
       noisesource_intersections.reduce(
         (acc, source) => {
@@ -58,6 +50,15 @@ export default function DiagnosticLocalNoiseSources({
       ),
     );
   }, [noisesource_intersections]);
+
+  const handleCategoryClick = (
+    categoryName: string,
+    categorySlug: string,
+    sources: NoiseSourceIntersection[],
+  ) => {
+    setSelectedCategory({ categoryName, categorySlug, sources });
+    modal.open();
+  };
 
   if (!noisesource_intersections || noisesource_intersections.length === 0) {
     return (

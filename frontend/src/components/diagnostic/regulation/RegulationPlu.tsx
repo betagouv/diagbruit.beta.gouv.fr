@@ -26,6 +26,7 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
     );
   }
 
+
   return (
     <>
       {uniqueNoisezones.map((noisezone) => (

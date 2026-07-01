@@ -44,8 +44,8 @@ export default function SoundClassification({
           <Text style={[styles.th, styles.colType]}>Type de source</Text>
           <Text style={[styles.th, styles.colName]}>Nom de la source</Text>
           <Text style={[styles.th, styles.colCat]}>Catégorie</Text>
-          <Text style={[styles.th, styles.colDist]}>Distance minimum*</Text>
-          <Text style={[styles.th, styles.colDist]}>Distance maximum*</Text>
+          <Text style={[styles.th, styles.colDist]}>Distance minimum**</Text>
+          <Text style={[styles.th, styles.colDist]}>Distance maximum**</Text>
         </View>
         {rows.map((r, i) => (
           <View key={i} style={styles.tableRow}>
@@ -58,7 +58,10 @@ export default function SoundClassification({
         ))}
       </View>
       <Text style={styles.tableNote}>
-        *Distances estimées à partir du centre de la source de bruit.
+        *Échelle de 1 à 5. La catégorie 1 est la plus bruyante.
+      </Text>
+      <Text style={styles.tableNote}>
+        **Distances estimées à partir du centre de la source de bruit et le point le plus prêt et le plus éloigné de votre parcelle.
       </Text>
       <ReferencesBox links={TERRESTRE_REFERENCES} />
     </View>
