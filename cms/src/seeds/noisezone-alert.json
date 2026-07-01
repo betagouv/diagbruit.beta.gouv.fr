@@ -1,170 +1,178 @@
 [
   {
-    "title": "",
-    "alert_slug": "alert-01",
-    "content": "<p>Cette zone est spécifiquement identifiée comme étant soumise à des <strong>nuisances liées au bruit</strong> ou à la pollution atmosphérique. En conséquence, elle est déclarée <strong>inconstructible</strong> pour de nouveaux logements ; seules les extensions de l'existant et certains bureaux administratifs y sont autorisés.</p>",
-    "reference": "PLUi - Règlement littéral ; Titre V, chapitre “zone UE4”, section 1",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-02",
-    "content": "<p>Dans cette zone, le PLU autorise \"<strong>les clôtures pleines ou supérieures à 2 mètres si elles assurent une protection acoustique</strong> vis-à-vis d'une voie bruyante ou très bruyante\".</p>",
-    "reference": "Livre IV, Titre 1, Chapitres 4, 5, 14 ; Livre IV, Titre 2, Chapitres 11, 12, 13, 37, 45, 49, 50.",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "lille-speer3",
-    "alert_slug": "lille-speer3",
-    "content": "<p><p>Secteur de Performance Énergétique et Environnementale Renforcé (SPEER Niveau 3, zone soumise à plus de 65 dB(A)). Le porteur de projet a obligation de <strong>démontrer la limitation des nuisances sonores à l'intérieur et l'extérieur</strong> pour : <ul><li> 🏢 Logements collectifs de plus de 10 unités </li><li> 🏫 Établissements scolaires et de santé </li><li> 💼 Bâtiments tertiaires de plus de 500 m² </li><li> 🗺️ Toute opération d'aménagement </li></ul></p><p>Nous préconisons la <strong>réalisation d'une étude acoustique</strong> intégrant un diagnostic terrain et une modélisation 3D du bâtiment.</p></p>",
-    "reference": "Livre I, Titre 1, Section VI, Chapitre 3, C, Point 5",
-    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-04",
-    "content": "<p>Dans les zones d'habitat mixte, les activités de type <strong>industrie ou entrepôt</strong> ne sont autorisées qu'à la condition expresse de <strong>ne pas générer de nuisances</strong> (sonores ou autres) et sous réserve d'une bonne intégration urbaine.</p>",
-    "reference": "PLUi - Règlement littéral ; Titre II, chapitre 2, section 2.1",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE CALME"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-05",
-    "content": "<p>Toute construction nouvelle doit se situer à au moins <strong>25m de la ligne ferroviaire</strong> à grande vitesse \"Paris-Bordeaux\".</p>",
-    "reference": "chapitre 2.3.4",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-06",
-    "content": "Dans cette zone, <p>Il est <strong>⚠️ recommandé</strong> : <ul><li> d'éviter d'exposer de nouvelles populations </li><li> d'éviter de construire de nouveaux équipements bruyants à proximité des zones habitées </li></ul></p></p>",
-    "reference": "PLUi - Règlement littéral ; Titre III, chapitre 6,  section 6.8.1",
-    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-07",
-    "content": "<p><p>Dans cette zone, il est <strong>🚫 interdit</strong> : <ul><li> de construire des établissements recevant du public </li><li> de transformer des parcelles pour qu'elles reçoivent du public </li></ul></p><p>Il est <strong>⚠️ recommandé</strong> : <ul><li> d'éviter d'exposer de nouvelles populations </li><li> d'éviter de construire de nouveaux équipements bruyants à proximité des zones habitées </li></ul></p></p>",
-    "reference": "PLUi - Règlement littéral ; Titre III, chapitre 6,  section 6.8.1",
-    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-08",
-    "content": "<p>Dans cette zone, le PLU autorise l'<strong>élévation de buttes de terre et / ou de mur anti-bruit</strong> le long de voies bruyantes, sous réserve d'un effort d'insertion dans le paysage.</p>",
-    "reference": "Livre IV, Titre 2, Chapitres 11.2 et 50.1.",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-09",
-    "content": "<p><p>🏗️ <strong>Recommandations de la Métropole de Nantes pour les aménageurs </strong>: <ul><li> 🏙️ Concevoir une architecture de quartier favorisant la dispersion de la pollution atmosphérique : <strong>éviter les rues « canyons »</strong> et privilégiez des espaces entre bâtiments pour des rues plus « ouvertes » </li><li> 📐 Implanter le bâti de manière à limiter la propagation du bruit </li><li> 🛡️ <strong>Aménager des espaces tampons</strong> et installer des écrans acoustiques si nécessaire </li><li> 🧱 Privilégier des <strong>matériaux absorbants</strong> de façade absorbant les ondes sonores </li></ul></p><p>🏢<strong> Recommandations de la Métropole de Nantes pour les constructeurs et promoteurs</strong> : <ul><li> 🧱 Utiliser des <strong>matériaux absorbants</strong> sur les façades </li><li> 🛏️ <strong>Orienter les pièces de vie</strong> selon le contexte acoustique (chambres côté calme, pièces de vie côté bruit) </li></ul></p></p>",
-    "reference": "",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-10",
-    "content": "<p><p>Limiter les expositions en travaillant sur le plan guide selon 4 principes : <ul><li> ↔️ <strong>Éloigner</strong> la source du bruit de la cible </li><li> 🛡️ <strong>Protéger</strong> la cible au moyen d'écrans acoustiques </li><li> 🧭 <strong>Orienter</strong> pour permettre aux pièces de repos de donner sur les zones les plus calmes </li><li> 🔇 <strong>Isoler</strong> la cible (bâtiment, pièce, établissement…) à protéger </li></ul></p><p><strong>Limiter les émissions</strong> du projet pour éviter que le projet devienne source de nuisance pour son environnement.</p><p>Pour les entreprises <strong>signataires du PACTE</strong> Lille bas Carbone, des <strong>exigences plus importantes</strong> s'appliquent. Consulter la page dédiée au PACTE dans les recommandations de diagBruit.</p></p>",
-    "reference": "",
-    "source": "",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-11",
-    "content": "<p>Les recommandations du PLU précisent que \"Les 🌳 🌸 🍎 <strong>arbres, les haies fleuries ou fruitières</strong> sont des éléments qui permettent de créer un <strong>filtre visuel et sonore</strong> entre l'espace privé et public.\" Bien que ces éléments ne diminuent que très peu les niveaux de bruit, ils participent à diminuer la gêne ressentie (voir préconisation).</p>",
-    "reference": "PLUi - Règlement littéral ; D-1-2 Guide de recommandations Rennes Métropole ; Guide de recommandations pour édifier des clôtures, partie 2.4",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-12",
-    "content": "<p><p>Cette zone est soumise à un niveau sonore élevé. Conformément au classement sonore, <strong>l'isolation</strong> du bâtiment selon les normes réglementaires <strong>est obligatoire</strong>. <a href=\"https://diagbruit.fr/preco/comment-s-isoler-du-bruit\">Voir l'isolation réglementaire</a></p><p>Toutefois, pour garantir un véritable confort de vie à l'extérieur (balcons utilisables, aération naturelle), il est indispensable de <strong>traiter également le bruit à la source</strong> par l'implantation, des écrans acoustiques ou la végétalisation. <a href=\"https://diagbruit.fr/preco\">Voir les préconisations</a></p>",
-    "reference": "Cahier 1, Chapitre 14, p49.",
-    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-13",
-    "content": "<p>Dans les zones urbaines, pour certaines zones spécifiques (de projet public ou d'aménagement concerté), le PLU précise \"les constructions et installations <strong>« ne doivent pas entraîner pour le voisinage et l'environnement des nuisances ou des dangers »</strong>\". Il convient donc de limiter le bruit que va créer le projet ; notamment celui des pompes à chaleur.</p>",
-    "reference": "Livre 3, Titre 2, territoire UCM, UCA, UCO, UGE ; Livre 4, titre 1, chapitres 10 à 19 ;  Livre 4, titre 2, chapitres 48, 49",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-14",
-    "content": "<p><p>Cette zone est soumise à un niveau sonore élevé. Conformément au classement sonore, <strong>l'isolation</strong> du bâtiment selon les normes réglementaires <strong>est obligatoire</strong>. <a href=\"https://diagbruit.fr/preco/comment-s-isoler-du-bruit\">Voir l'isolation réglementaire</a></p><p>Toutefois, pour garantir un véritable confort de vie à l'extérieur (balcons utilisables, aération naturelle), il est indispensable de <strong>traiter également le bruit à la source</strong> par l'implantation, des écrans acoustiques ou la végétalisation. <a href=\"https://diagbruit.fr/preco\">Voir les préconisations</a></p><p><strong>Aide financière disponible</strong><br>Pour les rénovations, Lille Métropole propose une prime bruit sous conditions de ressources pour aider les propriétaires à améliorer l'isolation acoustique de leur logement.<br><a href=\"https://www.maisonhabitatdurable-lillemetropole.fr/news/renovation-et-confort-acoustique-une-nouvelle-aide-financiere-metropolitaine-0\">En savoir plus sur la Maison de l'Habitat Durable</a></p></p>",
-    "reference": "Cahier 2, Chapitre 24, partie 7, p92",
-    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-15",
-    "content": "<p>Toute personne produisant ou détenant des déchets lors de chantiers doit s'assurer que leur élimination ne génère pas de bruits ou d'odeurs portant atteinte à la santé ou à l'environnement.</p>",
-    "reference": "PLUi - Règlement littéral ; D-1-2 Guide de recommandations Chartresde Bretagne, Chapitre 5",
-    "source": "Plan Local d'Urbanisme (PLU)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-16",
-    "content": "<p>Cette zone calme est <strong>un espace protégé de toute activité bruyante</strong> (installations industrielles, équipements sportifs, pompe à chaleur, etc.), définie par les politiques locales. Leur objectif est de préserver un faible niveau d'exposition sonore face aux activités humaines présentes ou à venir. <strong>Veillez à ce que votre projet ne compromette pas ces enjeux locaux.</strong></p>",
-    "reference": "Cahier 2, Chapitre 24, partie 8, p93",
-    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
-    "label": "ZONE CALME"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-17",
+    "title": "Déroger à la règle d'implantation générale sur Bordeaux Métropole",
+    "alert_slug": "alert-BordeauxMetropole-derogation-implantation-generale",
     "content": "<p>Les <strong>nouveaux projets de construction</strong> soumis au classement sonore <strong>peuvent déroger à la règle d’implantation générale</strong> de leur zone, uniquement <strong>si le projet s’intègre dans les perspectives urbaines et paysagères</strong> dans le respect des dispositions du règlement.</p>",
     "reference": "Chapitre 2.3.4 partie “Règles particulières relatives au bruit des infrastructures”",
     "source": "Plan Local d'Urbanisme (PLU)",
     "label": "ZONE SOUMISE AU BRUIT"
   },
   {
-    "title": "",
-    "alert_slug": "alert-18",
+    "title": "Isoler à l'intérieur et réduire à l'extérieur sur Bordeaux Métropole",
+    "alert_slug": "alert-BordeauxMetropole-isolation-dedans-dehors",
+    "content": "<p>Les projets soumis au classement sonore (isolation acoustique réglementée) doivent :</p><ul><li>être conçus de manière à <strong>réduire le bruit à l'intérieur</strong> de la construction <strong>ET</strong> dans les <strong>espaces extérieurs</strong></li><li><strong>limiter le nombre de façades</strong> habitées exposées au bruit</li></ul>",
+    "reference": "Chapitre 1.3.4.6",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Éloigner les construction de la LGV sur Bordeaux Métropole",
+    "alert_slug": "alert-BordeauxMetropole-lgv",
+    "content": "<p>Toute construction nouvelle doit se situer à au moins <strong>25m de la 🚅 &nbsp;ligne ferroviaire</strong> à grande vitesse \"Paris-Bordeaux\".</p>",
+    "reference": "chapitre 2.3.4",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Rénover acoustiquement au sein du secteur patrimonial remarquable de Bordeaux Métropole",
+    "alert_slug": "alert-BordeauxMetropole-secteur-patrimonial-remarquable",
+    "content": "<p>Au sein du <strong>Secteur Patrimonial Remarquable</strong>, les techniques de rénovation doivent tenir compte en priorité :</p><ol><li>de l'analyse patrimoniale</li><li>des problèmes phoniques et thermiques, car les <strong>solutions sont peu nombreuses et complexes</strong></li></ol><p>Une fiche de développement durable \"12) le confort phonique appliqué au secteur ancien\" devrait fournir une aide, mais n'a pu être trouvée.</p>",
+    "reference": "Chapitre 2.3.2",
+    "source": "Plan de Sauvegarde et de Mise en Valeur (PSMV)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Autoriser les murs au lieu des clôtures sur la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-cloture_amelioree",
+    "content": "<p>Dans cette zone, le PLU autorise \"<strong>les clôtures pleines ou supérieures à 2 mètres si elles assurent une protection acoustique</strong> vis-à-vis d'une voie bruyante ou très bruyante\".</p>",
+    "reference": "Livre IV, Titre 1, Chapitres 4, 5, 14 ; Livre IV, Titre 2, Chapitres 11, 12, 13, 37, 45, 49, 50.",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Réaliser des protections phoniques le long des voies bruyantes sur la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-exhaussement",
+    "content": "<p>Dans cette zone, le PLU autorise l'<strong>élévation de buttes de terre et / ou de mur anti-bruit</strong> le long de voies bruyantes, sous réserve d'un effort d'insertion dans le paysage.</p>",
+    "reference": "Livre IV, Titre 2, Chapitres 11.2 et 50.1.",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Isoler les zones sensible grâce a des aides sur la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-isolation-et-financement",
+    "content": "<p>Cette zone est soumise à un niveau sonore élevé. Conformément au classement sonore, <strong>l'isolation</strong> du bâtiment selon les normes réglementaires <strong>est obligatoire</strong>. <a href=\"https://diagbruit.fr/preco/comment-s-isoler-du-bruit\">Voir l'isolation réglementaire</a></p><p>Toutefois, pour garantir un véritable confort de vie à l'extérieur (balcons utilisables, aération naturelle), il est indispensable de <strong>traiter également le bruit à la source</strong> par l'implantation, des écrans acoustiques ou la végétalisation. <a href=\"https://diagbruit.fr/preco\">Voir les préconisations</a></p><p><strong>Aide financière disponible</strong><br>Pour les rénovations, Lille Métropole propose une prime bruit sous conditions de ressources pour aider les propriétaires à améliorer l'isolation acoustique de leur logement.<br><a href=\"https://www.maisonhabitatdurable-lillemetropole.fr/news/renovation-et-confort-acoustique-une-nouvelle-aide-financiere-metropolitaine-0\">En savoir plus sur la Maison de l'Habitat Durable</a></p>",
+    "reference": "Cahier 2, Chapitre 24, partie 7, p92",
+    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Isoler les zones sensible grâce a des aides sur la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-isolation-et-financement-ko",
+    "content": "<p>Cette zone est soumise à un niveau sonore élevé. Conformément au classement sonore, <strong>l'isolation</strong> du bâtiment selon les normes réglementaires <strong>est obligatoire</strong>. <a href=\"https://diagbruit.fr/preco/comment-s-isoler-du-bruit\">Voir l'isolation réglementaire</a></p><p>Toutefois, pour garantir un véritable confort de vie à l'extérieur (balcons utilisables, aération naturelle), il est indispensable de <strong>traiter également le bruit à la source</strong> par l'implantation, des écrans acoustiques ou la végétalisation. <a href=\"https://diagbruit.fr/preco\">Voir les préconisations</a></p>",
+    "reference": "Cahier 1, Chapitre 14, p49.",
+    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Limiter les nuisances créées par les nouveaux projet sur la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-limiter-nuisance-nouveau-projet",
+    "content": "<p>Dans les zones urbaines, pour certaines zones spécifiques (de projet public ou d'aménagement concerté), le PLU précise \"les constructions et installations <strong>« ne doivent pas entraîner pour le voisinage et l'environnement des nuisances ou des dangers »</strong>\". Il convient donc de limiter le bruit que va créer le projet ; notamment celui des pompes à chaleur.</p>",
+    "reference": "Livre 3, Titre 2, territoire UCM, UCA, UCO, UGE ; Livre 4, titre 1, chapitres 10 à 19 ;  Livre 4, titre 2, chapitres 48, 49",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Retrait par rapport au Port sur Lille Métropole",
+    "alert_slug": "alert-MetropoleEuropeenneLille-port",
     "content": "<p>Dans cette zone, le PLU impose un <strong>retrait de 20m</strong> par rapport aux limites avec les zones urbaines + <strong>réalisation d'un écran acoustique</strong> + <strong>plantation d'arbres de haute tige en nombre suffisant</strong> pour réduire l'impact des installations.</p>",
     "reference": "Livre IV, Titre 3, Chapitres 1 , 1.1 , 1.2",
     "source": "Plan Local d'Urbanisme (PLU)",
     "label": "ZONE SOUMISE AU BRUIT"
   },
   {
-    "title": "",
-    "alert_slug": "alert-19",
-    "content": "<p><p>Les projets soumis au classement sonore (isolation acoustique réglementée) doivent : <ul><li> être conçus de manière à <strong>réduire le bruit à l'intérieur</strong> de la construction <strong>ET</strong> dans les <strong>espaces extérieurs</strong> </li><li> <strong>limiter le nombre de façades</strong> habitées exposées au bruit </li></ul></p></p>",
-    "reference": "Chapitre 1.3.4.6",
+    "title": "Mesures spécifique pour les zones très exposées sur  la Métropole Européenne de Lille",
+    "alert_slug": "alert-MetropoleEuropeenneLille-speer3",
+    "content": "<p>Secteur de Performance Énergétique et Environnementale Renforcé (SPEER Niveau 3, zone soumise à plus de 65 dB(A)). Le porteur de projet a obligation de <strong>démontrer la limitation des nuisances sonores à l'intérieur et l'extérieur</strong> pour :</p><ul><li>🏢 Logements collectifs de plus de 10 unités</li><li>🏫 Établissements scolaires et de santé</li><li>💼 Bâtiments tertiaires de plus de 500 m²</li><li>🗺️ Toute opération d'aménagement</li></ul><p>Nous préconisons la <strong>réalisation d'une étude acoustique</strong> intégrant un diagnostic terrain et une modélisation 3D du bâtiment.</p>",
+    "reference": "Livre I, Titre 1, Section VI, Chapitre 3, C, Point 5",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Recommandations générales sur Nantes Métropole",
+    "alert_slug": "alert-NantesMetropole-sup55dB",
+    "content": "<p>🏗️ <strong>Recommandations de la Métropole de Nantes pour les aménageurs </strong>:</p><ul><li>🏙️ Concevoir une architecture de quartier favorisant la dispersion de la pollution atmosphérique : <strong>éviter les rues « canyons »</strong> et privilégiez des espaces entre bâtiments pour des rues plus « ouvertes »</li><li>📐 Implanter le bâti de manière à limiter la propagation du bruit</li><li>🛡️ <strong>Aménager des espaces tampons</strong> et installer des écrans acoustiques si nécessaire</li><li>🧱 Privilégier des <strong>matériaux absorbants</strong> de façade absorbant les ondes sonores</li></ul><p>🏢<strong> Recommandations de la Métropole de Nantes pour les constructeurs et promoteurs</strong> :</p><ul><li>🧱 Utiliser des <strong>matériaux absorbants</strong> sur les façades</li><li>🛏️ <strong>Orienter les pièces de vie</strong> selon le contexte acoustique (chambres côté calme, pièces de vie côté bruit)</li></ul>",
+    "reference": "Partie 3, Section 3.1 & Section 3.2, Sous-Section 3.2.1",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Rennes Metropole - Limiter bruit de la gestion de dechet à Chartres-de-Bretagne",
+    "alert_slug": "alert-RennesMetropole_charte_bretagne_dechet",
+    "content": "<p>Toute personne produisant ou détenant des déchets lors de chantiers doit s'assurer que leur élimination ne génère pas de bruits ou d'odeurs portant atteinte à la santé ou à l'environnement.</p>",
+    "reference": "PLUi - Règlement littéral ; D-1-2 Guide de recommandations Chartresde Bretagne, Chapitre 5",
     "source": "Plan Local d'Urbanisme (PLU)",
     "label": "ZONE SOUMISE AU BRUIT"
   },
   {
-    "title": "",
-    "alert_slug": "alert-20",
-    "content": "<p><p>Au sein du <strong>Secteur Patrimonial Remarquable</strong>, les techniques de rénovation doivent tenir compte en priorité : <ol><li> de l'analyse patrimoniale </li><li> des problèmes phoniques et thermiques, car les <strong>solutions sont peu nombreuses et complexes</strong> </li></ol></p><p>Une fiche de développement durable \"12) le confort phonique appliqué au secteur ancien\" devrait fournir une aide, mais n'a pu être trouvée.</p></p>",
-    "reference": "Chapitre 2.3.2",
-    "source": "Plan de Sauvegarde et de Mise en Valeur (PSMV)",
-    "label": "ZONE SOUMISE AU BRUIT"
-  },
-  {
-    "title": "",
-    "alert_slug": "alert-21",
+    "title": "Limiter les effets des PAC dans les ensembles \"Maillols\"",
+    "alert_slug": "alert-RennesMetropole-habillage-pac",
     "content": "<p>Pour les <strong>pompes à chaleur</strong> (fixation en façade ou pose en toiture), il est impératif de prévoir un élément d'habillage qui peut par la même occasion <strong>atténuer l'impact acoustique</strong> des unités extérieures.</p>",
     "reference": "PLUi - Règlement littéral ; D-1-2 Guide de recommandations Ensembles d’habitat Maillols : Le Blosne et Patton, Annexes",
     "source": "Plan Local d'Urbanisme (PLU)",
     "label": "ZONE CALME"
+  },
+  {
+    "title": "Limiter les nuisances des activités en zone d'habitat mixte dur Rennes Metropole",
+    "alert_slug": "alert-RennesMetropole-habitat-mixte",
+    "content": "<p>Dans les zones d'habitat mixte, les activités de type <strong>industrie ou entrepôt</strong> ne sont autorisées qu'à la condition expresse de <strong>ne pas générer de nuisances</strong> (sonores ou autres) et sous réserve d'une bonne intégration urbaine.</p>",
+    "reference": "PLUi - Règlement littéral ; Titre II, chapitre 2, section 2.1",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE CALME"
+  },
+  {
+    "title": "Interdiction de construire car zone a restructurer sur Rennes Métropole",
+    "alert_slug": "alert-RennesMetropole-habitat-restructurer-inconstructible",
+    "content": "<p>Cette zone est spécifiquement identifiée comme étant soumise à des <strong>nuisances liées au bruit</strong> ou à la pollution atmosphérique. En conséquence, elle est déclarée <strong>inconstructible</strong> pour de nouveaux logements ; seules les extensions de l'existant et certains bureaux administratifs y sont autorisés.</p>",
+    "reference": "PLUi - Règlement littéral ; Titre V, chapitre “zone UE4”, section 1",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Rappeler que les haies fleuries et fruitières diminuent la gêne ressentie",
+    "alert_slug": "alert-RennesMetropole-haies",
+    "content": "<p>Les recommandations du PLU précisent que \"<i>Les 🌳 🌸 🍎 <strong>arbres, les haies fleuries ou fruitières</strong> sont des éléments qui permettent de créer un <strong>filtre visuel et sonore</strong> entre l'espace privé et public.</i>\" Bien que ces éléments ne diminuent que très peu les niveaux de bruit, ils participent à <strong>diminuer la gêne ressentie</strong> (voir préconisation).</p>",
+    "reference": "PLUi - Règlement littéral ; D-1-2 Guide de recommandations Rennes Métropole ; Guide de recommandations pour édifier des clôtures, partie 2.4",
+    "source": "Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Zone de vigilance Air-Bruit niveau 1 ou 2 de Rennes Metropole",
+    "alert_slug": "alert-RennesMetropole-vigilance-air-bruit-1-2",
+    "content": "<p>Dans cette zone, il est <strong>🚫 interdit</strong> :</p><ul><li>de construire des établissements recevant du public</li><li>de transformer des parcelles pour qu'elles reçoivent du public</li></ul><p>Il est <strong>⚠️ recommandé</strong> :</p><ul><li>d'éviter d'exposer de nouvelles populations</li><li>d'éviter de construire de nouveaux équipements bruyants à proximité des zones habitées</li></ul>",
+    "reference": "PLUi - Règlement littéral ; Titre III, chapitre 6,  section 6.8.1",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Zone de vigilance Air-Bruit niveau 3 de Rennes Metropole",
+    "alert_slug": "alert-RennesMetropole-vigilance-air-bruit-3",
+    "content": "<p>Dans cette zone, il est <strong>⚠️ recommandé</strong> :</p><ul><li>d'éviter d'exposer de nouvelles populations</li><li>d'éviter de construire de nouveaux équipements bruyants à proximité des zones habitées</li></ul>",
+    "reference": "PLUi - Règlement littéral ; Titre III, chapitre 6,  section 6.8.1",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Zone calme et de moindre de bruit",
+    "alert_slug": "alert-VilleDeLille-calme-moindre-bruit",
+    "content": "<p>Cette zone présente soit :&nbsp;</p><ul><li>🔇 <strong>un espace protégé de toute activité bruyante</strong> (installations industrielles, équipements sportifs, pompe à chaleur, etc.), définie par les politiques locales</li><li> 🧘<strong>un espace soumis à un faible niveau de bruit.</strong>&nbsp;</li></ul><p>Leur objectif est de préserver ce faible niveau d'exposition sonore face aux activités humaines présentes ou à venir. <strong>Veillez à ce que votre projet ne compromette pas ces enjeux locaux</strong>.</p>",
+    "reference": "Cahier 2, Chapitre 24, partie 8, p93",
+    "source": "Plan de Prévention du Bruit dans l'Environnement (PPBE)",
+    "label": "ZONE CALME"
+  },
+  {
+    "title": "Exigences du PACTE Lille Bas-Carbone",
+    "alert_slug": "alert-VilledeLille-pacte",
+    "content": "<p>Limiter les expositions en travaillant sur le plan guide selon 4 principes :</p><ul><li>↔️ <strong>Éloigner</strong> la source du bruit de la cible</li><li>🛡️ <strong>Protéger</strong> la cible au moyen d'écrans acoustiques</li><li>🧭 <strong>Orienter</strong> pour permettre aux pièces de repos de donner sur les zones les plus calmes</li><li>🔇 <strong>Isoler</strong> la cible (bâtiment, pièce, établissement…) à protéger</li></ul><p><strong>Limiter les émissions</strong> du projet pour éviter que le projet devienne source de nuisance pour son environnement.</p><p>Pour les entreprises <strong>signataires du PACTE</strong> Lille bas Carbone, des <strong>exigences plus importantes</strong> s'appliquent. Consulter la <a href=\"https://www.lille.fr/Vivre-a-Lille/Lille-Durable/Pacte-Lille-Bas-Carbone\">page dédiée du PACTE</a> sur le site de la ville de Lille, avec notamment :&nbsp;</p><ul><li>🪷 Le focus sur la partie <a href=\"https://www.lille.fr/Vivre-a-Lille/Lille-Durable/Pacte-Lille-Bas-Carbone/Les-outils/Referentiel/Bien-etre-et-sante\">bien-être et santé</a></li><li>📊 Les <a href=\"https://www.lille.fr/Vivre-a-Lille/Lille-Durable/Pacte-Lille-Bas-Carbone/Les-outils/Grilles-a-completer\">grilles opérationnelles et grilles SPEER 3</a></li></ul>",
+    "reference": "Grille SPEER 3",
+    "source": "Pacte Lille bas Carbone",
+    "label": "ZONE SOUMISE AU BRUIT"
+  },
+  {
+    "title": "Mesures spécifique pour les zones très exposées sur  la Métropole Européenne de Lille",
+    "alert_slug": "lille-speer3",
+    "content": "<p>Secteur de Performance Énergétique et Environnementale Renforcé (SPEER Niveau 3, zone soumise à plus de 65 dB(A)). Le porteur de projet a obligation de <strong>démontrer la limitation des nuisances sonores à l'intérieur et l'extérieur</strong> pour :</p><ul><li>🏢 Logements collectifs de plus de 10 unités</li><li>🏫 Établissements scolaires et de santé</li><li>💼 Bâtiments tertiaires de plus de 500 m²</li><li>🗺️ Toute opération d'aménagement</li></ul><p>Nous préconisons la <strong>réalisation d'une étude acoustique</strong> intégrant un diagnostic terrain et une modélisation 3D du bâtiment.</p>",
+    "reference": "Livre I, Titre 1, Section VI, Chapitre 3, C, Point 5",
+    "source": "Orientation d'Aménagement et de Programmation (OAP) Climat Air Énergie, Plan Local d'Urbanisme (PLU)",
+    "label": "ZONE SOUMISE AU BRUIT"
   }
 ]
