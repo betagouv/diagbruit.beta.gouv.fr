@@ -9,6 +9,8 @@ import Contact from "./Contact";
 import IsolationBanner from "./IsolationBanner";
 import Info from "./Info";
 import PositionSvg from "./PositionSvg";
+import Preconisations from "./Preconisations";
+import { dsfr } from "./pdfTokens";
 
 const CUSTOMER_SERVICE_PATH =
   "M22 17.002a6.002 6.002 0 0 1-4.713 5.86l-.638-1.914A4.003 4.003 0 0 0 19.465 19H17a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h2.938a8.001 8.001 0 0 0-15.876 0H7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5.002Z";
@@ -95,28 +97,6 @@ export interface RegulationData {
 
 export type Run = { text: string; bold?: boolean };
 
-const dsfr = {
-  colors: {
-    blueFrance: "#000091", // --blue-france-sun-113-625 (primary action/title)
-    contrastBlueFrance: "#e3e3fd", // --background-contrast-blue-france (light callout bg)
-    titleGrey: "#161616", // --text-title-grey
-    defaultGrey: "#3a3a3a", // --text-default-grey
-    mentionGrey: "#666666", // --text-mention-grey
-    disabledGrey: "#929292", // --text-disabled-grey
-    borderGrey: "#dddddd", // --border-default-grey
-  },
-  spacing: (units: number) => units * 4, // "Xv" → px
-  fontSize: {
-    xxs: 8, // fr-text--xs  (0.75rem)
-    xs: 12, // fr-text--xs  (0.75rem)
-    sm: 14, // fr-text--sm  (0.875rem)
-    md: 16, // fr-text--lg  (1.125rem)
-    lg: 18, // fr-text--lg  (1.125rem)
-    h4: 24, // fr-h3
-    h3: 28, // fr-h3
-    h2: 32, // fr-h2
-  },
-} as const;
 
 export const styles = StyleSheet.create({
   page: {
@@ -709,9 +689,15 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
       <Page size="A4" style={styles.page}>
         <Header />
         <Text style={styles.title}>
-          Positions du bâti
+          Position du bâti
         </Text>
-        {data.position && <PositionSvg position={data.position} />}
+        {data.position && (
+          <PositionSvg
+            position={data.position}
+            noiseMapRows={data.noiseMap?.rows ?? []}
+          />
+        )}
+        <Preconisations />
       </Page>
     </Document>
   );
