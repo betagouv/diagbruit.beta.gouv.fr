@@ -6,6 +6,7 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { CheckTexts } from "../utils/CheckTexts";
+import type { PositionData } from "../../utils/buildPositionData";
 
 export const modal = createModal({
 	id: "diagnostic-receive-by-mail-modal",
@@ -91,6 +92,7 @@ export type DiagnosticEmailSummary = {
 			nightLevel: string;
 		}[];
 	};
+	position?: PositionData;
 };
 
 export default function DiagnosticEmailForm({

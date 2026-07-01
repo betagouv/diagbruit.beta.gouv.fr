@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { getNoiseMapRows, getReadableSource } from "../../utils/tools";
+import { buildPositionData } from "../../utils/buildPositionData";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -271,6 +272,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               noiseMap: {
                 rows: getNoiseMapRows(diagnosticItem.diagnostic),
               },
+              position: buildPositionData(
+                diagnosticItem.parcelle.geometry,
+                diagnosticItem.diagnostic.zones,
+              ),
             }}
           />
         </div>

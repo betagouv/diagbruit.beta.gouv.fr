@@ -15,6 +15,7 @@ import DiagnosticPdf, {
   type IsolationData,
   type NoiseMapData,
   type PluData,
+  type PositionData,
   type RegulationData,
 } from "../templates/DiagnosticPdf";
 
@@ -131,6 +132,29 @@ function coerceNoiseMap(raw: any): NoiseMapData | undefined {
     : [];
   if (rows.length === 0) return undefined;
   return { rows };
+}
+
+/** Coerce the client-provided parcelle position diagram (pre-computed SVG). */
+function coercePosition(raw: any): PositionData | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const size = Number(raw.size) || 400;
+  const parcellePoints = Array.isArray(raw.parcellePoints)
+    ? raw.parcellePoints.slice(0, 50).map((p: any) => String(p ?? ""))
+    : [];
+  if (parcellePoints.length === 0) return undefined;
+  const zones = Array.isArray(raw.zones)
+    ? raw.zones.slice(0, 100).map((z: any) => ({
+        d: String(z?.d ?? ""),
+        fill: String(z?.fill ?? "#000000"),
+      }))
+    : [];
+  const optimalPoints = Array.isArray(raw.optimalPoints)
+    ? raw.optimalPoints.slice(0, 2000).map((pt: any) => ({
+        x: Number(pt?.x) || 0,
+        y: Number(pt?.y) || 0,
+      }))
+    : [];
+  return { size, parcellePoints, zones, optimalPoints };
 }
 
 function coerceIsolation(raw: any): IsolationData | undefined {
@@ -265,6 +289,7 @@ export default factories.createCoreController("api::email.email", () => ({
           String(parcelNumber ?? "").split("-")[0],
         ),
         noiseMap: coerceNoiseMap(summary.noiseMap),
+        position: coercePosition(summary.position),
       };
       pdfUrl = await generateAndUploadDiagnosticPdf(pdfData);
     }
