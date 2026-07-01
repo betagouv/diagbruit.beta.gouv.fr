@@ -1,4 +1,4 @@
-import { Document, Font, Link, Page, StyleSheet, Text, View, Image } from "@react-pdf/renderer";
+import { Document, Font, Link, Page, Path, StyleSheet, Svg, Text, View, Image } from "@react-pdf/renderer";
 import path from "path";
 import Peb from "./Peb";
 import SoundClassification from "./SoundClassification";
@@ -7,6 +7,11 @@ import Isolation from "./Isolation";
 import NoiseMap from "./NoiseMap";
 import Contact from "./Contact";
 import IsolationBanner from "./IsolationBanner";
+import Info from "./Info";
+
+// remix "customer-service-fill" icon (24×24 viewBox) — used in the Recommandations bar.
+const CUSTOMER_SERVICE_PATH =
+  "M22 17.002a6.002 6.002 0 0 1-4.713 5.86l-.638-1.914A4.003 4.003 0 0 0 19.465 19H17a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h2.938a8.001 8.001 0 0 0-15.876 0H7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5C2 6.477 6.477 2 12 2s10 4.477 10 10v5.002Z";
 
 const FONTS_DIR = path.join(process.cwd(), "public", "fonts");
 Font.register({
@@ -36,8 +41,6 @@ export interface DiagnosticPdfData {
   noiseMap?: NoiseMapData;
 }
 
-// One row of the "Cartes de bruit" synthesis table; values are pre-formatted
-// strings built on the frontend (e.g. "70 dB", "-").
 export interface NoiseMapRow {
   type: string;
   producer: string;
@@ -50,8 +53,6 @@ export interface NoiseMapData {
   rows: NoiseMapRow[];
 }
 
-// One PLU "noise zone" entry. `content` is HTML authored in the CMS editor and
-// rendered into native @react-pdf nodes by the Plu component's parser.
 export interface PluZone {
   label: string;
   content: string;
@@ -64,8 +65,6 @@ export interface PluData {
   references: { label: string; url: string }[];
 }
 
-// Regulatory sound-isolation requirement (dB) plus the exposure flags used to
-// phrase the requirement sentence (mirrors the frontend's RegulationIsolation).
 export interface IsolationData {
   min: number | null;
   max: number | null;
@@ -590,63 +589,79 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Score d'exposition sonore</Text>
-          <Text style={styles.score}>{data.score}</Text>
-        </View>
-
-        {typeof data.maxDbLden === "number" && (
-          <View style={styles.section}>
-            <Text style={styles.label}>Niveau sonore maximal (Lden)</Text>
-            <Text style={styles.value}>{data.maxDbLden} dB(A)</Text>
+        <Info
+          title="Recommandations"
+          barColor={dsfr.colors.contrastBlueFrance}
+          titleColor={dsfr.colors.blueFrance}
+          icon={
+            <Svg style={styles.contactIcon} viewBox="0 0 24 24">
+              <Path d={CUSTOMER_SERVICE_PATH} fill={dsfr.colors.blueFrance} />
+            </Svg>
+          }
+        >
+          <View style={styles.listItem}>
+            <Text style={styles.bulletDot}>•</Text>
+            <Text style={styles.listText}>
+              <Text style={styles.bold}>Rendez-vous sur place</Text> afin
+              d'évaluer l'environnement sonore en fonction de vos usages et de
+              votre sensibilité au bruit.
+            </Text>
           </View>
-        )}
+          <View style={styles.listItem}>
+            <Text style={styles.bulletDot}>•</Text>
+            <Text style={styles.listText}>
+              <Text style={styles.bold}>
+                Faites appel à un acousticien certifié ou à un bureau d'études
+                spécialisé
+              </Text>{" "}
+              avant le dépôt du permis de construire pour une évaluation plus
+              précise et prendre en compte l'orientation, la hauteur du
+              bâtiment, ainsi que la mise en œuvre éventuelle de protections
+              acoustiques adaptées.
+            </Text>
+          </View>
+        </Info>
 
-
-        <View style={styles.section}>
-          <Link src={data.link} style={styles.link}>Diagnostic complet en ligne</Link>
-        </View>
-
-        <View style={styles.info}>
-          <View style={styles.infoHeader}>
+        <Info
+          title="Informations"
+          barColor={dsfr.colors.borderGrey}
+          icon={
             <View style={styles.infoIcon}>
               <Text style={styles.infoIconText}>i</Text>
             </View>
-            <Text style={styles.infoTitle}>Informations</Text>
-          </View>
-          <View style={styles.infoBody}>
-            <View style={styles.listItem}>
-              <Text style={styles.bulletDot}>•</Text>
-              <Text style={styles.listText}>
-                diagBruit est un service public d'information qui s'appuie sur des
-                données officielles.{" "}
-                <Text style={styles.bold}>
-                  Les résultats fournis sont des recommandations et n'ont pas de
-                  valeur juridique opposable.
-                </Text>
+          }
+        >
+          <View style={styles.listItem}>
+            <Text style={styles.bulletDot}>•</Text>
+            <Text style={styles.listText}>
+              diagBruit est un service public d'information qui s'appuie sur des
+              données officielles.{" "}
+              <Text style={styles.bold}>
+                Les résultats fournis sont des recommandations et n'ont pas de
+                valeur juridique opposable.
               </Text>
-            </View>
-            <View style={styles.listItem}>
-              <Text style={styles.bulletDot}>•</Text>
-              <Text style={styles.listText}>
-                Le risque est évalué grâce aux{" "}
-                <Text style={styles.bold}>cartes de bruit</Text>,{" "}
-                <Text style={styles.bold}>la présence de bâtiments</Text>{" "}
-                susceptibles de faire écran au bruit (indépendamment de leur
-                hauteur), et{" "}
-                <Text style={styles.bold}>
-                  la part de votre parcelle réellement exposée
-                </Text>{" "}
-                aux nuisances. C'est la combinaison de ces critères qui explique
-                que{" "}
-                <Text style={styles.bold}>
-                  deux parcelles, même voisines, puissent afficher des niveaux de
-                  risque différents.
-                </Text>
-              </Text>
-            </View>
+            </Text>
           </View>
-        </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletDot}>•</Text>
+            <Text style={styles.listText}>
+              Le risque est évalué grâce aux{" "}
+              <Text style={styles.bold}>cartes de bruit</Text>,{" "}
+              <Text style={styles.bold}>la présence de bâtiments</Text>{" "}
+              susceptibles de faire écran au bruit (indépendamment de leur
+              hauteur), et{" "}
+              <Text style={styles.bold}>
+                la part de votre parcelle réellement exposée
+              </Text>{" "}
+              aux nuisances. C'est la combinaison de ces critères qui explique
+              que{" "}
+              <Text style={styles.bold}>
+                deux parcelles, même voisines, puissent afficher des niveaux de
+                risque différents.
+              </Text>
+            </Text>
+          </View>
+        </Info>
 
         <Text style={styles.footer}>
           diagBruit, service public d'information sur l'exposition sonore des parcelles.
