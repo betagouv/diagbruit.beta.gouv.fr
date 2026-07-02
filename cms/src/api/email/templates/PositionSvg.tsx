@@ -10,7 +10,6 @@ import {
 } from "@react-pdf/renderer";
 import { styles, type NoiseMapRow, type PositionData } from "./DiagnosticPdf";
 import { dsfr } from "./pdfTokens";
-import { NoiseMapTable } from "./NoiseMap";
 
 const OUTLINE_COLOR = dsfr.colors.blueFrance;
 const BORDER_GREY = "#ffffff";
@@ -32,6 +31,14 @@ const RISK_LEVELS = [
   { label: "fort", color: lighten("#FA7659") },
   { label: "extrême", color: lighten("#F95A5C") },
 ];
+
+const col = {
+  type: { flex: 1.2 },
+  producer: { flex: 1.2 },
+  name: { flex: 1.4 },
+  day: { flex: 1.4 },
+  night: { flex: 1.4 },
+};
 
 const DotSwatch = () => (
   <Svg width={16} height={16}>
@@ -57,6 +64,30 @@ const DotSwatch = () => (
     )}
   </Svg>
 );
+
+const NoiseMapTable = ({ rows }: { rows: NoiseMapRow[] }) => {
+  if (!rows || rows.length === 0) return null;
+  return (
+    <View style={[styles.table, { marginTop: 12 }]}>
+      <View style={styles.tableHeaderRow}>
+        <Text style={[styles.th, col.type]}>Type de source</Text>
+        <Text style={[styles.th, col.producer]}>Producteur</Text>
+        <Text style={[styles.th, col.name]}>Nom de la source</Text>
+        <Text style={[styles.th, col.day]}>Niveau de bruit (jour)</Text>
+        <Text style={[styles.th, col.night]}>Niveau de bruit (nuit)</Text>
+      </View>
+      {rows.map((r, i) => (
+        <View key={i} style={styles.tableRow}>
+          <Text style={[styles.td, col.type]}>{r.type}</Text>
+          <Text style={[styles.td, col.producer]}>{r.producer}</Text>
+          <Text style={[styles.td, col.name]}>{r.name}</Text>
+          <Text style={[styles.td, col.day]}>{r.dayLevel}</Text>
+          <Text style={[styles.td, col.night]}>{r.nightLevel}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export default function PositionSvg({
   position,

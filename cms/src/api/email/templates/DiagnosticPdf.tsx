@@ -4,9 +4,6 @@ import Peb from "./Peb";
 import SoundClassification from "./SoundClassification";
 import Plu from "./Plu";
 import Isolation from "./Isolation";
-import NoiseMap from "./NoiseMap";
-import Contact from "./Contact";
-import IsolationBanner from "./IsolationBanner";
 import Info from "./Info";
 import PositionSvg from "./PositionSvg";
 import Preconisations from "./Preconisations";
@@ -253,6 +250,11 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
 
+  contactIcon: {
+    width: 16,
+    height: 16,
+  },
+
   // Blue header/title/text reused by the Contact ("Conseils diagBruit") box.
   recoHeader: {
     flexDirection: "row",
@@ -273,65 +275,8 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
 
-  contactBox: {
-    marginTop: dsfr.spacing(6),
-    padding: dsfr.spacing(6),
-    borderWidth: 1,
-    borderColor: dsfr.colors.blueFrance,
-    borderRadius: dsfr.spacing(1),
-  },
-  contactIcon: {
-    width: 16,
-    height: 16,
-  },
-  contactLink: {
-    fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.blueFrance,
-    textDecoration: "underline",
-  },
-
-  // --- "Besoin de conseils pour vous isoler du bruit ?" promo banner ---
-  banner: {
-    marginTop: dsfr.spacing(6),
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: dsfr.colors.borderGrey,
-    borderRadius: dsfr.spacing(1),
-    overflow: "hidden",
-  },
-  bannerImageWrap: {
-    width: 180,
-    flexDirection: "row",
-  },
-  bannerImage: {
-    flex: 1,
-    height: "100%",
-    objectFit: "cover",
-  },
-  bannerText: {
-    flex: 1,
-    padding: dsfr.spacing(6),
-    justifyContent: "center",
-  },
-  bannerTitle: {
-    fontSize: dsfr.fontSize.lg,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.titleGrey,
-    marginBottom: dsfr.spacing(3),
-  },
-  bannerBody: {
-    fontSize: dsfr.fontSize.xs,
-    color: dsfr.colors.blueFrance,
-  },
-  bannerLink: {
-    fontSize: dsfr.fontSize.xs,
-    color: dsfr.colors.blueFrance,
-    textDecoration: "underline",
-  },
-
   regSection: {
-    marginBottom: dsfr.spacing(8),
+    marginBottom: dsfr.spacing(2),
   },
   regSectionHeader: {
     flexDirection: "row",
@@ -356,6 +301,17 @@ export const styles = StyleSheet.create({
     textTransform: "uppercase",
     color: "#b34000",
     backgroundColor: "#ffe9e6",
+    paddingVertical: 2,
+    lineHeight: 1.5,
+    paddingHorizontal: dsfr.spacing(2),
+  },
+  nonExposedBadge: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: "#18753C",
+    backgroundColor: "#B8FEC9",
     paddingVertical: 2,
     lineHeight: 1.5,
     paddingHorizontal: dsfr.spacing(2),
@@ -659,39 +615,24 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           diagBruit, service public d'information sur l'exposition sonore des parcelles.
         </Text>
       </Page>
-      {data.regulation &&
-        ((data.regulation.peb.exposed && data.regulation.peb.zone) ||
-          data.regulation.soundClassification.exposed) && (
-          <Page size="A4" style={styles.page}>
-            <Header />
-            <Text style={styles.title}>
-              Réglementations
-            </Text>
-
-            {data.regulation.peb.exposed && data.regulation.peb.zone && (
-              <Peb peb={data.regulation.peb} />
-            )}
-
-            {data.regulation.soundClassification.exposed && (
-              <SoundClassification
-                soundClassification={data.regulation.soundClassification}
-              />
-            )}
-          </Page>
-        )}
-      {(data.plu || data.isolation) &&
+      {(data.regulation || data.plu || data.isolation) && (
         <Page size="A4" style={styles.page}>
           <Header />
+          <Text style={styles.title}>
+            Réglementations
+          </Text>
+          {data.regulation.peb.exposed && data.regulation.peb.zone && (
+            <Peb peb={data.regulation.peb} />
+          )}
+          {data.regulation.soundClassification.exposed && (
+            <SoundClassification
+              soundClassification={data.regulation.soundClassification}
+            />
+          )}
           {data.plu && <Plu plu={data.plu} />}
           {data.isolation && <Isolation isolation={data.isolation} />}
         </Page>
-      }
-      <Page size="A4" style={styles.page}>
-        <Header />
-        {data.noiseMap && <NoiseMap noiseMap={data.noiseMap} />}
-        <Contact />
-        <IsolationBanner />
-      </Page>
+      )}
       <Page size="A4" style={styles.page}>
         <Header />
         <Text style={styles.title}>
