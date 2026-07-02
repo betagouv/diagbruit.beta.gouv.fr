@@ -105,7 +105,8 @@ export type Run = { text: string; bold?: boolean };
 
 export const styles = StyleSheet.create({
   page: {
-    paddingVertical: dsfr.spacing(10),
+    paddingTop: dsfr.spacing(10),
+    paddingBottom: dsfr.spacing(16),
     paddingHorizontal: dsfr.spacing(12),
     fontSize: dsfr.fontSize.sm,
     fontFamily: "Marianne",
@@ -175,6 +176,46 @@ export const styles = StyleSheet.create({
     color: dsfr.colors.blueFrance,
     textDecoration: "underline",
   },
+  footer: {
+    position: "absolute",
+    bottom: dsfr.spacing(6),
+    left: dsfr.spacing(12),
+    right: dsfr.spacing(12),
+    height: dsfr.spacing(8),
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingTop: dsfr.spacing(2),
+  },
+  footerLeft: {
+    flex: 1,
+  },
+  footerMeta: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.4,
+  },
+  footerLink: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    textDecoration: "underline",
+  },
+  footerPage: {
+    marginLeft: dsfr.spacing(4),
+  },
+  footerPageText: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1,
+  },
   info: {
     marginTop: dsfr.spacing(6),
     borderWidth: 1,
@@ -187,19 +228,11 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     gap: dsfr.spacing(2),
     backgroundColor: dsfr.colors.borderGrey,
-    paddingVertical: dsfr.spacing(2),
-    paddingHorizontal: dsfr.spacing(4),
+    paddingVertical: dsfr.spacing(1),
+    paddingHorizontal: dsfr.spacing(3),
   },
   infoBody: {
     padding: dsfr.spacing(2),
-  },
-  infoIcon: {
-    width: 10,
-    height: 10,
-    borderRadius: 7,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   infoIconText: {
     fontSize: 8,
@@ -208,15 +241,10 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
   infoTitle: {
-    fontSize: dsfr.fontSize.xs,
+    fontSize: 9,
     fontFamily: "Marianne",
     fontWeight: 400,
     lineHeight: 1.5,
-  },
-
-  contactIcon: {
-    width: 16,
-    height: 16,
   },
 
   // Blue header/title/text reused by the Contact ("Conseils diagBruit") box.
@@ -377,6 +405,7 @@ export const styles = StyleSheet.create({
     fontSize: dsfr.fontSize.xxs,
     color: dsfr.colors.mentionGrey,
     marginBottom: dsfr.spacing(1),
+    lineHeight: 1.5,
   },
   refBox: {
     marginBottom: dsfr.spacing(2),
@@ -399,18 +428,14 @@ export const styles = StyleSheet.create({
     color: dsfr.colors.defaultGrey,
     textDecoration: "underline",
   },
-  footer: {
-    marginTop: dsfr.spacing(6),
-    fontSize: dsfr.fontSize.xs,
-    color: dsfr.colors.disabledGrey,
-    borderTopWidth: 1,
-    borderTopColor: dsfr.colors.borderGrey,
-    paddingTop: dsfr.spacing(2),
-  },
   positionSvgWrap: {
     alignItems: "center",
     marginTop: dsfr.spacing(2),
   },
+  icon: {
+    height: 10,
+    width: 10,
+  }
 });
 
 const Header = () => {
@@ -422,6 +447,36 @@ const Header = () => {
     <Text style={styles.subtitle}>Intégrez les risques sonores dès la conception d’un projet immobilier</Text>
   </View>);
 }
+
+const PdfFooter = ({ data }: { data: DiagnosticPdfData }) => (
+  <View fixed style={styles.footer}>
+    <View style={styles.footerRow}>
+      <View style={styles.footerLeft}>
+        <Text style={styles.footerMeta}>
+          Édité le {data.generatedAt} · Parcelle n°{data.parcelNumber}
+          {data.address ? ` · ${data.address}` : ""}
+        </Text>
+        <Link src={data.link} style={styles.footerLink}>
+          Retrouvez votre diagnostic en ligne
+        </Link>
+      </View>
+      <Text
+        style={styles.footerPage}
+        render={(props) => {
+          const { pageNumber, totalPages } = props as unknown as {
+            pageNumber: number;
+            totalPages: number;
+          };
+          return (
+            <Text style={styles.footerPageText}>
+              Page {pageNumber}/{totalPages}
+            </Text>
+          );
+        }}
+      />
+    </View>
+  </View>
+);
 
 export const renderRuns = (runs: Run[], key?: number) => (
   <Text key={key} style={styles.regParagraph}>
@@ -449,6 +504,10 @@ export const ReferencesBox = ({ links }: { links: { label: string; url: string }
   </View>
 );
 
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+const CUSTOMER_SERVICE_ICON = `${STRAPI_URL}/images/customerServiceIcon.svg`;
+const INFORMATION_ICON = `${STRAPI_URL}/images/informationIcon.svg`;
+
 export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
   return (
     <Document title={`Diagnostic acoustique - ${data.parcelNumber}`}>
@@ -466,9 +525,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           barColor={dsfr.colors.contrastBlueFrance}
           titleColor={dsfr.colors.blueFrance}
           icon={
-            <Svg style={styles.contactIcon} viewBox="0 0 24 24">
-              <Path d={CUSTOMER_SERVICE_PATH} fill={dsfr.colors.blueFrance} />
-            </Svg>
+            <Image src={CUSTOMER_SERVICE_ICON} style={styles.icon} />
           }
         >
           <View style={styles.listItem}>
@@ -498,9 +555,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           title="Informations"
           barColor={dsfr.colors.borderGrey}
           icon={
-            <View style={styles.infoIcon}>
-              <Text style={styles.infoIconText}>i</Text>
-            </View>
+            <Image src={INFORMATION_ICON} style={styles.icon} />
           }
         >
           <View style={styles.listItem}>
@@ -546,6 +601,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
         />
         {data.plu && <Plu plu={data.plu} />}
         {data.isolation && <Isolation isolation={data.isolation} />}
+        <PdfFooter data={data} />
       </Page>
       <Page size="A4" style={styles.page}>
         <Header />
@@ -559,6 +615,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           />
         )}
         <Preconisations />
+        <PdfFooter data={data} />
       </Page>
     </Document>
   );
