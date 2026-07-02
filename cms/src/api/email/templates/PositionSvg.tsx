@@ -69,7 +69,7 @@ const NoiseMapTable = ({ rows }: { rows: NoiseMapRow[] }) => {
   if (!rows || rows.length === 0) return null;
   return (
     <View style={[styles.table, { marginTop: 12 }]}>
-      <View style={styles.tableHeaderRow}>
+      <View style={styles.tableHeaderRow} wrap={false}>
         <Text style={[styles.th, col.type]}>Type de source</Text>
         <Text style={[styles.th, col.producer]}>Producteur</Text>
         <Text style={[styles.th, col.name]}>Nom de la source</Text>
@@ -77,7 +77,7 @@ const NoiseMapTable = ({ rows }: { rows: NoiseMapRow[] }) => {
         <Text style={[styles.th, col.night]}>Niveau de bruit (nuit)</Text>
       </View>
       {rows.map((r, i) => (
-        <View key={i} style={styles.tableRow}>
+        <View key={i} style={styles.tableRow} wrap={false}>
           <Text style={[styles.td, col.type]}>{r.type}</Text>
           <Text style={[styles.td, col.producer]}>{r.producer}</Text>
           <Text style={[styles.td, col.name]}>{r.name}</Text>
@@ -138,7 +138,7 @@ export default function PositionSvg({
       </View>
 
       {/* Legend + parcelle diagram, side by side */}
-      <View style={s.row}>
+      <View style={s.row} wrap={false}>
         <View style={s.legend}>
           <View style={s.legendRow}>
             <DotSwatch />

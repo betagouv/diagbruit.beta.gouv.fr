@@ -92,7 +92,7 @@ export default function Peb({ peb }: { peb: RegulationData["peb"] }) {
   if (!peb.exposed || !peb.zone) return null;
   const content = PEB_ZONE_CONTENT[peb.zone];
   return (
-    <View style={styles.regSection}>
+    <View style={styles.regSection} wrap={false}>
       <View style={styles.regSectionHeader}>
         <Text style={styles.regSectionTitle}>Nationale Aérien (PEB)</Text>
         <Text style={styles.exposedBadge}>Parcelle exposée</Text>

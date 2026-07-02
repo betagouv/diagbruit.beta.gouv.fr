@@ -13,7 +13,7 @@ export default function Isolation({ isolation }: { isolation: IsolationData }) {
         : "Vous êtes soumis au classement sonore";
 
   return (
-    <View style={styles.regSection}>
+    <View style={styles.regSection} wrap={false}>
       <View style={styles.regSectionHeader}>
         <Text style={styles.regSectionTitle}>Isolation réglementaire</Text>
         {hasIsolation && (

@@ -616,24 +616,20 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           diagBruit, service public d'information sur l'exposition sonore des parcelles.
         </Text>
       </Page>
-      {(data.regulation || data.plu || data.isolation) && (
-        <Page size="A4" style={styles.page}>
-          <Header />
-          <Text style={styles.title}>
-            Réglementations
-          </Text>
-          {data.regulation.peb.exposed && data.regulation.peb.zone && (
-            <Peb peb={data.regulation.peb} />
-          )}
-          {data.regulation.soundClassification.exposed && (
-            <SoundClassification
-              soundClassification={data.regulation.soundClassification}
-            />
-          )}
-          {data.plu && <Plu plu={data.plu} />}
-          {data.isolation && <Isolation isolation={data.isolation} />}
-        </Page>
-      )}
+      <Page size="A4" style={styles.page}>
+        <Header />
+        <Text style={styles.title}>
+          Réglementations
+        </Text>
+        <Peb peb={data.regulation.peb} />
+        {data.regulation.soundClassification.exposed && (
+          <SoundClassification
+            soundClassification={data.regulation.soundClassification}
+          />
+        )}
+        {data.plu && <Plu plu={data.plu} />}
+        {data.isolation && <Isolation isolation={data.isolation} />}
+      </Page>
       <Page size="A4" style={styles.page}>
         <Header />
         <Text style={styles.title}>

@@ -120,12 +120,12 @@ export default function Plu({ plu }: { plu: PluData }) {
   if (!plu || plu.zones.length === 0) return null;
   return (
     <View style={styles.regSection}>
-      <View style={styles.regSectionHeader}>
+      <View style={styles.regSectionHeader} wrap={false}>
         <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
         <Text style={styles.exposedBadge}>Parcelle exposée</Text>
       </View>
       {plu.zones.map((zone, i) => (
-        <View key={i} style={styles.regCard}>
+        <View key={i} style={styles.regCard} wrap={false}>
           <View style={styles.badgeRow}>
             <Text style={styles.sourceBadge}>
               Source : {zone.source || "Plan local d'urbanisme"}

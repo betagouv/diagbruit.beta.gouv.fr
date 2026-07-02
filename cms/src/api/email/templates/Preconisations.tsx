@@ -7,7 +7,7 @@ const PRECO_URL = "https://diagbruit.beta.gouv.fr/preco";
 // design-stage measures to limit noise, plus a link to the full guide.
 export default function Preconisations() {
   return (
-    <View style={s.section}>
+    <View style={s.section} wrap={false}>
       <Text style={s.title}>Préconisations</Text>
       <Text style={s.intro}>
         Pour limiter les nuisances sonores, certaines mesures simples peuvent

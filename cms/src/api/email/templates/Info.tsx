@@ -18,7 +18,7 @@ export default function Info({
   children,
 }: InfoProps) {
   return (
-    <View style={styles.info}>
+    <View style={styles.info} wrap={false}>
       <View style={[styles.infoHeader, { backgroundColor: barColor }]}>
         {icon}
         <Text

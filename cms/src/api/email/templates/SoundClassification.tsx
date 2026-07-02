@@ -30,7 +30,7 @@ export default function SoundClassification({
         </Text>
         <Text style={styles.exposedBadge}>Parcelle exposée</Text>
       </View>
-      <View style={styles.regCard}>
+      <View style={styles.regCard} wrap={false}>
         <View style={styles.badgeRow}>
           <Text style={styles.sourceBadge}>Source : Classement sonore</Text>
         </View>
@@ -40,7 +40,7 @@ export default function SoundClassification({
         </Text>
       </View>
       <View style={styles.table}>
-        <View style={styles.tableHeaderRow}>
+        <View style={styles.tableHeaderRow} wrap={false}>
           <Text style={[styles.th, styles.colType]}>Type de source</Text>
           <Text style={[styles.th, styles.colName]}>Nom de la source</Text>
           <Text style={[styles.th, styles.colCat]}>Catégorie</Text>
@@ -48,7 +48,7 @@ export default function SoundClassification({
           <Text style={[styles.th, styles.colDist]}>Distance maximum**</Text>
         </View>
         {rows.map((r, i) => (
-          <View key={i} style={styles.tableRow}>
+          <View key={i} style={styles.tableRow} wrap={false}>
             <Text style={[styles.td, styles.colType]}>{r.type}</Text>
             <Text style={[styles.td, styles.colName]}>{r.name}</Text>
             <Text style={[styles.td, styles.colCat]}>{r.category}</Text>
@@ -58,9 +58,7 @@ export default function SoundClassification({
         ))}
       </View>
       <Text style={styles.tableNote}>
-        *Échelle de 1 à 5. La catégorie 1 est la plus bruyante.
-      </Text>
-      <Text style={styles.tableNote}>
+        *Échelle de 1 à 5. La catégorie 1 est la plus bruyante.{"\n"}
         **Distances estimées à partir du centre de la source de bruit et le point le plus prêt et le plus éloigné de votre parcelle.
       </Text>
       <ReferencesBox links={TERRESTRE_REFERENCES} />
