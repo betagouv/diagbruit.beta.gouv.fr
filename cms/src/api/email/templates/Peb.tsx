@@ -1,4 +1,5 @@
 import { Text, View } from "@react-pdf/renderer";
+import ExposureBadge from "./ExposureBadge";
 import {
   ReferencesBox,
   renderRuns,
@@ -89,31 +90,33 @@ const PEB_REFERENCES = [
 
 
 export default function Peb({ peb }: { peb: RegulationData["peb"] }) {
-  if (!peb.exposed || !peb.zone) return null;
   const content = PEB_ZONE_CONTENT[peb.zone];
   return (
     <View style={styles.regSection} wrap={false}>
       <View style={styles.regSectionHeader}>
         <Text style={styles.regSectionTitle}>Nationale Aérien (PEB)</Text>
-        <Text style={styles.exposedBadge}>Parcelle exposée</Text>
+        <ExposureBadge exposed={peb.exposed} />
       </View>
-      <Text style={styles.regIntro}>
-        Votre projet doit se conformer la réglementation suivante :
-      </Text>
-      <View style={styles.regCard}>
-        <View style={styles.badgeRow}>
-          <Text style={styles.zoneBadge}>Zone {peb.zone}</Text>
-          <Text style={styles.sourceBadge}>Source : PEB</Text>
-        </View>
-        {renderRuns(content.intro)}
-        {content.allowed.map((item, i) => (
-          <View key={i} style={styles.listItem}>
-            <Text style={styles.bulletDot}>•</Text>
-            <Text style={styles.listText}>{item}</Text>
-          </View>
-        ))}
-        {content.paragraphs.map((p, i) => renderRuns(p, i))}
-      </View>
+      {peb.exposed ? (
+        <>
+          <Text style={styles.regIntro}>
+            Votre projet doit se conformer la réglementation suivante :
+          </Text>
+          <View style={styles.regCard}>
+            <View style={styles.badgeRow}>
+              <Text style={styles.zoneBadge}>Zone {peb.zone}</Text>
+              <Text style={styles.sourceBadge}>Source : PEB</Text>
+            </View>
+            {renderRuns(content.intro)}
+            {content.allowed.map((item, i) => (
+              <View key={i} style={styles.listItem}>
+                <Text style={styles.bulletDot}>•</Text>
+                <Text style={styles.listText}>{item}</Text>
+              </View>
+            ))}
+            {content.paragraphs.map((p, i) => renderRuns(p, i))}
+          </View></>
+      ) : (<Text style={styles.regIntro}>Votre parcelle n'est pas impactée par la réglementation Aérienne.</Text>)}
       <ReferencesBox links={PEB_REFERENCES} />
     </View>
   );

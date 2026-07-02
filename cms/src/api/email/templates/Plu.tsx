@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Text, View } from "@react-pdf/renderer";
+import ExposureBadge from "./ExposureBadge";
 import {
   ReferencesBox,
   renderRuns,
@@ -122,7 +123,7 @@ export default function Plu({ plu }: { plu: PluData }) {
     <View style={styles.regSection}>
       <View style={styles.regSectionHeader} wrap={false}>
         <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
-        <Text style={styles.exposedBadge}>Parcelle exposée</Text>
+        <ExposureBadge exposed />
       </View>
       {plu.zones.map((zone, i) => (
         <View key={i} style={styles.regCard} wrap={false}>

@@ -150,7 +150,7 @@ export const styles = StyleSheet.create({
   title: {
     fontWeight: 700,
     fontFamily: "Marianne",
-    fontSize: dsfr.fontSize.xs,
+    fontSize: dsfr.fontSize.xxs,
   },
   score: {
     fontSize: dsfr.fontSize.h2,
@@ -415,7 +415,7 @@ export const styles = StyleSheet.create({
     marginBottom: dsfr.spacing(1),
   },
   refBox: {
-    marginTop: dsfr.spacing(1),
+    marginBottom: dsfr.spacing(2),
   },
   refTitle: {
     fontSize: dsfr.fontSize.xxs,
@@ -445,7 +445,7 @@ export const styles = StyleSheet.create({
   },
   positionSvgWrap: {
     alignItems: "center",
-    marginTop: dsfr.spacing(6),
+    marginTop: dsfr.spacing(2),
   },
 });
 
@@ -622,11 +622,9 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           Réglementations
         </Text>
         <Peb peb={data.regulation.peb} />
-        {data.regulation.soundClassification.exposed && (
-          <SoundClassification
-            soundClassification={data.regulation.soundClassification}
-          />
-        )}
+        <SoundClassification
+          soundClassification={data.regulation.soundClassification}
+        />
         {data.plu && <Plu plu={data.plu} />}
         {data.isolation && <Isolation isolation={data.isolation} />}
       </Page>

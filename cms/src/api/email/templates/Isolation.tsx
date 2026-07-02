@@ -1,4 +1,5 @@
 import { Text, View } from "@react-pdf/renderer";
+import ExposureBadge from "./ExposureBadge";
 import { styles, type IsolationData } from "./DiagnosticPdf";
 
 export default function Isolation({ isolation }: { isolation: IsolationData }) {
@@ -16,9 +17,7 @@ export default function Isolation({ isolation }: { isolation: IsolationData }) {
     <View style={styles.regSection} wrap={false}>
       <View style={styles.regSectionHeader}>
         <Text style={styles.regSectionTitle}>Isolation réglementaire</Text>
-        {hasIsolation && (
-          <Text style={styles.exposedBadge}>Parcelle exposée</Text>
-        )}
+        <ExposureBadge exposed={hasIsolation} />
       </View>
       <View style={styles.regCard}>
         {hasIsolation ? (
