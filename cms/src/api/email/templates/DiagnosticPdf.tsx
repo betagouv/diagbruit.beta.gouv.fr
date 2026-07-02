@@ -100,16 +100,16 @@ export type Run = { text: string; bold?: boolean };
 
 export const styles = StyleSheet.create({
   page: {
-    paddingVertical: dsfr.spacing(10), // 40
-    paddingHorizontal: dsfr.spacing(12), // 48
+    paddingVertical: dsfr.spacing(10),
+    paddingHorizontal: dsfr.spacing(12),
     fontSize: dsfr.fontSize.sm,
     fontFamily: "Marianne",
     color: dsfr.colors.defaultGrey,
     lineHeight: 1.5,
   },
   header: {
-    paddingBottom: dsfr.spacing(3),
-    marginBottom: dsfr.spacing(6),
+    paddingBottom: dsfr.spacing(2),
+    marginBottom: dsfr.spacing(2),
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -659,20 +659,26 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           diagBruit, service public d'information sur l'exposition sonore des parcelles.
         </Text>
       </Page>
-      <Page size="A4" style={styles.page}>
-        <Header />
-        <Text style={styles.title}>
-          Réglementations
-        </Text>
+      {data.regulation &&
+        ((data.regulation.peb.exposed && data.regulation.peb.zone) ||
+          data.regulation.soundClassification.exposed) && (
+          <Page size="A4" style={styles.page}>
+            <Header />
+            <Text style={styles.title}>
+              Réglementations
+            </Text>
 
-        {data.regulation && <Peb peb={data.regulation.peb} />}
+            {data.regulation.peb.exposed && data.regulation.peb.zone && (
+              <Peb peb={data.regulation.peb} />
+            )}
 
-        {data.regulation && (
-          <SoundClassification
-            soundClassification={data.regulation.soundClassification}
-          />
+            {data.regulation.soundClassification.exposed && (
+              <SoundClassification
+                soundClassification={data.regulation.soundClassification}
+              />
+            )}
+          </Page>
         )}
-      </Page>
       {(data.plu || data.isolation) &&
         <Page size="A4" style={styles.page}>
           <Header />

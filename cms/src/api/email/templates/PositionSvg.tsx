@@ -13,8 +13,8 @@ import { dsfr } from "./pdfTokens";
 import { NoiseMapTable } from "./NoiseMap";
 
 const OUTLINE_COLOR = dsfr.colors.blueFrance;
-const BORDER_GREY = dsfr.colors.borderGrey;
-const SWATCH_BG = "#eeeeee";
+const BORDER_GREY = "#ffffff";
+const SWATCH_BG = "#ffffff";
 
 const lighten = (hex: string): string => {
   const n = parseInt(hex.slice(1), 16);
@@ -175,18 +175,18 @@ const s = StyleSheet.create({
   dot: {
     fontSize: dsfr.fontSize.xxs,
     marginRight: dsfr.spacing(2),
-    lineHeight: 1.5,
+    lineHeight: 1.25,
   },
   bulletText: {
     flex: 1,
     fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
-    lineHeight: 1.5,
+    lineHeight: 1.25,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: dsfr.spacing(4),
+    gap: dsfr.spacing(2),
   },
   legend: {
     flex: 1,
@@ -195,7 +195,6 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: dsfr.spacing(2),
-    marginBottom: dsfr.spacing(2),
   },
   swatch: {
     width: 16,
@@ -216,6 +215,5 @@ const s = StyleSheet.create({
     fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
     color: dsfr.colors.mentionGrey,
-    marginTop: dsfr.spacing(1),
   },
 });
