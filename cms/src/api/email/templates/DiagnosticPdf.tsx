@@ -398,10 +398,12 @@ export const styles = StyleSheet.create({
     fontWeight: 700,
     color: dsfr.colors.titleGrey,
     padding: dsfr.spacing(2),
+    lineHeight: 1.2,
   },
   td: {
     fontSize: dsfr.fontSize.xxs,
     padding: dsfr.spacing(2),
+    lineHeight: 1.2,
   },
   colType: { flex: 1.2 },
   colName: { flex: 2 },
@@ -410,28 +412,27 @@ export const styles = StyleSheet.create({
   tableNote: {
     fontSize: dsfr.fontSize.xxs,
     color: dsfr.colors.mentionGrey,
-    marginBottom: dsfr.spacing(3),
+    marginBottom: dsfr.spacing(1),
   },
   refBox: {
-    borderWidth: 1,
-    borderColor: dsfr.colors.borderGrey,
-    padding: dsfr.spacing(2),
+    marginTop: dsfr.spacing(1),
   },
   refTitle: {
     fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
     fontWeight: 700,
-    color: dsfr.colors.mentionGrey,
-    paddingBottom: dsfr.spacing(1),
-
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.2,
+    marginBottom: dsfr.spacing(0.5),
   },
   refLinks: {
     fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.mentionGrey,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.2,
   },
   refLink: {
     fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.mentionGrey,
+    color: dsfr.colors.defaultGrey,
     textDecoration: "underline",
   },
   footer: {
@@ -507,8 +508,8 @@ export const ReferencesBox = ({ links }: { links: { label: string; url: string }
     <Text style={styles.refLinks}>
       {links.map((l, i) => (
         <Text key={i}>
-          {i > 0 ? "   |   " : ""}
-          <Link src={l.url} style={styles.refLink}>{l.label} </Link>
+          {i > 0 ? " | " : ""}
+          <Link src={l.url} style={styles.refLink}>{l.label}</Link>
         </Text>
       ))}
     </Text>
