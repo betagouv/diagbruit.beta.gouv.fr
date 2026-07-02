@@ -92,6 +92,11 @@ export type DiagnosticEmailSummary = {
 			nightLevel: string;
 		}[];
 	};
+	noiseSources?: {
+		name: string;
+		slug: string;
+		count: number;
+	}[];
 	position?: PositionData;
 };
 

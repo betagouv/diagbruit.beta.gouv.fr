@@ -272,6 +272,27 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               noiseMap: {
                 rows: getNoiseMapRows(diagnosticItem.diagnostic),
               },
+              noiseSources: Object.values(
+                (
+                  diagnosticItem.diagnostic.noisesource_intersections ?? []
+                ).reduce(
+                  (acc, src) => {
+                    if (!acc[src.category_slug]) {
+                      acc[src.category_slug] = {
+                        name: src.category_name,
+                        slug: src.category_slug,
+                        count: 0,
+                      };
+                    }
+                    acc[src.category_slug].count += 1;
+                    return acc;
+                  },
+                  {} as Record<
+                    string,
+                    { name: string; slug: string; count: number }
+                  >,
+                ),
+              ),
               position: buildPositionData(
                 diagnosticItem.parcelle.geometry,
                 diagnosticItem.diagnostic.zones,

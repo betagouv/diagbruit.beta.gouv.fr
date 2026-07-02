@@ -5,6 +5,7 @@ import SoundClassification from "./SoundClassification";
 import Plu from "./Plu";
 import Isolation from "./Isolation";
 import Info from "./Info";
+import Sonoscore from "./Sonoscore";
 import PositionSvg from "./PositionSvg";
 import Preconisations from "./Preconisations";
 import { dsfr } from "./pdfTokens";
@@ -38,7 +39,14 @@ export interface DiagnosticPdfData {
   isolation?: IsolationData;
   plu?: PluData;
   noiseMap?: NoiseMapData;
+  noiseSources?: NoiseSourceGroup[];
   position?: PositionData;
+}
+
+export interface NoiseSourceGroup {
+  name: string;
+  slug: string;
+  count: number;
 }
 
 export interface PositionData {
@@ -166,50 +174,6 @@ export const styles = StyleSheet.create({
     fontSize: dsfr.fontSize.sm,
     color: dsfr.colors.blueFrance,
     textDecoration: "underline",
-  },
-  sonoscore: {
-    flexDirection: "row",
-    width: "100%",
-    marginBottom: dsfr.spacing(4),
-  },
-  sonoscoreLeft: {
-    flex: 1,
-    padding: `${dsfr.spacing(10)}px ${dsfr.spacing(6)}px`,
-    backgroundColor: dsfr.colors.blueFrance,
-    color: "#ffffff",
-  },
-  sonoTitle: {
-    fontSize: dsfr.fontSize.lg,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    lineHeight: 1.2,
-    marginBottom: dsfr.spacing(5),
-  },
-  sonoParcelle: {
-    fontSize: dsfr.fontSize.sm,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    marginBottom: dsfr.spacing(3),
-  },
-  sonoAddress: {
-    fontSize: dsfr.fontSize.xs,
-    marginBottom: dsfr.spacing(2),
-    fontWeight: 400,
-
-  },
-  sonoDate: {
-    fontSize: dsfr.fontSize.xxs,
-    fontWeight: 400,
-
-  },
-  sonoscoreRight: {
-    flex: 1,
-    padding: dsfr.spacing(4),
-    borderWidth: 1,
-    borderColor: dsfr.colors.blueFrance,
-    color: dsfr.colors.defaultGrey,
-    fontSize: dsfr.fontSize.xs,
-    lineHeight: 1.5,
   },
   info: {
     marginTop: dsfr.spacing(6),
@@ -471,37 +435,6 @@ export const renderRuns = (runs: Run[], key?: number) => (
   </Text>
 );
 
-const getRiskSummaryRuns = (score: number): Run[] => {
-  if (score > 8) {
-    return [
-      { text: "Votre parcelle est exposée à un " },
-      { text: "risque extrême de nuisance sonore.", bold: true },
-      {
-        text:
-          " Les projets de construction ou de rénovation sont soumis à des ",
-      },
-      { text: "obligations réglementaires", bold: true },
-      { text: "." },
-    ];
-  }
-  const level = score > 6 ? "fort" : score > 3 ? "moyen" : "faible";
-  return [
-    { text: "Votre parcelle est exposée à un " },
-    { text: `risque ${level} de nuisance sonore.`, bold: true }
-  ];
-};
-
-const renderInlineRuns = (runs: Run[]) =>
-  runs.map((r, i) =>
-    r.bold ? (
-      <Text key={i} style={styles.bold}>
-        {r.text}
-      </Text>
-    ) : (
-      r.text
-    ),
-  );
-
 export const ReferencesBox = ({ links }: { links: { label: string; url: string }[] }) => (
   <View style={styles.refBox}>
     <Text style={styles.refTitle}>Références</Text>
@@ -526,17 +459,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           <Text style={styles.brand}>diagBruit</Text>
         </View>
 
-        <View style={styles.sonoscore}>
-          <View style={styles.sonoscoreLeft}>
-            <Text style={styles.sonoTitle}>Diagnostic complet sur les risques sonores</Text>
-            <Text style={styles.sonoParcelle}>Parcelle n°{data.parcelNumber}</Text>
-            {data.address && <Text style={styles.sonoAddress}>{data.address}</Text>}
-            <Text style={styles.sonoDate}>Édité le {data.generatedAt}</Text>
-          </View>
-          <View style={styles.sonoscoreRight}>
-            <Text>{renderInlineRuns(getRiskSummaryRuns(data.score))}</Text>
-          </View>
-        </View>
+        <Sonoscore data={data} />
 
         <Info
           title="Recommandations"
@@ -611,10 +534,6 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
             </Text>
           </View>
         </Info>
-
-        <Text style={styles.footer}>
-          diagBruit, service public d'information sur l'exposition sonore des parcelles.
-        </Text>
       </Page>
       <Page size="A4" style={styles.page}>
         <Header />

@@ -14,6 +14,7 @@ import DiagnosticPdf, {
   type DiagnosticPdfData,
   type IsolationData,
   type NoiseMapData,
+  type NoiseSourceGroup,
   type PluData,
   type PositionData,
   type RegulationData,
@@ -157,6 +158,20 @@ function coercePosition(raw: any): PositionData | undefined {
   return { size, parcellePoints, zones, optimalPoints };
 }
 
+/** Coerce the client-provided nearby noise-source groups (category + count). */
+function coerceNoiseSources(raw: any): NoiseSourceGroup[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const groups = raw
+    .slice(0, 20)
+    .map((g: any) => ({
+      name: String(g?.name ?? "").trim(),
+      slug: String(g?.slug ?? "").trim(),
+      count: Math.max(0, Math.floor(Number(g?.count) || 0)),
+    }))
+    .filter((g: NoiseSourceGroup) => g.name.length > 0 && g.count > 0);
+  return groups.length > 0 ? groups : undefined;
+}
+
 function coerceIsolation(raw: any): IsolationData | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const num = (v: any) =>
@@ -289,6 +304,7 @@ export default factories.createCoreController("api::email.email", () => ({
           String(parcelNumber ?? "").split("-")[0],
         ),
         noiseMap: coerceNoiseMap(summary.noiseMap),
+        noiseSources: coerceNoiseSources(summary.noiseSources),
         position: coercePosition(summary.position),
       };
       pdfUrl = await generateAndUploadDiagnosticPdf(pdfData);
