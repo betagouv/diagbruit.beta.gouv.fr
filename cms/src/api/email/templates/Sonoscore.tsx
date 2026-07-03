@@ -138,7 +138,7 @@ export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
 
         <Text style={s.summary}>{renderInlineRuns(getRiskSummaryRuns(data.score))}</Text>
 
-        {noiseSources.length > 0 && (
+        {noiseSources.length > 0 ? (
           <>
             <Text style={s.sourcesIntro}>
               D'autres sources de bruit à proximité de votre parcelle peuvent
@@ -149,7 +149,11 @@ export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
               <SourceRow key={group.slug} group={group} />
             ))}
           </>
-        )}
+        ) : (<Text style={s.sourcesIntro}>
+          À ce jour, aucune autre source de nuisance sonore
+          (ex. terrasse, école) n'a été identifiée à proximité de votre parcelle.
+          Cela n'exclut pas l'existence de nuisances non référencées.
+        </Text>)}
 
         <Link src={data.link} style={s.cta}>
           Retrouvez votre diagnostic en ligne
