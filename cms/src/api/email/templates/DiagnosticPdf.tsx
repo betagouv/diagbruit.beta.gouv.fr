@@ -358,6 +358,12 @@ export const styles = StyleSheet.create({
     marginBottom: dsfr.spacing(1),
     paddingLeft: dsfr.spacing(2),
   },
+  infoView: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: dsfr.spacing(1),
+    paddingLeft: 2,
+  },
   bulletDot: {
     fontSize: dsfr.fontSize.xxs,
     lineHeight: 1.5,
@@ -615,6 +621,23 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
           />
         )}
         <Preconisations />
+        <Info
+          title="Des questions sur votre diagnostic acoustique ?"
+          barColor={dsfr.colors.contrastBlueFrance}
+          titleColor={dsfr.colors.blueFrance}
+          icon={
+            <Image src={CUSTOMER_SERVICE_ICON} style={styles.icon} />
+          }
+        >
+          <View style={styles.infoView}>
+            <Text style={styles.listText}>
+              L'équipe de diagBruit est à votre disposition pour vous accompagner et
+              répondre à vos interrogations. N'hésitez pas à nous contacter par email à l'adresse suivante : {" "}
+              <Link href="mailto:contact@diagbruit.fr">contact@diagbruit.fr</Link>
+            </Text>
+          </View>
+        </Info>
+
         <PdfFooter data={data} />
       </Page>
     </Document>
