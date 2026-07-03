@@ -1,44 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Table } from "@codegouvfr/react-dsfr/Table";
+import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
 
-interface ParsedTable {
-  caption: string;
-  headers: string[];
-  data: string[][];
-}
+function normalizeTableHtml(tableEl: HTMLTableElement): string {
+  const table = tableEl.cloneNode(true) as HTMLTableElement;
 
-function parseTable(tableEl: HTMLTableElement): ParsedTable {
-  const caption = tableEl.querySelector("caption")?.textContent?.trim() ?? "";
-
-  const headerCells = Array.from(
-    tableEl.querySelectorAll("thead tr th")
-  );
-  const headers = headerCells.map((th) => th.textContent?.trim() ?? "");
-
-  let dataRows: HTMLTableRowElement[];
-  if (headers.length === 0) {
-    const allRows = Array.from(tableEl.querySelectorAll("tbody tr, tr"));
-    const firstRow = allRows[0];
-    if (firstRow) {
-      Array.from(firstRow.querySelectorAll("th, td")).forEach((cell) =>
-        headers.push(cell.textContent?.trim() ?? "")
-      );
+  if (!table.querySelector("thead")) {
+    const body = table.querySelector("tbody") ?? table;
+    const rows = Array.from(body.querySelectorAll(":scope > tr"));
+    const headerRows: HTMLTableRowElement[] = [];
+    for (const row of rows) {
+      const cells = Array.from(row.children);
+      const allTh = cells.length > 0 && cells.every((c) => c.tagName === "TH");
+      if (allTh) headerRows.push(row as HTMLTableRowElement);
+      else break;
     }
-    dataRows = allRows.slice(1) as HTMLTableRowElement[];
-  } else {
-    dataRows = Array.from(
-      tableEl.querySelectorAll("tbody tr")
-    ) as HTMLTableRowElement[];
+    if (headerRows.length > 0) {
+      const thead = document.createElement("thead");
+      headerRows.forEach((row) => thead.appendChild(row));
+      table.insertBefore(thead, table.firstChild);
+    }
   }
 
-  const data = dataRows.map((row) =>
-    Array.from(row.querySelectorAll("td, th")).map(
-      (cell) => cell.textContent?.trim() ?? ""
-    )
-  );
-
-  return { caption, headers, data };
+  return table.outerHTML;
 }
 
 interface RichContentProps {
@@ -58,7 +42,7 @@ export const RichContent = ({ html, className }: RichContentProps) => {
     const nodes = Array.from(doc.body.childNodes);
 
     const result: Array<
-      { type: "html"; content: string } | { type: "table"; table: ParsedTable }
+      { type: "html"; content: string } | { type: "table"; html: string }
     > = [];
 
     let htmlBuffer = "";
@@ -80,7 +64,7 @@ export const RichContent = ({ html, className }: RichContentProps) => {
             ? (el as HTMLTableElement)
             : (el.querySelector("table") as HTMLTableElement);
         if (tableEl) {
-          result.push({ type: "table", table: parseTable(tableEl) });
+          result.push({ type: "table", html: normalizeTableHtml(tableEl) });
         }
       } else {
         const div = document.createElement("div");
@@ -142,13 +126,11 @@ export const RichContent = ({ html, className }: RichContentProps) => {
               />
             );
           }
-          const { headers, data } = segment.table;
           return (
-            <Table
+            <div
               key={i}
-              headers={headers}
-              data={data}
-              bordered
+              className={cx(classes.table)}
+              dangerouslySetInnerHTML={{ __html: segment.html }}
             />
           );
         })}
@@ -182,6 +164,25 @@ const useStyles = tss.create(() => ({
   container: {
     "& img": {
       cursor: "zoom-in",
+    },
+  },
+  table: {
+    overflowX: "auto",
+    marginBottom: fr.spacing("4v"),
+    "& table": {
+      width: "100%",
+      borderCollapse: "collapse",
+    },
+    "& th, & td": {
+      border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+      padding: fr.spacing("2v"),
+      textAlign: "left",
+      verticalAlign: "top",
+    },
+    "& thead th": {
+      backgroundColor: fr.colors.decisions.background.contrast.grey.default,
+      fontWeight: 700,
+      verticalAlign: "middle",
     },
   },
   zoomedImageOverlay: {
