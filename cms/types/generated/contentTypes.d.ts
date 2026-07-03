@@ -407,6 +407,47 @@ export interface ApiAccessibilityAccessibility extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAcousticCertificateAcousticCertificate
+  extends Struct.SingleTypeSchema {
+  collectionName: 'acoustic_certificates';
+  info: {
+    description: '';
+    displayName: 'AcousticCertificate';
+    pluralName: 'acoustic-certificates';
+    singularName: 'acoustic-certificate';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::acoustic-certificate.acoustic-certificate'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    recommendation: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::recommendation.recommendation'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiChangelogChangelog extends Struct.CollectionTypeSchema {
   collectionName: 'changelogs';
   info: {
@@ -701,7 +742,7 @@ export interface ApiNoisezoneAlertNoisezoneAlert
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    reference: Schema.Attribute.String;
+    reference: Schema.Attribute.String & Schema.Attribute.Required;
     source: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<"Plan Local d'Urbanisme">;
@@ -1338,6 +1379,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::accessibility.accessibility': ApiAccessibilityAccessibility;
+      'api::acoustic-certificate.acoustic-certificate': ApiAcousticCertificateAcousticCertificate;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;

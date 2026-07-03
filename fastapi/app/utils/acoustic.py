@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 
 def correction_from_angle(angle_vue: float) -> int:
@@ -89,36 +89,32 @@ def get_land_intersection_isolation(category: int, distance: float, correction: 
     return (last_isolations[category - 1] + correction) if 0 <= category - 1 < len(last_isolations) else 0
 
 
-def get_land_isolations(soundclassification_intersections: List) -> (int, int):
+def _cumulative_correction(gap: float) -> int:
+    """Additive correction for a given isolation gap (first matching rule wins)."""
+    for rule in isolation_correction_table:
+        if gap <= rule["maxGap"]:
+            return int(rule["correction"])
+    return 0
+
+
+def _combine_isolations(isolations: List[int]) -> int:
     """
-    Returns the maximum isolation across all provided land intersections.
-    If the list is empty, returns 30.
+    Combine source isolations by iterating in ascending order:
+    each step takes max(running, next) + correction(|running - next|).
+
+    Example: [31, 33, 36, 38]
+      31 vs 33 -> 33 + 2 = 35   (gap=2)
+      35 vs 36 -> 36 + 3 = 39   (gap=1)
+      39 vs 38 -> 39 + 3 = 42   (gap=1)
     """
-    if not len(soundclassification_intersections):
-        return 30, 30
+    filtered = sorted(iso for iso in isolations if iso > 0)
+    if not filtered:
+        return 0
 
-    max_val = max(
-        get_land_intersection_isolation(
-            inter["acoustic_category"],
-            inter["max_distance"],
-            inter["farthest_correction"]
-        )
-        for inter in soundclassification_intersections
-    )
-
-    min_val = max(
-        get_land_intersection_isolation(
-            inter["acoustic_category"],
-            inter["min_distance"],
-            inter["closest_correction"]
-        )
-        for inter in soundclassification_intersections
-    )
-
-    max_val = max_val if max_val >= 30 else 30
-    min_val = min_val if min_val >= 30 else 30
-
-    return max_val, min_val
+    result = filtered[0]
+    for nxt in filtered[1:]:
+        result = max(result, nxt) + _cumulative_correction(abs(result - nxt))
+    return result
 
 
 def get_air_isolation(air_intersections: List) -> int:
@@ -135,17 +131,43 @@ def get_air_isolation(air_intersections: List) -> int:
     return 0
 
 
-def get_computed_isolation(land_isolation: int, air_isolation: int) -> int:
+def compute_parcelle_isolations(
+    soundclassification_intersections: List,
+    air_intersections: List,
+) -> Tuple[int, int]:
     """
-    Combines land and air isolation using the correction table. Add the topo correction.
+    Returns (isolation_min, isolation_max):
+      - isolation_min: required at the least-exposed point of the parcel
+                       (uses max_distance / farthest_correction per source)
+      - isolation_max: required at the most-exposed point of the parcel
+                       (uses min_distance / closest_correction per source)
+
+    Each entry of soundclassification_intersections is treated as a single
+    source (the list is pre-deduplicated by label). The PEB zone counts
+    as one additional source. Sources whose computed isolation is 0
+    (category out of table at the given distance) are excluded from the cumul.
+    A 30 dB floor is applied to the final combined value.
     """
-    max_isolation = max(land_isolation, air_isolation)
-    min_isolation = min(land_isolation, air_isolation)
-    gap = max_isolation - min_isolation
+    air_iso = get_air_isolation(air_intersections)
 
-    tmp_correction = 0
-    for rule in isolation_correction_table:
-        if gap <= rule["maxGap"]:
-            tmp_correction = int(rule["correction"])
+    iso_min_per_source = [
+        get_land_intersection_isolation(
+            inter["acoustic_category"],
+            inter["max_distance"],
+            inter["farthest_correction"],
+        )
+        for inter in soundclassification_intersections
+    ]
+    iso_max_per_source = [
+        get_land_intersection_isolation(
+            inter["acoustic_category"],
+            inter["min_distance"],
+            inter["closest_correction"],
+        )
+        for inter in soundclassification_intersections
+    ]
 
-    return int(max_isolation + tmp_correction)
+    isolation_min = _combine_isolations(iso_min_per_source + [air_iso])
+    isolation_max = _combine_isolations(iso_max_per_source + [air_iso])
+
+    return max(isolation_min, 30), max(isolation_max, 30)

@@ -32,7 +32,8 @@
       "default": "Plan Local d'Urbanisme"
     },
     "reference": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "label": {
       "type": "enumeration",
