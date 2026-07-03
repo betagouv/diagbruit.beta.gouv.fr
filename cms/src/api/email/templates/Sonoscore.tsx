@@ -1,4 +1,5 @@
 import {
+  Image,
   Link,
   Path,
   Polygon,
@@ -115,15 +116,20 @@ const SourceRow = ({ group }: { group: NoiseSourceGroup }) => (
 
 export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
   const noiseSources = data.noiseSources ?? [];
-
+  const imgUrl = data.mapImage ? `${process.env.STRAPI_URL || "http://localhost:1337"}/fonts` : null
   return (
     <View style={s.sonoscore}>
       <View style={s.left}>
-        <Text style={s.title}>Diagnostic des risques sonores extérieurs</Text>
-        <Text style={s.subtitle}>
-          Identifiez rapidement les parcelles exposées à des risques acoustiques
-          et les réglementations à respecter.
-        </Text>
+        <View style={s.leftContent}>
+          <Text style={s.title}>Diagnostic des risques sonores extérieurs</Text>
+          <Text style={s.subtitle}>
+            Identifiez rapidement les parcelles exposées à des risques
+            acoustiques et les réglementations à respecter.
+          </Text>
+        </View>
+        {data.mapImage ? (
+          <Image src={data.mapImage} style={s.mapImage} />
+        ) : null}
       </View>
 
       <View style={s.right}>
@@ -171,9 +177,11 @@ const s = StyleSheet.create({
   },
   left: {
     flex: 1,
-    padding: `${dsfr.spacing(6)}px ${dsfr.spacing(6)}px`,
     backgroundColor: dsfr.colors.blueFrance,
     color: "#ffffff",
+  },
+  leftContent: {
+    padding: dsfr.spacing(6),
   },
   title: {
     fontSize: dsfr.fontSize.lg,
@@ -188,14 +196,14 @@ const s = StyleSheet.create({
     fontWeight: 700,
     lineHeight: 1.4,
   },
-  mapCard: {
-    marginTop: dsfr.spacing(5),
-    backgroundColor: "#ffffff",
-    padding: dsfr.spacing(2),
-    alignItems: "center",
+  mapImage: {
+    flexGrow: 1,
+    width: "100%",
+    minHeight: 140,
+    objectFit: "cover",
   },
   right: {
-    flex: 1.3,
+    flex: 1,
     padding: dsfr.spacing(4),
     borderWidth: 1,
     borderColor: dsfr.colors.blueFrance,

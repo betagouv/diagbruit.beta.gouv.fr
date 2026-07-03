@@ -41,6 +41,7 @@ export interface DiagnosticPdfData {
   noiseMap?: NoiseMapData;
   noiseSources?: NoiseSourceGroup[];
   position?: PositionData;
+  mapImage?: string | null;
 }
 
 export interface NoiseSourceGroup {

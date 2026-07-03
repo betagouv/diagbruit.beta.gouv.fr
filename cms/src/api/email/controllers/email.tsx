@@ -172,6 +172,18 @@ function coerceNoiseSources(raw: any): NoiseSourceGroup[] | undefined {
   return groups.length > 0 ? groups : undefined;
 }
 
+/**
+ * Validate the client-captured map image. Only accept a JPEG/PNG data-URI and
+ * cap its size so a malformed/oversized payload can't bloat the PDF.
+ */
+function coerceMapImage(raw: any): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  if (!/^data:image\/(jpeg|png);base64,/.test(raw)) return undefined;
+  // ~1.5 MB of base64 upper bound.
+  if (raw.length > 1_500_000) return undefined;
+  return raw;
+}
+
 function coerceIsolation(raw: any): IsolationData | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const num = (v: any) =>
@@ -306,6 +318,7 @@ export default factories.createCoreController("api::email.email", () => ({
         noiseMap: coerceNoiseMap(summary.noiseMap),
         noiseSources: coerceNoiseSources(summary.noiseSources),
         position: coercePosition(summary.position),
+        mapImage: coerceMapImage(summary.mapImage),
       };
       pdfUrl = await generateAndUploadDiagnosticPdf(pdfData);
     }

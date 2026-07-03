@@ -347,6 +347,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         <Map
           id="map"
           ref={mapRef}
+          canvasContextAttributes={{ preserveDrawingBuffer: true }}
           initialViewState={defaultViewState}
           onLoad={onMapLoad}
           onClick={onClick}

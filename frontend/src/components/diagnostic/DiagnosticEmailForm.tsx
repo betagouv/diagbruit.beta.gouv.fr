@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { CheckTexts } from "../utils/CheckTexts";
 import type { PositionData } from "../../utils/buildPositionData";
+import { captureMapImage } from "../../utils/captureMapImage";
 
 export const modal = createModal({
 	id: "diagnostic-receive-by-mail-modal",
@@ -98,6 +99,7 @@ export type DiagnosticEmailSummary = {
 		count: number;
 	}[];
 	position?: PositionData;
+	mapImage?: string;
 };
 
 export default function DiagnosticEmailForm({
@@ -150,12 +152,17 @@ export default function DiagnosticEmailForm({
 			);
 		}
 
+		// Capture the current map view (satellite + parcel outline) for the PDF.
+		const summaryWithMap = summary
+			? { ...summary, mapImage: captureMapImage() ?? undefined }
+			: summary;
+
 		const mailResponse = await fetch(
 			`${process.env.REACT_APP_CMS_URL}/api/email/send`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber, summary }),
+				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber, summary: summaryWithMap }),
 			},
 		);
 		if (!mailResponse.ok) {
