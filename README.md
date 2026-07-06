@@ -59,52 +59,63 @@ This will create and configure all virtual environments for the different compon
 
 ## 🥣 Data ingestion
 
+Ingestion is orchestrated by Dagster (see the Dagster section below). There is no
+standalone ingestion component anymore — the legacy `ingestion/launch-ingestion.sh`
+was replaced by Dagster assets.
+
+```bash
+cd dagster
+uv sync
+
+# Relaunch pipelines by domain × department (landing-only from S3 by default).
+# Locally you only need one dept — 033 by tradition (the first dept injected):
+uv run python run_pipelines.py --domain all --dept 033          # all dept-scoped domains for 033
+uv run python run_pipelines.py --domain noisemap --dept 033     # one domain for 033
+
+# Landing-only CI provisioning (S3 → PostGIS, no Box; what CI runs):
+uv run python ci_ingest.py ci_landing_by_codedept_job 033
+```
+
+See [`dagster/README.md`](dagster/README.md#relaunching-pipelines) for the full
+relaunch/reset guide (all departments, `--with-launcher`, `--full-refresh`, Scalingo).
+
+## ⚙️ Dagster + DBT (Orchestration)
+
+### From dagster folder
+
+```bash
+cd dagster
+```
+
 ### Launch dedicated Virtual Environment
 
 ```bash
-source ingestion-venv/bin/activate
+source dagster-venv/bin/activate
 ```
 
-### Launch seed raw data
+### Install dependencies
 
 ```bash
-cd ingestion
-./launch-ingestion.sh
+uv sync
 ```
 
-## 🧪 DBT
+### dbt Profile
 
-### Launch dedicated Virtual Environment
+The dbt profile (`dagster/dbt/profiles.yml`, where Dagster's dbt component reads it — not `~/.dbt`) is committed and env-templated. It defaults to the docker-compose db and reads `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` when set, so no setup step is required.
+
+### Authenticate with Box (first-time only)
 
 ```bash
-source dbt-venv/bin/activate
+uv run python box_auth.py
 ```
 
-### Configure dbt Profile
+### Start the Application
 
 ```bash
-./setup-dbt.sh
+uv run dagster dev -p 3001
 ```
 
-Optional : edit `~/.dbt/profiles.yml` with your database credentials if you do not use the docker-compose db.
-
-### From dbt folder
-
-```bash
-cd dbt
-```
-
-### Verify Configuration
-
-```bash
-dbt debug
-```
-
-### Run Models
-
-```bash
-dbt run
-```
+The Dagster UI will be available at http://localhost:3001
 
 ## 🚀 FastApi
 
@@ -191,8 +202,8 @@ Tests are automatically run on each pull request or push to the main branch via 
 This CI pipeline performs the following steps:
 
 1. Launches a PostgreSQL database with PostGIS.
-2. Runs the ingestion scripts (/ingestion/launch-ingestion.sh).
-3. Executes the dbt run pipeline in the /dbt folder.
+2. Runs the Dagster landing ingestion (`dagster/ci_ingest.py ci_landing_by_codedept_job 033`, S3 → PostGIS).
+3. Executes the dbt run pipeline in `dagster/dbt`.
 4. Runs all FastAPI tests located in fastapi/tests/.
 
 The badge at the top of the README reflects the status of this CI.
@@ -224,13 +235,18 @@ The GitHub Actions workflows require the `SCALINGO_SSH_PRIVATE_KEY` secret to be
 
 ```mermaid
 graph TD
-    subgraph Ingestion["Ingestion"]
-        A[Script d'ingestion]
+    subgraph Sources["Sources de données"]
+        BOX[Box]
+        S3[S3]
+    end
+
+    subgraph Dagster["Dagster — Orchestration"]
+        A[Assets d'ingestion]
+        B0[dbt : Transformations]
     end
 
     subgraph PostgreSQL["PostgreSQL - Database diagbruit"]
         PW[Données brutes : schema public_workspace]
-        B0[DBT: Traitements intermédiaires dans public_workspace]
         C[Données finales : schema public]
     end
 
@@ -249,27 +265,37 @@ graph TD
         F[Éditeur de préconisations]
     end
 
+    subgraph Metabase["Metabase"]
+        G[Tableaux de bord]
+    end
+
+    BOX --> A
+    S3 --> A
     A --> PW
     PW --> B0
     B0 --> C
-    D --> D2
+    C --> G
     D --> D1
-    D1 --> C
+    D --> D2
     D --> D3
+    D1 --> C
     D3 --> F
     E --> D
 
-    classDef ingestion fill:#1a936f,stroke:#88d498,stroke-width:2px,color:#f3e9d2
+    classDef sources fill:#e07b39,stroke:#c45e1a,stroke-width:2px,color:#fff
+    classDef dagster fill:#4f2d7f,stroke:#7c4dbd,stroke-width:2px,color:#e8d9ff
     classDef dbt fill:#114b5f,stroke:#456990,stroke-width:2px,color:#e4fde1
     classDef postgres fill:#f45b69,stroke:#6b2737,stroke-width:2px,color:#f6e8ea
     classDef fastapi fill:#540d6e,stroke:#9e0059,stroke-width:2px,color:#ffcbf2
     classDef frontend fill:#3a506b,stroke:#1c2541,stroke-width:2px,color:#c2dfe3
+    classDef metabase fill:#509ee3,stroke:#2d7cd0,stroke-width:2px,color:#fff
 
-    class A ingestion
-    class B0,B1,B2 dbt
+    class BOX,S3 sources
+    class A,B0 dagster
     class PW,C postgres
     class D,D1,D2,D3 fastapi
     class E frontend
+    class G metabase
 ```
 
 ## 🗂️ Project Structure
@@ -281,30 +307,48 @@ diagbruit/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── database.py
+│   │   ├── algorithm/
 │   │   ├── models/
+│   │   ├── references/
 │   │   ├── routes/
 │   │   ├── schemas/
 │   │   └── utils/
 │   ├── tests/
 │   │   ├── integration/
-│   │   ├── unit/
+│   │   └── unit/
 │   ├── .env.example
-│   ├── requirements.txt
-│
-├── dbt/
-│   ├── models/
-│   ├── macros/
-│   ├── tests/
-│   ├── dbt_project.yml
-│   ├── profiles.yml.example
 │   └── requirements.txt
 │
-├── ingestion/
-│   ├── inputs/
-│   ├── .env.example
-│   ├── ingest_shapefiles.py
-│   └── requirements.txt
-|
+├── dagster/
+│   ├── dbt/
+│   │   ├── models/
+│   │   │   ├── bdnb/
+│   │   │   ├── noisemap/
+│   │   │   ├── osm/
+│   │   │   ├── peb/
+│   │   │   └── soundclassification/
+│   │   ├── macros/
+│   │   ├── dbt_project.yml
+│   │   └── profiles.yml.example
+│   ├── src/dagster_project/
+│   │   ├── defs/
+│   │   │   ├── assets/
+│   │   │   │   ├── bdnb/
+│   │   │   │   ├── noisemap/
+│   │   │   │   ├── osm/
+│   │   │   │   ├── peb/
+│   │   │   │   ├── soundclassification/
+│   │   │   │   └── defs.py
+│   │   │   ├── jobs/
+│   │   │   ├── resources/
+│   │   │   └── schedules/
+│   │   ├── ingestion/         # GeoPandas → PostGIS helpers
+│   │   ├── reference_data/    # committed static fixtures (departments)
+│   │   └── io/
+│   ├── ci_ingest.py           # in-process job runner used by CI
+│   ├── box_auth.py
+│   └── pyproject.toml
+│
 ├── frontend/
 │   ├── .env.example
 │   ├── package.json
@@ -321,9 +365,11 @@ diagbruit/
 │   ├── src/
 │   └── types/
 │
+├── metabase/
+│
 ├── setup-dev.sh
-├── setup-dbt.sh
-└── docker-compose.yml
+├── setup-ingestion-dev.sh
+└── docker-compose.yaml
 ```
 
 ## 🔧 Troubleshooting

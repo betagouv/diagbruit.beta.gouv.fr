@@ -8,9 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import type { Settings } from "../utils/types";
 import TallyForm from "../components/diagnostic/TallyForm";
-import AddressSearch, {
-  AddressFeature,
-} from "../components/search/AddressSearch";
+import AddressSearch, { AddressFeature } from "../components/search/AddressSearch";
 import { encode } from "../utils/compression";
 import { getIsMobile } from "../utils/tools";
 import { trackMatomoEvent } from "../utils/matomo";
@@ -83,37 +81,27 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
               href: "/changelogs",
             },
           },
-          ...(!isMobile
-            ? [
-                <div
-                  key="header-search"
-                  className={cx(classes.searchContainer)}
-                >
-                  <AddressSearch
-                    id="header-address-search"
-                    placeholder="Rechercher une adresse..."
-                    light
-                    onValueSelected={(feature: AddressFeature | null) => {
-                      trackMatomoEvent(
-                        "Action",
-                        "Header address search",
-                        "header-search-address",
-                      );
-                      navigate({
-                        pathname: "/diagnostic",
-                        search: `?address=${encode(feature)}`,
-                      });
-                    }}
-                  />
-                </div>,
-              ]
-            : []),
+          ...(!isMobile ? [
+            <div key="header-search" className={cx(classes.searchContainer)}>
+              <AddressSearch
+                id="header-address-search"
+                placeholder="Rechercher une adresse..."
+                light
+                onValueSelected={(feature: AddressFeature | null) => {
+                  trackMatomoEvent("Action", "Header address search", "header-search-address");
+                  navigate({
+                    pathname: "/diagnostic",
+                    search: `?address=${encode(feature)}`,
+                  });
+                }}
+              />
+            </div>
+          ] : []),
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
           <>
-            Intégrez les risques sonores dès la conception d'un projet
-            immobilier
+            Intégrez les risques sonores dès la conception d'un projet immobilier
           </>
         }
         operatorLogo={{
@@ -129,27 +117,24 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
           {
             isActive: pathname === "/",
             linkProps: {
-              href: "/",
-              target: "_self",
+              href: '/',
             },
-            text: "Accueil",
+            text: 'Accueil'
           },
           {
             isActive: pathname.startsWith("/diagnostic"),
             linkProps: {
-              href: "/diagnostic",
-              target: "_self",
+              href: '/diagnostic',
             },
-            text: "Diagnostiquer une parcelle",
+            text: 'Diagnostiquer une parcelle'
           },
           {
             isActive: pathname.startsWith("/preco"),
             linkProps: {
-              href: "/preco",
-              target: "_self",
+              href: '/preco',
             },
-            text: "Se protéger du bruit",
-          },
+            text: 'Se protéger du bruit'
+          }
         ]}
         id="fr-header-simple-header"
       />
@@ -218,8 +203,8 @@ const useStyles = tss.create(() => ({
       },
       width: "350px",
       a: {
-        marginBottom: fr.spacing("1v"),
-      },
+        marginBottom: fr.spacing("1v")
+      }
     },
   },
   searchContainer: {
@@ -230,7 +215,7 @@ const useStyles = tss.create(() => ({
     "&& .fr-btn:enabled": {
       backgroundColor: `${fr.colors.decisions.background.actionHigh.blueFrance.default} !important`,
       color: "#ffffff !important",
-    },
+    }
   },
   betaNotice: {
     marginBottom: `-${fr.spacing("10v")}`,

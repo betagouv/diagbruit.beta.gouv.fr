@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: noisemap
+    description: "Clean noise map polygons with validated geometries"
+    columns:
+      - name: id
+        description: "Noise zone ID"
+      - name: campaign
+        description: "Year"
+      - name: codedept
+        description: "Department code"
+      - name: acoustic_producer_kind
+        description: "Territory type (INFRA or AGGLO)"
+      - name: label
+        description: "Infrastructure code"
+      - name: kind
+        description: "Source type (F for railway, R for road)"
+      - name: acoustic_noisemap_kind
+        description: "CBS type (A, B, C priority zone)"
+      - name: acoustic_db_value
+        description: "Noise level in dB"
+      - name: acoustic_time_range
+        description: "Time range indicator (LD for day, LN for night)"
+      - name: geometry
+        description: "Valid polygon geometry"

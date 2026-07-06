@@ -1,0 +1,45 @@
+{{ config(
+    materialized='view',
+    schema='workspace'
+) }}
+
+WITH fixed_geometries AS (
+    SELECT
+        acoustic_zone,
+        acoustic_db_value,
+        indldenext,
+        indldenint,
+        code_oaci,
+        label,
+        date_arret,
+        producteur,
+        date_maj,
+        campaign_url,
+        id_map,
+        campaign,
+        {{ repair_geometry('geometry', 'is_valid', 'structure') }} AS geometry,
+        is_valid AS original_is_valid,
+        validity_reason AS original_validity_reason
+    FROM {{ ref('int_peb_validated') }}
+)
+
+SELECT
+    acoustic_zone,
+    acoustic_db_value,
+    indldenext,
+    indldenint,
+    code_oaci,
+    label,
+    date_arret,
+    producteur,
+    date_maj,
+    campaign_url,
+    id_map,
+    campaign,
+    geometry,
+    original_is_valid,
+    original_validity_reason,
+    ST_IsValid(geometry) AS is_valid_now,
+    ST_Area(geometry) AS area_m2,
+    ST_GeometryType(geometry) AS geometry_type
+FROM fixed_geometries

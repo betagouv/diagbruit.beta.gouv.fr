@@ -2,15 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useEffect, useRef, useState } from "react";
 import type { MapGeoJSONFeature } from "react-map-gl/maplibre";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import Diagnostic from "../components/diagnostic/Diagnostic";
 import MapComponent, {
   type ExposedMapMethods,
 } from "../components/map/MapComponent";
-import AddressSearch, {
-  type AddressFeature,
-} from "../components/search/AddressSearch";
+import AddressSearch, { type AddressFeature } from "../components/search/AddressSearch";
 import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
 import { decode, encode } from "../utils/compression";
@@ -22,28 +20,23 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
 import { trackMatomoEvent } from "../utils/matomo";
 
-const defaultSearchValues =
-  process.env.NODE_ENV === "development"
-    ? {
-        codeInsee: "33063",
-        prefix: "000",
-        section: "DL",
-        numero: "0039",
-      }
-    : {
-        codeInsee: "",
-        prefix: "",
-        section: "",
-        numero: "",
-      };
+const defaultSearchValues = process.env.NODE_ENV === "development" ? {
+  codeInsee: "33063",
+  prefix: "000",
+  section: "DL",
+  numero: "0039",
+} : {
+  codeInsee: "",
+  prefix: "",
+  section: "",
+  numero: "",
+};
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
-  usePageMeta(
-    "Diagnostiquer une parcelle",
-    "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.",
-  );
+  usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const mapMethodsRef = useRef<ExposedMapMethods>(null);
   const addressSearchRef = useRef<{ reset: () => void }>(null);
@@ -86,13 +79,14 @@ function DiagnosticPage() {
     return encoded ? decode(encoded) === true : false;
   });
 
-  const [autoSubmitParcelle, setAutoSubmitParcelle] =
-    useState(!!parcelleFromQuery);
+  const [autoSubmitParcelle, setAutoSubmitParcelle] = useState(
+    !!parcelleFromQuery,
+  );
 
-  const [autoLoading, setAutoLoading] = useState(!!parcelleFromQuery);
 
   const onAddressSelected = (feature: AddressFeature | null) => {
-    if (feature === null) return;
+    if (feature === null)
+      return
     if (mapMethodsRef.current?.map) {
       mapMethodsRef.current.map.flyTo({
         center: [
@@ -103,11 +97,7 @@ function DiagnosticPage() {
         essential: true,
         speed: 10,
       });
-      trackMatomoEvent(
-        "Action",
-        "Diagnostic Search Address",
-        `diagnostic-search-address-${feature.properties.type}-${feature.properties.label}`,
-      );
+      trackMatomoEvent("Action", "Diagnostic Search Address", `diagnostic-search-address-${feature.properties.type}-${feature.properties.label}`);
     }
     reset();
   };
@@ -167,17 +157,7 @@ function DiagnosticPage() {
           });
         });
       }
-      const props = parcelleFeature.properties;
-      const codeInsee = props.code_insee ?? props.commune;
-      const section = props.section?.toString().padStart(2, "0");
-      const numero = props.numero?.toString().padStart(4, "0");
-      if (codeInsee && section && numero) {
-        trackMatomoEvent(
-          "Action",
-          `Diagnostic search parcelle`,
-          `${codeInsee}-${section}-${numero}`,
-        );
-      }
+      trackMatomoEvent("Action", `Diagnostic search parcelle n° ${parcelleFeature.properties.numero} - ${parcelleFeature.properties.nom_com}`, `diagnostic-search-id-${parcelleFeature.properties.numero}`);
     }
   };
 
@@ -187,10 +167,6 @@ function DiagnosticPage() {
 
   const onDiagnosticsChange = (newDiagnostics: DiagnosticItem[]) => {
     setDiagnosticsResponses(newDiagnostics);
-    if (newDiagnostics.length > 0) {
-      setParcelleError(false);
-      setAutoLoading(false);
-    }
   };
 
   const reset = () => {
@@ -203,7 +179,6 @@ function DiagnosticPage() {
 
     setNotIntegrated(false);
     setInternalServerError(false);
-    setParcelleError(false);
     setDiagnosticsResponses([]);
     setSearchValues(defaultSearchValues);
   };
@@ -236,6 +211,7 @@ function DiagnosticPage() {
   const addressParam = searchParams.get("address");
 
   useEffect(() => {
+
     if (!isMapReady || !(parcelleParam || addressParam)) return;
 
     if (parcelleParam) {
@@ -271,6 +247,7 @@ function DiagnosticPage() {
           typeof addressFeature === "object" &&
           "geometry" in addressFeature
         ) {
+          reset();
           if (mapMethodsRef.current?.map) {
             setAddressDefaultValue(addressFeature);
             mapMethodsRef.current.map.flyTo({
@@ -294,7 +271,7 @@ function DiagnosticPage() {
 
   return (
     <div className={cx("fr-mb-10v")}>
-      {(isLoading || autoLoading) && (
+      {isLoading && (
         <div className={cx(classes.loaderContainer)}>
           <Loader text="Nous générons votre diagnostic..." />
         </div>
@@ -317,19 +294,15 @@ function DiagnosticPage() {
           label="Rechercher une parcelle"
           showCheckedHint={false}
           checked={showParcelleSearch}
-          onChange={(checked) => {
+          onChange={checked => {
             setShowParcelleSearch(checked);
-            const params = new URLSearchParams(window.location.search);
+            const params = new URLSearchParams(location.search);
             if (checked) {
               params.set("parcelleSearch", encode(checked));
             } else {
               params.delete("parcelleSearch");
             }
-            window.history.replaceState(
-              {},
-              "",
-              `${window.location.pathname}?${params.toString()}`,
-            );
+            navigate({ search: params.toString() }, { replace: true });
           }}
         />
 
@@ -337,7 +310,7 @@ function DiagnosticPage() {
           <Alert
             className={fr.cx("fr-my-4v")}
             description="Veuillez rechercher une parcelle, une adresse ou une zone géographique en France métropolitaine ou dans les DOM TOM."
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Votre recherche n’est pas référencée dans diagBruit"
           />
@@ -358,12 +331,10 @@ function DiagnosticPage() {
                 const parcelleFeature = response.data?.features[0];
                 onParcelleSelected(parcelleFeature);
               } else {
-                setAutoLoading(false);
                 setParcelleError(true);
               }
             }}
-          />
-        )}
+          />)}
         <MapComponent
           ref={mapMethodsRef}
           noisePins={
@@ -379,15 +350,19 @@ function DiagnosticPage() {
             setDiagnosticsResponses([]);
             setNotIntegrated(error?.code === 404);
             setInternalServerError(error?.code === 500);
-            if (error) setAutoLoading(false);
           }}
           onAddressSelected={onAddressSelected}
         />
-        {diagnosticItem && <DiagnosticHero diagnosticItem={diagnosticItem} />}
+        {diagnosticItem && (
+          <DiagnosticHero diagnosticItem={diagnosticItem} />
+        )}
 
         {diagnosticItem && (
           <div className={fr.cx("fr-mt-6v")}>
-            <Diagnostic diagnosticItem={diagnosticItem} isLoading={false} />
+            <Diagnostic
+              diagnosticItem={diagnosticItem}
+              isLoading={false}
+            />
           </div>
         )}
         {!diagnosticsResponses.length &&
@@ -396,7 +371,7 @@ function DiagnosticPage() {
             <Alert
               className={fr.cx("fr-mt-6v")}
               description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() {}}
+              onClose={function noRefCheck() { }}
               severity="info"
               title={
                 parcelleError
@@ -424,7 +399,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Parcelle non référencée dans diagBruit"
           />
@@ -450,7 +425,7 @@ function DiagnosticPage() {
                 </div>
               </div>
             }
-            onClose={function noRefCheck() {}}
+            onClose={function noRefCheck() { }}
             severity="error"
             title="Erreur lors de la génération du diagnostic"
           />
@@ -469,7 +444,7 @@ const useStyles = tss.create(() => ({
   toggle: {
     "label::before": {
       marginRight: fr.spacing("2v"),
-    },
+    }
   },
   loaderContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",

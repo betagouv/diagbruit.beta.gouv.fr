@@ -75,12 +75,14 @@ def test_air_isolation_empty():
     ("D", 32),
 ])
 def test_air_isolation_single_zone(zone, expected):
-    assert get_air_isolation([{"zone": zone}]) == expected
+    assert get_air_isolation([{"acoustic_zone": zone}]) == expected
 
 
 def test_air_isolation_priority():
     # Several zones present -> highest priority (A > B > C > D) wins
-    assert get_air_isolation([{"zone": "C"}, {"zone": "A"}, {"zone": "B"}]) == 45
+    assert get_air_isolation(
+        [{"acoustic_zone": "C"}, {"acoustic_zone": "A"}, {"acoustic_zone": "B"}]
+    ) == 45
 
 
 # --- compute_parcelle_isolations ------------------------------------------
@@ -93,7 +95,7 @@ def test_compute_floor_applied_at_30():
     # Distant cat 3 source with negative corrections gives values below 30,
     # the final isolation must be clamped to 30.
     sources = [{
-        "sound_category": 3,
+        "acoustic_category": 3,
         "min_distance": 200,
         "max_distance": 250,
         "closest_correction": -6,
@@ -124,24 +126,24 @@ def test_compute_mouvaux_parcelle_228():
     """
     sources = [
         {
-            "codeinfra": "RUE DE ROUBAIX (RD9)",
-            "sound_category": 4,
+            "label": "RUE DE ROUBAIX (RD9)",
+            "acoustic_category": 4,
             "min_distance": 5,
             "max_distance": 62,
             "closest_correction": 0,
             "farthest_correction": -6,
         },
         {
-            "codeinfra": "RUE FRANKLIN ROOSEVELT (RD9)",
-            "sound_category": 3,
+            "label": "RUE FRANKLIN ROOSEVELT (RD9)",
+            "acoustic_category": 3,
             "min_distance": 25,
             "max_distance": 71,
             "closest_correction": 0,
             "farthest_correction": -3,
         },
         {
-            "codeinfra": "D670",
-            "sound_category": 3,
+            "label": "D670",
+            "acoustic_category": 3,
             "min_distance": 30,
             "max_distance": 75,
             "closest_correction": 0,
@@ -157,13 +159,13 @@ def test_compute_land_and_air_combined():
     # 1 close cat 3 land source -> 36; air zone C -> 35
     # Combined ascending: [35, 36] -> 36 + 3 = 39
     sources = [{
-        "sound_category": 3,
+        "acoustic_category": 3,
         "min_distance": 25,
         "max_distance": 25,
         "closest_correction": 0,
         "farthest_correction": 0,
     }]
-    air = [{"zone": "C"}]
+    air = [{"acoustic_zone": "C"}]
     iso_min, iso_max = compute_parcelle_isolations(sources, air)
     assert iso_max == 39
     assert iso_min == 39
@@ -171,7 +173,7 @@ def test_compute_land_and_air_combined():
 
 def test_compute_single_land_source_no_cumul():
     sources = [{
-        "sound_category": 3,
+        "acoustic_category": 3,
         "min_distance": 25,
         "max_distance": 25,
         "closest_correction": 0,
@@ -180,3 +182,43 @@ def test_compute_single_land_source_no_cumul():
     iso_min, iso_max = compute_parcelle_isolations(sources, [])
     assert iso_max == 36
     assert iso_min == 36
+
+
+# --- regression: real Nantes parcelle 44109 EM 0003 -----------------------
+
+def test_compute_nantes_parcelle_44109_em_0003():
+    """
+    Parcelle exposed to rail T1 (cat 4) + road R DE STRASBOURG (cat 3) + PEB zone D.
+    isolation_max cumulates the most-exposed point of each source:
+      cat 4 @ 18m (corr 0)  -> 33
+      cat 3 @ 35m (corr -6) -> 29
+      PEB zone D            -> 32
+      sorted ascending: [29, 32, 33]
+        29 vs 32 -> gap=3 -> +2 -> 34
+        34 vs 33 -> gap=1 -> +3 -> 37
+    isolation_min (least-exposed point, max_distance side):
+      cat 4 @ 244m -> 0 (excluded), cat 3 @ 259m -> 0 (excluded)
+      only PEB zone D -> 32
+    """
+    sources = [
+        {
+            "label": "T1",
+            "acoustic_category": 4,
+            "min_distance": 18,
+            "max_distance": 244,
+            "closest_correction": 0,
+            "farthest_correction": -9,
+        },
+        {
+            "label": "R DE STRASBOURG",
+            "acoustic_category": 3,
+            "min_distance": 35,
+            "max_distance": 259,
+            "closest_correction": -6,
+            "farthest_correction": -9,
+        },
+    ]
+    air = [{"acoustic_zone": "D"}]
+    iso_min, iso_max = compute_parcelle_isolations(sources, air)
+    assert iso_max == 37
+    assert iso_min == 32

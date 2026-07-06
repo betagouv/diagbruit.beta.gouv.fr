@@ -42,12 +42,12 @@ def get_filtered_land_intersections(noisemap_intersections):
     """
     Get all the filtered arrays needed to calculate score in modules.
     """
-    def filter_items(indicetype, typeterr):
+    def filter_items(acoustic_time_range, acoustic_producer_kind):
         return [
             item for item in noisemap_intersections
-            if item.get('typesource') in ['F', 'R']
-            and item.get('indicetype') == indicetype
-            and item.get('typeterr') == typeterr
+            if item.get('kind') in ['F', 'R']
+            and item.get('acoustic_time_range') == acoustic_time_range
+            and item.get('acoustic_producer_kind') == acoustic_producer_kind
         ]
 
     land_intersections_agglo_ld = filter_items('LD', 'AGGLO')
@@ -65,7 +65,6 @@ def get_filtered_land_intersections(noisemap_intersections):
 def normalize_codeinfra(value):
     if not value:
         return ""
-    # Lowercase, remove accents, replace dashes with space, remove extra spaces
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
     value = value.lower()
     value = value.replace('-', ' ')
@@ -74,23 +73,23 @@ def normalize_codeinfra(value):
 
 
 def filter_land_intersections_by_codeinfra(intersections):
-    grouped_by_cbstype = defaultdict(dict)
+    grouped_by_acoustic_noisemap_kind = defaultdict(dict)
 
     for item in intersections:
-        cbstype = item.get('cbstype')
+        acoustic_noisemap_kind = item.get('acoustic_noisemap_kind')
         codeinfra_raw = item.get('codeinfra')
         norm_codeinfra = normalize_codeinfra(codeinfra_raw)
-        legende = item.get('legende')
+        acoustic_db_value = item.get('acoustic_db_value')
 
-        if not cbstype:
+        if not acoustic_noisemap_kind:
             continue
 
-        if norm_codeinfra not in grouped_by_cbstype[cbstype] or \
-           legende > grouped_by_cbstype[cbstype][norm_codeinfra]['legende']:
-            grouped_by_cbstype[cbstype][norm_codeinfra] = item
+        if norm_codeinfra not in grouped_by_acoustic_noisemap_kind[acoustic_noisemap_kind] or \
+           acoustic_db_value > grouped_by_acoustic_noisemap_kind[acoustic_noisemap_kind][norm_codeinfra]['acoustic_db_value']:
+            grouped_by_acoustic_noisemap_kind[acoustic_noisemap_kind][norm_codeinfra] = item
 
     flatten_items = [
-        item for codeinfra_dict in grouped_by_cbstype.values()
+        item for codeinfra_dict in grouped_by_acoustic_noisemap_kind.values()
         for item in codeinfra_dict.values()
     ]
 
@@ -98,20 +97,20 @@ def filter_land_intersections_by_codeinfra(intersections):
 
     sorted_results = sorted(
         flatten_items_not_null if flatten_items_not_null else ([flatten_items[0]] if flatten_items else []),
-        key=lambda x: x.get('legende', ''),
+        key=lambda x: x.get('acoustic_db_value', ''),
         reverse=True
     )
 
     return sorted_results
 
 
-def filter_soundclassification_by_codeinfra(intersections):
+def filter_soundclassification_by_label(intersections):
     filtered = {}
 
     for item in intersections:
-        codeinfra = item.get("codeinfra")
-        if codeinfra and codeinfra not in filtered:
-            filtered[codeinfra] = item
+        label = item.get("label")
+        if label and label not in filtered:
+            filtered[label] = item
 
     return list(filtered.values())
 

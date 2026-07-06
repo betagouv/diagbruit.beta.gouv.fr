@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_bdnb_validated
+    description: "Validated BDNB data with geometry validation"
+
+  - name: int_bdnb_fixed
+    description: "BDNB data with repaired geometries"
+
+  - name: int_bdnb_projected
+    description: "BDNB data projected to EPSG:4326"

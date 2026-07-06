@@ -1,0 +1,12 @@
+diagbruit:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DB_HOST', 'localhost') }}"
+      port: "{{ env_var('DB_PORT', '5433') | int }}"
+      user: "{{ env_var('DB_USER', 'user') }}"
+      pass: "{{ env_var('DB_PASSWORD', 'password') }}"
+      dbname: "{{ env_var('DB_NAME', 'diagbruit') }}"
+      schema: public
+      threads: 4

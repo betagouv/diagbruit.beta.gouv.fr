@@ -2,7 +2,7 @@ import { AirIntersection, IntRange } from "../types";
 
 const generateAerialContent = (
   context: typeof SUMMARY_TEXTS.CONTENT.AERIAL,
-  zone: AirIntersection["zone"] | "UNKNOWN"
+  zone: AirIntersection["acoustic_zone"] | "UNKNOWN"
 ) => {
   switch (zone) {
     case "A":
@@ -80,7 +80,7 @@ export const SUMMARY_TEXTS = {
         URBANISME_D: `<p><b>Le code de l'urbanisme impose l'isolation du bâtiment.</b></p>`,
       },
 
-      generateContent: function (zone: AirIntersection["zone"] | "UNKNOWN") {
+      generateContent: function (zone: AirIntersection["acoustic_zone"] | "UNKNOWN") {
         return generateAerialContent(this, zone);
       },
     },

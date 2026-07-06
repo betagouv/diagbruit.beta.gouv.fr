@@ -1,8 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { DiagnosticItem } from "../../../utils/types";
-import FakeLinkComponent from "../../ui/FakeLinkComponent";
 import DiagnosticRegulationBox from "../DiagnosticRegulationBox";
-import { useSearchParams } from "react-router-dom";
 
 type RegulationClsProps = {
   diagnosticItem: DiagnosticItem;
@@ -11,15 +9,9 @@ type RegulationClsProps = {
 const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
   const { diagnostic } = diagnosticItem;
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const goToTab = (str: string) =>
-    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
-
   const intersections = diagnostic.soundclassification_intersections;
 
-  const hasIntersections =
-    intersections.length > 0;
+  const hasIntersections = intersections.length > 0;
 
   if (!hasIntersections) {
     return (
@@ -29,8 +21,10 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
     );
   }
 
-  const firstSoundCategory = intersections[0].sound_category;
-  const allSameSoundCategory = intersections.every((i) => i.sound_category === firstSoundCategory);
+  const firstSoundCategory = intersections[0].acoustic_category;
+  const allSameSoundCategory = intersections.every(
+    (i) => i.acoustic_category === firstSoundCategory,
+  );
 
   return (
     <div className={fr.cx("fr-mb-4v")}>
@@ -39,7 +33,11 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
         content={
           <>
             <p className={fr.cx("fr-mb-0")}>
-              La parcelle est exposée à {diagnostic.soundclassification_intersections.length} sources de bruit de {allSameSoundCategory ? `catégorie ${firstSoundCategory}` : "différentes catégories."}
+              La parcelle est exposée à {intersections.length} sources de bruit
+              de{" "}
+              {allSameSoundCategory
+                ? `catégorie ${firstSoundCategory}`
+                : "différentes catégories."}
             </p>
             <p className={fr.cx("fr-mb-4v")}>
               Vous avez une obligation réglementaire d'isoler votre bâtiment.

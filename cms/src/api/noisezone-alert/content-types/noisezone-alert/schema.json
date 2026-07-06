@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "noisezone_alerts",
+  "info": {
+    "singularName": "noisezone-alert",
+    "pluralName": "noisezone-alerts",
+    "displayName": "NoisezoneAlert",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "alert_slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "content": {
+      "type": "customField",
+      "options": {
+        "preset": "defaultHtml"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    },
+    "source": {
+      "type": "string",
+      "required": true,
+      "default": "Plan Local d'Urbanisme"
+    },
+    "reference": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "enumeration",
+      "enum": [
+        "ZONE SOUMISE AU BRUIT",
+        "ZONE CALME"
+      ],
+      "required": true,
+      "default": "ZONE SOUMISE AU BRUIT"
+    }
+  }
+}

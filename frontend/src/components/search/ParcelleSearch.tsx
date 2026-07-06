@@ -14,7 +14,7 @@ const parcelleSchema = z.object({
     .string()
     .regex(
       /^[A-Z0-9]{2}$/,
-      "Section (2 caractères : lettres majuscules et/ou chiffres)",
+      "Section (2 caractères : lettres majuscules et/ou chiffres)"
     ),
   numero: z.string().regex(/^\d{4}$/, "Numéro (4 chiffres)"),
 });
@@ -24,7 +24,7 @@ type ParcelleFormData = z.infer<typeof parcelleSchema>;
 interface ParcelleSearchProps {
   onParcelleRequested: (
     response: { data?: any; error?: any },
-    values: ParcelleFormData,
+    values: ParcelleFormData
   ) => void;
   onChange?: () => void;
   formValues?: ParcelleFormData;
@@ -58,9 +58,8 @@ const ParcelleSearch = ({
 
   const onSubmit = async (data: ParcelleFormData) => {
     const { codeInsee, section, numero, prefix } = data;
-    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${
-      prefix !== "000" ? `com_abs=${prefix}` : `code_insee=${codeInsee}`
-    }&section=${section}&numero=${numero}`;
+    const url = `https://apicarto.ign.fr/api/cadastre/parcelle?${prefix !== "000" ? `com_abs=${prefix}` : `code_insee=${codeInsee}`
+      }&section=${section}&numero=${numero}`;
 
     setIsLoading(true);
     try {
@@ -78,7 +77,7 @@ const ParcelleSearch = ({
   const handleInputChange = (
     field: any,
     fieldName: keyof ParcelleFormData,
-    value: string,
+    value: string
   ) => {
     let formattedValue = value;
     if (fieldName === "prefix" || fieldName === "numero") {

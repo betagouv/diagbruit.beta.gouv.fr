@@ -407,6 +407,47 @@ export interface ApiAccessibilityAccessibility extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAcousticCertificateAcousticCertificate
+  extends Struct.SingleTypeSchema {
+  collectionName: 'acoustic_certificates';
+  info: {
+    description: '';
+    displayName: 'AcousticCertificate';
+    pluralName: 'acoustic-certificates';
+    singularName: 'acoustic-certificate';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::acoustic-certificate.acoustic-certificate'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    recommendation: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::recommendation.recommendation'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiChangelogChangelog extends Struct.CollectionTypeSchema {
   collectionName: 'changelogs';
   info: {
@@ -659,6 +700,53 @@ export interface ApiNoiseSourceCategoryNoiseSourceCategory
     slug: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNoisezoneAlertNoisezoneAlert
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'noisezone_alerts';
+  info: {
+    description: '';
+    displayName: 'NoisezoneAlert';
+    pluralName: 'noisezone-alerts';
+    singularName: 'noisezone-alert';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    alert_slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    content: Schema.Attribute.RichText &
+      Schema.Attribute.CustomField<
+        'plugin::ckeditor5.CKEditor',
+        {
+          preset: 'defaultHtml';
+        }
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    label: Schema.Attribute.Enumeration<
+      ['ZONE SOUMISE AU BRUIT', 'ZONE CALME']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'ZONE SOUMISE AU BRUIT'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::noisezone-alert.noisezone-alert'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    reference: Schema.Attribute.String & Schema.Attribute.Required;
+    source: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<"Plan Local d'Urbanisme">;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1291,6 +1379,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::accessibility.accessibility': ApiAccessibilityAccessibility;
+      'api::acoustic-certificate.acoustic-certificate': ApiAcousticCertificateAcousticCertificate;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;
@@ -1298,6 +1387,7 @@ declare module '@strapi/strapi' {
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
       'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
       'api::noise-source-category.noise-source-category': ApiNoiseSourceCategoryNoiseSourceCategory;
+      'api::noisezone-alert.noisezone-alert': ApiNoisezoneAlertNoisezoneAlert;
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::recommendation.recommendation': ApiRecommendationRecommendation;
       'api::setting.setting': ApiSettingSetting;

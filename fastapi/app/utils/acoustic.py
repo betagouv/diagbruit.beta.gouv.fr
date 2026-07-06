@@ -1,5 +1,3 @@
-# acoustic.py
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -91,17 +89,6 @@ def get_land_intersection_isolation(category: int, distance: float, correction: 
     return (last_isolations[category - 1] + correction) if 0 <= category - 1 < len(last_isolations) else 0
 
 
-def get_air_isolation(air_intersections: List) -> int:
-    """
-    Returns the isolation value based on the highest-priority zone present.
-    Priority order: A > B > C > D. If none are present, returns 0.
-    """
-    for zone in ("A", "B", "C", "D"):
-        if any(item["zone"] == zone for item in air_intersections):
-            return air_isolation_values[zone]
-    return 0
-
-
 def _cumulative_correction(gap: float) -> int:
     """Additive correction for a given isolation gap (first matching rule wins)."""
     for rule in isolation_correction_table:
@@ -130,6 +117,20 @@ def _combine_isolations(isolations: List[int]) -> int:
     return result
 
 
+def get_air_isolation(air_intersections: List) -> int:
+    """
+    Returns the isolation value based on the highest-priority zone present.
+    Priority order: A > B > C > D. If none are present, returns 0.
+    """
+    zone_priority = ["A", "B", "C", "D"]
+
+    for zone in zone_priority:
+        if any(item['acoustic_zone'] == zone for item in air_intersections):
+            return air_isolation_values[zone]
+
+    return 0
+
+
 def compute_parcelle_isolations(
     soundclassification_intersections: List,
     air_intersections: List,
@@ -142,7 +143,7 @@ def compute_parcelle_isolations(
                        (uses min_distance / closest_correction per source)
 
     Each entry of soundclassification_intersections is treated as a single
-    source (the list is pre-deduplicated by codeinfra). The PEB zone counts
+    source (the list is pre-deduplicated by label). The PEB zone counts
     as one additional source. Sources whose computed isolation is 0
     (category out of table at the given distance) are excluded from the cumul.
     A 30 dB floor is applied to the final combined value.
@@ -151,7 +152,7 @@ def compute_parcelle_isolations(
 
     iso_min_per_source = [
         get_land_intersection_isolation(
-            inter["sound_category"],
+            inter["acoustic_category"],
             inter["max_distance"],
             inter["farthest_correction"],
         )
@@ -159,7 +160,7 @@ def compute_parcelle_isolations(
     ]
     iso_max_per_source = [
         get_land_intersection_isolation(
-            inter["sound_category"],
+            inter["acoustic_category"],
             inter["min_distance"],
             inter["closest_correction"],
         )

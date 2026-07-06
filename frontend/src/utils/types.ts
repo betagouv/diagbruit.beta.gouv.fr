@@ -51,12 +51,12 @@ export type DiagnosticFlags = {
 export type Cardinality = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW";
 
 export type LandIntersection = {
-  typeterr: string;
-  typesource: string;
-  indicetype: string;
+  acoustic_producer_kind: string;
+  kind: string;
+  acoustic_time_range: string;
   codeinfra: string | null;
-  legende: number;
-  cbstype: string;
+  acoustic_db_value: number;
+  acoustic_noisemap_kind: string;
   geometry_intersection: Geometry;
   percent_impacted: number;
   direction: Cardinality;
@@ -68,18 +68,19 @@ export type Zone = {
 };
 
 export type AirIntersection = {
-  zone: ("A" | "B" | "C" | "D") | null;
-  legende: number;
-  nom: string;
-  ref_doc: string;
+  acoustic_zone: ("A" | "B" | "C" | "D") | null;
+  acoustic_db_value: number;
+  label: string;
+  campaign: string;
+  campaign_url: string;
   percent_impacted: number;
 };
 
 export type SoundClassificationIntersection = {
   source: string;
-  typesource: string;
-  codeinfra: string;
-  sound_category: number;
+  kind: string;
+  label: string;
+  acoustic_category: number;
   min_distance: number;
   max_distance: number;
   geometry_intersection: Geometry;
@@ -98,8 +99,12 @@ export type NoiseSourceIntersection = {
 };
 
 export type NoiseZoneIntersection = {
-  label: "Zone de calme" | "Zone soumise au bruit";
-  alert: string;
+  alert_slug: string;
+  content: string | null;
+  title: string | null;
+  source: string | null;
+  reference: string | null;
+  label: string | null;
   geometry: Geometry;
 };
 

@@ -1,7 +1,5 @@
 import asyncio
-import copy
 import logging
-import time
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
@@ -101,48 +99,54 @@ async def process_parcelle(parcelle: ParcelleRequest, populate: Populate):
         return {"parcelle": parcelle, "error": {"status_code": 500, "detail": str(e)}}
 
 
-def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Populate):
+def _run_on_own_session(query_fn, *args):
+    """Run one query function on its own Session. A SQLAlchemy Session is not
+    thread-safe, so each concurrent query must get its own."""
     db = SessionLocal()
     try:
-        _t = time.perf_counter()
-        noisemap = query_noisemap_intersecting_features(db, polygon_wkt, codedept)
-
-        _t = time.perf_counter()
-        noisesource = query_noisesource_intersecting_features(db, polygon_wkt, codedept)
-
-        _t = time.perf_counter()
-        noisezone = query_noisezone_intersecting_features(db, polygon_wkt)
-
-        percent_unimpacted = noisemap.get("percent_unimpacted", 0)
-
-        _t = time.perf_counter()
-        sound = query_soundclassification_intersecting_features(db, polygon_wkt, populate.isolation, codedept)
-
-        _t = time.perf_counter()
-        peb = query_peb_intersecting_features(db, polygon_wkt)
-
-        geom_area_m2 = get_area_m2_from_wkt(polygon_wkt) if polygon_wkt else None
-
-        _t = time.perf_counter()
-        result = get_parcelle_diagnostic(
-            noisemap.get('intersections', []),
-            sound.get('intersections', []),
-            peb.get('intersections', []),
-            noisesource.get('intersections', []),
-            noisezone.get('intersections', []),
-            percent_unimpacted,
-            populate,
-            geom_area_m2
-        )
-        return result
+        return query_fn(db, *args)
     finally:
         db.close()
 
 
+def _generate_diagnostic_threaded(polygon_wkt: str, codedept: str, populate: Populate):
+    # The five source queries are independent (only noisemap's percent_unimpacted
+    # and each query's intersections are combined afterward), so run them
+    # concurrently — each on its own session — turning Σ latencies into max.
+    query_args = {
+        "noisemap": (query_noisemap_intersecting_features, polygon_wkt, codedept),
+        "noisesource": (query_noisesource_intersecting_features, polygon_wkt, codedept),
+        "noisezone": (query_noisezone_intersecting_features, polygon_wkt),
+        "sound": (query_soundclassification_intersecting_features, polygon_wkt, populate.isolation, codedept),
+        "peb": (query_peb_intersecting_features, polygon_wkt),
+    }
+    with ThreadPoolExecutor(max_workers=len(query_args)) as pool:
+        futures = {name: pool.submit(_run_on_own_session, fn, *args)
+                   for name, (fn, *args) in query_args.items()}
+        # .result() re-raises any query exception (preserves fail-on-error behavior).
+        results = {name: fut.result() for name, fut in futures.items()}
+
+    noisemap = results["noisemap"]
+    percent_unimpacted = noisemap.get("percent_unimpacted", 0)
+    geom_area_m2 = get_area_m2_from_wkt(polygon_wkt) if polygon_wkt else None
+
+    return get_parcelle_diagnostic(
+        noisemap.get('intersections', []),
+        results["sound"].get('intersections', []),
+        results["peb"].get('intersections', []),
+        results["noisesource"].get('intersections', []),
+        results["noisezone"].get('intersections', []),
+        percent_unimpacted,
+        populate,
+        geom_area_m2
+    )
+
+
 async def generate_diagnostic_async(polygon_wkt: str, codedept: str, populate: Populate):
     loop = asyncio.get_running_loop()
-    diagnostic = await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt, codedept, populate)
-    return copy.deepcopy(diagnostic)
+    # get_parcelle_diagnostic already returns a fresh deep-copied template, so no
+    # extra copy is needed here.
+    return await loop.run_in_executor(executor, _generate_diagnostic_threaded, polygon_wkt, codedept, populate)
 
 
 @router.post("/generate/from-parcelles")

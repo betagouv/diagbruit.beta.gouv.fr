@@ -11,14 +11,11 @@ import {
   useRef,
   useState,
 } from "react";
-import type {
-  MapGeoJSONFeature,
-  MapInstance,
-  MapLayerMouseEvent,
-  MapRef,
-  MapSourceDataEvent,
+import type { MapGeoJSONFeature, MapInstance, MapLayerMouseEvent, MapRef, MapSourceDataEvent } from "react-map-gl/maplibre";
+import Map, {
+  Marker,
+  type StyleSpecification,
 } from "react-map-gl/maplibre";
-import Map, { Marker, type StyleSpecification } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
 import usePrevious from "../../hooks/previous";
 import { buildExclusiveDiagnosticSearch } from "../../utils/diagnosticSearchParams";
@@ -51,6 +48,7 @@ const defaultViewState = {
   latitude: 44.837789,
   zoom: 12,
 };
+
 
 export type HoverInfo = {
   longitude: number;
@@ -176,11 +174,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
 
           setParcelleSiblings(nearbySiblings);
           setParcelle(clickedParcelle);
-          trackMatomoEvent(
-            "Action",
-            "Map clic search",
-            `diagnostic-map-clic-${parcelle?.id}`,
-          );
+          trackMatomoEvent("Action", "Map clic search", `diagnostic-map-clic-${parcelle?.id}`)
         } else {
           setParcelle(null);
         }

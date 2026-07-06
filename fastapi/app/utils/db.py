@@ -4,26 +4,23 @@ from sqlalchemy import select, func, cast, case, union_all, literal, and_
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.types import Text
 from geoalchemy2 import WKTElement
-from ..models import (NoiseMapItem, SoundClassificationItem, SoundClassificationRoadsItem, PebItem, TopoItem, NoiseSourceItem, NoiseZoneItem)
+from ..models import (NoiseMapItem, SoundClassificationItem, PebItem, BdnbItem, NoiseSourceItem, NoiseZoneItem)
 from ..models.result import Result
 from ..database import SessionLocal
 from ..utils.geometry import create_multipolygon_from_coordinates
 from ..version import get_api_version
 from .sig import (
     base_geoms,
-    build_arm_cte,
-    union_arms_to_triangles_cte,
-    intersecting_triangle_groups_cte,
+    correction_counts_query,
     angle_view_from_counts,
     determine_cardinality
 )
 from .acoustic import (correction_from_angle)
+from .strapi import cached_strapi_get
 import asyncio
 import logging
 import yaml
 import json
-import os
-import httpx
 from pathlib import Path
 from typing import Tuple
 from sqlalchemy import select
@@ -41,95 +38,49 @@ logger = logging.getLogger('uvicorn.error')
 
 def get_soundclassification_intersection_corrections(
     db: "Session",
-    wkt_geometry: str,
+    buffered_wkt_geometry: str,
     source_point_geom: ColumnElement,
     geometry_source: ColumnElement,
     codedept: str
 ) -> Tuple[int, int]:
     """
     Compute the corrective value (in dB) based on the resulting view angle
-    after masking by TopoItem buildings around the source, for:
+    after masking by BdnbItem buildings around the source, for:
       - the SHORTEST connecting segment (closest)
       - the LONGEST  connecting segment (farthest)
 
+    buffered_wkt_geometry is the parcelle WKT already buffered (identical for every
+    row), so the caller buffers once and passes it in.
     Returns (closest_correction_db, farthest_correction_db).
     """
 
     FULL_ANGLE = 140.0
-    SUB_ANGLE  = 5.0
+    SUB_ANGLE = 5.0
     STEPS = int(FULL_ANGLE / SUB_ANGLE / 2)
     FAR_LEN = 1_000_000.0
 
-    def compute_correction_for(*, pa, pb, az0, name_prefix: str, road_2154) -> int:
-        # Build recursive CTEs for left and right arms (triangles in 2154)
-        left = build_arm_cte(
-            name=f"{name_prefix}_left_tri",
-            steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE,
-            direction="left", far_length=FAR_LEN
-        )
-        right = build_arm_cte(
-            name=f"{name_prefix}_right_tri",
-            steps=STEPS, pa=pa, pb=pb, az0=az0,
-            road_2154=road_2154, subangle_deg=SUB_ANGLE,
-            direction="right", far_length=FAR_LEN
-        )
-
-        # Count total triangles generated (stops early if q becomes NULL)
-        triangles = union_arms_to_triangles_cte(left, right)
-        total = int(db.execute(select(func.count()).select_from(triangles)).scalar() or 0)
-
-        # Count triangles that intersect at least one TopoItem
-        tri_hits = intersecting_triangle_groups_cte(triangles, TopoItem, valid_col="is_valid_now", codedept=codedept)
-        intersecting = int(db.execute(select(func.count()).select_from(tri_hits)).scalar() or 0)
-
-        # Angle and dB correction
-        angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, intersecting)
-        correction_db = correction_from_angle(angle_view)
-
-        logger.debug(
-            f"[{name_prefix}] Triangles: total={total}, hits={intersecting} | "
-            f"view_angle={angle_view:.1f}° -> correction={correction_db} dB"
-        )
-        return correction_db
-
     try:
-        # Apply 5-meter buffer to the WKT geometry to avoid scanning geometry's building
-        buffered_wkt_geom = func.ST_AsText(
-            func.ST_Transform(
-                func.ST_Buffer(
-                    func.ST_Transform(
-                        func.ST_GeomFromText(wkt_geometry, 4326),
-                        2154
-                    ),
-                    2
-                ),
-                4326
-            )
-        )
-        buffered_wkt_geometry = db.execute(select(buffered_wkt_geom)).scalar()
-        
         _, _, road_2154, closest_values, farthest_values = base_geoms(
             buffered_wkt_geometry, source_point_geom, geometry_source
         )
 
-        closest_correction_db = compute_correction_for(
-            pa=closest_values['pa'],
-            pb=closest_values['pb'],
-            az0=closest_values['az0'],
-            name_prefix="closest",
-            road_2154=road_2154
+        counts_query = correction_counts_query(
+            closest_values=closest_values,
+            farthest_values=farthest_values,
+            road_2154=road_2154,
+            steps=STEPS,
+            subangle_deg=SUB_ANGLE,
+            far_length=FAR_LEN,
+            bdnb_table=BdnbItem,
+            codedept=codedept,
         )
+        masked_counts = {row.kind: int(row.n or 0) for row in db.execute(counts_query).all()}
 
-        farthest_correction_db = compute_correction_for(
-            pa=farthest_values['pa'],
-            pb=farthest_values['pb'],
-            az0=farthest_values['az0'],
-            name_prefix="farthest",
-            road_2154=road_2154
-        )
+        def correction_for(kind: str) -> int:
+            angle_view = angle_view_from_counts(FULL_ANGLE, SUB_ANGLE, masked_counts.get(kind, 0))
+            return correction_from_angle(angle_view)
 
-        return (closest_correction_db, farthest_correction_db)
+        return (correction_for("closest"), correction_for("farthest"))
 
     except Exception as e:
         logger.error(f"Error while computing sound corrections: {str(e)}")
@@ -154,12 +105,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
         intersection_geom = func.ST_Intersection(NoiseMapItem.geometry, safe_geom)
 
         stmt = db.query(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             func.sum(func.ST_Area(func.Geography(intersection_geom))).label("total_intersection_area_m2"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
             func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
@@ -168,12 +119,12 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
         ).group_by(
-            NoiseMapItem.typeterr,
-            NoiseMapItem.typesource,
-            NoiseMapItem.indicetype,
+            NoiseMapItem.acoustic_producer_kind,
+            NoiseMapItem.kind,
+            NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
-            NoiseMapItem.legende,
-            NoiseMapItem.cbstype,
+            NoiseMapItem.acoustic_db_value,
+            NoiseMapItem.acoustic_noisemap_kind,
             intersection_geom
         )
 
@@ -185,11 +136,11 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             geometry_intersection = geometry_parsed["coordinates"]
             if percent_impacted > threshold and r.union_centroid_x and r.union_centroid_y:
                 result.append({
-                    "typeterr": r.typeterr,
-                    "typesource": r.typesource,
-                    "indicetype": r.indicetype,
-                    "cbstype": r.cbstype,
-                    "legende": r.legende,
+                    "acoustic_producer_kind": r.acoustic_producer_kind,
+                    "kind": r.kind,
+                    "acoustic_time_range": r.acoustic_time_range,
+                    "acoustic_noisemap_kind": r.acoustic_noisemap_kind,
+                    "acoustic_db_value": r.acoustic_db_value,
                     "codeinfra": r.codeinfra,
                     "geometry_intersection": geometry_intersection,
                     "percent_impacted": percent_impacted,
@@ -203,10 +154,10 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
                     func.COALESCE(
                         func.ST_Union(
                             func.ST_Intersection(
-                                NoiseMapItem.geometry, 
+                                NoiseMapItem.geometry,
                                 safe_geom
                             )
-                        ).filter(NoiseMapItem.indicetype == 'LD'),
+                        ).filter(NoiseMapItem.acoustic_time_range == 'LD'),
                         func.ST_GeomFromText('GEOMETRYCOLLECTION EMPTY', 4326)
                     )
                 ),
@@ -249,16 +200,16 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
         intersection_geom = func.ST_Intersection(SoundClassificationItem.geometry, geom_4326)
 
         closest_point_2154 = func.ST_ClosestPoint(
-            SoundClassificationRoadsItem.geometry,
+            SoundClassificationItem.road_geometry,
             geom_2154
         )
 
         stmt = db.query(
             SoundClassificationItem.source,
-            SoundClassificationItem.typesource,
-            SoundClassificationItem.codeinfra,
-            SoundClassificationItem.sound_category,
-            cast(func.ST_AsGeoJSON(SoundClassificationRoadsItem.geometry), Text).label("geometry_source"),
+            SoundClassificationItem.kind,
+            SoundClassificationItem.label,
+            SoundClassificationItem.acoustic_category,
+            cast(func.ST_AsGeoJSON(SoundClassificationItem.road_geometry), Text).label("geometry_source"),
             cast(
                 func.ST_AsGeoJSON(
                     func.ST_Transform(closest_point_2154, 4326)
@@ -267,7 +218,7 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             ).label("geometry_source_point"),
             func.round(
                 func.ST_Distance(
-                    SoundClassificationRoadsItem.geometry,
+                    SoundClassificationItem.road_geometry,
                     geom_2154
                 )
             ).label("min_distance"),
@@ -279,19 +230,27 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
             ).label("max_distance"),
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area"),
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
-        ).join(
-            SoundClassificationRoadsItem,
-            SoundClassificationItem.codeinfra == SoundClassificationRoadsItem.codeinfra
         ).filter(
             func.ST_Intersects(SoundClassificationItem.geometry, geom_4326)
         ).group_by(
             SoundClassificationItem.source,
-            SoundClassificationItem.typesource,
-            SoundClassificationItem.codeinfra,
-            SoundClassificationItem.sound_category,
-            SoundClassificationRoadsItem.geometry,
+            SoundClassificationItem.kind,
+            SoundClassificationItem.label,
+            SoundClassificationItem.acoustic_category,
+            SoundClassificationItem.road_geometry,
             intersection_geom
         ).order_by("min_distance")
+
+        # The masking buffer is the parcelle geometry, identical for every row, so
+        # buffer it once here and reuse it for every per-row correction.
+        buffered_wkt_geometry = None
+        if include_isolation:
+            buffered_wkt_geometry = db.execute(
+                select(func.ST_AsText(func.ST_Transform(
+                    func.ST_Buffer(func.ST_Transform(func.ST_GeomFromText(wkt_geometry, 4326), 2154), 2),
+                    4326
+                )))
+            ).scalar()
 
         result = []
         for r in stmt.all():
@@ -315,13 +274,13 @@ def query_soundclassification_intersecting_features(db: Session, wkt_geometry: s
                 source_point_geom = None
 
             if include_isolation and source_point_geom is not None and codedept is not None:
-                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, wkt_geometry, source_point_geom, r.geometry_source, codedept)
+                (closest_correction, farthest_correction) = get_soundclassification_intersection_corrections(db, buffered_wkt_geometry, source_point_geom, r.geometry_source, codedept)
 
             result.append({
                 "source": r.source,
-                "typesource": r.typesource,
-                "codeinfra": r.codeinfra,
-                "sound_category": r.sound_category,
+                "kind": r.kind,
+                "label": r.label,
+                "acoustic_category": r.acoustic_category,
                 "min_distance": r.min_distance,
                 "max_distance": r.max_distance,
                 "percent_impacted": percent_impacted,
@@ -355,10 +314,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
         intersection_geom = func.ST_Intersection(PebItem.geometry, safe_geom)
 
         stmt = db.query(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc,
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url,
             func.sum(func.ST_Area(intersection_geom)).label("intersection_area")
         ).filter(
             func.ST_Intersects(
@@ -366,10 +326,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
                 safe_geom
             )
         ).group_by(
-            PebItem.zone,
-            PebItem.legende,
-            PebItem.nom,
-            PebItem.ref_doc
+            PebItem.acoustic_zone,
+            PebItem.acoustic_db_value,
+            PebItem.label,
+            PebItem.campaign,
+            PebItem.campaign_url
         )
 
         result = []
@@ -378,10 +339,11 @@ def query_peb_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str,
             percent_impacted = round(r.intersection_area / safe_geom_area, 2)
             if percent_impacted > threshold:
                 result.append({
-                    "zone": r.zone,
-                    "legende": r.legende,
-                    "nom": r.nom,
-                    "ref_doc": r.ref_doc,
+                    "acoustic_zone": r.acoustic_zone,
+                    "acoustic_db_value": r.acoustic_db_value,
+                    "label": r.label,
+                    "campaign": r.campaign,
+                    "campaign_url": r.campaign_url,
                     "percent_impacted": percent_impacted
                 })
 
@@ -454,23 +416,15 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
     4. Apply specific buffer per category and filter intersecting features
     """
     try:
-        strapi_url = os.getenv("STRAPI_URL", "http://localhost:1337")
-        categories_url = f"{strapi_url}/api/noise-source-categories"
-        
-        try:
-            response = httpx.get(categories_url, timeout=10.0)
-            response.raise_for_status()
-            categories_data = response.json()
-            categories = categories_data.get("data", [])
-        except Exception as e:
-            logger.error(f"Error fetching noise source categories from Strapi: {str(e)}")
+        categories_data = cached_strapi_get("/api/noise-source-categories")
+        if categories_data is None:
             return {"intersections": []}
-        
+        categories = categories_data.get("data", [])
+
         if not categories:
             logger.warning("No noise source categories found in Strapi")
             return {"intersections": []}
         
-        # Build category lookup: slug -> {buffer, name}
         category_info = {cat["slug"]: {"buffer": cat["buffer"], "name": cat["name"], "description": cat["description"]} for cat in categories}
         max_buffer = max(info["buffer"] for info in category_info.values())
         
@@ -486,73 +440,67 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         if codedept is not None:
             dept_filter.append(NoiseSourceItem.codedept == codedept)
 
+        # Per-category buffer (metres), picked per row via a CASE on the slug, so
+        # the category-specific intersection test AND the distance are computed in
+        # this single query instead of two extra round-trips per candidate row.
+        buffer_case = case(
+            *[(NoiseSourceItem.category_slug == slug, info["buffer"]) for slug, info in category_info.items()],
+            else_=None,
+        )
+        buffered_4326 = func.ST_Transform(
+            func.ST_Buffer(func.ST_Transform(NoiseSourceItem.geometry, 2154), buffer_case), 4326
+        )
+
         stmt = db.query(
-            NoiseSourceItem.pk,
             NoiseSourceItem.label,
             NoiseSourceItem.category_slug,
             cast(func.ST_AsGeoJSON(NoiseSourceItem.geometry), Text).label("geometry"),
-            cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point")
+            cast(func.ST_AsGeoJSON(func.ST_Centroid(NoiseSourceItem.geometry)), Text).label("geometry_point"),
+            func.ST_Intersects(buffered_4326, safe_geom).label("cat_intersects"),
+            func.round(
+                func.ST_Distance(geom_2154, func.ST_Transform(NoiseSourceItem.geometry, 2154))
+            ).label("distance"),
         ).filter(*dept_filter)
-        
+
         result = []
         for r in stmt.all():
             category_slug = r.category_slug
-            print(r)
-            
+
             if category_slug not in category_info:
                 logger.warning(f"Category slug '{category_slug}' not found in Strapi categories")
                 continue
-            
+
+            # Category-specific buffer didn't reach the parcelle → not impacted.
+            if not r.cat_intersects:
+                continue
+
             category_data = category_info[category_slug]
-            buffer_distance = category_data["buffer"]
             category_name = category_data["name"]
             category_description = category_data["description"]
-            
-            point_2154 = func.ST_Transform(NoiseSourceItem.geometry, 2154)
-            buffered_point = func.ST_Buffer(point_2154, buffer_distance)
-            buffered_point_4326 = func.ST_Transform(buffered_point, 4326)
-            
-            intersects = db.query(
-                func.ST_Intersects(buffered_point_4326, safe_geom)
-            ).filter(
-                NoiseSourceItem.pk == r.pk
-            ).scalar()
-            
-            if intersects:
-                try:
-                    geometry_parsed = json.loads(r.geometry)
-                    geometry = geometry_parsed["coordinates"]
-                except Exception as parse_err:
-                    logger.warning(f"Could not parse geometry: {parse_err}")
-                    geometry = None
 
-                try:
-                    geometry_point_parsed = json.loads(r.geometry_point)
-                    geometry_point = geometry_point_parsed["coordinates"]
-                except Exception as parse_err:
-                    logger.warning(f"Could not parse geometry_point: {parse_err}")
-                    geometry_point = None
-                
-                distance = db.query(
-                    func.round(
-                        func.ST_Distance(
-                            func.ST_Transform(safe_geom, 2154),
-                            func.ST_Transform(NoiseSourceItem.geometry, 2154)
-                        )
-                    )
-                ).filter(
-                    NoiseSourceItem.pk == r.pk
-                ).scalar()
-                
-                result.append({
-                    "label": r.label,
-                    "category_slug": category_slug,
-                    "category_name": category_name,
-                    "category_description": category_description,
-                    "distance": int(distance) if distance else 0,
-                    "geometry": geometry,
-                    "geometry_point": geometry_point
-                })
+            try:
+                geometry_parsed = json.loads(r.geometry)
+                geometry = geometry_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse geometry: {parse_err}")
+                geometry = None
+
+            try:
+                geometry_point_parsed = json.loads(r.geometry_point)
+                geometry_point = geometry_point_parsed["coordinates"]
+            except Exception as parse_err:
+                logger.warning(f"Could not parse geometry_point: {parse_err}")
+                geometry_point = None
+
+            result.append({
+                "label": r.label,
+                "category_slug": category_slug,
+                "category_name": category_name,
+                "category_description": category_description,
+                "distance": int(r.distance) if r.distance else 0,
+                "geometry": geometry,
+                "geometry_point": geometry_point
+            })
         
         logger.debug(f"Found {len(result)} noise sources intersecting with geometry")
         
@@ -565,10 +513,36 @@ def query_noisesource_intersecting_features(db: Session, wkt_geometry: str, code
         raise
 
 
+def fetch_noisezone_alert_content(slug: str) -> Dict[str, Any] | None:
+    if not slug:
+        return None
+
+    data = cached_strapi_get(
+        "/api/noisezone-alerts",
+        params={"filters[alert_slug][$eq]": slug},
+    )
+    entries = data.get("data", []) if data else []
+    if not entries:
+        logger.warning(f"No noisezone alert found in Strapi for slug '{slug}'")
+        return None
+
+    entry = entries[0]
+    return {
+        "content": entry.get("content"),
+        "title": entry.get("title"),
+        "source": entry.get("source"),
+        "reference": entry.get("reference"),
+        "label": entry.get("label"),
+    }
+
+
 def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dict[str, Any]:
     """
     Query the database for noise zone features that intersect with the given WKT geometry.
-    Returns intersecting NoiseZoneItem records with their label, alert, and intersection geometry.
+
+    Each intersecting NoiseZoneItem carries an `alert_slug`; this resolves the slug
+    against the Strapi `noisezone-alerts` collection so the response includes the
+    HTML `content` (plus title/source/reference) alongside the intersection geometry.
     """
     try:
         safe_geom = func.ST_Buffer(func.ST_GeomFromText(wkt_geometry, 4326), 0)
@@ -577,8 +551,7 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
 
         stmt = db.query(
             NoiseZoneItem.id,
-            NoiseZoneItem.label,
-            NoiseZoneItem.alert,
+            NoiseZoneItem.alert_slug,
             cast(func.ST_AsGeoJSON(intersection_geom), Text).label("geometry_intersection")
         ).filter(
             func.ST_Intersects(NoiseZoneItem.geometry, safe_geom)
@@ -593,9 +566,16 @@ def query_noisezone_intersecting_features(db: Session, wkt_geometry: str) -> Dic
                 logger.warning(f"Could not parse noisezone geometry_intersection: {parse_err}")
                 geometry_intersection = None
 
+            slug = r.alert_slug
+            alert = fetch_noisezone_alert_content(slug) or {}
+
             result.append({
-                "label": r.label.value if hasattr(r.label, 'value') else r.label,
-                "alert": r.alert,
+                "alert_slug": slug,
+                "content": alert.get("content"),
+                "title": alert.get("title"),
+                "source": alert.get("source"),
+                "reference": alert.get("reference"),
+                "label": alert.get("label"),
                 "geometry": geometry_intersection
             })
 

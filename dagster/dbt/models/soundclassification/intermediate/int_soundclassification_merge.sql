@@ -1,0 +1,27 @@
+{{ config(
+    materialized='view',
+    schema='workspace'
+) }}
+
+SELECT
+    MIN(id) AS id,
+    source,
+    kind,
+    label,
+    acoustic_buffer,
+    acoustic_category,
+    codedept,
+    array_agg(id ORDER BY id) AS merged_ids,
+    ST_Union(geometry) AS geometry,
+    ST_Union(multilinestring) AS multilinestring,
+    ST_IsValid(ST_Union(geometry)) AS is_valid_now,
+    ST_Area(ST_Union(geometry)) AS area_m2,
+    ST_GeometryType(ST_Union(geometry)) AS geometry_type
+FROM {{ ref('int_soundclassification_with_pk') }}
+GROUP BY
+    source,
+    kind,
+    label,
+    acoustic_category,
+    codedept,
+    acoustic_buffer

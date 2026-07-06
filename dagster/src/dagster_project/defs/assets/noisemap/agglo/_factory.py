@@ -1,0 +1,41 @@
+"""Mapping helpers for agglo ingestion.
+
+The actual @asset definitions live in `defs.py` — this module only holds the
+per-territory mapping construction so the asset file stays focused on Dagster
+wiring.
+"""
+
+from dagster_project.defs.assets.noisemap.agglo._registry import (
+    AGGLO_TERRITORIES,
+    AggloFile,
+    AggloTerritory,
+)
+
+KIND = "agglo"
+GROUP = "noisemap_agglo"
+SOURCE = "box"
+
+AGGLO_BY_DEPT: dict[str, AggloTerritory] = {t.dept: t for t in AGGLO_TERRITORIES}
+
+
+def s3_prefix(t: AggloTerritory) -> str:
+    return f"noisemap/cbs_{KIND}/territory={t.slug}/campaign={t.campaign}/"
+
+
+def _file_mapping(t: AggloTerritory, f: AggloFile) -> dict:
+    return {
+        "geometry": True,
+        "codedept": {"value": t.dept},
+        "label": {"value": ""},
+        "campaign": {"value": t.annee},
+        "acoustic_producer_kind": {"value": "AGGLO"},
+        "noisemap_pipeline": {"value": "AGGLO"},
+        "kind": {"from": t.kind_from} if t.kind_from else {"value": f.typesource},
+        "acoustic_noisemap_kind": {"from": t.acoustic_noisemap_kind_from} if t.acoustic_noisemap_kind_from else {"value": f.cbstype},
+        "acoustic_db_value": {"from": t.legende_from},
+        "acoustic_time_range": {"value": f.indicetype},
+    }
+
+
+def build_territory_mapping(t: AggloTerritory) -> list[dict]:
+    return [{"name": f.name, "mapping": _file_mapping(t, f)} for f in t.files]
