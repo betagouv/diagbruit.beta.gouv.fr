@@ -16,7 +16,8 @@ import {
 } from "./DiagnosticPdf";
 import { dsfr } from "./pdfTokens";
 
-/* --- Remixicon / DSFR icon path data (24x24 viewBox) --- */
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+
 const ICON_ALERT =
   "M12.8659 3.00017L22.3922 19.5002C22.6684 19.9785 22.5045 20.5901 22.0262 20.8662C21.8742 20.954 21.7017 21.0002 21.5262 21.0002H2.47363C1.92135 21.0002 1.47363 20.5525 1.47363 20.0002C1.47363 19.8246 1.51984 19.6522 1.60761 19.5002L11.1339 3.00017C11.41 2.52187 12.0216 2.358 12.4999 2.63414C12.6519 2.72191 12.7782 2.84815 12.8659 3.00017ZM10.9999 16.0002V18.0002H12.9999V16.0002H10.9999ZM10.9999 9.00017V14.0002H12.9999V9.00017H10.9999Z";
 const ICON_CLOSE_CIRCLE =
@@ -25,12 +26,16 @@ const ICON_INFORMATION =
   "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 11V17H13V11H11ZM11 7V9H13V7H11Z";
 const ICON_CHECKBOX_CIRCLE =
   "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11.0026 16L18.0737 8.92893L16.6595 7.51472L11.0026 13.1716L8.17421 10.3431L6.75999 11.7574L11.0026 16Z";
-const ICON_SCHOOL =
-  "M23 18.9999H22V8.99991H18V6.58569L12 0.585693L6 6.58569V8.99991H2V18.9999H1V20.9999H23V18.9999ZM6 19H4V11H6V19ZM18 11H20V19H18V11ZM11 12H13V19H11V12Z";
-const ICON_CAR =
-  "M19 20H5V21C5 21.5523 4.55228 22 4 22H3C2.44772 22 2 21.5523 2 21V12L4.51334 5.29775C4.80607 4.51715 5.55231 4 6.386 4H17.614C18.4477 4 19.1939 4.51715 19.4867 5.29775L22 12V21C22 21.5523 21.5523 22 21 22H20C19.4477 22 19 21.5523 19 21V20ZM4.136 12H19.864L17.614 6H6.386L4.136 12ZM6.5 17C7.32843 17 8 16.3284 8 15.5C8 14.6716 7.32843 14 6.5 14C5.67157 14 5 14.6716 5 15.5C5 16.3284 5.67157 17 6.5 17ZM17.5 17C18.3284 17 19 16.3284 19 15.5C19 14.6716 18.3284 14 17.5 14C16.6716 14 16 14.6716 16 15.5C16 16.3284 16.6716 17 17.5 17Z";
-const ICON_GOBLET =
-  "M11 19V13.8889L3 5V3H21V5L13 13.8889V19H18V21H6V19H11ZM7.49073 7H16.5093L18.3093 5H5.69072L7.49073 7Z";
+
+const SOURCE_ICON_FILES: Record<string, string> = {
+  ECO: "SchoolIcon.svg",
+  CART: "CartIcon.svg",
+  HEALTH: "HealthIcon.svg",
+};
+const DEFAULT_SOURCE_ICON = "GlassIcon.svg";
+
+const getSourceIconUrl = (slug: string): string =>
+  `${STRAPI_URL}/images/${SOURCE_ICON_FILES[slug] ?? DEFAULT_SOURCE_ICON}`;
 
 const scoreColor = (s: number): string =>
   s > 8 ? "#F95A5C" : s > 6 ? "#FA7659" : s > 3 ? "#CB9F2D" : "#4B9F6C";
@@ -44,9 +49,6 @@ const scoreIcon = (s: number): string =>
       : s > 3
         ? ICON_INFORMATION
         : ICON_CHECKBOX_CIRCLE;
-
-const sourceIcon = (slug: string): string =>
-  slug === "ECO" ? ICON_SCHOOL : slug === "CAR" ? ICON_CAR : ICON_GOBLET;
 
 const getRiskSummaryRuns = (score: number): Run[] => {
   if (score > 8) {
@@ -105,9 +107,7 @@ const ScoreGauge = ({ score }: { score: number }) => {
 
 const SourceRow = ({ group }: { group: NoiseSourceGroup }) => (
   <View style={s.sourceRow}>
-    <Svg style={s.sourceIcon} viewBox="0 0 24 24">
-      <Path d={sourceIcon(group.slug)} fill={dsfr.colors.titleGrey} />
-    </Svg>
+    <Image src={getSourceIconUrl(group.slug)} style={s.sourceIcon} />
     <Text style={s.sourceText}>
       {group.name} ({group.count})
     </Text>
@@ -173,7 +173,6 @@ const s = StyleSheet.create({
   sonoscore: {
     flexDirection: "row",
     width: "100%",
-    marginBottom: dsfr.spacing(4),
   },
   left: {
     flex: 1,
@@ -292,7 +291,7 @@ const s = StyleSheet.create({
     height: 14,
   },
   sourceText: {
-    fontSize: dsfr.fontSize.xs,
+    fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
   },
   cta: {
