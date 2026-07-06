@@ -126,11 +126,6 @@ export const styles = StyleSheet.create({
     height: 24,
     width: 24,
   },
-  brand: {
-    fontSize: dsfr.fontSize.h4,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-  },
   headerBrand: {
     fontSize: 10,
     fontFamily: "Marianne",
@@ -263,7 +258,7 @@ export const styles = StyleSheet.create({
     fontWeight: 400,
     color: dsfr.colors.titleGrey,
     textAlign: "center",
-    lineHeight: 1.5,
+    lineHeight: 1.25,
   },
   brandFooterBrands: {
     flexDirection: "row",
@@ -575,7 +570,7 @@ export const ReferencesBox = ({ links }: { links: { label: string; url: string }
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const CUSTOMER_SERVICE_ICON = `${STRAPI_URL}/images/customerServiceIcon.svg`;
 const INFORMATION_ICON = `${STRAPI_URL}/images/informationIcon.svg`;
-const FOOTER_LOGO = `${STRAPI_URL}/images/footerImage.svg`;
+const FOOTER_LOGO = `${STRAPI_URL}/images/brandIconText.svg`;
 
 const CEREMA_LOGO = `${STRAPI_URL}/images/cerema.png`;
 const GOUV_LOGO = `${STRAPI_URL}/images/GouvBrandIcon.svg`;
@@ -606,8 +601,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Image
-            src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIcon.svg`} />
-          <Text style={styles.brand}>diagBruit</Text>
+            src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIconText.svg`} />
         </View>
 
         <Sonoscore data={data} />
