@@ -217,6 +217,67 @@ export const styles = StyleSheet.create({
     color: dsfr.colors.defaultGrey,
     lineHeight: 1,
   },
+  // Brand footer (first page only), pinned to the bottom margin.
+  brandFooter: {
+    position: "absolute",
+    bottom: dsfr.spacing(6),
+    left: dsfr.spacing(12),
+    right: dsfr.spacing(12),
+    height: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  brandFooterLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+    flex: 1.7,
+  },
+  brandFooterLogo: {
+    width: 106,
+    height: 24,
+  },
+  brandFooterTextCol: {
+    flexShrink: 1,
+  },
+  brandFooterTagline: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.titleGrey,
+    lineHeight: 1.25,
+  },
+  brandFooterUrl: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.mentionGrey,
+    lineHeight: 1.25,
+    marginTop: dsfr.spacing(1),
+  },
+  brandFooterContact: {
+    flex: 1,
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.titleGrey,
+    textAlign: "center",
+    lineHeight: 1.5,
+  },
+  brandFooterBrands: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(3),
+  },
+  brandFooterCerema: {
+    width: 88,
+    height: 26,
+  },
+  brandFooterGouv: {
+    width: 44,
+    height: 40,
+  },
   info: {
     marginTop: dsfr.spacing(6),
     borderWidth: 1,
@@ -514,6 +575,30 @@ export const ReferencesBox = ({ links }: { links: { label: string; url: string }
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const CUSTOMER_SERVICE_ICON = `${STRAPI_URL}/images/customerServiceIcon.svg`;
 const INFORMATION_ICON = `${STRAPI_URL}/images/informationIcon.svg`;
+const FOOTER_LOGO = `${STRAPI_URL}/images/footerImage.svg`;
+
+const CEREMA_LOGO = `${STRAPI_URL}/images/cerema.png`;
+const GOUV_LOGO = `${STRAPI_URL}/images/GouvBrandIcon.svg`;
+
+const FirstPageFooter = () => (
+  <View style={styles.brandFooter}>
+    <View style={styles.brandFooterLeft}>
+      <Image src={FOOTER_LOGO} style={styles.brandFooterLogo} />
+      <View style={styles.brandFooterTextCol}>
+        <Text style={styles.brandFooterTagline}>
+          Intégrez les risques sonores dès la conception{"\n"}d'un projet
+          immobilier
+        </Text>
+        <Text style={styles.brandFooterUrl}>diagbruit.beta.gouv.fr</Text>
+      </View>
+    </View>
+    <Text style={styles.brandFooterContact}>contact@diagbruit.fr</Text>
+    <View style={styles.brandFooterBrands}>
+      <Image src={CEREMA_LOGO} style={styles.brandFooterCerema} />
+      <Image src={GOUV_LOGO} style={styles.brandFooterGouv} />
+    </View>
+  </View>
+);
 
 export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
   return (
@@ -596,6 +681,7 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
             </Text>
           </View>
         </Info>
+        <FirstPageFooter />
       </Page>
       <Page size="A4" style={styles.page}>
         <Header />
