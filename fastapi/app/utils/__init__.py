@@ -14,6 +14,5 @@ from .whitelist import codes_insee_whitelist, is_code_insee_allowed
 
 from .risk import get_risk_from_score
 
-from .acoustic import get_land_isolations
 from .acoustic import get_air_isolation
-from .acoustic import get_computed_isolation
+from .acoustic import compute_parcelle_isolations

@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { tss } from "tss-react/dsfr";
 import { z } from "zod";
@@ -28,12 +28,14 @@ interface ParcelleSearchProps {
   ) => void;
   onChange?: () => void;
   formValues?: ParcelleFormData;
+  autoSubmit?: boolean;
 }
 
 const ParcelleSearch = ({
   onParcelleRequested,
   onChange,
   formValues,
+  autoSubmit,
 }: ParcelleSearchProps) => {
   const { cx, classes } = useStyles();
 
@@ -99,6 +101,14 @@ const ParcelleSearch = ({
     }
     trigger();
   }, [formValues, setValue, trigger]);
+
+  const hasAutoSubmittedRef = useRef(false);
+  useEffect(() => {
+    if (autoSubmit && isValid && !isLoading && !hasAutoSubmittedRef.current) {
+      hasAutoSubmittedRef.current = true;
+      handleSubmit(onSubmit)();
+    }
+  }, [autoSubmit, isValid, isLoading, handleSubmit]);
 
   return (
     <div className={cx(classes.container)}>

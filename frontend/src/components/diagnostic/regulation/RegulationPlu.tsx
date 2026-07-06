@@ -26,10 +26,6 @@ const RegulationPlu = ({ diagnosticItem }: RegulationPluProps) => {
     );
   }
 
-  const uniqueNoisezones = diagnostic.noisezone_intersections.filter(
-    (noisezone, index, self) =>
-      self.findIndex((n) => n.alert === noisezone.alert) === index,
-  );
 
   return (
     <>

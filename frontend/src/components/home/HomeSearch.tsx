@@ -3,7 +3,7 @@ import { tss } from "tss-react/dsfr";
 import { ImageProps } from "./About";
 import AddressSearch, { AddressFeature } from "../search/AddressSearch";
 import { useNavigate } from "react-router-dom";
-import { encode } from "../../utils/compression";
+import { buildExclusiveDiagnosticSearch } from "../../utils/diagnosticSearchParams";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { imgUrl } from "../../utils/tools";
 import { trackMatomoEvent } from "../../utils/matomo";
@@ -44,7 +44,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                             trackMatomoEvent("Action", "Home Address Search Button", `home-search-address-${feature.properties.type}-${feature.properties.label}`);
                         navigate({
                             pathname: "/diagnostic",
-                            search: `?address=${encode(feature)}`,
+                            search: buildExclusiveDiagnosticSearch("address", feature).toString(),
                         });
                     }}
                     limit={3}
@@ -56,8 +56,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
                         trackMatomoEvent("Action", "Button search parcelle", "home-search-id");
                         navigate({
                             pathname: "/diagnostic",
-                            search: `?parcelleSearch=${encode(true)}`,
-
+                            search: buildExclusiveDiagnosticSearch("parcelleSearch", true).toString(),
                         });
                     }}
                     priority="secondary"

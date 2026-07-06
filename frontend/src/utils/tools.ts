@@ -103,6 +103,10 @@ export const getReadableSource = (
 export const getSummaryTextFromDiagnostic = (
   diagnostic: Diagnostic,
 ): string => {
+  if (diagnostic.flags.hasNoisemapWarning) {
+    return "Le <strong>risque de nuisance sonore</strong> ne peut pas être déterminé par diagBruit pour votre parcelle.<br/>Une <strong>visite des lieux</strong> peut aider à mieux appréhender la gêne occasionnée.";
+  }
+
   const risk = getRiskFromScore(diagnostic.score);
 
   switch (risk) {

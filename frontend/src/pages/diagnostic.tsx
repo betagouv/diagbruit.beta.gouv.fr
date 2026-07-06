@@ -50,16 +50,38 @@ function DiagnosticPage() {
     DiagnosticItem[]
   >([]);
 
-  const [searchValues, setSearchValues] = useState(defaultSearchValues);
+  const parcelleFromQuery = (() => {
+    const params = new URLSearchParams(location.search);
+    const codeInsee = params.get("insee_com");
+    const section = params.get("section");
+    const prefix = params.get("prefixe");
+    const numero = params.get("numero");
+    if (!codeInsee || !section || !prefix || !numero) return null;
+    return {
+      codeInsee,
+      prefix: prefix.padStart(3, "0"),
+      section: section.toUpperCase().slice(0, 2),
+      numero: numero.padStart(4, "0"),
+    };
+  })();
+
+  const [searchValues, setSearchValues] = useState(
+    parcelleFromQuery ?? defaultSearchValues,
+  );
 
   const [addressDefaultValue, setAddressDefaultValue] =
     useState<AddressFeature>();
 
   const [showParcelleSearch, setShowParcelleSearch] = useState(() => {
+    if (parcelleFromQuery) return true;
     const params = new URLSearchParams(location.search);
     const encoded = params.get("parcelleSearch");
     return encoded ? decode(encoded) === true : false;
   });
+
+  const [autoSubmitParcelle, setAutoSubmitParcelle] = useState(
+    !!parcelleFromQuery,
+  );
 
 
   const onAddressSelected = (feature: AddressFeature | null) => {
@@ -225,6 +247,7 @@ function DiagnosticPage() {
           typeof addressFeature === "object" &&
           "geometry" in addressFeature
         ) {
+          reset();
           if (mapMethodsRef.current?.map) {
             setAddressDefaultValue(addressFeature);
             mapMethodsRef.current.map.flyTo({
@@ -274,7 +297,11 @@ function DiagnosticPage() {
           onChange={checked => {
             setShowParcelleSearch(checked);
             const params = new URLSearchParams(location.search);
-            params.set("parcelleSearch", encode(checked));
+            if (checked) {
+              params.set("parcelleSearch", encode(checked));
+            } else {
+              params.delete("parcelleSearch");
+            }
             navigate({ search: params.toString() }, { replace: true });
           }}
         />
@@ -291,10 +318,12 @@ function DiagnosticPage() {
         {showParcelleSearch && (
           <ParcelleSearch
             formValues={searchValues}
+            autoSubmit={autoSubmitParcelle}
             onChange={() => {
               setParcelleError(false);
             }}
             onParcelleRequested={(response) => {
+              setAutoSubmitParcelle(false);
               addressSearchRef.current?.reset();
 
               setDiagnosticsResponses([]);
