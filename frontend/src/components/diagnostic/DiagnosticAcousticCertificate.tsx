@@ -52,7 +52,7 @@ const DiagnosticAcousticCertificate = () => {
         return <></>;
     }
 
-    return (<div className={fr.cx("fr-mb-4v")}>
+    return (<div className={fr.cx("fr-mb-6v")}>
         {response.content && (
             <>
                 <h4 className={fr.cx("fr-h6", "fr-mb-3v")}>Concernant votre projet</h4>
