@@ -23,6 +23,7 @@ const usePreco = (slug: string) => {
     useEffect(() => {
         setIsLoading(true);
         setNotFound(false);
+        setPreco(null);
         axios
             .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
                 params: {

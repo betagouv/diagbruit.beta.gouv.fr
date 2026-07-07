@@ -1,10 +1,12 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { SITE_URL } from "../config/seo";
 
 const APP_NAME = "diagBruit";
-const SITE_URL = (
-  process.env.REACT_APP_SITE_URL || "https://diagbruit.beta.gouv.fr"
-).replace(/\/+$/, "");
 const JSONLD_ID = "page-jsonld";
+// Distinct element from the global noindex meta injected by src/index.tsx,
+// so removing the page-level one never drops the env-level one.
+const PAGE_ROBOTS_ID = "page-robots";
 
 type PageMetaOptions = {
   /** Absolute image URL for og:image / twitter:image. */
@@ -15,6 +17,8 @@ type PageMetaOptions = {
   canonical?: string;
   /** Structured data (JSON-LD) injected as a <script type="application/ld+json">. */
   jsonLd?: Record<string, unknown>;
+  /** Mark the page noindex (e.g. a not-found state rendered on a 200). */
+  noindex?: boolean;
 };
 
 const upsertMeta = (
@@ -22,14 +26,19 @@ const upsertMeta = (
   value: string,
   content?: string,
 ) => {
-  if (!content) return;
-  let el = document.head.querySelector(`meta[${key}="${value}"]`);
-  if (!el) {
-    el = document.createElement("meta");
-    el.setAttribute(key, value);
-    document.head.appendChild(el);
+  const el = document.head.querySelector(`meta[${key}="${value}"]`);
+  if (!content) {
+    el?.remove();
+    return;
   }
-  el.setAttribute("content", content);
+  if (el) {
+    el.setAttribute("content", content);
+    return;
+  }
+  const created = document.createElement("meta");
+  created.setAttribute(key, value);
+  created.setAttribute("content", content);
+  document.head.appendChild(created);
 };
 
 const upsertCanonical = (href: string) => {
@@ -40,6 +49,21 @@ const upsertCanonical = (href: string) => {
     document.head.appendChild(el);
   }
   el.setAttribute("href", href);
+};
+
+const upsertPageRobots = (noindex: boolean) => {
+  let el = document.getElementById(PAGE_ROBOTS_ID);
+  if (!noindex) {
+    el?.remove();
+    return;
+  }
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", "robots");
+    el.id = PAGE_ROBOTS_ID;
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", "noindex");
 };
 
 /**
@@ -53,17 +77,21 @@ export const usePageMeta = (
   description?: string,
   options: PageMetaOptions = {},
 ) => {
-  const { image, type = "website", canonical } = options;
+  const { image, type = "website", canonical, noindex = false } = options;
   const jsonLdStr = options.jsonLd ? JSON.stringify(options.jsonLd) : undefined;
+  // From the router, not window.location: the effect must re-run on path
+  // change even when every other argument is identical.
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const fullTitle = `${title} - ${APP_NAME}`;
     document.title = fullTitle;
 
-    const canonicalUrl = canonical || `${SITE_URL}${window.location.pathname}`;
+    const canonicalUrl = canonical || `${SITE_URL}${pathname}`;
 
     upsertMeta("name", "description", description);
     upsertCanonical(canonicalUrl);
+    upsertPageRobots(noindex);
 
     // Open Graph
     upsertMeta("property", "og:site_name", APP_NAME);
@@ -100,5 +128,5 @@ export const usePageMeta = (
     return () => {
       document.title = APP_NAME;
     };
-  }, [title, description, image, type, canonical, jsonLdStr]);
+  }, [title, description, image, type, canonical, jsonLdStr, noindex, pathname]);
 };

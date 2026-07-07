@@ -34,9 +34,10 @@ export const PrecoPage = () => {
   const precoImage =
     preco?.imageBanner?.url ? imgUrl(preco.imageBanner.url) : undefined;
 
-  usePageMeta(preco?.title ?? "Préconisation", plainText, {
+  usePageMeta(notFound ? "Préconisation introuvable" : preco?.title ?? "Préconisation", plainText, {
     type: "article",
     image: precoImage,
+    noindex: notFound || !preco,
     jsonLd: preco
       ? {
           "@context": "https://schema.org",

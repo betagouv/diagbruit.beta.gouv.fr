@@ -1,49 +1,37 @@
 /* eslint-disable */
 /**
- * Build-time sitemap generator.
- *
- * Writes public/sitemap.xml with the static routes plus one entry per
- * published "préconisation" (fetched from Strapi). Runs as part of `yarn build`
- * (before react-scripts build, so CRA copies the file into build/).
+ * Build-time sitemap + robots.txt generator, run by `yarn build` before
+ * react-scripts build (so CRA copies the files into build/).
  *
  * Needs, at build time:
- *   - REACT_APP_CMS_URL  : Strapi base URL (to list preco slugs)
- *   - REACT_APP_SITE_URL : public site origin used in <loc> (defaults to prod)
- * If the CMS is unreachable, it still writes a sitemap with the static routes
- * so the build never fails over SEO metadata.
+ *   - REACT_APP_CMS_URL     : Strapi base URL (to list preco slugs)
+ *   - REACT_APP_SITE_URL    : public site origin used in <loc>
+ *   - REACT_APP_ENVIRONMENT : "production" enables indexing; anything else
+ *                             writes a Disallow-all robots.txt
+ *
+ * CMS errors are soft (sitemap falls back to the static routes); any other
+ * error fails the build rather than shipping a robots.txt that advertises a
+ * missing sitemap.
  */
 const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
 
-try {
-  const dotenv = require("dotenv");
-  dotenv.config({ path: path.resolve(__dirname, "..", ".env.local") });
-  dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
-} catch (_) {
-  /* dotenv not installed — rely on the process environment */
-}
+dotenv.config({ path: path.resolve(__dirname, "..", ".env.local") });
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
-const SITE_URL = (
-  process.env.REACT_APP_SITE_URL || "https://diagbruit.beta.gouv.fr"
-).replace(/\/+$/, "");
+// seo.js reads process.env at require time — keep this after dotenv.config.
+const {
+  SITE_URL,
+  IS_INDEXABLE,
+  PUBLIC_ROUTES,
+} = require(path.resolve(__dirname, "..", "src", "config", "seo"));
+
 const CMS_URL = (
   process.env.REACT_APP_CMS_URL || "http://localhost:1337"
 ).replace(/\/+$/, "");
 
-const NOINDEX_ENVS = ["test", "preprod", "staging", "development", "dev", "local"];
-const IS_NOINDEX = NOINDEX_ENVS.includes(
-  (process.env.REACT_APP_ENVIRONMENT || "").toLowerCase(),
-);
-
-const STATIC_ROUTES = [
-  "/",
-  "/preco",
-  "/changelogs",
-  "/stats",
-  "/accessibility",
-  "/legal-mentions",
-  "/privacy-policy",
-];
+const FETCH_TIMEOUT_MS = 10_000;
 
 async function fetchAllRecoSlugs() {
   const slugs = [];
@@ -55,15 +43,14 @@ async function fetchAllRecoSlugs() {
       `${CMS_URL}/api/recommendations` +
       `?fields[0]=slug&fields[1]=updatedAt` +
       `&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!res.ok) throw new Error(`CMS responded ${res.status}`);
     const json = await res.json();
     const data = Array.isArray(json.data) ? json.data : [];
     for (const item of data) {
-      // Strapi v5 flattens fields; fall back to v4 attributes just in case.
-      const slug = item.slug ?? item.attributes?.slug;
-      const updatedAt = item.updatedAt ?? item.attributes?.updatedAt;
-      if (slug) slugs.push({ slug, updatedAt });
+      if (item.slug) slugs.push({ slug: item.slug, updatedAt: item.updatedAt });
     }
     const pageCount = json.meta?.pagination?.pageCount ?? 1;
     if (page >= pageCount) break;
@@ -73,22 +60,24 @@ async function fetchAllRecoSlugs() {
 }
 
 function urlEntry(loc, lastmod) {
-  const lm = lastmod
-    ? `\n    <lastmod>${new Date(lastmod).toISOString().slice(0, 10)}</lastmod>`
-    : "";
+  const date = lastmod ? new Date(lastmod) : null;
+  const lm =
+    date && !Number.isNaN(date.getTime())
+      ? `\n    <lastmod>${date.toISOString().slice(0, 10)}</lastmod>`
+      : "";
   return `  <url>\n    <loc>${loc}</loc>${lm}\n  </url>`;
 }
 
 function writeRobots() {
-  const body = IS_NOINDEX
-    ? ["User-agent: *", "Disallow: /"]
-    : ["User-agent: *", "Disallow:", "", `Sitemap: ${SITE_URL}/sitemap.xml`];
+  const body = IS_INDEXABLE
+    ? ["User-agent: *", "Disallow:", "", `Sitemap: ${SITE_URL}/sitemap.xml`]
+    : ["User-agent: *", "Disallow: /"];
   const content =
     "# https://www.robotstxt.org/robotstxt.html\n" + body.join("\n") + "\n";
   const out = path.join(__dirname, "..", "public", "robots.txt");
   fs.writeFileSync(out, content, "utf-8");
   console.log(
-    `[robots] ${IS_NOINDEX ? "Disallow: / (noindex env)" : "allow + sitemap"} -> ${out}`,
+    `[robots] ${IS_INDEXABLE ? "allow + sitemap" : "Disallow: / (non-production env)"} -> ${out}`,
   );
 }
 
@@ -107,7 +96,7 @@ writeRobots();
   }
 
   const entries = [
-    ...STATIC_ROUTES.map((r) => urlEntry(`${SITE_URL}${r}`)),
+    ...Object.values(PUBLIC_ROUTES).map((r) => urlEntry(`${SITE_URL}${r}`)),
     ...recos.map((r) =>
       urlEntry(`${SITE_URL}/preco/${encodeURIComponent(r.slug)}`, r.updatedAt),
     ),
@@ -123,5 +112,6 @@ writeRobots();
   fs.writeFileSync(out, xml, "utf-8");
   console.log(`[sitemap] wrote ${entries.length} urls -> ${out}`);
 })().catch((err) => {
-  console.warn(`[sitemap] generation skipped: ${err.message}`);
+  console.error(`[sitemap] generation failed: ${err.message}`);
+  process.exitCode = 1;
 });
