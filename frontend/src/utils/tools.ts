@@ -167,6 +167,38 @@ export const getZoomFromGeometry = (geometry: GeoJSON.Geometry): number => {
   return 16;
 };
 
+export type CommuneLocation = {
+  bbox: [number, number, number, number] | null; // [minLng, minLat, maxLng, maxLat]
+  center: [number, number] | null; // [lng, lat]
+};
+
+export const fetchCommuneLocation = async (
+  codeInsee: string,
+): Promise<CommuneLocation | null> => {
+  try {
+    const res = await fetch(
+      `https://geo.api.gouv.fr/communes/${encodeURIComponent(
+        codeInsee,
+      )}?fields=centre,bbox&format=json`,
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const bbox =
+      Array.isArray(data?.bbox) && data.bbox.length === 4
+        ? (data.bbox as [number, number, number, number])
+        : null;
+    const center =
+      Array.isArray(data?.centre?.coordinates) &&
+        data.centre.coordinates.length === 2
+        ? (data.centre.coordinates as [number, number])
+        : null;
+    if (!bbox && !center) return null;
+    return { bbox, center };
+  } catch {
+    return null;
+  }
+};
+
 export const getReadableCardinality = (direction: Cardinality) => {
   switch (direction) {
     case "N":

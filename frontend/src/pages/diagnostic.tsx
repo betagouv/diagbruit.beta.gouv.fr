@@ -13,7 +13,7 @@ import ParcelleSearch from "../components/search/ParcelleSearch";
 import { Loader } from "../components/ui/Loader";
 import { decode, encode } from "../utils/compression";
 import { computeParcelleSiblings, findFeatureAsync } from "../utils/map";
-import { getZoomFromGouvType } from "../utils/tools";
+import { fetchCommuneLocation, getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { usePageMeta } from "../hooks/usePageMeta";
@@ -72,6 +72,10 @@ function DiagnosticPage() {
   const [addressDefaultValue, setAddressDefaultValue] =
     useState<AddressFeature>();
 
+  const [communeCodeInsee, setCommuneCodeInsee] = useState<string | null>(
+    () => new URLSearchParams(location.search).get("codeInsee"),
+  );
+
   const [showParcelleSearch, setShowParcelleSearch] = useState(() => {
     if (parcelleFromQuery) return true;
     const params = new URLSearchParams(location.search);
@@ -83,6 +87,26 @@ function DiagnosticPage() {
     !!parcelleFromQuery,
   );
 
+  const syncCodeInseeParam = (feature: AddressFeature) => {
+    const params = new URLSearchParams(window.location.search);
+    const citycode = feature.properties.citycode;
+    if (feature.properties.type === "municipality" && citycode) {
+      ["parcelle", "address", "parcelleSearch", "insee_com", "section", "prefixe", "numero"].forEach(
+        (key) => params.delete(key),
+      );
+      params.set("codeInsee", citycode);
+      setCommuneCodeInsee(citycode);
+    } else {
+      params.delete("codeInsee");
+      setCommuneCodeInsee(null);
+    }
+    const query = params.toString();
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}`,
+    );
+  };
 
   const onAddressSelected = (feature: AddressFeature | null) => {
     if (feature === null)
@@ -99,6 +123,7 @@ function DiagnosticPage() {
       });
       trackMatomoEvent("Action", "Diagnostic Search Address", `diagnostic-search-address-${feature.properties.type}-${feature.properties.label}`);
     }
+    syncCodeInseeParam(feature);
     reset();
   };
 
@@ -209,6 +234,7 @@ function DiagnosticPage() {
   const searchParams = new URLSearchParams(location.search);
   const parcelleParam = searchParams.get("parcelle");
   const addressParam = searchParams.get("address");
+  const codeInseeParam = searchParams.get("codeInsee");
 
   useEffect(() => {
 
@@ -266,6 +292,32 @@ function DiagnosticPage() {
       }
     }
   }, [parcelleParam, addressParam, isMapReady]);
+
+  useEffect(() => {
+    if (
+      !isMapReady ||
+      parcelleParam ||
+      addressParam ||
+      !codeInseeParam
+    )
+      return;
+
+    let cancelled = false;
+    fetchCommuneLocation(codeInseeParam).then((location) => {
+      const map = mapMethodsRef.current?.map;
+      if (cancelled || !location || !map) return;
+
+      if (location.bbox) {
+        map.fitBounds(location.bbox, { padding: 40, essential: true });
+      } else if (location.center) {
+        map.flyTo({ center: location.center, zoom: 12, essential: true });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [codeInseeParam, parcelleParam, addressParam, isMapReady]);
 
   const diagnosticItem = diagnosticsResponses?.[0];
 
@@ -335,6 +387,21 @@ function DiagnosticPage() {
               }
             }}
           />)}
+        {!diagnosticsResponses.length &&
+          !notIntegrated &&
+          (parcelleError || addressDefaultValue || communeCodeInsee) && (
+            <Alert
+              className={fr.cx("fr-mb-6v")}
+              description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
+              onClose={function noRefCheck() { }}
+              severity="info"
+              title={
+                parcelleError
+                  ? "Vous ne trouvez pas votre parcelle ?"
+                  : "Vous y êtes presque !"
+              }
+            />
+          )}
         <MapComponent
           ref={mapMethodsRef}
           noisePins={
@@ -365,21 +432,7 @@ function DiagnosticPage() {
             />
           </div>
         )}
-        {!diagnosticsResponses.length &&
-          !notIntegrated &&
-          (parcelleError || addressDefaultValue) && (
-            <Alert
-              className={fr.cx("fr-mt-6v")}
-              description="Naviguez sur la carte et sélectionnez une parcelle pour afficher le diagnostic"
-              onClose={function noRefCheck() { }}
-              severity="info"
-              title={
-                parcelleError
-                  ? "Vous ne trouvez pas votre parcelle ?"
-                  : "Vous y êtes presque !"
-              }
-            />
-          )}
+
 
         {notIntegrated && (
           <Alert
