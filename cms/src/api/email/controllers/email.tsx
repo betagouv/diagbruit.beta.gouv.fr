@@ -200,7 +200,7 @@ function coerceIsolation(raw: any): IsolationData | undefined {
 async function buildPluData(
   raw: any,
   codeInsee: string,
-): Promise<PluData | undefined> {
+): Promise<PluData> {
   const zones = Array.isArray(raw?.zones)
     ? raw.zones
       .slice(0, 20)
@@ -212,7 +212,6 @@ async function buildPluData(
       }))
       .filter((z: { content: string }) => z.content.trim().length > 0)
     : [];
-  if (zones.length === 0) return undefined;
 
   let references: { label: string; url: string }[] = [];
   if (codeInsee) {

@@ -1,4 +1,4 @@
-import { Text, View } from "@react-pdf/renderer";
+import { Image, Text, View } from "@react-pdf/renderer";
 import ExposureBadge from "./ExposureBadge";
 import { ReferencesBox, styles, type RegulationData } from "./DiagnosticPdf";
 
@@ -11,6 +11,9 @@ const TERRESTRE_REFERENCES = [
   },
 ];
 
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+const SOUND_CLASS_LOGO_1 = `${STRAPI_URL}/images/directions_car.svg`;
+const SOUND_CLASS_LOGO_2 = `${STRAPI_URL}/images/directions_transit_filled.svg`;
 
 export default function SoundClassification({
   soundClassification,
@@ -25,9 +28,13 @@ export default function SoundClassification({
   return (
     <View style={styles.regSection}>
       <View style={styles.regSectionHeader}>
-        <Text style={styles.regSectionTitle}>
-          Nationale Terrestre (Classement sonore)
-        </Text>
+        <View style={styles.regSectionHeaderLeft}>
+          <Image src={SOUND_CLASS_LOGO_1} style={styles.regIcon} />
+          <Image src={SOUND_CLASS_LOGO_2} style={styles.regIcon} />
+          <Text style={styles.regSectionTitle}>
+            Nationale Terrestre (Classement sonore)
+          </Text>
+        </View>
         <ExposureBadge exposed={soundClassification.exposed} />
       </View>
       {soundClassification.exposed ? (

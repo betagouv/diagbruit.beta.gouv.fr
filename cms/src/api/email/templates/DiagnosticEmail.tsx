@@ -118,7 +118,7 @@ export default function DiagnosticEmail({
             <Row>
               <Column className="w-2/3" style={{ verticalAlign: "top" }}>
                 <Img
-                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
+                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIconText.svg`}
                   alt="DiagBruit"
                   style={{ paddingRight: "8px" }}
                 />

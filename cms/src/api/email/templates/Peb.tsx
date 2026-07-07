@@ -1,4 +1,4 @@
-import { Text, View } from "@react-pdf/renderer";
+import { Image, Text, View } from "@react-pdf/renderer";
 import ExposureBadge from "./ExposureBadge";
 import {
   ReferencesBox,
@@ -88,13 +88,18 @@ const PEB_REFERENCES = [
   },
 ];
 
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+const PEB_LOGO = `${STRAPI_URL}/images/flight.svg`;
 
 export default function Peb({ peb }: { peb: RegulationData["peb"] }) {
   const content = PEB_ZONE_CONTENT[peb.zone];
   return (
     <View style={styles.regSection} wrap={false}>
       <View style={styles.regSectionHeader}>
-        <Text style={styles.regSectionTitle}>Nationale Aérien (PEB)</Text>
+        <View style={styles.regSectionHeaderLeft}>
+          <Image src={PEB_LOGO} style={styles.regIcon} />
+          <Text style={styles.regSectionTitle}>Nationale Aérien (PEB)</Text>
+        </View>
         <ExposureBadge exposed={peb.exposed} />
       </View>
       {peb.exposed ? (

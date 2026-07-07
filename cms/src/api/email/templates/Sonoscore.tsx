@@ -116,7 +116,6 @@ const SourceRow = ({ group }: { group: NoiseSourceGroup }) => (
 
 export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
   const noiseSources = data.noiseSources ?? [];
-  const imgUrl = data.mapImage ? `${process.env.STRAPI_URL || "http://localhost:1337"}/fonts` : null
   return (
     <View style={s.sonoscore}>
       <View style={s.left}>
@@ -213,7 +212,7 @@ const s = StyleSheet.create({
   date: {
     fontSize: dsfr.fontSize.xxs,
     fontWeight: 400,
-    marginBottom: dsfr.spacing(2),
+    marginBottom: dsfr.spacing(1),
   },
   parcelle: {
     fontSize: 10,
@@ -229,7 +228,6 @@ const s = StyleSheet.create({
     alignSelf: "flex-start",
     paddingVertical: dsfr.spacing(1),
     paddingHorizontal: dsfr.spacing(2),
-    borderRadius: 4,
     marginBottom: dsfr.spacing(3),
   },
   badgeIcon: {
@@ -283,16 +281,17 @@ const s = StyleSheet.create({
   sourceRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: dsfr.spacing(2),
-    marginBottom: dsfr.spacing(2),
+    gap: dsfr.spacing(1),
+    paddingBottom: dsfr.spacing(1),
   },
   sourceIcon: {
-    width: 14,
-    height: 14,
+    width: 10,
+    height: 10,
   },
   sourceText: {
     fontSize: dsfr.fontSize.xxs,
     fontFamily: "Marianne",
+    lineHeight: 1.5,
   },
   cta: {
     marginTop: dsfr.spacing(3),
@@ -305,5 +304,6 @@ const s = StyleSheet.create({
     textDecoration: "underline",
     paddingVertical: dsfr.spacing(2),
     paddingHorizontal: dsfr.spacing(1),
+    lineHeight: 1.5,
   },
 });

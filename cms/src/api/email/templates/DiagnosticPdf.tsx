@@ -1,4 +1,4 @@
-import { Document, Font, Link, Page, Path, StyleSheet, Svg, Text, View, Image } from "@react-pdf/renderer";
+import { Document, Font, Link, Page, StyleSheet, Text, View, Image } from "@react-pdf/renderer";
 import path from "path";
 import Peb from "./Peb";
 import SoundClassification from "./SoundClassification";
@@ -99,403 +99,6 @@ export interface RegulationData {
 }
 
 export type Run = { text: string; bold?: boolean };
-
-
-export const styles = StyleSheet.create({
-  page: {
-    paddingTop: dsfr.spacing(10),
-    paddingBottom: dsfr.spacing(16),
-    paddingHorizontal: dsfr.spacing(12),
-    fontSize: dsfr.fontSize.sm,
-    fontFamily: "Marianne",
-    color: dsfr.colors.defaultGrey,
-    lineHeight: 1.5,
-  },
-  header: {
-    paddingBottom: dsfr.spacing(2),
-    marginBottom: dsfr.spacing(2),
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: dsfr.spacing(2),
-  },
-  headerLogo: {
-    height: 24,
-    width: 24,
-  },
-  headerBrand: {
-    fontSize: 10,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    lineHeight: 1,
-  },
-  subtitle: {
-    fontSize: dsfr.fontSize.xxs,
-    fontWeight: 700,
-    lineHeight: 1,
-  },
-  section: {
-    marginBottom: dsfr.spacing(4),
-  },
-  label: {
-    fontSize: dsfr.fontSize.xs,
-    color: dsfr.colors.mentionGrey,
-    textTransform: "uppercase",
-    marginBottom: dsfr.spacing(1),
-  },
-  value: {
-    fontSize: dsfr.fontSize.lg,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.titleGrey,
-  },
-  title: {
-    fontWeight: 700,
-    fontFamily: "Marianne",
-    fontSize: dsfr.fontSize.xxs,
-  },
-  score: {
-    fontSize: dsfr.fontSize.h2,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.blueFrance,
-  },
-  bullet: {
-    fontSize: dsfr.fontSize.sm,
-    marginBottom: dsfr.spacing(1),
-  },
-  link: {
-    fontSize: dsfr.fontSize.sm,
-    color: dsfr.colors.blueFrance,
-    textDecoration: "underline",
-  },
-  footer: {
-    position: "absolute",
-    bottom: dsfr.spacing(6),
-    left: dsfr.spacing(12),
-    right: dsfr.spacing(12),
-    height: dsfr.spacing(8),
-  },
-  footerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingTop: dsfr.spacing(2),
-  },
-  footerLeft: {
-    flex: 1,
-  },
-  footerMeta: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    color: dsfr.colors.defaultGrey,
-    lineHeight: 1.4,
-  },
-  footerLink: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    color: dsfr.colors.defaultGrey,
-    textDecoration: "underline",
-  },
-  footerPage: {
-    marginLeft: dsfr.spacing(4),
-  },
-  footerPageText: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    color: dsfr.colors.defaultGrey,
-    lineHeight: 1,
-  },
-  // Brand footer (first page only), pinned to the bottom margin.
-  brandFooter: {
-    position: "absolute",
-    bottom: dsfr.spacing(6),
-    left: dsfr.spacing(12),
-    right: dsfr.spacing(12),
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  brandFooterLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: dsfr.spacing(2),
-    flex: 1.7,
-  },
-  brandFooterLogo: {
-    width: 106,
-    height: 24,
-  },
-  brandFooterTextCol: {
-    flexShrink: 1,
-  },
-  brandFooterTagline: {
-    fontSize: 8,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.titleGrey,
-    lineHeight: 1.25,
-  },
-  brandFooterUrl: {
-    fontSize: 8,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    color: dsfr.colors.mentionGrey,
-    lineHeight: 1.25,
-    marginTop: dsfr.spacing(1),
-  },
-  brandFooterContact: {
-    flex: 1,
-    fontSize: 8,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    color: dsfr.colors.titleGrey,
-    textAlign: "center",
-    lineHeight: 1.25,
-  },
-  brandFooterBrands: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: dsfr.spacing(3),
-  },
-  brandFooterCerema: {
-    width: 88,
-    height: 26,
-  },
-  brandFooterGouv: {
-    width: 44,
-    height: 40,
-  },
-  info: {
-    marginTop: dsfr.spacing(6),
-    borderWidth: 1,
-    borderColor: dsfr.colors.borderGrey,
-    borderRadius: dsfr.spacing(1),
-    overflow: "hidden",
-  },
-  infoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: dsfr.spacing(2),
-    backgroundColor: dsfr.colors.borderGrey,
-    paddingVertical: dsfr.spacing(1),
-    paddingHorizontal: dsfr.spacing(3),
-  },
-  infoBody: {
-    padding: dsfr.spacing(2),
-  },
-  infoIconText: {
-    fontSize: 8,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    lineHeight: 1.5,
-  },
-  infoTitle: {
-    fontSize: 9,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    lineHeight: 1.5,
-  },
-
-  // Blue header/title/text reused by the Contact ("Conseils diagBruit") box.
-  recoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: dsfr.spacing(2),
-  },
-  recoTitle: {
-    fontSize: dsfr.fontSize.xs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.blueFrance,
-  },
-  recoParagraph: {
-    fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.blueFrance,
-    fontWeight: 400,
-    lineHeight: 1.5,
-  },
-
-  regSection: {
-    marginBottom: dsfr.spacing(2),
-  },
-  regSectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: dsfr.colors.contrastBlueFrance,
-    paddingVertical: dsfr.spacing(2),
-    paddingHorizontal: dsfr.spacing(3),
-    marginBottom: dsfr.spacing(3),
-  },
-  regSectionTitle: {
-    fontSize: dsfr.fontSize.xs,
-    fontFamily: "Marianne",
-    fontWeight: 400,
-    lineHeight: 1.5,
-    color: dsfr.colors.blueFrance,
-  },
-  exposedBadge: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    color: "#b34000",
-    backgroundColor: "#ffe9e6",
-    paddingVertical: 2,
-    lineHeight: 1.5,
-    paddingHorizontal: dsfr.spacing(2),
-  },
-  nonExposedBadge: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    color: "#18753C",
-    backgroundColor: "#B8FEC9",
-    paddingVertical: 2,
-    lineHeight: 1.5,
-    paddingHorizontal: dsfr.spacing(2),
-  },
-  regIntro: {
-    fontSize: dsfr.fontSize.xxs,
-  },
-  regCard: {
-    borderWidth: 1,
-    borderColor: dsfr.colors.blueFrance,
-    padding: dsfr.spacing(4),
-    marginBottom: dsfr.spacing(3),
-  },
-  badgeRow: {
-    flexDirection: "row",
-    gap: dsfr.spacing(2),
-    marginBottom: dsfr.spacing(3),
-  },
-  zoneBadge: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    color: "#ce0500",
-    backgroundColor: "#ffe9e6",
-    paddingVertical: 2,
-    lineHeight: 1.5,
-    paddingHorizontal: dsfr.spacing(2),
-  },
-  sourceBadge: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    color: dsfr.colors.defaultGrey,
-    backgroundColor: "#eeeeee",
-    paddingVertical: 2,
-    lineHeight: 1.5,
-    paddingHorizontal: dsfr.spacing(2),
-  },
-  regParagraph: {
-    fontSize: dsfr.fontSize.xxs,
-    lineHeight: 1.5,
-  },
-  bold: {
-    fontFamily: "Marianne",
-    fontWeight: 700,
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: dsfr.spacing(1),
-    paddingLeft: dsfr.spacing(2),
-  },
-  infoView: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: dsfr.spacing(1),
-    paddingLeft: 2,
-  },
-  bulletDot: {
-    fontSize: dsfr.fontSize.xxs,
-    lineHeight: 1.5,
-    marginRight: dsfr.spacing(2),
-  },
-  listText: {
-    flex: 1,
-    fontSize: dsfr.fontSize.xxs,
-    lineHeight: 1.5,
-  },
-  table: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: dsfr.colors.borderGrey,
-    marginBottom: dsfr.spacing(2),
-  },
-  tableHeaderRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: dsfr.colors.borderGrey,
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: dsfr.colors.borderGrey,
-  },
-  th: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.titleGrey,
-    padding: dsfr.spacing(2),
-    lineHeight: 1.2,
-  },
-  td: {
-    fontSize: dsfr.fontSize.xxs,
-    padding: dsfr.spacing(2),
-    lineHeight: 1.2,
-  },
-  colType: { flex: 1.2 },
-  colName: { flex: 2 },
-  colCat: { flex: 1 },
-  colDist: { flex: 1.4 },
-  tableNote: {
-    fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.mentionGrey,
-    marginBottom: dsfr.spacing(1),
-    lineHeight: 1.5,
-  },
-  refBox: {
-    marginBottom: dsfr.spacing(2),
-  },
-  refTitle: {
-    fontSize: dsfr.fontSize.xxs,
-    fontFamily: "Marianne",
-    fontWeight: 700,
-    color: dsfr.colors.defaultGrey,
-    lineHeight: 1.2,
-    marginBottom: dsfr.spacing(0.5),
-  },
-  refLinks: {
-    fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.defaultGrey,
-    lineHeight: 1.2,
-  },
-  refLink: {
-    fontSize: dsfr.fontSize.xxs,
-    color: dsfr.colors.defaultGrey,
-    textDecoration: "underline",
-  },
-  positionSvgWrap: {
-    alignItems: "center",
-    marginTop: dsfr.spacing(2),
-  },
-  icon: {
-    height: 10,
-    width: 10,
-  }
-});
 
 const Header = () => {
   return (<View style={styles.header}>
@@ -682,8 +285,8 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
         <SoundClassification
           soundClassification={data.regulation.soundClassification}
         />
-        {data.plu && <Plu plu={data.plu} />}
-        {data.isolation && <Isolation isolation={data.isolation} />}
+        <Plu plu={data.plu} />
+        <Isolation isolation={data.isolation} />
         <PdfFooter data={data} />
       </Page>
       <Page size="A4" style={styles.page}>
@@ -720,3 +323,411 @@ export default function DiagnosticPdf({ data }: { data: DiagnosticPdfData }) {
     </Document>
   );
 }
+
+export const styles = StyleSheet.create({
+  page: {
+    paddingTop: dsfr.spacing(10),
+    paddingBottom: dsfr.spacing(16),
+    paddingHorizontal: dsfr.spacing(12),
+    fontSize: dsfr.fontSize.sm,
+    fontFamily: "Marianne",
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.5,
+  },
+  header: {
+    paddingBottom: dsfr.spacing(2),
+    marginBottom: dsfr.spacing(2),
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+  },
+  headerLogo: {
+    height: 24,
+    width: 24,
+  },
+  headerBrand: {
+    fontSize: 10,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    lineHeight: 1,
+  },
+  subtitle: {
+    fontSize: dsfr.fontSize.xxs,
+    fontWeight: 700,
+    lineHeight: 1,
+  },
+  section: {
+    marginBottom: dsfr.spacing(4),
+  },
+  label: {
+    fontSize: dsfr.fontSize.xs,
+    color: dsfr.colors.mentionGrey,
+    textTransform: "uppercase",
+    marginBottom: dsfr.spacing(1),
+  },
+  value: {
+    fontSize: dsfr.fontSize.lg,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.titleGrey,
+  },
+  title: {
+    fontWeight: 700,
+    fontFamily: "Marianne",
+    fontSize: dsfr.fontSize.xs,
+    paddingBottom: dsfr.spacing(1),
+  },
+  score: {
+    fontSize: dsfr.fontSize.h2,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.blueFrance,
+  },
+  bullet: {
+    fontSize: dsfr.fontSize.sm,
+    marginBottom: dsfr.spacing(1),
+  },
+  link: {
+    fontSize: dsfr.fontSize.sm,
+    color: dsfr.colors.blueFrance,
+    textDecoration: "underline",
+  },
+  footer: {
+    position: "absolute",
+    bottom: dsfr.spacing(6),
+    left: dsfr.spacing(12),
+    right: dsfr.spacing(12),
+    height: dsfr.spacing(8),
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingTop: dsfr.spacing(2),
+  },
+  footerLeft: {
+    flex: 1,
+  },
+  footerMeta: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.4,
+  },
+  footerLink: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    textDecoration: "underline",
+  },
+  footerPage: {
+    marginLeft: dsfr.spacing(4),
+  },
+  footerPageText: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1,
+  },
+  // Brand footer (first page only), pinned to the bottom margin.
+  brandFooter: {
+    position: "absolute",
+    bottom: dsfr.spacing(6),
+    left: dsfr.spacing(12),
+    right: dsfr.spacing(12),
+    height: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: dsfr.spacing(2),
+  },
+  brandFooterLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+    flexShrink: 0,
+  },
+  brandFooterLogo: {
+    width: 66,
+    height: 15,
+  },
+  brandFooterTextCol: {
+    flexShrink: 1,
+  },
+  brandFooterTagline: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.titleGrey,
+    lineHeight: 1.25,
+  },
+  brandFooterUrl: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.mentionGrey,
+    lineHeight: 1.25,
+    marginTop: dsfr.spacing(1),
+  },
+  brandFooterContact: {
+    flex: 1.5,
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    color: dsfr.colors.titleGrey,
+    textAlign: "center",
+    lineHeight: 1.25,
+  },
+  brandFooterBrands: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(3),
+  },
+  brandFooterCerema: {
+    width: 88,
+    height: 26,
+  },
+  brandFooterGouv: {
+    width: 44,
+    height: 40,
+  },
+  info: {
+    marginTop: dsfr.spacing(2),
+    borderWidth: 1,
+    borderColor: dsfr.colors.borderGrey,
+    overflow: "hidden",
+  },
+  infoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+    backgroundColor: dsfr.colors.borderGrey,
+    paddingVertical: dsfr.spacing(1),
+    paddingHorizontal: dsfr.spacing(3),
+  },
+  infoBody: {
+    padding: dsfr.spacing(2),
+  },
+  infoIconText: {
+    fontSize: 8,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+  infoTitle: {
+    fontSize: 9,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+
+  // Blue header/title/text reused by the Contact ("Conseils diagBruit") box.
+  recoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(2),
+  },
+  recoTitle: {
+    fontSize: dsfr.fontSize.xs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.blueFrance,
+  },
+  recoParagraph: {
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.blueFrance,
+    fontWeight: 400,
+    lineHeight: 1.5,
+  },
+
+  regSection: {
+    marginBottom: dsfr.spacing(2),
+  },
+  regSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: dsfr.colors.contrastBlueFrance,
+    paddingVertical: dsfr.spacing(1),
+    paddingHorizontal: dsfr.spacing(3),
+    marginBottom: dsfr.spacing(3),
+  },
+  regSectionHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: dsfr.spacing(1),
+  },
+  regSectionTitle: {
+    fontSize: 9,
+    fontFamily: "Marianne",
+    fontWeight: 400,
+    lineHeight: 1.5,
+    color: dsfr.colors.blueFrance,
+  },
+  exposedBadge: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: "#b34000",
+    backgroundColor: "#ffe9e6",
+    paddingVertical: 2,
+    lineHeight: 1.5,
+    paddingHorizontal: dsfr.spacing(2),
+  },
+  nonExposedBadge: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: "#18753C",
+    backgroundColor: "#B8FEC9",
+    paddingVertical: 2,
+    lineHeight: 1.5,
+    paddingHorizontal: dsfr.spacing(2),
+  },
+  regIntro: {
+    fontSize: dsfr.fontSize.xxs,
+  },
+  regCard: {
+    borderWidth: 1,
+    borderColor: dsfr.colors.blueFrance,
+    padding: dsfr.spacing(2),
+    marginBottom: dsfr.spacing(1),
+  },
+  regIcon: {
+    height: 12,
+    width: 12,
+  },
+  badgeRow: {
+    flexDirection: "row",
+    gap: dsfr.spacing(2),
+    marginBottom: dsfr.spacing(3),
+  },
+  zoneBadge: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: "#ce0500",
+    backgroundColor: "#ffe9e6",
+    paddingVertical: 2,
+    lineHeight: 1.5,
+    paddingHorizontal: dsfr.spacing(2),
+  },
+  sourceBadge: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: dsfr.colors.defaultGrey,
+    backgroundColor: "#eeeeee",
+    paddingVertical: 2,
+    lineHeight: 1.5,
+    paddingHorizontal: dsfr.spacing(2),
+  },
+  regParagraph: {
+    fontSize: dsfr.fontSize.xxs,
+    lineHeight: 1.5,
+  },
+  bold: {
+    fontFamily: "Marianne",
+    fontWeight: 700,
+  },
+  ul: {
+    marginVertical: dsfr.spacing(2),
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingLeft: dsfr.spacing(2),
+  },
+  infoView: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: dsfr.spacing(1),
+    paddingLeft: 2,
+  },
+  bulletDot: {
+    fontSize: dsfr.fontSize.xxs,
+    lineHeight: 1.5,
+    marginRight: dsfr.spacing(2),
+  },
+  listText: {
+    flex: 1,
+    fontSize: dsfr.fontSize.xxs,
+    lineHeight: 1.5,
+  },
+  table: {
+    width: "100%",
+    borderWidth: 1,
+    borderColor: dsfr.colors.borderGrey,
+    marginBottom: dsfr.spacing(2),
+  },
+  tableHeaderRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: dsfr.colors.borderGrey,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: dsfr.colors.borderGrey,
+  },
+  th: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.titleGrey,
+    padding: dsfr.spacing(2),
+    lineHeight: 1.2,
+  },
+  td: {
+    fontSize: dsfr.fontSize.xxs,
+    padding: dsfr.spacing(2),
+    lineHeight: 1.2,
+  },
+  colType: { flex: 1.2 },
+  colName: { flex: 2 },
+  colCat: { flex: 1 },
+  colDist: { flex: 1.4 },
+  tableNote: {
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.mentionGrey,
+    marginBottom: dsfr.spacing(1),
+    lineHeight: 1.5,
+  },
+  refBox: {
+    marginBottom: dsfr.spacing(2),
+  },
+  refTitle: {
+    fontSize: dsfr.fontSize.xxs,
+    fontFamily: "Marianne",
+    fontWeight: 700,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.2,
+    marginBottom: dsfr.spacing(0.5),
+  },
+  refLinks: {
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.defaultGrey,
+    lineHeight: 1.2,
+  },
+  refLink: {
+    fontSize: dsfr.fontSize.xxs,
+    color: dsfr.colors.defaultGrey,
+    textDecoration: "underline",
+  },
+  positionSvgWrap: {
+    alignItems: "center",
+    marginTop: dsfr.spacing(2),
+  },
+  icon: {
+    height: 10,
+    width: 10,
+  }
+});

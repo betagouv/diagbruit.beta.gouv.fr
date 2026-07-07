@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Text, View } from "@react-pdf/renderer";
+import { Image, Text, View } from "@react-pdf/renderer";
 import ExposureBadge from "./ExposureBadge";
 import {
   ReferencesBox,
@@ -92,13 +92,21 @@ const parseHtml = (html: string): ReactNode[] => {
     if (tag === "ul" || tag === "ol") {
       const liRe = /<li\b[^>]*>([\s\S]*?)<\/li>/gi;
       let li: RegExpExecArray | null;
+      const items: ReactNode[] = [];
       while ((li = liRe.exec(m[2]))) {
         const runs = parseInline(li[1]);
         if (!runs.length) continue;
-        nodes.push(
-          <View key={key++} style={styles.listItem}>
+        items.push(
+          <View key={items.length} style={styles.listItem}>
             <Text style={styles.bulletDot}>•</Text>
             <Text style={styles.listText}>{renderListItemRuns(runs)}</Text>
+          </View>,
+        );
+      }
+      if (items.length) {
+        nodes.push(
+          <View key={key++} style={styles.ul}>
+            {items}
           </View>,
         );
       }
@@ -117,15 +125,23 @@ const parseHtml = (html: string): ReactNode[] => {
   return nodes;
 };
 
-export default function Plu({ plu }: { plu: PluData }) {
-  if (!plu || plu.zones.length === 0) return null;
+const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
+const PLU_LOGO = `${STRAPI_URL}/images/location_city.svg`;
+
+export default function Plu({ plu }: { plu?: PluData }) {
+  const display = !plu || plu.zones.length === 0;
   return (
     <View style={styles.regSection}>
       <View style={styles.regSectionHeader} wrap={false}>
-        <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
-        <ExposureBadge exposed />
+        <View style={styles.regSectionHeaderLeft}>
+          <Image src={PLU_LOGO} style={styles.regIcon} />
+          <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
+        </View>
+        <ExposureBadge exposed={!display} />
       </View>
-      {plu.zones.map((zone, i) => (
+      {display ? (<Text style={styles.regIntro}>
+        Aucune spécificité locale inscrite au PLU.
+      </Text>) : (plu.zones.map((zone, i) => (
         <View key={i} style={styles.regCard} wrap={false}>
           <View style={styles.badgeRow}>
             <Text style={styles.sourceBadge}>
@@ -134,8 +150,8 @@ export default function Plu({ plu }: { plu: PluData }) {
           </View>
           {parseHtml(zone.content)}
         </View>
-      ))}
-      {plu.references.length > 0 && <ReferencesBox links={plu.references} />}
+      )))}
+      {plu && plu.references.length > 0 && <ReferencesBox links={plu.references} />}
     </View>
   );
 }
