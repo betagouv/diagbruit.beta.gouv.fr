@@ -1,4 +1,4 @@
-export function captureMapImage(maxWidth = 600, quality = 0.8): string | null {
+export function captureMapImage(maxWidth = 600, quality = 0.9): string | null {
   try {
     const canvas =
       document.querySelector<HTMLCanvasElement>(".maplibregl-canvas") ??

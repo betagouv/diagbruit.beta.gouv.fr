@@ -179,7 +179,8 @@ const s = StyleSheet.create({
     color: "#ffffff",
   },
   leftContent: {
-    padding: dsfr.spacing(6),
+    paddingHorizontal: dsfr.spacing(4),
+    paddingVertical: dsfr.spacing(6),
   },
   title: {
     fontSize: dsfr.fontSize.lg,
@@ -192,12 +193,13 @@ const s = StyleSheet.create({
     fontSize: 10,
     fontFamily: "Marianne",
     fontWeight: 700,
-    lineHeight: 1.4,
+    lineHeight: 1.5,
+    paddingBottom: dsfr.spacing(6),
   },
   mapImage: {
     flexGrow: 1,
     width: "100%",
-    minHeight: 140,
+    minHeight: 180,
     objectFit: "cover",
   },
   right: {
