@@ -15,6 +15,7 @@ import PrecoPage from "./pages/preco";
 import Stats from "./pages/stats";
 import reportWebVitals from "./reportWebVitals";
 import SearchPrecoPage from "./pages/searchPreco";
+import { PUBLIC_ROUTES } from "./config/seo";
 
 
 type DsfrRouterLinkProps = Omit<
@@ -39,16 +40,19 @@ const App = () => {
   // out of search engines: inject a noindex robots meta. No effect in prod.
   useEffect(() => {
     if (process.env.REACT_APP_ENVIRONMENT !== "test") return;
-    const content = "noindex, nofollow";
-    let meta = document.head.querySelector<HTMLMetaElement>(
-      'meta[name="robots"]',
-    );
+    // Targeted by id: matching meta[name="robots"] could grab the page-level
+    // element managed by usePageMeta, which removes it on navigation.
+    const GLOBAL_ROBOTS_ID = "global-robots";
+    let meta = document.getElementById(
+      GLOBAL_ROBOTS_ID,
+    ) as HTMLMetaElement | null;
     if (!meta) {
       meta = document.createElement("meta");
       meta.name = "robots";
+      meta.id = GLOBAL_ROBOTS_ID;
       document.head.appendChild(meta);
     }
-    meta.content = content;
+    meta.content = "noindex, nofollow";
   }, []);
 
   if (process.env.NODE_ENV === "production") {
@@ -59,23 +63,23 @@ const App = () => {
     <PublicLayout>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/diagnostic" element={<Diagnostic />} />
-        <Route path="/changelogs" element={<Changelogs />} />
-        <Route path="/stats" element={<Stats />} />
+        <Route path={PUBLIC_ROUTES.home} element={<Home />} />
+        <Route path={PUBLIC_ROUTES.diagnostic} element={<Diagnostic />} />
+        <Route path={PUBLIC_ROUTES.changelogs} element={<Changelogs />} />
+        <Route path={PUBLIC_ROUTES.stats} element={<Stats />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/preco/:slug" element={<PrecoPage />} />
-        <Route path="/preco" element={<SearchPrecoPage />} />
+        <Route path={PUBLIC_ROUTES.searchPreco} element={<SearchPrecoPage />} />
         <Route
-          path="/accessibility"
+          path={PUBLIC_ROUTES.accessibility}
           element={<CmsPage slug="accessibility" />}
         />
         <Route
-          path="/legal-mentions"
+          path={PUBLIC_ROUTES.legalMentions}
           element={<CmsPage slug="legal-mention" />}
         />
         <Route
-          path="/privacy-policy"
+          path={PUBLIC_ROUTES.privacyPolicy}
           element={<CmsPage slug="privacy-policy" />}
         />
       </Routes>

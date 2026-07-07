@@ -42,7 +42,7 @@
   },
   "scripts": {
     "start": "react-dsfr update-icons && react-scripts start",
-    "build": "react-dsfr copy-static-assets && react-dsfr update-icons && react-scripts build",
+    "build": "react-dsfr copy-static-assets && react-dsfr update-icons && node scripts/generate-sitemap.js && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -72,7 +72,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.6",
     "@types/d3-shape": "^3.1.7",
-    "@types/pako": "^2.0.3"
+    "@types/pako": "^2.0.3",
+    "dotenv": "^17.4.2"
   },
   "packageManager": "yarn@4.12.0"
 }
