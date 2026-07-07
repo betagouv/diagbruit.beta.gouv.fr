@@ -27,18 +27,18 @@ export default function SoundClassification({
   );
   return (
     <View style={styles.regSection}>
-      <View style={styles.regSectionHeader}>
-        <View style={styles.regSectionHeaderLeft}>
-          <Image src={SOUND_CLASS_LOGO_1} style={styles.regIcon} />
-          <Image src={SOUND_CLASS_LOGO_2} style={styles.regIcon} />
-          <Text style={styles.regSectionTitle}>
-            Nationale Terrestre (Classement sonore)
-          </Text>
+      <View wrap={false}>
+        <View style={styles.regSectionHeader}>
+          <View style={styles.regSectionHeaderLeft}>
+            <Image src={SOUND_CLASS_LOGO_1} style={styles.regIcon} />
+            <Image src={SOUND_CLASS_LOGO_2} style={styles.regIcon} />
+            <Text style={styles.regSectionTitle}>
+              Nationale Terrestre (Classement sonore)
+            </Text>
+          </View>
+          <ExposureBadge exposed={soundClassification.exposed} />
         </View>
-        <ExposureBadge exposed={soundClassification.exposed} />
-      </View>
-      {soundClassification.exposed ? (
-        <>
+        {soundClassification.exposed ? (
           <View style={styles.regCard} wrap={false}>
             <View style={styles.badgeRow}>
               <Text style={styles.sourceBadge}>Source : Classement sonore</Text>
@@ -48,6 +48,14 @@ export default function SoundClassification({
               {rows.length > 1 ? "s" : ""} de bruit de catégorie {maxCategory}.
             </Text>
           </View>
+        ) : (
+          <Text style={styles.regIntro}>
+            Votre parcelle n'est pas impactée par le classement sonore.
+          </Text>
+        )}
+      </View>
+      {soundClassification.exposed ? (
+        <>
           <View style={styles.table}>
             <View style={styles.tableHeaderRow} wrap={false}>
               <Text style={[styles.th, styles.colType]}>Type de source</Text>
@@ -71,7 +79,7 @@ export default function SoundClassification({
             **Distances estimées à partir du centre de la source de bruit et le point le plus prêt et le plus éloigné de votre parcelle.
           </Text>
         </>
-      ) : <Text style={styles.regIntro}>Votre parcelle n'est pas impactée par le classement sonore.</Text>}
+      ) : null}
       <ReferencesBox links={TERRESTRE_REFERENCES} />
     </View>
   );

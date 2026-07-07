@@ -606,7 +606,7 @@ export const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     gap: dsfr.spacing(2),
-    marginBottom: dsfr.spacing(3),
+    marginBottom: dsfr.spacing(2),
   },
   zoneBadge: {
     fontSize: dsfr.fontSize.xxs,
@@ -633,6 +633,7 @@ export const styles = StyleSheet.create({
   regParagraph: {
     fontSize: dsfr.fontSize.xxs,
     lineHeight: 1.5,
+    marginVertical: dsfr.spacing(1),
   },
   bold: {
     fontFamily: "Marianne",

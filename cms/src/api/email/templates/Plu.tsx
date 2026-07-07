@@ -6,6 +6,7 @@ import {
   renderRuns,
   styles,
   type PluData,
+  type PluZone,
   type Run,
 } from "./DiagnosticPdf";
 
@@ -128,29 +129,41 @@ const parseHtml = (html: string): ReactNode[] => {
 const STRAPI_URL = process.env.STRAPI_URL || "http://localhost:1337";
 const PLU_LOGO = `${STRAPI_URL}/images/location_city.svg`;
 
+const PluCard = ({ zone }: { zone: PluZone }) => (
+  <View style={styles.regCard} wrap={false}>
+    <View style={styles.badgeRow}>
+      <Text style={styles.sourceBadge}>
+        Source : {zone.source || "Plan local d'urbanisme"}
+      </Text>
+    </View>
+    {parseHtml(zone.content)}
+  </View>
+);
+
 export default function Plu({ plu }: { plu?: PluData }) {
-  const display = !plu || plu.zones.length === 0;
+  const zones = plu?.zones ?? [];
+  const display = zones.length === 0;
   return (
     <View style={styles.regSection}>
-      <View style={styles.regSectionHeader} wrap={false}>
-        <View style={styles.regSectionHeaderLeft}>
-          <Image src={PLU_LOGO} style={styles.regIcon} />
-          <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
-        </View>
-        <ExposureBadge exposed={!display} />
-      </View>
-      {display ? (<Text style={styles.regIntro}>
-        Aucune spécificité locale inscrite au PLU.
-      </Text>) : (plu.zones.map((zone, i) => (
-        <View key={i} style={styles.regCard} wrap={false}>
-          <View style={styles.badgeRow}>
-            <Text style={styles.sourceBadge}>
-              Source : {zone.source || "Plan local d'urbanisme"}
-            </Text>
+      <View wrap={false}>
+        <View style={styles.regSectionHeader}>
+          <View style={styles.regSectionHeaderLeft}>
+            <Image src={PLU_LOGO} style={styles.regIcon} />
+            <Text style={styles.regSectionTitle}>Locales (PLU)</Text>
           </View>
-          {parseHtml(zone.content)}
+          <ExposureBadge exposed={!display} />
         </View>
-      )))}
+        {display ? (
+          <Text style={styles.regIntro}>
+            Aucune spécificité locale inscrite au PLU.
+          </Text>
+        ) : (
+          <PluCard zone={zones[0]} />
+        )}
+      </View>
+      {zones.slice(1).map((zone, i) => (
+        <PluCard key={i} zone={zone} />
+      ))}
       {plu && plu.references.length > 0 && <ReferencesBox links={plu.references} />}
     </View>
   );
