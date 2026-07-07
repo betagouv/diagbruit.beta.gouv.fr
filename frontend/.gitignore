@@ -27,3 +27,7 @@ yarn-error.log*
 !.yarn/releases
 !.yarn/patches
 !.yarn/plugins
+
+# Generated at build time by scripts/generate-sitemap.js
+/public/sitemap.xml
+/public/robots.txt
