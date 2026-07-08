@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "email_form_profiles",
+  "info": {
+    "singularName": "email-form-profile",
+    "pluralName": "email-form-profiles",
+    "displayName": "EmailFormProfile",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "EmailProfiles": {
+      "displayName": "email-profiles",
+      "type": "component",
+      "repeatable": true,
+      "component": "global.email-profiles"
+    }
+  }
+}
