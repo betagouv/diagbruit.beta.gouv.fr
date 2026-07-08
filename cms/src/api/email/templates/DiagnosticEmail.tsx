@@ -5,6 +5,36 @@ interface EmailProps {
   diagLink?: string;
 }
 
+const Footer = () => (
+  <Section>
+    <Row>
+      <Column className="w-2/3">
+        <Img
+          src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
+          alt="DiagBruit"
+          style={{ paddingRight: "8px" }}
+        />
+      </Column>
+      <Column align="right" style={footerTextColumn}>
+        <Text style={footerText}>
+          Cordialement,
+          <br />
+          L'équipe diagBruit
+          <br />
+          <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
+        </Text>
+        <Text style={footerText}>
+          <em>
+            Service public proposé à titre de conseil pour alerter sur
+            l'exposition sonore des parcelles, réalisé avec l'appui du
+            Cerema et de l'ANCT.
+          </em>
+        </Text>
+      </Column>
+    </Row>
+  </Section>
+)
+
 export default function DiagnosticEmail({
   diagLink = "https://diagbruit.fr",
 }: EmailProps) {
@@ -74,39 +104,69 @@ export default function DiagnosticEmail({
               </Link>
             </Text>
           </Section>
-          {/* Footer */}
-          <Section>
-            <Row>
-              <Column className="w-2/3">
-                <Img
-                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
-                  alt="DiagBruit"
-                  style={{ paddingRight: "8px" }}
-                />
-              </Column>
-              <Column align="right" style={footerTextColumn}>
-                <Text style={footerText}>
-                  Cordialement,
-                  <br />
-                  L'équipe diagBruit
-                  <br />
-                  <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
-                </Text>
-                <Text style={footerText}>
-                  <em>
-                    Service public proposé à titre de conseil pour alerter sur
-                    l'exposition sonore des parcelles, réalisé avec l'appui du
-                    Cerema et de l'ANCT.
-                  </em>
-                </Text>
-              </Column>
-            </Row>
-          </Section>
+          <Footer />
         </Container>
       </Body>
     </Html>
   );
 }
+
+export const FollowUpEmail = () => {
+  const previewText = `Vous avez récemment consulté un diagnostic sur diagBruit.`;
+
+  return (
+    <Html>
+      <Head />
+      <Preview>{previewText}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Main Content */}
+          <Section>
+            <Text style={paragraph}>Bonjour,</Text>
+            <Text style={paragraph}>
+              Vous avez récemment consulté un diagnostic sur diagBruit.
+            </Text>
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              Votre expérience nous intéresse : nous aimerions savoir si ce diagnostic vous a été utile.
+            </Text>
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              A-t-il eu un impact concret sur votre projet ou vos réflexions ?
+            </Text>
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              Par exemple :
+            </Text>
+            <ul style={list}>
+              <li style={listItem}>adaptation du projet</li>
+              <li style={listItem}>prise de contact avec un spécialiste</li>
+              <li style={listItem}>approfondissement du sujet bruit</li>
+              <li style={listItem}>
+                ou simplement confirmation que le bruit n'était pas un enjeu
+                particulier
+              </li>
+            </ul>
+            <Text style={paragraph}>
+              Quelques lignes suffisent et nous seront très utiles.
+            </Text>
+            <Text style={paragraph}>
+              Au plaisir de vous lire,
+            </Text>
+            <Text style={paragraph}>
+              Très cordialement,
+            </Text>
+          </Section>
+          <Footer />
+        </Container>
+      </Body>
+    </Html>
+  )
+}
+
 
 const main: React.CSSProperties = {
   fontFamily:
@@ -138,6 +198,18 @@ const paragraph: React.CSSProperties = {
   lineHeight: "1.5",
   color: "#333333",
   marginBottom: "16px",
+};
+
+const list: React.CSSProperties = {
+  margin: "0 0 16px",
+  paddingLeft: "20px",
+  fontSize: "14px",
+  lineHeight: "1.5",
+  color: "#333333",
+};
+
+const listItem: React.CSSProperties = {
+  marginBottom: "4px",
 };
 
 const button: React.CSSProperties = {
