@@ -20,7 +20,7 @@ def _s3_prefix(dept: str, campaign: str) -> str:
     return f"noisemap/cbs_infra_fastlines/dept={dept}/campaign={campaign}/"
 
 
-def _concede_file_mapping(t: FastlineTerritory, f: FastlineFile) -> dict:
+def _file_mapping(t: FastlineTerritory, f: FastlineFile) -> dict:
     return {
         "geometry": True,
         "codedept": {"value": t.dept},
@@ -35,8 +35,8 @@ def _concede_file_mapping(t: FastlineTerritory, f: FastlineFile) -> dict:
     }
 
 
-def _build_concede_mapping(t: FastlineTerritory) -> list[dict]:
-    return [{"name": f.name, "mapping": _concede_file_mapping(t, f)} for f in t.files]
+def _build_file_mapping(t: FastlineTerritory) -> list[dict]:
+    return [{"name": f.name, "mapping": _file_mapping(t, f)} for f in t.files]
 
 
 @asset(
@@ -52,7 +52,7 @@ def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
     if t is None:
         return MaterializeResult(metadata={"status": MetadataValue.text(
             f"skipped: no fastline territory for dept {context.partition_key}")})
-    if t.is_concede:
+    if t.is_infra:
         return box_to_s3_launcher(
             context=context,
             path=_s3_prefix(t.dept, t.campaign),
@@ -60,7 +60,7 @@ def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
             dept=t.dept,
             box=box,
             folder_id=t.box_folder_id,
-            mapping=_build_concede_mapping(t),
+            callback=rename_fastline,
         )
     return box_to_s3_launcher(
         context=context,
@@ -69,7 +69,7 @@ def fastline_launcher(context: AssetExecutionContext, box: BoxResource):
         dept=t.dept,
         box=box,
         folder_id=t.box_folder_id,
-        callback=rename_fastline,
+        mapping=_build_file_mapping(t),
     )
 
 
