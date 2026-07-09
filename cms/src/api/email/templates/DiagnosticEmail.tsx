@@ -126,18 +126,12 @@ export const FollowUpEmail = () => {
             <Text style={paragraph}>
               Vous avez récemment consulté un diagnostic sur diagBruit.
             </Text>
-          </Section>
-          <Section>
             <Text style={paragraph}>
               Votre expérience nous intéresse : nous aimerions savoir si ce diagnostic vous a été utile.
             </Text>
-          </Section>
-          <Section>
             <Text style={paragraph}>
               A-t-il eu un impact concret sur votre projet ou vos réflexions ?
             </Text>
-          </Section>
-          <Section>
             <Text style={paragraph}>
               Par exemple :
             </Text>
