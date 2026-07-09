@@ -555,6 +555,35 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFollowUpEmailUserFollowUpEmailUser
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'follow_up_email_users';
+  info: {
+    displayName: 'FollowUpEmailUser';
+    pluralName: 'follow-up-email-users';
+    singularName: 'follow-up-email-user';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::follow-up-email-user.follow-up-email-user'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomePageContentHomePageContent
   extends Struct.SingleTypeSchema {
   collectionName: 'home_page_contents';
@@ -1383,6 +1412,7 @@ declare module '@strapi/strapi' {
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;
+      'api::follow-up-email-user.follow-up-email-user': ApiFollowUpEmailUserFollowUpEmailUser;
       'api::home-page-content.home-page-content': ApiHomePageContentHomePageContent;
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
       'api::local-documentation.local-documentation': ApiLocalDocumentationLocalDocumentation;
