@@ -24,7 +24,7 @@ def _file_mapping(t: FastlineTerritory, f: FastlineFile) -> dict:
     return {
         "geometry": True,
         "codedept": {"value": t.dept},
-        "label": {"value": ""},
+        "label": {"from": t.label_from} if t.label_from else {"value": ""},
         "campaign": {"value": t.campaign},
         "acoustic_producer_kind": {"value": "INFRA"},
         "noisemap_pipeline": {"value": "FASTLINE"},

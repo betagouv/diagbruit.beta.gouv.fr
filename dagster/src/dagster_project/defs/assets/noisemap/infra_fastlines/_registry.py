@@ -36,6 +36,7 @@ class FastlineTerritory:
     box_folder_id: str  # Box folder ID containing the .shp files
     is_infra: bool = False
     db_value_from: str = ""  # source column mapped onto acoustic_db_value (per-file mode)
+    label_from: str = ""  # source column mapped onto label (per-file mode); empty → blank label
     files: list[FastlineFile] = field(default_factory=list)
 
     def __post_init__(self):
@@ -65,6 +66,17 @@ FASTLINE_TERRITORIES: list[FastlineTerritory] = [
         campaign="2022",
         box_folder_id="380219303992",
         is_infra=True,
+    ),
+    FastlineTerritory(
+        dept="053",
+        campaign="2022",
+        box_folder_id="398012435954",
+        db_value_from="category",
+        label_from="nomroute",
+        files=[
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LN.shp", "R", "A", "LN"),
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LD.shp", "R", "A", "LD"),
+        ],
     ),
     FastlineTerritory(
         dept="067",
