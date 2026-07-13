@@ -21,14 +21,21 @@ export default {
                 let sent = 0;
                 let deleted = 0;
 
+                // Track entries whose deletion failed so we never re-fetch and
+                // re-email the same recipient. Deletes normally succeed, so this
+                // set stays empty and $notIn is omitted in the common case.
+                const failed = new Set<string>();
+
                 while (true) {
+                    const filters = failed.size
+                        ? { documentId: { $notIn: [...failed] } }
+                        : {};
                     const users = await strapi
                         .documents(FOLLOW_UP_UID)
-                        .findMany({ limit: 100 });
+                        .findMany({ limit: 100, filters });
 
                     if (!users.length) break;
 
-                    let deletedThisBatch = 0;
                     for (const user of users) {
                         try {
                             await strapi.plugins.email.services.email.send({
@@ -48,15 +55,13 @@ export default {
                                 .documents(FOLLOW_UP_UID)
                                 .delete({ documentId: user.documentId });
                             deleted++;
-                            deletedThisBatch++;
                         } catch (err) {
+                            failed.add(user.documentId);
                             strapi.log.error(
                                 `[cron] followUpMail: failed to delete ${user.documentId}: ${err}`
                             );
                         }
                     }
-
-                    if (deletedThisBatch === 0) break;
                 }
 
                 strapi.log.info(
