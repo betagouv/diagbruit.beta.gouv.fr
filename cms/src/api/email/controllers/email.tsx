@@ -97,6 +97,20 @@ export default factories.createCoreController("api::email.email", () => ({
       html,
     });
 
+    try {
+      const followUpUid = "api::follow-up-email-user.follow-up-email-user";
+      const existingFollowUp = await strapi.documents(followUpUid).findMany({
+        filters: { email: to },
+      });
+      if (existingFollowUp.length === 0) {
+        await strapi.documents(followUpUid).create({
+          data: { email: to, publishedAt: new Date() },
+        });
+      }
+    } catch (err) {
+      strapi.log.error(`[email] failed to add ${to} to follow-up list: ${err}`);
+    }
+
     return ctx.send({ message: "Email envoyé avec succès" });
   },
 }));
