@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { useSearchParams } from "react-router-dom";
 import type { DiagnosticItem } from "../../../utils/types";
 import FakeLinkComponent from "../../ui/FakeLinkComponent";
+import { useGoToTab } from "../../../hooks/useGoToTab";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -9,10 +9,7 @@ type RegulationIsolationProps = {
 
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const { diagnostic } = diagnosticItem;
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const goToTab = (str: string) =>
-    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
+  const goToTab = useGoToTab();
 
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;

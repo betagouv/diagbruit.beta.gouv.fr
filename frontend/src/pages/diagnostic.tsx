@@ -249,6 +249,14 @@ function DiagnosticPage() {
           typeof parcelleFeature === "object" &&
           "geometry" in parcelleFeature
         ) {
+          const currentId = mapMethodsRef.current?.parcelle?.properties?.id;
+          const incomingProps = (
+            parcelleFeature as { properties?: { idu?: string; id?: string } }
+          ).properties;
+          const incomingId = incomingProps?.idu ?? incomingProps?.id;
+          if (currentId && incomingId && currentId === incomingId) {
+            return;
+          }
           setIsLoading(true);
           onParcelleSelected(parcelleFeature);
         } else {
@@ -348,7 +356,7 @@ function DiagnosticPage() {
           checked={showParcelleSearch}
           onChange={checked => {
             setShowParcelleSearch(checked);
-            const params = new URLSearchParams(location.search);
+            const params = new URLSearchParams(window.location.search);
             if (checked) {
               params.set("parcelleSearch", encode(checked));
             } else {
