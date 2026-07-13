@@ -223,23 +223,12 @@ function DiagnosticPage() {
           typeof parcelleFeature === "object" &&
           "geometry" in parcelleFeature
         ) {
-          const parcelleKey = (props: any) => {
-            const commune = props?.commune ?? props?.code_insee;
-            const section = props?.section;
-            const numero = props?.numero;
-            if (commune == null || section == null || numero == null)
-              return null;
-            return `${commune}-${String(section).padStart(2, "0")}-${String(
-              numero,
-            ).padStart(4, "0")}`;
-          };
-          const currentKey = parcelleKey(
-            mapMethodsRef.current?.parcelle?.properties,
-          );
-          const incomingKey = parcelleKey(
-            (parcelleFeature as { properties?: unknown }).properties,
-          );
-          if (currentKey && incomingKey && currentKey === incomingKey) {
+          const currentId = mapMethodsRef.current?.parcelle?.properties?.id;
+          const incomingProps = (
+            parcelleFeature as { properties?: { idu?: string; id?: string } }
+          ).properties;
+          const incomingId = incomingProps?.idu ?? incomingProps?.id;
+          if (currentId && incomingId && currentId === incomingId) {
             return;
           }
           setIsLoading(true);
