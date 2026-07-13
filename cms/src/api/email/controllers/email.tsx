@@ -104,7 +104,7 @@ export default factories.createCoreController("api::email.email", () => ({
       });
       if (existingFollowUp.length === 0) {
         await strapi.documents(followUpUid).create({
-          data: { email: to, publishedAt: new Date() },
+          data: { email: to },
         });
       }
     } catch (err) {

@@ -564,7 +564,7 @@ export interface ApiFollowUpEmailUserFollowUpEmailUser
     singularName: 'follow-up-email-user';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
