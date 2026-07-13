@@ -19,6 +19,7 @@ export type AddressFeature = {
     label: string;
     context: string;
     type: string;
+    citycode?: string;
   };
   geometry: {
     coordinates: number[];
