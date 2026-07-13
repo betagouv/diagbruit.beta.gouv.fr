@@ -316,9 +316,13 @@ function DiagnosticPage() {
       if (cancelled || !location || !map) return;
 
       if (location.bbox) {
-        map.fitBounds(location.bbox, { padding: 40, essential: true });
+        map.fitBounds(location.bbox, {
+          padding: 40,
+          essential: true,
+          animate: false,
+        });
       } else if (location.center) {
-        map.flyTo({ center: location.center, zoom: 12, essential: true });
+        map.jumpTo({ center: location.center, zoom: 12 });
       }
     });
 
