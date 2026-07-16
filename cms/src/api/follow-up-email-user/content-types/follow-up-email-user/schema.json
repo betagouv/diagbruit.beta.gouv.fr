@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "follow_up_email_users",
+  "info": {
+    "singularName": "follow-up-email-user",
+    "pluralName": "follow-up-email-users",
+    "displayName": "FollowUpEmailUser"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "email": {
+      "type": "email",
+      "required": true
+    }
+  }
+}
