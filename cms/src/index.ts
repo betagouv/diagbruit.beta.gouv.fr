@@ -2,6 +2,7 @@ import type { Core } from '@strapi/strapi';
 import homePageContentSeed from './seeds/home-page-content.json';
 import noisezoneAlertSeed from './seeds/noisezone-alert.json';
 import acousticCertification from './seeds/acoustic-certificate.json'
+import emailProfilesSeed from './seeds/email-profiles.json';
 
 export default {
   register(/* { strapi }: { strapi: Core.Strapi } */) { },
@@ -30,6 +31,17 @@ export default {
       strapi.log.info('[seed] No acoustic-certificate found, seeding...');
       await strapi.documents(certificateUid).create({ data: acousticCertification as any, status: 'published' });
       strapi.log.info('[seed] acoustic-certificate seeded.');
+    }
+
+    const emailProfileUid = 'api::email-form-profile.email-form-profile';
+    const existingEmailProfile = await strapi.documents(emailProfileUid).findFirst();
+    if (!existingEmailProfile) {
+      strapi.log.info(`[seed] No email-form-profile found, seeding ${emailProfilesSeed.length} profile(s)...`);
+      await strapi.documents(emailProfileUid).create({
+        data: { EmailProfiles: emailProfilesSeed } as any,
+        status: 'published',
+      });
+      strapi.log.info('[seed] email-form-profile seeded.');
     }
   },
 };
