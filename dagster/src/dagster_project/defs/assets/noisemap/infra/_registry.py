@@ -52,4 +52,9 @@ INFRA_TERRITORIES: list[InfraTerritory] = [
         campaign="2022",
         box_folder_id="388258245137"
     ),
+    InfraTerritory(
+        dept="053",
+        campaign="2022",
+        box_folder_id="388260165063"
+    ),
 ]

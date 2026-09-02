@@ -8,6 +8,36 @@ interface EmailProps {
   parcelNumber?: string;
 }
 
+const Footer = () => (
+  <Section>
+    <Row>
+      <Column className="w-2/3">
+        <Img
+          src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
+          alt="DiagBruit"
+          style={{ paddingRight: "8px" }}
+        />
+      </Column>
+      <Column align="right" style={footerTextColumn}>
+        <Text style={footerText}>
+          Cordialement,
+          <br />
+          L'équipe diagBruit
+          <br />
+          <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
+        </Text>
+        <Text style={footerText}>
+          <em>
+            Service public proposé à titre de conseil pour alerter sur
+            l'exposition sonore des parcelles, réalisé avec l'appui du
+            Cerema et de l'ANCT.
+          </em>
+        </Text>
+      </Column>
+    </Row>
+  </Section>
+)
+
 export default function DiagnosticEmail({
   diagLink = "https://diagbruit.fr",
   pdfUrl,
@@ -113,7 +143,23 @@ export default function DiagnosticEmail({
               </Column>
             </Row>
           </Section>
-          {/* Footer */}
+          <Footer />
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+export const FollowUpEmail = () => {
+  const previewText = `Vous avez récemment consulté un diagnostic sur diagBruit.`;
+
+  return (
+    <Html>
+      <Head />
+      <Preview>{previewText}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Main Content */}
           <Section>
             <Row>
               <Column className="w-2/3" style={{ verticalAlign: "top" }}>
@@ -141,11 +187,13 @@ export default function DiagnosticEmail({
               </Column>
             </Row>
           </Section>
+          <Footer />
         </Container>
       </Body>
     </Html>
-  );
+  )
 }
+
 
 const main: React.CSSProperties = {
   fontFamily:
