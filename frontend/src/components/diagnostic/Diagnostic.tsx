@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
+import { getNoiseMapRows, getReadableSource } from "../../utils/tools";
+import { buildPositionData } from "../../utils/buildPositionData";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
 import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
@@ -215,6 +217,89 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           )}
           <DiagnosticReceiveByMail
             parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+            summary={{
+              score: diagnosticItem.diagnostic.score,
+              maxDbLden: diagnosticItem.diagnostic.max_db_lden,
+              flags: {
+                isMultiExposedSources:
+                  diagnosticItem.diagnostic.flags.isMultiExposedSources,
+                isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
+                hasClassificationWarning:
+                  diagnosticItem.diagnostic.flags.hasClassificationWarning,
+              },
+              regulation: {
+                peb: {
+                  exposed: diagnosticItem.diagnostic.air_intersections.length > 0,
+                  zone:
+                    diagnosticItem.diagnostic.air_intersections[0]?.acoustic_zone ??
+                    null,
+                },
+                soundClassification: {
+                  exposed:
+                    diagnosticItem.diagnostic.soundclassification_intersections
+                      .length > 0,
+                  rows: [...diagnosticItem.diagnostic.soundclassification_intersections]
+                    .sort((a, b) => b.acoustic_category - a.acoustic_category)
+                    .map((s) => ({
+                      type: getReadableSource(s.kind, true),
+                      name: s.label || "-",
+                      category: s.acoustic_category,
+                      minDistance: s.min_distance,
+                      maxDistance: s.max_distance,
+                    })),
+                },
+              },
+              isolation: {
+                min: diagnosticItem.diagnostic.isolation_min,
+                max: diagnosticItem.diagnostic.isolation_max,
+                hasPeb: diagnosticItem.diagnostic.air_intersections.length > 0,
+                hasCls:
+                  diagnosticItem.diagnostic.soundclassification_intersections
+                    .length > 0,
+              },
+              plu: {
+                zones: Array.from(
+                  new Map(
+                    diagnosticItem.diagnostic.noisezone_intersections.map(
+                      (nz) => [nz.alert_slug, nz],
+                    ),
+                  ).values(),
+                ).map((nz) => ({
+                  label: nz.label ?? "",
+                  content: nz.content ?? "",
+                  source: nz.source ?? "",
+                  reference: nz.reference ?? "",
+                })),
+              },
+              noiseMap: {
+                rows: getNoiseMapRows(diagnosticItem.diagnostic),
+              },
+              noiseSources: Object.values(
+                (
+                  diagnosticItem.diagnostic.noisesource_intersections ?? []
+                ).reduce(
+                  (acc, src) => {
+                    if (!acc[src.category_slug]) {
+                      acc[src.category_slug] = {
+                        name: src.category_name,
+                        slug: src.category_slug,
+                        count: 0,
+                      };
+                    }
+                    acc[src.category_slug].count += 1;
+                    return acc;
+                  },
+                  {} as Record<
+                    string,
+                    { name: string; slug: string; count: number }
+                  >,
+                ),
+              ),
+              position: buildPositionData(
+                diagnosticItem.parcelle.geometry,
+                diagnosticItem.diagnostic.zones,
+              ),
+            }}
           />
         </div>
       )}
