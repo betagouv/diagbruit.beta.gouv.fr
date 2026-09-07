@@ -22,6 +22,9 @@ SCHEMA = "public_workspace"
 CADASTRE_RELEASE = "2026-06-01"
 BASE_URL = "https://files.data.gouv.fr/cadastre/etalab-cadastre"
 
+# Department the committed CI fixture belongs to (Bordeaux + Mérignac parcels).
+FIXTURE_DEPT = "033"
+
 
 def _source_url(dept: str) -> str:
     code = to_etalab_code(dept)
@@ -140,6 +143,44 @@ def cadastre_parcelles_landing(context: AssetExecutionContext):
         "release": MetadataValue.text(CADASTRE_RELEASE),
         "files_ingested": MetadataValue.int(ingested),
         "row_count": MetadataValue.int(row_count),
+    })
+
+
+@asset(
+    name="cadastre_parcelles_fixture",
+    group_name=GROUP,
+    tags={"stage": "fixture", "source": "local"},
+    kinds={"postgres"},
+)
+def cadastre_parcelles_fixture(context: AssetExecutionContext):
+    """Seed raw_cadastre_parcelles from the committed 500-parcel extract.
+
+    A real department extract is ~2M rows / 358 MB, far too heavy to land per CI
+    run, so CI provisions the source table from this fixture instead. `if_exists`
+    is "skip": once a real landing has created the table this asset is a no-op, and
+    the rows it seeds carry codedept="033", which the real 033 landing deletes
+    before appending.
+
+    Tagged stage="fixture", not "landing", so run_pipelines.py never selects it —
+    it would otherwise mix an unpartitioned asset into a dept-partitioned domain.
+    """
+    file_path = DAGSTER_ROOT / "reference_data" / "cadastre" / "parcelles.shp"
+    context.log.info(f"Ingesting {file_path.name} → {DB_TABLE} (fixture)")
+    success = ingest_shapefile(
+        str(file_path),
+        DB_TABLE,
+        db_url(),
+        schema=SCHEMA,
+        if_exists="skip",
+        fixed_columns={"codedept": FIXTURE_DEPT, "release": CADASTRE_RELEASE},
+        context=context,
+    )
+    if not success:
+        raise RuntimeError(f"Failed to ingest the cadastre fixture from {file_path}")
+
+    return MaterializeResult(metadata={
+        "source": MetadataValue.path(str(file_path)),
+        "codedept": MetadataValue.text(FIXTURE_DEPT),
     })
 
 

@@ -62,12 +62,9 @@ jobs:
           AWS_S3_BUCKET: ${{ vars.AWS_S3_BUCKET || 'diagbruit-dagster' }}
         run: uv run python ci_ingest.py ci_landing_by_codedept_job 033
 
-      # cadastre is excluded: its source table is a ~2M-row department extract that
-      # the landing job deliberately does not provision here (358 MB for dept 033).
-      # The models are still compiled by the `dbt parse` step above.
       - name: Run dbt pipeline
         working-directory: dagster
-        run: uv run dbt run --project-dir dbt --profiles-dir dbt --exclude cadastre
+        run: uv run dbt run --project-dir dbt --profiles-dir dbt
 
       - name: Set up Python for FastAPI
         uses: actions/setup-python@v5

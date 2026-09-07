@@ -42,7 +42,7 @@ select on. Per-dept assets are partitioned and all share `ALL_DEPT_PARTITIONS`
 | `soundclassification` | `raw_soundclassification_{tramway,fer,routier,lgv}` (fan-in markers) | no | — | — |
 | `osm` | `osm_foods_launcher` → `raw_full_osm_foods_data`; `osm_schools_launcher` → `raw_full_osm_schools_data`; `terrasses_launcher` → `raw_full_osm_terrasses` | no | data.gouv.fr / Box | `noisesource/osm/{foods,schools,terrasses}/` |
 | `peb` | `peb_launcher` → `raw_peb` | no | data.gouv.fr | `peb/scope={scope}/` |
-| `cadastre` | `cadastre_parcelles_launcher` → `cadastre_parcelles_landing` → `raw_cadastre_parcelles` (fan-in) | by dept (all 101) | data.gouv.fr (Etalab PCI) | `cadastre/parcelles/release={release}/dept={dept}/` |
+| `cadastre` | `cadastre_parcelles_launcher` → `cadastre_parcelles_landing` → `raw_cadastre_parcelles` (fan-in); `cadastre_parcelles_fixture` (CI seed) | by dept (all 101) | data.gouv.fr (Etalab PCI) | `cadastre/parcelles/release={release}/dept={dept}/` |
 | `maintenance` | `box_token_refresh` | no | — | — |
 
 **Partition depts** (all on the shared `ALL_DEPT_PARTITIONS` axis):
@@ -56,6 +56,14 @@ snapshot is pinned by `CADASTRE_RELEASE` in `defs/assets/cadastre/defs.py` — t
 no "latest" alias upstream, and the sonoscore batch records which release it ran
 against. `run_pipelines.py --domain all` deliberately skips it (~20 GB of ZIPs for
 the 101 departments); name `--domain cadastre` explicitly.
+
+A real department extract is far too heavy for CI (dept 033 is ~2M parcels / 358 MB),
+so `ci_landing_by_codedept_job` seeds `raw_cadastre_parcelles` from the committed
+500-parcel fixture in `reference_data/cadastre/` via `cadastre_parcelles_fixture`.
+That asset ingests with `if_exists="skip"`, so it is a no-op once a real landing has
+created the table; its rows carry `codedept="033"`, which the real 033 landing deletes
+before appending. It is tagged `stage=fixture`, not `stage=landing`, so
+`run_pipelines.py` never picks it up.
 
 > Because every partitioned asset shares one partition set, the picker offers a
 > dept even for a scope that has no territory for it (e.g. `019` for agglo).
