@@ -32,7 +32,7 @@ Copy `.env.example` to `.env`. Key vars: `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PAS
 
 **Package layout** — importable package stays `src/dagster_project/` (named to avoid colliding
 with the `dagster` library import; the *folder* is `dagster/`):
-- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm` (incl. foods/schools/terrasses), `peb`, `bdnb`, `departements`.
+- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm` (incl. foods/schools/terrasses), `peb`, `bdnb`, `cadastre`, `departements`.
 - `defs/jobs/`, `defs/resources/` (`box.py` → `BoxResource`), `defs/schedules/` (`box_refresh.py` → `box_token_refresh_sensor`).
 - `ingestion/` — Dagster-agnostic GeoPandas → PostGIS ingest (`ingest_shapefiles.py`, `ingest_geojson.py`).
 - `reference_data/` — committed static fixtures (`departments/depts.shp`) ingested directly by the `departements` asset (no launcher).
