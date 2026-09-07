@@ -67,7 +67,9 @@ soundclassification_ingest_job = define_asset_job(
 )
 
 # Landing-only (no launchers): reads S3 into PostGIS + the committed reference
-# fixtures, so CI provisions every dbt source table with AWS creds and no Box.
+# fixtures, so CI provisions the dbt source tables with AWS creds and no Box.
+# `cadastre_parcelles_landing` is deliberately absent — a department extract is
+# ~2M rows / 358 MB, too heavy per CI run — so CI runs dbt with `--exclude cadastre`.
 _CI_LANDING_ASSETS = [
     "agglo_landing",
     "infra_landing",
