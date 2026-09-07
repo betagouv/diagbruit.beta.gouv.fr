@@ -1,5 +1,3 @@
-import hashlib
-import io
 import os
 import shutil
 import time
@@ -11,7 +9,7 @@ import boto3
 
 from dagster import AssetExecutionContext
 
-from dagster_project.io.manifest import reporthook
+from dagster_project.io.manifest import reporthook, sha256_file
 
 S3_BUCKET: str = os.getenv("AWS_S3_BUCKET", "diagbruit-dagster")
 
@@ -64,11 +62,10 @@ def download_upload(url: str, local_dir: Path, source_prefix: str, context: Asse
             block_count = local_path.stat().st_size // 8192
             reporthook(block_count, 8192, -1, context, start_time, last_log_time)
 
-    content = local_path.read_bytes()
-    size_mb = len(content) / 1024 / 1024
+    size_mb = local_path.stat().st_size / 1024 / 1024
     context.log.info(f"Downloaded {filename} ({size_mb:.1f} MB) in {time.time() - start_time:.1f}s")
 
-    sha256 = hashlib.sha256(content).hexdigest()
+    sha256 = sha256_file(local_path)
     key = f"{source_prefix}{filename}"
     s3.upload_file(str(local_path), S3_BUCKET, key)
     context.log.info(f"Uploaded {filename} → s3://{S3_BUCKET}/{key}")
@@ -78,27 +75,34 @@ def download_upload(url: str, local_dir: Path, source_prefix: str, context: Asse
 def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, context: AssetExecutionContext) -> tuple[list[str], dict[str, str]]:
     """Download a ZIP from url, extract to extract_dir, upload every file to S3 under source_prefix.
 
+    Everything streams through disk rather than memory: a cadastre department ZIP is
+    ~350 MB and expands to ~630 MB, which a buffered download plus `read_bytes()`
+    hashing would hold in RAM all at once.
+
     Returns (shp_paths, sha256) where sha256 maps relative path → hash, computed before cleanup.
     """
     start_time = time.time()
     last_log_time = [start_time]
 
-    zip_buffer = io.BytesIO()
-    with urllib.request.urlopen(url) as response:
-        while chunk := response.read(8192):
-            zip_buffer.write(chunk)
-            block_count = zip_buffer.tell() // 8192
-            reporthook(block_count, 8192, -1, context, start_time, last_log_time)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = extract_dir / "_download.zip"
 
-    zip_size_mb = zip_buffer.tell() / 1024 / 1024
+    with urllib.request.urlopen(url) as response, open(zip_path, "wb") as out:
+        downloaded = 0
+        while chunk := response.read(1024 * 1024):
+            out.write(chunk)
+            downloaded += len(chunk)
+            reporthook(downloaded // 8192, 8192, -1, context, start_time, last_log_time)
+
+    zip_size_mb = zip_path.stat().st_size / 1024 / 1024
     context.log.info(f"Downloaded {zip_size_mb:.1f} MB in {time.time() - start_time:.1f}s")
 
-    extract_dir.mkdir(parents=True, exist_ok=True)
-    zip_buffer.seek(0)
-    with zipfile.ZipFile(zip_buffer) as zf:
+    with zipfile.ZipFile(zip_path) as zf:
         zf.extractall(extract_dir)
         extracted = zf.namelist()
     context.log.info(f"Extracted {len(extracted)} files")
+    # Dropped before uploading so the container only ever holds the extracted copy.
+    zip_path.unlink()
 
     shp_paths: list[str] = []
     sha256: dict[str, str] = {}
@@ -106,7 +110,7 @@ def download_extract_upload(url: str, extract_dir: Path, source_prefix: str, con
         if not file.is_file():
             continue
         relative = file.relative_to(extract_dir)
-        sha256[str(relative)] = hashlib.sha256(file.read_bytes()).hexdigest()
+        sha256[str(relative)] = sha256_file(file)
         key = f"{source_prefix}{relative}"
         s3.upload_file(str(file), S3_BUCKET, key)
         if file.suffix == ".shp":
