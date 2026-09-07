@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 from datetime import datetime, timezone
 
@@ -24,6 +25,11 @@ BASE_URL = "https://files.data.gouv.fr/cadastre/etalab-cadastre"
 
 # Department the committed CI fixture belongs to (Bordeaux + Mérignac parcels).
 FIXTURE_DEPT = "033"
+
+# A department holds up to ~2M parcels; read them in slices so peak memory stays
+# flat instead of scaling with the department. Measured on dept 033, above a 127 MB
+# baseline: 50k rows costs ~150 MB, 100k costs ~270 MB. Raise it on a bigger container.
+CHUNK_FEATURES = int(os.getenv("CADASTRE_CHUNK_FEATURES", "50000"))
 
 
 def _source_url(dept: str) -> str:
@@ -122,6 +128,7 @@ def cadastre_parcelles_landing(context: AssetExecutionContext):
                 schema=SCHEMA,
                 if_exists="append",
                 fixed_columns={"codedept": dept, "release": CADASTRE_RELEASE},
+                chunk_features=CHUNK_FEATURES,
                 context=context,
             )
             if success:
