@@ -7,11 +7,13 @@ so a full reset must be typed out explicitly (`--domain all --dept all`).
 
 Axes
 ----
---domain   all | noisemap | soundclassification | bdnb | osm | peb | noisezone | departements
+--domain   all | noisemap | soundclassification | bdnb | cadastre | osm | peb | noisezone | departements
 --dept     all | <code>   (e.g. 033)
 
 A department only exists for the dept-scoped domains (noisemap, soundclassification,
-bdnb). Consequently:
+bdnb, cadastre). Note that `cadastre` partitions over all 101 French departments,
+not just the ingested noise territories, so `--domain cadastre --dept all` is a
+national-scale run. Consequently:
   * `--dept <code>` runs ONLY the dept-scoped domains. National domains are skipped
     under `--domain all`, and naming one directly (e.g. `--domain peb --dept 033`)
     is an error.
@@ -59,14 +61,19 @@ DOMAIN_GROUPS = {
     "noisemap": ["noisemap_agglo", "noisemap_infra", "noisemap_fastline"],
     "soundclassification": ["soundclassification"],
     "bdnb": ["bdnb"],
+    "cadastre": ["cadastre"],
     "osm": ["osm"],
     "peb": ["peb"],
     "noisezone": ["noisezone"],
     "departements": ["departements"],
 }
-PARTITIONED_DOMAINS = {"noisemap", "soundclassification", "bdnb"}
+PARTITIONED_DOMAINS = {"noisemap", "soundclassification", "bdnb", "cadastre"}
 NATIONAL_DOMAINS = {"osm", "peb", "noisezone", "departements"}
 ALL_DOMAINS = list(DOMAIN_GROUPS)
+# cadastre spans all 101 French departments (~30 GB of Etalab ZIPs), far beyond the
+# ingested noise territories, so `--domain all` never pulls it in — it has to be
+# named explicitly.
+EXCLUDED_FROM_ALL = {"cadastre"}
 
 # Logical domain -> dbt asset group (the dbt models live under models/<group>/,
 # keyed by model name, grouped by folder). None = no dbt models (source only).
@@ -74,6 +81,7 @@ DOMAIN_DBT_GROUP = {
     "noisemap": "noisemap",
     "soundclassification": "soundclassification",
     "bdnb": "bdnb",
+    "cadastre": "cadastre",
     "osm": "osm",
     "peb": "peb",
     "noisezone": "noisezone",
@@ -168,7 +176,7 @@ def run_leaf(defs, domain, dept, with_launcher, dry_run):
 
 def plan_units(defs, domain, dept):
     """Return [(domain, child_dept)] for a multi-unit run, logging skips."""
-    domains = ALL_DOMAINS if domain == "all" else [domain]
+    domains = [d for d in ALL_DOMAINS if d not in EXCLUDED_FROM_ALL] if domain == "all" else [domain]
     units = []
     for d in domains:
         if d in PARTITIONED_DOMAINS:
