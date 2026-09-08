@@ -67,3 +67,13 @@ models:
         materialized: view
       marts:
         materialized: table
+
+    # Staging stays a view here: the national cadastre is ~100M rows and only the
+    # `parcelle` mart is ever read.
+    cadastre:
+      staging:
+        +materialized: view
+      intermediate:
+        +materialized: view
+      marts:
+        +materialized: table

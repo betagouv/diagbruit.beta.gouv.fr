@@ -31,10 +31,19 @@ def reporthook(
         context.log.info(f"Downloading... {downloaded / (1024 * 1024):.1f} MB — {speed_mb:.2f} MB/s")
 
 
+def sha256_file(path: Path, block_size: int = 1024 * 1024) -> str:
+    """Hash a file incrementally — `read_bytes()` on a 500 MB shapefile OOMs a container."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        while block := handle.read(block_size):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 def manifest_file(input_dir: Path) -> dict:
     """Build a sha256 manifest for every file under `input_dir`."""
     sha256 = {
-        str(file.relative_to(input_dir)): hashlib.sha256(file.read_bytes()).hexdigest()
+        str(file.relative_to(input_dir)): sha256_file(file)
         for file in input_dir.rglob("*")
         if file.is_file()
     }
