@@ -29,30 +29,30 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
   );
 
   return (
-    <div className={fr.cx("fr-mb-4v")}>
-      <DiagnosticRegulationBox
-        label="Parcelle soumise au classement sonore"
-        content={
-          <>
-            <p className={fr.cx("fr-mb-0")}>
-              La parcelle est exposée à {intersections.length} sources de bruit
-              de{" "}
-              {allSameSoundCategory
-                ? `catégorie ${firstSoundCategory}`
-                : "différentes catégories."}
-            </p>
-            <p className={fr.cx("fr-mb-4v")}>
-              Vous avez une obligation réglementaire d'isoler votre bâtiment.
-            </p>
-          </>
-        }
-      />
+    <>
+      <div className={fr.cx("fr-mb-4v")}>
+        <DiagnosticRegulationBox
+          label="Parcelle soumise au classement sonore"
+          content={
+            <>
+              <p className={fr.cx("fr-mb-0")}>
+                La parcelle est exposée à {intersections.length} sources de bruit
+                de{" "}
+                {allSameSoundCategory
+                  ? `catégorie ${firstSoundCategory}`
+                  : "différentes catégories."}
+              </p>
+              <p className={fr.cx("fr-mb-4v")}>
+                Vous avez une obligation réglementaire d'isoler votre bâtiment.
+              </p>
+            </>
+          }
+        />
 
+
+      </div>
       {intersections.length > 0 && (
         <>
-          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
-            Classement sonore
-          </h4>
           <div className={fr.cx("fr-mb-6v")}>
             <DiagnosticSoundClassificationTable
               intersections={intersections}
@@ -63,8 +63,7 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
             <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
           </p>
         </>
-      )}
-    </div>
+      )}</>
   );
 };
 
