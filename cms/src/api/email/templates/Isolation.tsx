@@ -47,6 +47,11 @@ export default function Isolation({ isolation }: { isolation: IsolationData }) {
             réglementation en vigueur.*
           </Text>
         )}
+        <Text style={styles.regParagraph}>
+          Les valeurs d'isolations réglementaires sont indicatives. Faites appel
+          à une bureau d'études acoustiques pour déterminer précisément le niveau d'isolation requis pour chaque façade
+          et obtenir des préconisations adaptées à votre projet.
+        </Text>
       </View>
       <Text style={styles.tableNote}>
         *Calculée à partir du classement sonore, le plan d’exposition au bruit, et la distance entre la source de bruit et la parcelle.
