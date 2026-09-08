@@ -399,6 +399,7 @@ function DiagnosticPage() {
               }
             }}
           />)}
+          
         {!diagnosticsResponses.length &&
           !notIntegrated &&
           (parcelleError || addressDefaultValue || communeCodeInsee) && (
@@ -414,6 +415,31 @@ function DiagnosticPage() {
               }
             />
           )}
+
+        {notIntegrated && (
+          <Alert
+            className={fr.cx("fr-my-4v")}
+            description={
+              <div className={fr.cx("fr-mt-2v")}>
+                Malheureusement, cette parcelle ne figure pas dans les données
+                actuellement disponibles.
+                <div className={fr.cx("fr-mt-1v")}>
+                  <a
+                    href="https://tally.so/popup/1A4kZL"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Vous jugez cela dommage 😞 ? Dites le nous.
+                  </a>
+                </div>
+              </div>
+            }
+            onClose={function noRefCheck() { }}
+            severity="error"
+            title="Parcelle non référencée dans diagBruit"
+          />
+        )}
+        
         <MapComponent
           ref={mapMethodsRef}
           noisePins={
@@ -445,30 +471,6 @@ function DiagnosticPage() {
           </div>
         )}
 
-
-        {notIntegrated && (
-          <Alert
-            className={fr.cx("fr-my-4v")}
-            description={
-              <div className={fr.cx("fr-mt-2v")}>
-                Malheureusement, cette parcelle ne figure pas dans les données
-                actuellement disponibles.
-                <div className={fr.cx("fr-mt-1v")}>
-                  <a
-                    href="https://tally.so/popup/1A4kZL"
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    Vous jugez cela dommage 😞 ? Dites le nous.
-                  </a>
-                </div>
-              </div>
-            }
-            onClose={function noRefCheck() { }}
-            severity="error"
-            title="Parcelle non référencée dans diagBruit"
-          />
-        )}
 
         {internalServerError && (
           <Alert

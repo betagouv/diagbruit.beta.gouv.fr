@@ -1,6 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { DiagnosticItem } from "../../../utils/types";
 import DiagnosticRegulationBox from "../DiagnosticRegulationBox";
+import DiagnosticSoundClassificationTable from "../DiagnosticSoundClassificationTable";
+import { LEGAL_TEXTS } from "../../../utils/texts/legal";
 
 type RegulationClsProps = {
   diagnosticItem: DiagnosticItem;
@@ -45,6 +47,23 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
           </>
         }
       />
+
+      {intersections.length > 0 && (
+        <>
+          <h4 className={fr.cx("fr-text--lg", "fr-mb-4v", "fr-mt-4v")}>
+            Classement sonore
+          </h4>
+          <div className={fr.cx("fr-mb-6v")}>
+            <DiagnosticSoundClassificationTable
+              intersections={intersections}
+              caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
+            />
+          </div>
+          <p className={fr.cx("fr-text--sm")}>
+            <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
+          </p>
+        </>
+      )}
     </div>
   );
 };
