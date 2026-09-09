@@ -8,11 +8,12 @@ does not exist there). Moving this into a Dagster asset means first extracting t
 algorithm into a package both components can install.
 
     scalingo --app diag-bruit-api --region osc-fr1 run --size M \\
-        -e DATABASE_URL=postgres://…@replica…/… \\
+        -e DATABASE_URL=postgresql://…@replica…/… \\
         python scripts/sonoscore_batch.py --dept 033 --workers 2
 
 `DATABASE_URL` is read from, and written to unless `SONOSCORE_OUTPUT_DATABASE_URL`
-points somewhere else.
+points somewhere else. A `postgres://` URL, which is what Scalingo prints, is
+accepted and rewritten.
 
 Deliberately thin: it reads parcel geometries, hands each one to the *existing* query
 functions from `app.utils.db`, then to `get_parcelle_diagnostic`, and stores the
@@ -35,6 +36,18 @@ from time import perf_counter
 from sqlalchemy import create_engine, text
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def _normalise_pg_url(url):
+    """Scalingo hands out `postgres://`, which SQLAlchemy 2 dropped in favour of
+    `postgresql://`. Rewritten in the environment rather than at engine creation
+    because app/database.py builds its engine at import time, below."""
+    return "postgresql://" + url[len("postgres://"):] if url.startswith("postgres://") else url
+
+
+for _var in ("DATABASE_URL", "SONOSCORE_OUTPUT_DATABASE_URL"):
+    if os.environ.get(_var):
+        os.environ[_var] = _normalise_pg_url(os.environ[_var])
 
 from app.algorithm import get_parcelle_diagnostic  # noqa: E402
 from app.database import SessionLocal  # noqa: E402
