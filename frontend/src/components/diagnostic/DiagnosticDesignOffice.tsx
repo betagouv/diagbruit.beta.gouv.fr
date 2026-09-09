@@ -55,7 +55,6 @@ const useStyles = tss.create(() => ({
         marginLeft: fr.spacing("2v"),
     },
     linkItem: {
-        // DSFR dessine une puce native (list-style-type: var(--ul-type))
         listStyleType: "none",
     },
     link: {
