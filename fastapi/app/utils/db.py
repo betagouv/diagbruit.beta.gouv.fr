@@ -114,18 +114,18 @@ def query_noisemap_intersecting_features(db: Session, wkt_geometry: str, codedep
             func.sum(func.ST_Area(func.Geography(intersection_geom))).label("total_intersection_area_m2"),
             func.ST_X(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_x"),
             func.ST_Y(func.ST_Centroid(func.ST_Union(intersection_geom))).label("union_centroid_y"),
-            cast(func.ST_AsGeoJSON(func.ST_Intersection(NoiseMapItem.geometry, safe_geom)), Text).label("geometry_intersection")
+            cast(func.ST_AsGeoJSON(func.ST_Union(intersection_geom)), Text).label("geometry_intersection")
         ).filter(
             NoiseMapItem.codedept == codedept,
             func.ST_Intersects(NoiseMapItem.geometry, safe_geom)
         ).group_by(
+            NoiseMapItem.id,
             NoiseMapItem.acoustic_producer_kind,
             NoiseMapItem.kind,
             NoiseMapItem.acoustic_time_range,
             NoiseMapItem.codeinfra,
             NoiseMapItem.acoustic_db_value,
             NoiseMapItem.acoustic_noisemap_kind,
-            intersection_geom
         )
 
         result = []
