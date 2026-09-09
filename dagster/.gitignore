@@ -207,5 +207,3 @@ src/dagster_project/ingestion/inputs/
 .nux
 .logs_queue
 storage
-
-node_modules/
