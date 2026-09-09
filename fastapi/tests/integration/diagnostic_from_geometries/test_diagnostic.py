@@ -1,17 +1,25 @@
 import json
 import os
+import re
 import pytest
 from httpx import AsyncClient, ASGITransport
 from shapely.geometry import shape
 from app.main import app
 
-# geometry_intersection holds bare GeoJSON coordinates (no "type"); ST_Subdivide on
-# noisemap means a feature's intersection can be returned as an equivalent MultiPolygon
-# instead of a Polygon. We compare these by geometric equality (area + shape), not by
-# byte-identical coordinates, and compare feature lists order-independently. Every other
-# field is still compared exactly, so value/feature changes still fail the test.
+# Geometry payloads hold bare GeoJSON coordinates (no "type"). ST_Subdivide on noisemap
+# means a feature's intersection comes back as an equivalent MultiPolygon instead of a
+# Polygon, with extra collinear vertices along the cut lines and a different ring start;
+# the zone polygons built from those intersections inherit both. Same shapes, different
+# coordinate lists. So geometries are compared by geometric equality — symmetric
+# difference under 0.1% of the area — and feature lists order-independently. Every other
+# field is still compared exactly, so any value or feature change still fails the test.
 GEOM_KEY = "geometry_intersection"
+ZONE_GEOM_PATH = re.compile(r"\.zones\[\d+\]\.geometry$")
 GEOM_REL_TOL = 1e-3
+
+
+def _is_geometry_path(path):
+    return path.endswith(GEOM_KEY) or ZONE_GEOM_PATH.search(path) is not None
 
 
 def load_json(file_path):
@@ -53,7 +61,7 @@ def _feature_sort_key(feature):
 
 
 def assert_diagnostic_equal(actual, expected, path="$"):
-    if path.endswith(GEOM_KEY):
+    if _is_geometry_path(path):
         _assert_geometry_equal(actual, expected, path)
         return
     if isinstance(expected, dict):
