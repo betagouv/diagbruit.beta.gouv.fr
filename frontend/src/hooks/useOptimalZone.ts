@@ -14,7 +14,7 @@ type UseOptimalZoneOptions = {
   radiusPercent?: number;
 };
 
-export function useOptimalZone({
+export function computeOptimalZone({
   rings,
   zones,
   projectPoint,
@@ -25,7 +25,7 @@ export function useOptimalZone({
 }: UseOptimalZoneOptions) {
   const step = 10;
 
-  return useMemo(() => {
+  {
     const grid: ProjectedPoint[] = [];
     for (let x = 0; x < width; x += step) {
       for (let y = 0; y < height; y += step) {
@@ -115,7 +115,11 @@ export function useOptimalZone({
     const optimalZonePoints = scored.slice(0, count);
 
     return { bestPoint, optimalZonePoints };
-  }, [
+  }
+}
+
+export function useOptimalZone(options: UseOptimalZoneOptions) {
+  const {
     rings,
     zones,
     projectPoint,
@@ -123,5 +127,17 @@ export function useOptimalZone({
     height,
     safeZoneThreshold,
     radiusPercent,
-  ]);
+  } = options;
+  return useMemo(
+    () => computeOptimalZone(options),
+    [
+      rings,
+      zones,
+      projectPoint,
+      width,
+      height,
+      safeZoneThreshold,
+      radiusPercent,
+    ],
+  );
 }
