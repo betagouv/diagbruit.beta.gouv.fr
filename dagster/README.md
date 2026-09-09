@@ -29,8 +29,8 @@ Every pipeline follows a **launcher → landing** pattern:
 
 Assets are grouped by **domain**. The launcher → landing stage is carried on a
 `stage` tag (not a group), which is what `full_launcher_job` / `full_landing_job`
-select on. Per-dept assets are partitioned and all share `ALL_DEPT_PARTITIONS`
-(see `defs/assets/_partitions.py`).
+select on (minus the `cadastre` group — see below). Per-dept assets are partitioned
+and all share `ALL_DEPT_PARTITIONS` (see `defs/assets/_partitions.py`).
 
 | Group | Assets (launcher → landing) | Partitioned | Source | S3 prefix |
 |---|---|---|---|---|
@@ -92,8 +92,9 @@ dynamically and owns the dbt step, so there are no per-domain "ingest + dbt" job
 
 | Job | Selection |
 |---|---|
-| `full_launcher_job` | every asset tagged `stage=launcher` (all domains) |
-| `full_landing_job` | every asset tagged `stage=landing` (all domains) |
+| `full_launcher_job` | every asset tagged `stage=launcher`, except the `cadastre` group |
+| `full_landing_job` | every asset tagged `stage=landing`, except the `cadastre` group |
+| `cadastre_ingest_job` | `cadastre` group, ingest stages only — separate job because it resolves `CADASTRE_PARTITIONS`, and a job carries a single partitions def |
 | `agglo_ingest_job` | `noisemap_agglo` group (launcher + landing) |
 | `infra_ingest_job` | `noisemap_infra` group (launcher + landing) |
 | `fastline_ingest_job` | `noisemap_fastline` group (launcher + landing) |

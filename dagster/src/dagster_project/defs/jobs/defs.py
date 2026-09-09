@@ -10,27 +10,36 @@ Naming convention: `<scope>_ingest_job` ingests one scope (launcher + landing),
 `ci_landing_by_codedept_job` is the landing-only job CI runs.
 
 Noisemap ingest is split per source type (`agglo_ingest_job`, `infra_ingest_job`,
-`fastline_ingest_job`). All partitioned assets share `ALL_DEPT_PARTITIONS` and
-skip departments absent from their own registry, so a dept that doesn't apply to
-a scope is a no-op, not an error.
+`fastline_ingest_job`). Partitioned assets share `ALL_DEPT_PARTITIONS` and skip
+departments absent from their own registry, so a dept that doesn't apply to a
+scope is a no-op, not an error.
+
+Cadastre is the one exception: it partitions over all 101 Etalab departments
+(`CADASTRE_PARTITIONS`) so parcelle coverage can run ahead of noisemap coverage.
+A job carries a single partitions def, so cadastre cannot share one with the
+other domains -- the `full_*` jobs exclude it and `cadastre_ingest_job` covers it.
 """
 
 from dagster import AssetSelection, define_asset_job
 
 from dagster_project.defs.assets._partitions import ALL_DEPT_PARTITIONS
+from dagster_project.defs.assets.cadastre._partitions import CADASTRE_PARTITIONS
 
 _STAGE_INGEST = AssetSelection.tag("stage", "launcher") | AssetSelection.tag(
     "stage", "landing"
 )
 
+
+_CADASTRE = AssetSelection.groups("cadastre")
+
 full_launcher_job = define_asset_job(
     "full_launcher_job",
-    selection=AssetSelection.tag("stage", "launcher"),
+    selection=AssetSelection.tag("stage", "launcher") - _CADASTRE,
     tags={"domain": "full", "scope": "launcher"},
 )
 full_landing_job = define_asset_job(
     "full_landing_job",
-    selection=AssetSelection.tag("stage", "landing"),
+    selection=AssetSelection.tag("stage", "landing") - _CADASTRE,
     tags={"domain": "full", "scope": "landing"},
 )
 
@@ -48,6 +57,13 @@ fastline_ingest_job = define_asset_job(
     "fastline_ingest_job",
     selection=AssetSelection.groups("noisemap_fastline"),
     tags={"domain": "noisemap", "scope": "fastline"},
+)
+
+cadastre_ingest_job = define_asset_job(
+    "cadastre_ingest_job",
+    selection=_CADASTRE & _STAGE_INGEST,
+    partitions_def=CADASTRE_PARTITIONS,
+    tags={"domain": "cadastre", "scope": "ingest"},
 )
 
 osm_ingest_job = define_asset_job(
