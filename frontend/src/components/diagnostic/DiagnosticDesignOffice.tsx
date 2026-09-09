@@ -21,10 +21,12 @@ export default function DiagnosticDesignOffice() {
                     <li>
                         <strong>Faites appel à un acousticien certifié ou à un bureau d'études spécialisé</strong> avant le dépôt du permis de construire pour garantir la conformité réglementaire de votre projet et protéger la santé et le confort de vos futurs résidents.
                     </li>
-                    <a href="/preco/bureau-etudes-acoustiques" className={cx(classes.link)}>
-                        Consultez les annuaires de bureaux d'études acoustiques
-                        <i className={fr.cx("ri-arrow-right-line", "fr-pl-1v")} />
-                    </a>
+                    <li className={cx(classes.linkItem)}>
+                        <a href="/preco/bureau-etudes-acoustiques" className={cx(classes.link)}>
+                            Consultez les annuaires de bureaux d'études acoustiques
+                            <i className={fr.cx("ri-arrow-right-line", "fr-pl-1v")} />
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -51,6 +53,10 @@ const useStyles = tss.create(() => ({
             marginLeft: fr.spacing("4v"),
         },
         marginLeft: fr.spacing("2v"),
+    },
+    linkItem: {
+        // DSFR dessine une puce native (list-style-type: var(--ul-type))
+        listStyleType: "none",
     },
     link: {
         color: fr.colors.decisions.text.actionHigh.blueFrance.default,
