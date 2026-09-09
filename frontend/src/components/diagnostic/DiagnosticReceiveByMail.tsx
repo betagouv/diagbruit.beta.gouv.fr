@@ -124,6 +124,7 @@ const useStyles = tss.create(() => ({
     borderColor: fr.colors.decisions.border.default.blueFrance.default,
     borderWidth: "1px",
     marginTop: fr.spacing("4v"),
+    borderStyle: "solid"
   },
   buttonContainer: {
     display: "flex",

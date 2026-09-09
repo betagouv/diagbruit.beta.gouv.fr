@@ -48,22 +48,17 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
             </>
           }
         />
-
-
       </div>
-      {intersections.length > 0 && (
-        <>
-          <div className={fr.cx("fr-mb-6v")}>
-            <DiagnosticSoundClassificationTable
-              intersections={intersections}
-              caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
-            />
-          </div>
-          <p className={fr.cx("fr-text--sm")}>
-            <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
-          </p>
-        </>
-      )}</>
+      <div className={fr.cx("fr-mb-6v")}>
+        <DiagnosticSoundClassificationTable
+          intersections={intersections}
+          caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
+        />
+      </div>
+      <p className={fr.cx("fr-text--sm")}>
+        <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
+      </p>
+    </>
   );
 };
 
