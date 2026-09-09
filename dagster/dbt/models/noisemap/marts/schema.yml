@@ -24,3 +24,40 @@ models:
         description: "Time range indicator (LD for day, LN for night)"
       - name: geometry
         description: "Valid polygon geometry"
+
+  - name: noisemap_subdivided
+    description: >
+      Same contours as `noisemap`, split into pieces of at most 256 vertices so that
+      spatial joins against large parcel sets stop paying for exact intersection tests
+      on huge polygons. Pieces tile the parent without overlap, so summing intersection
+      areas per noisemap_id reproduces the undivided result. Used by the sonoscore
+      batch; the API keeps reading `noisemap`.
+    columns:
+      - name: noisemap_id
+        description: "id of the parent row in `noisemap` — group by this to recover a whole contour"
+        tests:
+          - not_null
+          # noisemap.id is minted from a sequence and reassigned on every rebuild, so
+          # building this model without its parent silently orphans every row. This
+          # test turns that into a loud `dbt build` failure.
+          - relationships:
+              to: ref('noisemap')
+              field: id
+      - name: campaign
+        description: "Year"
+      - name: codedept
+        description: "Department code"
+      - name: acoustic_producer_kind
+        description: "Territory type (INFRA or AGGLO)"
+      - name: label
+        description: "Infrastructure code"
+      - name: kind
+        description: "Source type (F for railway, R for road)"
+      - name: acoustic_noisemap_kind
+        description: "CBS type (A, B, C priority zone)"
+      - name: acoustic_db_value
+        description: "Noise level in dB"
+      - name: acoustic_time_range
+        description: "Time range indicator (LD for day, LN for night)"
+      - name: geometry
+        description: "One subdivided piece of the parent contour"

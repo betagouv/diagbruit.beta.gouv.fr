@@ -7,8 +7,8 @@
       "CREATE SEQUENCE IF NOT EXISTS {{ this.schema }}.{{ this.name }}_id_seq"
     ],
     post_hook=[
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
-      "CREATE INDEX IF NOT EXISTS idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);",
+      "DROP INDEX IF EXISTS idx_{{ this.name }}_codedept; CREATE INDEX idx_{{ this.name }}_codedept ON {{ this }} (codedept);"
     ]
 ) }}
 
