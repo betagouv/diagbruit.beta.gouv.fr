@@ -16,6 +16,7 @@ import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticAcousticCertificate from "./DiagnosticAcousticCertificate";
+import DiagnosticDesignOffice from "./DiagnosticDesignOffice";
 
 
 type DiagnosticProps = {
@@ -213,6 +214,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
+          <DiagnosticDesignOffice />
           <DiagnosticReceiveByMail
             parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
           />

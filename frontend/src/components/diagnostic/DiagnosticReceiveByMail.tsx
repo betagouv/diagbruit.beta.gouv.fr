@@ -70,7 +70,8 @@ export default function DiagnosticReceiveByMail({
             trackMatomoEvent("Action", "Open Email Modal", "Manual");
             modal.open();
           }}
-          className={fr.cx("fr-mt-4v")}
+          className={cx(classes.button)}
+          size="large"
         >
           Recevoir le diagnostic
         </Button>
@@ -119,6 +120,11 @@ const useStyles = tss.create(() => ({
       margin: `0 0 0 ${fr.spacing("1v")} `,
     },
   },
+  button: {
+    borderColor: fr.colors.decisions.border.default.blueFrance.default,
+    borderWidth: "1px",
+    marginTop: fr.spacing("4v"),
+  },
   buttonContainer: {
     display: "flex",
     alignItems: "center",
@@ -126,7 +132,8 @@ const useStyles = tss.create(() => ({
     [fr.breakpoints.down('md')]: {
       justifyContent: "center",
       marginBottom: fr.spacing('4v')
-    }
+    },
+
   },
   checkIcon: {
     color: fr.colors.decisions.background.flat.blueFrance.default,
