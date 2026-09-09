@@ -79,7 +79,13 @@ def find_similar_intersections(item, intersections):
       - have the same kind
       - have a direction equal to, +45°, or -45° vs the given item
       - have an acoustic_db_value within ±5 of the item's acoustic_db_value
-    Ordered by closeness: 0° first, then ±45°.
+    Ordered by closeness: 0° first, then ±45°, then by nearest acoustic_db_value.
+
+    The ordering must be total. `determine_codeinfra` keeps only the first candidate,
+    so ties used to be resolved by the order rows happened to come back from the
+    database: the same parcel could get a different codeinfra, land in a different
+    group, and end up one point higher or lower once the "several groups share the
+    top score" penalty was applied.
     """
     item_dir = item.get("direction")
     item_acoustic_db_value = item.get("acoustic_db_value")
@@ -96,7 +102,12 @@ def find_similar_intersections(item, intersections):
         and abs(other.get("acoustic_db_value") - item_acoustic_db_value) <= 5
     ]
 
-    return sorted(candidates, key=lambda x: priority_map[x["direction"]])
+    return sorted(candidates, key=lambda x: (
+        priority_map[x["direction"]],
+        abs(x["acoustic_db_value"] - item_acoustic_db_value),
+        -x.get("percent_impacted", 0),
+        x["codeinfra"],
+    ))
 
 
 def determine_codeinfra(item, intersections):
