@@ -186,11 +186,23 @@ def _widen_columns(engine, schema, table_name, gdf, log):
                     f'USING acoustic_db_value::text'
                 ))
                 log(f"Converted column acoustic_db_value from {existing_db_type} to TEXT")
-        conn.execute(text(
-            f"ALTER TABLE {schema}.{table_name} "
-            f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
-            f"USING geometry::geometry(Geometry,2154)"
-        ))
+        # Only widen the geometry column when it is not already typed. Postgres
+        # refuses to alter a column a view depends on, and `to_postgis` already
+        # creates it as geometry(Geometry,2154) — so running this unconditionally
+        # broke every append into a table carrying a dbt view (raw_cadastre_parcelles
+        # and stg_parcelle) for no gain.
+        current = conn.execute(text(
+            "SELECT type, srid FROM geometry_columns "
+            "WHERE f_table_schema = :schema AND f_table_name = :table "
+            "AND f_geometry_column = 'geometry'"
+        ), {"schema": schema, "table": table_name}).first()
+        if not current or current.srid != 2154 or current.type.upper() != "GEOMETRY":
+            log(f"Typing geometry column of {schema}.{table_name} as geometry(Geometry,2154)")
+            conn.execute(text(
+                f"ALTER TABLE {schema}.{table_name} "
+                f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
+                f"USING geometry::geometry(Geometry,2154)"
+            ))
         conn.commit()
 
 
