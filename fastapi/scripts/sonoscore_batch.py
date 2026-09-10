@@ -229,8 +229,6 @@ def main():
             try:
                 code_insee, n, n_data, n_failed, seconds, sample = future.result()
             except Exception as error:
-                # A dead worker must not abort the 500 remaining communes; --skip-done
-                # picks this one back up on the next run.
                 crashed.append(commune)
                 print(f"[{done}/{len(communes)}] {commune}: ÉCHEC — {error}", flush=True)
                 continue
