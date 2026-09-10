@@ -6,6 +6,8 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { CheckTexts } from "../utils/CheckTexts";
+import type { PositionData } from "../../utils/buildPositionData";
+import { captureMapImage } from "../../utils/captureMapImage";
 
 export const modal = createModal({
 	id: "diagnostic-receive-by-mail-modal",
@@ -47,14 +49,69 @@ const selectOptions = [
 	{ value: "autre", label: "Autre" },
 ];
 
+export type DiagnosticEmailSummary = {
+	score: number;
+	maxDbLden?: number;
+	flags: {
+		isMultiExposedSources: boolean;
+		isPriorityZone: boolean;
+		hasClassificationWarning: boolean;
+	};
+	regulation?: {
+		peb: { exposed: boolean; zone: string | null };
+		soundClassification: {
+			exposed: boolean;
+			rows: {
+				type: string;
+				name: string;
+				category: number;
+				minDistance: number;
+				maxDistance: number;
+			}[];
+		};
+	};
+	isolation?: {
+		min: number | null;
+		max: number | null;
+		hasPeb: boolean;
+		hasCls: boolean;
+	};
+	plu?: {
+		zones: {
+			label: string;
+			content: string;
+			source: string;
+			reference: string;
+		}[];
+	};
+	noiseMap?: {
+		rows: {
+			type: string;
+			producer: string;
+			name: string;
+			dayLevel: string;
+			nightLevel: string;
+		}[];
+	};
+	noiseSources?: {
+		name: string;
+		slug: string;
+		count: number;
+	}[];
+	position?: PositionData;
+	mapImage?: string;
+};
+
 export default function DiagnosticEmailForm({
 	onSuccess,
 	onClose,
-	parcelNumber
+	parcelNumber,
+	summary,
 }: {
 	onSuccess?: (email: string) => void;
 	onClose?: () => void;
 	parcelNumber?: string;
+	summary?: DiagnosticEmailSummary;
 }) {
 	const { cx, classes } = useStyles();
 
@@ -95,12 +152,17 @@ export default function DiagnosticEmailForm({
 			);
 		}
 
+		// Capture the current map view (satellite + parcel outline) for the PDF.
+		const summaryWithMap = summary
+			? { ...summary, mapImage: captureMapImage() ?? undefined }
+			: summary;
+
 		const mailResponse = await fetch(
 			`${process.env.REACT_APP_CMS_URL}/api/email/send`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber }),
+				body: JSON.stringify({ to: email, link: window.location.href, parcelNumber, summary: summaryWithMap }),
 			},
 		);
 		if (!mailResponse.ok) {

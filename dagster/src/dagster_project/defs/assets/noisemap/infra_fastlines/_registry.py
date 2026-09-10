@@ -68,6 +68,17 @@ FASTLINE_TERRITORIES: list[FastlineTerritory] = [
         is_infra=True,
     ),
     FastlineTerritory(
+        dept="013",
+        campaign="2022",
+        box_folder_id="411789800667",
+        db_value_from="category",
+        label_from="nomroute",
+        files=[
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LN_013.shp", "R", "A", "LN"),
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LD_013.shp", "R", "A", "LD"),
+        ],
+    ),
+    FastlineTerritory(
         dept="053",
         campaign="2022",
         box_folder_id="398012435954",

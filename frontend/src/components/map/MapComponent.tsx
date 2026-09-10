@@ -14,6 +14,7 @@ import {
 import type { MapGeoJSONFeature, MapInstance, MapLayerMouseEvent, MapRef, MapSourceDataEvent } from "react-map-gl/maplibre";
 import Map, {
   Marker,
+  NavigationControl,
   type StyleSpecification,
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
@@ -347,6 +348,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         <Map
           id="map"
           ref={mapRef}
+          canvasContextAttributes={{ preserveDrawingBuffer: true }}
           initialViewState={defaultViewState}
           onLoad={onMapLoad}
           onClick={onClick}
@@ -360,6 +362,8 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
         >
+          <NavigationControl position="bottom-right" showCompass={false} />
+
           {zoom >= 16 &&
             noisePins.map((pin, index) => {
               const iconClass = getIconFromNoiseCategorySlug(pin.category_slug);

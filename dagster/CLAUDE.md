@@ -32,7 +32,7 @@ Copy `.env.example` to `.env`. Key vars: `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PAS
 
 **Package layout** — importable package stays `src/dagster_project/` (named to avoid colliding
 with the `dagster` library import; the *folder* is `dagster/`):
-- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm` (incl. foods/schools/terrasses), `peb`, `bdnb`, `departements`.
+- `defs/assets/` — assets grouped by domain: `noisemap/{agglo,infra,infra_fastlines}`, `soundclassification`, `osm` (incl. foods/schools/terrasses), `peb`, `bdnb`, `cadastre`, `departements`.
 - `defs/jobs/`, `defs/resources/` (`box.py` → `BoxResource`), `defs/schedules/` (`box_refresh.py` → `box_token_refresh_sensor`).
 - `ingestion/` — Dagster-agnostic GeoPandas → PostGIS ingest (`ingest_shapefiles.py`, `ingest_geojson.py`).
 - `reference_data/` — committed static fixtures (`departments/depts.shp`) ingested directly by the `departements` asset (no launcher).
@@ -47,9 +47,13 @@ SHA-256); the landing reads the mapping back and ingests each shapefile into `pu
 bodies look up the territory by partition key, e.g. `AGGLO_BY_DEPT[context.partition_key]` — a direct
 dict lookup, so a partition with no matching registry entry raises `KeyError`.
 
-**Partitions:** all partitioned assets share `ALL_DEPT_PARTITIONS` (union of every dept across scopes,
+**Partitions:** partitioned assets share `ALL_DEPT_PARTITIONS` (union of every dept across scopes,
 in `defs/assets/_partitions.py`) so a single `--partition <dept>` applies across a cross-scope job.
 Trade-off: the picker offers depts a given scope can't materialize — see the `KeyError` note above.
+**Cadastre is the exception**: it uses `CADASTRE_PARTITIONS` (all 101 Etalab depts, in
+`defs/assets/cadastre/_partitions.py`) so parcelle coverage can run ahead of noisemap coverage.
+Since a job resolves a single partitions def, cadastre assets cannot be selected in the same job
+as the others — mixing them raises `DagsterInvalidDefinitionError` at load time.
 
 **Fan-in markers:** unpartitioned no-op assets (`raw_noisemap`, `raw_soundclassification_*`) depend on
 all partitions of their landing assets (`AllPartitionMapping()`); they signal downstream dbt that per-dept
@@ -57,8 +61,9 @@ ingest is complete. Their keys match the dbt source names.
 
 **Jobs** (`defs/jobs/defs.py`) are UI convenience handles only: per-scope ingest
 (`agglo_ingest_job`, `infra_ingest_job`, `fastline_ingest_job`, `osm_ingest_job`,
-`peb_ingest_job`, `soundclassification_ingest_job`), stage cross-cuts
-(`full_launcher_job`, `full_landing_job`), and `ci_landing_by_codedept_job`
+`peb_ingest_job`, `soundclassification_ingest_job`, `cadastre_ingest_job`), stage cross-cuts
+(`full_launcher_job`, `full_landing_job` — both exclude the `cadastre` group, whose
+partitions def differs), and `ci_landing_by_codedept_job`
 (landing-only: S3 → PostGIS + committed fixtures, no Box — what CI runs via `ci_ingest.py`).
 There are intentionally no per-domain "ingest + dbt" jobs.
 

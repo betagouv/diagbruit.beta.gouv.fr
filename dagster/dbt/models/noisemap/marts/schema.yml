@@ -2,10 +2,15 @@ version: 2
 
 models:
   - name: noisemap
-    description: "Clean noise map polygons with validated geometries"
+    description: >
+      Clean noise map polygons with validated geometries. Each source contour is split
+      into pieces of at most 256 vertices, so there are several rows per contour: group
+      by `id` to recover a whole feature.
     columns:
       - name: id
-        description: "Noise zone ID"
+        description: >
+          Contour ID, shared by every piece of the same source contour — NOT unique.
+          Minted before the split, so it is stable within a build.
       - name: campaign
         description: "Year"
       - name: codedept
@@ -23,4 +28,4 @@ models:
       - name: acoustic_time_range
         description: "Time range indicator (LD for day, LN for night)"
       - name: geometry
-        description: "Valid polygon geometry"
+        description: "One subdivided piece of the contour, at most 256 vertices"
