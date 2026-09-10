@@ -121,7 +121,7 @@ def cadastre_parcelles_landing(context: AssetExecutionContext):
 
         for shp_path in local_dir.rglob("*.shp"):
             context.log.info(f"Ingesting {shp_path.name} → {DB_TABLE}")
-            success = ingest_shapefile(
+            ingest_shapefile(
                 str(shp_path),
                 DB_TABLE,
                 db_url(),
@@ -129,12 +129,10 @@ def cadastre_parcelles_landing(context: AssetExecutionContext):
                 if_exists="append",
                 fixed_columns={"codedept": dept, "release": CADASTRE_RELEASE},
                 chunk_features=CHUNK_FEATURES,
+                raise_on_error=True,
                 context=context,
             )
-            if success:
-                ingested += 1
-            else:
-                raise RuntimeError(f"Failed to ingest {shp_path.name} for dept={dept}")
+            ingested += 1
 
     finally:
         shutil.rmtree(local_dir, ignore_errors=True)

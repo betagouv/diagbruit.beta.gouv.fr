@@ -254,12 +254,16 @@ def _write_frame(engine, schema, table_name, gdf, if_exists, log):
             raise
 
 
-def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, chunk_features=None, context=None):
+def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, chunk_features=None, raise_on_error=False, context=None):
     """Ingest a vector file into PostGIS.
 
     `chunk_features` streams the source in slices of that many rows instead of
     building one GeoDataFrame; the first slice honours `if_exists`, the rest append.
     Leave it None (the default) to keep the single-frame behaviour.
+
+    `raise_on_error` re-raises instead of returning False. Under Dagster's
+    `execute_in_process` the error log goes to the captured-log manager rather than
+    stdout, so a caller that only sees the False has no way to learn what failed.
     """
     log = context.log.info if context else print
     log_err = context.log.error if context else lambda msg: print(msg, file=sys.stderr)
@@ -295,6 +299,8 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
         return True
     except Exception as e:
         log_err(f"Error ingesting shapefile: {e}, {sys.stderr}")
+        if raise_on_error:
+            raise
         return False
 
 
