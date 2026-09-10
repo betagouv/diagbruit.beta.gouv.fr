@@ -80,12 +80,8 @@ CREATE INDEX IF NOT EXISTS idx_sonoscore_codedept   ON public.sonoscore (codedep
 # ST_Multi matches what the API receives: the frontend posts parcel coordinates that
 # create_multipolygon_from_coordinates turns into a MULTIPOLYGON before any query.
 PARCELLES_SQL = """
--- 17 decimals, not ST_AsText's default 15: 15 drops the last bits of the float64
--- coordinates, and on a handful of parcels the rounded polygon makes ST_Difference
--- produce a residue whose spherical area PostGIS refuses to compute
--- ("lwgeom_area_spher(oid) returned area < 0.0"). Sanitising the residue afterwards
--- does not help — ST_MakeValid, ST_ForcePolygonCCW and ST_Buffer(_, 0) all still
--- raise. Not rounding in the first place does.
+-- 17 decimals: ST_AsText's default 15 rounds float64 coordinates, and PostGIS then
+-- refuses to measure the ST_Difference residue on some parcels.
 SELECT idu, ST_AsText(ST_Multi(geometry), 17) AS wkt
 FROM public.parcelle
 WHERE code_insee = :code_insee
