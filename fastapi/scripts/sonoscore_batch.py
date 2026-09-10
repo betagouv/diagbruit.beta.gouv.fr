@@ -151,10 +151,7 @@ def process_commune(code_insee, codedept):
             try:
                 score, has_data = score_parcelle(db, parcelle.wkt, codedept, populate)
             except Exception as error:
-                # One parcel must not cost a whole run. Degenerate geometries make
-                # PostGIS raise on ST_Area(Geography(...)) ("area < 0.0") — the same
-                # failure the API returns a 500 for. The parcel is left out of
-                # sonoscore, so a later run retries it.
+                # Left out of sonoscore, so a later run retries it.
                 db.rollback()
                 failed.append((parcelle.idu, f"{type(error).__name__}: {error}"))
                 continue
