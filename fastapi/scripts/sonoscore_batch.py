@@ -128,17 +128,30 @@ def score_parcelle(db, wkt, codedept, populate):
 
 
 def process_commune(code_insee, codedept):
-    """Score every parcel of one commune. Returns (code_insee, n, n_with_data, seconds)."""
+    """Score every parcel of one commune.
+
+    Returns (code_insee, n, n_with_data, n_failed, seconds, sample_error).
+    """
     started = perf_counter()
     populate = Populate()
     db = SessionLocal()
     now = datetime.now(timezone.utc)
     rows = []
+    failed = []
 
     try:
         parcelles = db.execute(text(PARCELLES_SQL), {"code_insee": code_insee}).all()
         for parcelle in parcelles:
-            score, has_data = score_parcelle(db, parcelle.wkt, codedept, populate)
+            try:
+                score, has_data = score_parcelle(db, parcelle.wkt, codedept, populate)
+            except Exception as error:
+                # One parcel must not cost a whole run. Degenerate geometries make
+                # PostGIS raise on ST_Area(Geography(...)) ("area < 0.0") — the same
+                # failure the API returns a 500 for. The parcel is left out of
+                # sonoscore, so a later run retries it.
+                db.rollback()
+                failed.append((parcelle.idu, f"{type(error).__name__}: {error}"))
+                continue
             rows.append({
                 "idu": parcelle.idu, "code_insee": code_insee, "codedept": codedept,
                 "score": score, "has_data": has_data,
@@ -157,7 +170,9 @@ def process_commune(code_insee, codedept):
     finally:
         out.dispose()
 
-    return code_insee, len(rows), sum(r["has_data"] for r in rows), perf_counter() - started
+    sample = failed[0][1][:200] if failed else None
+    return (code_insee, len(rows), sum(r["has_data"] for r in rows),
+            len(failed), perf_counter() - started, sample)
 
 
 def main():
@@ -201,19 +216,35 @@ def main():
     started = perf_counter()
     total = with_data = 0
 
+    failed_total = 0
+    crashed = []
+
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        futures = [pool.submit(process_commune, c, args.dept) for c in communes]
+        futures = {pool.submit(process_commune, c, args.dept): c for c in communes}
         for done, future in enumerate(as_completed(futures), 1):
-            code_insee, n, n_data, seconds = future.result()
+            commune = futures[future]
+            try:
+                code_insee, n, n_data, n_failed, seconds, sample = future.result()
+            except Exception as error:
+                # A dead worker must not abort the 500 remaining communes; --skip-done
+                # picks this one back up on the next run.
+                crashed.append(commune)
+                print(f"[{done}/{len(communes)}] {commune}: ÉCHEC — {error}", flush=True)
+                continue
             total += n
             with_data += n_data
+            failed_total += n_failed
             rate = n / seconds if seconds else 0
+            suffix = f", {n_failed} en erreur ({sample})" if n_failed else ""
             print(f"[{done}/{len(communes)}] {code_insee}: {n} parcelles, "
-                  f"{n_data} avec données, {seconds:.1f}s ({rate:.0f}/s)")
+                  f"{n_data} avec données, {seconds:.1f}s ({rate:.0f}/s){suffix}", flush=True)
 
     elapsed = perf_counter() - started
     print(f"\n{total} parcelles ({with_data} avec données) en {elapsed:.0f}s "
           f"— {total / elapsed:.1f} parcelles/s avec {args.workers} workers")
+    if failed_total or crashed:
+        print(f"{failed_total} parcelles en erreur, {len(crashed)} communes échouées "
+              f"{crashed[:10]} — relancer avec --skip-done")
 
 
 if __name__ == "__main__":
