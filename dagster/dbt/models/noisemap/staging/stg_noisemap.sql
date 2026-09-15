@@ -3,7 +3,7 @@
     incremental_strategy='delete+insert',
     unique_key='codedept',
     post_hook=[
-      "DROP INDEX IF EXISTS idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);"
+      "DROP INDEX IF EXISTS {{ this.schema }}.idx_{{ this.name }}_geometry; CREATE INDEX idx_{{ this.name }}_geometry ON {{ this }} USING GIST (geometry);"
     ],
     schema='workspace'
 ) }}
