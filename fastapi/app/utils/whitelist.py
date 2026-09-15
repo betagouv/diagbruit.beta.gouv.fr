@@ -19,7 +19,7 @@ codes_insee_whitelist = [
 ]
 
 # Departments that are fully whitelisted
-whitelisted_departments = ["33", "44", "35", "59", "67", "53"]
+whitelisted_departments = ["33", "44", "35", "59", "67", "53", "085", "049" , "072"]
 
 def is_code_insee_allowed(code_insee: str) -> bool:
     """

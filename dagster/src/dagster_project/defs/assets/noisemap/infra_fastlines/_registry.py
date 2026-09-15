@@ -99,4 +99,37 @@ FASTLINE_TERRITORIES: list[FastlineTerritory] = [
             FastlineFile("N_BRUIT_ZBR_A_LD_067.shp", "R", "A", "LD"),
         ],
     ),
+    FastlineTerritory(
+        dept="049",
+        campaign="2022",
+        box_folder_id="410536883557",
+        db_value_from="category",
+        label_from="nomroute",
+        files=[
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LN_049.shp", "R", "A", "LN"),
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LD_049.shp", "R", "A", "LD"),
+        ],
+    ),
+    FastlineTerritory(
+        dept="072",
+        campaign="2022",
+        box_folder_id="410240531997",
+        db_value_from="category",
+        label_from="nomroute",
+        files=[
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LN_072.shp", "R", "A", "LN"),
+            FastlineFile("N_BRUIT_ZBR_INFRA_ROUTE_A_LD_072.shp", "R", "A", "LD"),
+        ],
+    ),
+    FastlineTerritory(
+        dept="085",
+        campaign="2022",
+        box_folder_id="397648208565",
+        db_value_from="category",
+        label_from="nomroute",
+        files=[
+            FastlineFile("N_BRUIT_ZBR_INFRA_A_LN_085.shp", "R", "A", "LN"),
+            FastlineFile("N_BRUIT_ZBR_INFRA_A_LD_085.shp", "R", "A", "LD"),
+        ],
+    ),
 ]
