@@ -13,7 +13,7 @@ const Footer = () => (
     <Row>
       <Column className="w-2/3">
         <Img
-          src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
+          src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIconText.svg`}
           alt="DiagBruit"
           style={{ paddingRight: "8px" }}
         />
@@ -24,7 +24,7 @@ const Footer = () => (
           <br />
           L'équipe diagBruit
           <br />
-          <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
+          <Link style={linkStyle} href='mailto:contact@diagbruit.fr'>contact@diagbruit.fr</Link>
         </Text>
         <Text style={footerText}>
           <em>
@@ -72,7 +72,6 @@ export default function DiagnosticEmail({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Main Content */}
           <Section>
             <Text style={paragraph}>Bonjour,</Text>
             <Text style={paragraph}>
@@ -159,33 +158,27 @@ export const FollowUpEmail = () => {
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Main Content */}
           <Section>
-            <Row>
-              <Column className="w-2/3" style={{ verticalAlign: "top" }}>
-                <Img
-                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIconText.svg`}
-                  alt="DiagBruit"
-                  style={{ paddingRight: "8px" }}
-                />
-              </Column>
-              <Column align="right" style={footerTextColumn}>
-                <Text style={footerText}>
-                  Cordialement,
-                  <br />
-                  L'équipe diagBruit
-                  <br />
-                  <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
-                </Text>
-                <Text style={footerText}>
-                  <em>
-                    Service public proposé à titre de conseil pour alerter sur
-                    l'exposition sonore des parcelles, réalisé avec l'appui du
-                    Cerema et de l'ANCT.
-                  </em>
-                </Text>
-              </Column>
-            </Row>
+            <Text style={paragraph}>Bonjour,</Text>
+            <Text style={paragraph}>
+              Vous avez récemment téléchargé un diagnostic sur <strong>diagBruit</strong> et une chose nous intéresse particulièrement : <strong>à quoi vous a-t-il servi ?</strong>
+            </Text>
+            <Text style={paragraph}>
+              Préparer un projet, vérifier une réglementation, informer un client, mieux comprendre l’exposition au bruit d’une parcelle…
+              <strong>votre retour nous aide à comprendre l’impact réel de diagBruit et à améliorer le service.</strong> 
+            </Text>
+            <Text style={paragraph}>
+              👉 <strong>3 questions, 2 minutes : </strong><Link style={linkStyle} href="https://tally.so/popup/1A4kZL">Partager mon retour</Link> 
+            </Text>
+            <Text style={paragraph}>
+              Vous pouvez aussi simplement répondre à ce mail en quelques mots : <strong>on lit chaque retour.  </strong>
+            </Text>
+            <Text style={paragraph}>
+              Merci pour votre aide !
+            </Text>
+            <Text style={paragraph}>
+              <strong>L'équipe diagBruit</strong>
+            </Text>
           </Section>
           <Footer />
         </Container>
