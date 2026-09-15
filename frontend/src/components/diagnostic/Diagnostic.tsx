@@ -228,6 +228,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                 isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
                 hasClassificationWarning:
                   diagnosticItem.diagnostic.flags.hasClassificationWarning,
+                hasNoisemapWarning:
+                  diagnosticItem.diagnostic.flags.hasNoisemapWarning,
               },
               regulation: {
                 peb: {

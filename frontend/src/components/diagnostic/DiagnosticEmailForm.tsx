@@ -56,6 +56,7 @@ export type DiagnosticEmailSummary = {
 		isMultiExposedSources: boolean;
 		isPriorityZone: boolean;
 		hasClassificationWarning: boolean;
+		hasNoisemapWarning: boolean;
 	};
 	regulation?: {
 		peb: { exposed: boolean; zone: string | null };

@@ -301,6 +301,7 @@ export default factories.createCoreController("api::email.email", () => ({
           isMultiExposedSources: Boolean(summary.flags?.isMultiExposedSources),
           isPriorityZone: Boolean(summary.flags?.isPriorityZone),
           hasClassificationWarning: Boolean(summary.flags?.hasClassificationWarning),
+          hasNoisemapWarning: Boolean(summary.flags?.hasNoisemapWarning),
         },
         link,
         generatedAt: new Date().toLocaleDateString("fr-FR"),

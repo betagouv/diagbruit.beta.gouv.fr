@@ -28,6 +28,7 @@ export interface DiagnosticPdfData {
     isMultiExposedSources?: boolean;
     isPriorityZone?: boolean;
     hasClassificationWarning?: boolean;
+    hasNoisemapWarning?: boolean;
   };
   link: string;
   generatedAt: string;

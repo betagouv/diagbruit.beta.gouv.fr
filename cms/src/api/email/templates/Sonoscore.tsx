@@ -27,6 +27,9 @@ const ICON_INFORMATION =
 const ICON_CHECKBOX_CIRCLE =
   "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11.0026 16L18.0737 8.92893L16.6595 7.51472L11.0026 13.1716L8.17421 10.3431L6.75999 11.7574L11.0026 16Z";
 
+const ICON_FORBID =
+  "M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM8.52313 7.10891C8.25459 7.30029 7.99828 7.51644 7.75736 7.75736C7.51644 7.99828 7.30029 8.25459 7.10891 8.52313L15.4769 16.8911C15.7454 16.6997 16.0017 16.4836 16.2426 16.2426C16.4836 16.0017 16.6997 15.7454 16.8911 15.4769L8.52313 7.10891Z";
+
 const SOURCE_ICON_FILES: Record<string, string> = {
   ECO: "SchoolIcon.svg",
   CART: "CartIcon.svg",
@@ -50,7 +53,17 @@ const scoreIcon = (s: number): string =>
         ? ICON_INFORMATION
         : ICON_CHECKBOX_CIRCLE;
 
-const getRiskSummaryRuns = (score: number): Run[] => {
+const getRiskSummaryRuns = (score: number, undefinedRisk: boolean): Run[] => {
+  if (undefinedRisk) {
+    return [
+      { text: "Le " },
+      { text: "risque de nuisance sonore", bold: true },
+      { text: " ne peut pas être déterminé par diagBruit pour votre parcelle.\n" },
+      { text: "Une " },
+      { text: "visite des lieux", bold: true },
+      { text: " peut aider à mieux appréhender la gêne occasionnée." },
+    ];
+  }
   if (score > 8) {
     return [
       { text: "Votre parcelle est exposée à un " },
@@ -80,12 +93,32 @@ const renderInlineRuns = (runs: Run[]) =>
     ),
   );
 
-const RiskBadge = ({ score }: { score: number }) => (
-  <View style={[s.badge, { backgroundColor: scoreColor(score) }]}>
+const RiskBadge = ({
+  score,
+  undefinedRisk,
+}: {
+  score: number;
+  undefinedRisk: boolean;
+}) => (
+  <View
+    style={[
+      s.badge,
+      {
+        backgroundColor: undefinedRisk
+          ? dsfr.colors.disabledGrey
+          : scoreColor(score),
+      },
+    ]}
+  >
     <Svg style={s.badgeIcon} viewBox="0 0 24 24">
-      <Path d={scoreIcon(score)} fill={dsfr.colors.titleGrey} />
+      <Path
+        d={undefinedRisk ? ICON_FORBID : scoreIcon(score)}
+        fill={dsfr.colors.titleGrey}
+      />
     </Svg>
-    <Text style={s.badgeText}>RISQUE {scoreText(score)}</Text>
+    <Text style={s.badgeText}>
+      RISQUE {undefinedRisk ? "INDÉFINI" : scoreText(score)}
+    </Text>
   </View>
 );
 
@@ -116,6 +149,7 @@ const SourceRow = ({ group }: { group: NoiseSourceGroup }) => (
 
 export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
   const noiseSources = data.noiseSources ?? [];
+  const undefinedRisk = Boolean(data.flags?.hasNoisemapWarning);
   return (
     <View style={s.sonoscore}>
       <View style={s.left}>
@@ -138,10 +172,12 @@ export default function Sonoscore({ data }: { data: DiagnosticPdfData }) {
           {data.address ? `, ${data.address}` : ""}
         </Text>
 
-        <RiskBadge score={data.score} />
-        <ScoreGauge score={data.score} />
+        <RiskBadge score={data.score} undefinedRisk={undefinedRisk} />
+        {!undefinedRisk && <ScoreGauge score={data.score} />}
 
-        <Text style={s.summary}>{renderInlineRuns(getRiskSummaryRuns(data.score))}</Text>
+        <Text style={[s.summary, undefinedRisk && s.summaryUndefined]}>
+          {renderInlineRuns(getRiskSummaryRuns(data.score, undefinedRisk))}
+        </Text>
 
         {noiseSources.length > 0 ? (
           <>
@@ -273,6 +309,9 @@ const s = StyleSheet.create({
     fontFamily: "Marianne",
     lineHeight: 1.4,
     marginBottom: dsfr.spacing(3),
+  },
+  summaryUndefined: {
+    marginTop: dsfr.spacing(2),
   },
   sourcesIntro: {
     fontSize: dsfr.fontSize.xxs,
