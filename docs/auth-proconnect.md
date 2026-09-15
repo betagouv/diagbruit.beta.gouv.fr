@@ -87,7 +87,7 @@ OAUTH2_PROXY_CLIENT_SECRET=...
 OAUTH2_PROXY_COOKIE_SECRET=...
 OAUTH2_PROXY_REDIRECT_URL=https://metabase.diagbruit.beta.gouv.fr/oauth2/callback
 OAUTH2_PROXY_UPSTREAMS=http://127.0.0.1:8080
-OAUTH2_PROXY_SCOPE=openid given_name usual_name email profile
+OAUTH2_PROXY_SCOPE=openid email
 OAUTH2_PROXY_OIDC_EMAIL_CLAIM=email
 OAUTH2_PROXY_PROMPT=login
 OAUTH2_PROXY_COOKIE_SECURE=true
@@ -116,15 +116,28 @@ trentaine de secondes. Aucune adresse n'est versionnée.
 2. Déclarer quatre `redirect_uris` — Metabase et Strapi × prod et preprod.
 3. Récupérer `issuer`, `client_id`, `client_secret`.
 
-### Points de friction connus
+### Scopes
 
-**`/userinfo` renvoie un JWT signé**, hérité de FranceConnect, qu'`oauth2-proxy`
-ne sait pas lire. Le contournement est `OAUTH2_PROXY_OIDC_EMAIL_CLAIM=email`, qui
-lit l'adresse dans l'`id_token`. À valider sur l'intégration.
+Valeurs vérifiées sur le document de découverte d'intégration.
 
-**Les claims ProConnect personnalisés** (`given_name`, `usual_name`) ne sont
-exposés qu'en [mode de configuration « alpha »](https://oauth2-proxy.github.io/oauth2-proxy/configuration/alpha-config)
-d'`oauth2-proxy`. Sans besoin de ces claims, rester en configuration standard.
+**`profile` n'existe pas chez ProConnect** — le demander fait échouer
+l'autorisation en `invalid_scope`. Les exemples qui circulent l'incluent à tort.
+
+**Les claims personnalisés** (`given_name`, `usual_name`) ne sont exploitables
+qu'en [mode de configuration « alpha »](https://oauth2-proxy.github.io/oauth2-proxy/configuration/alpha-config)
+d'`oauth2-proxy`, parce que `/userinfo` renvoie un **JWT signé** et non du JSON
+(héritage FranceConnect). Nous n'en avons pas besoin : seule l'adresse sert, à
+comparer à l'allowlist. D'où `openid email`, et rien de plus.
+
+### Autres particularités du dossier
+
+- `token_endpoint_auth_methods_supported` : `client_secret_post` et
+  `private_key_jwt` uniquement, pas de `client_secret_basic`. Si l'échange de
+  jeton échoue, chercher là.
+- `end_session_endpoint` :
+  `https://fca.integ01.dev-agentconnect.fr/api/v2/session/end`, à utiliser pour
+  câbler la déconnexion IdP le moment venu.
+- `response_types_supported` : `code` seulement.
 
 **Pas de déconnexion IdP native.** Se déconnecter du proxy ne déconnecte pas de
 ProConnect. Le contournement documenté par betagouv consiste à injecter un lien
