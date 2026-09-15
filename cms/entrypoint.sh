@@ -8,21 +8,25 @@ if [ "${DANGER_DISABLE_AUTH_PROXY:-false}" = "true" ]; then
   exec yarn start
 fi
 
-tr ',' '\n' <<<"${ALLOWED_EMAILS:?ALLOWED_EMAILS non défini}" \
-  | tr -d ' ' | grep . >/tmp/allowed-emails.txt
+: "${OAUTH2_PROXY_CLIENT_ID:?OAUTH2_PROXY_CLIENT_ID non défini}"
+: "${OAUTH2_PROXY_CLIENT_SECRET:?OAUTH2_PROXY_CLIENT_SECRET non défini}"
+: "${OAUTH2_PROXY_COOKIE_SECRET:?OAUTH2_PROXY_COOKIE_SECRET non défini}"
 
-# Loopback : le proxy est le seul chemin d'entrée, y compris via l'URL *.scalingo.io.
-HOST=127.0.0.1 PORT=1337 yarn start &
+echo "${OAUTH2_ALLOWED_EMAILS:?OAUTH2_ALLOWED_EMAILS non défini}" \
+  | tr ',' '\n' | tr -d ' ' | grep . >/tmp/allowed_emails.txt
+
+HOST=127.0.0.1 PORT=8080 yarn start &
 strapi_pid=$!
 
+# Les exceptions d'authentification restent ici plutôt qu'en variable
+# d'environnement : elles sont critiques et doivent passer par une revue.
 oauth2-proxy \
   --http-address="0.0.0.0:${PUBLIC_PORT}" \
-  --upstream="http://127.0.0.1:1337" \
+  --upstream="http://127.0.0.1:8080" \
   --provider=oidc \
-  --scope="openid email" \
-  --oidc-email-claim=email \
-  --authenticated-emails-file=/tmp/allowed-emails.txt \
-  --skip-auth-regex='^/(api|uploads)/' \
+  --authenticated-emails-file=/tmp/allowed_emails.txt \
+  --skip-auth-regex='^/api/' \
+  --skip-auth-regex='^/uploads/' \
   --reverse-proxy=true \
   --cookie-secure=true \
   --cookie-expire=8h \
