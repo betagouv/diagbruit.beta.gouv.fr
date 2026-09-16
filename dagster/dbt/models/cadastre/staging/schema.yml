@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: public_workspace
+    schema: public_workspace
+    tables:
+      - name: raw_cadastre_parcelles
+        description: "Raw Etalab cadastre parcelles (PCI Express), one shapefile per department"
+        columns:
+          - name: id
+            description: "Cadastral IDU: commune + prefixe + section + numero (14 chars)"
+          - name: commune
+            description: "INSEE commune code (5 chars)"
+          - name: prefixe
+            description: "Absorbed-commune prefix (3 chars, '000' when none)"
+          - name: section
+            description: "Cadastral section (2 chars)"
+          - name: numero
+            description: "Parcel number, NOT zero-padded in the source ('80', not '0080')"
+          - name: contenance
+            description: "Cadastral area in m² as declared by the DGFiP"
+          - name: created
+            description: "Parcel creation date"
+          - name: updated
+            description: "Parcel last-update date"
+          - name: codedept
+            description: "Department code, 3 chars, added at ingest (e.g. '033')"
+          - name: release
+            description: "Etalab snapshot date the rows come from (e.g. '2026-06-01')"
+          - name: geometry
+            description: "PostGIS geometry data in EPSG:2154"

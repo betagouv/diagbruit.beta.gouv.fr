@@ -40,6 +40,13 @@ const DiagnosticHero = ({
           light
         />
       )}
+      <a href={"https://docs.numerique.gouv.fr/docs/fd006572-fa86-492d-abc4-1391f9c24270/"}
+        className={cx(classes.sonoscoreLink)}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Comprendre le sonoscore
+      </a>
       <div
         className={classes.summary}
         dangerouslySetInnerHTML={{
@@ -91,6 +98,13 @@ const useStyles = tss
       [fr.breakpoints.up("md")]: {
         marginTop: 0,
       },
+    },
+    sonoscoreLink: {
+      display: "block",
+      width: "fit-content",
+      marginLeft: "auto",
+      marginBottom: fr.spacing("2v"),
+
     },
     summary: {
       ...fr.typography[21].style,

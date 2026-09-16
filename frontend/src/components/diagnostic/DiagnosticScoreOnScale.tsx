@@ -53,7 +53,7 @@ const useStyles = tss.create(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
-    marginBottom: fr.spacing("8v"),
+    marginBottom: fr.spacing("4v"),
   },
   header: {
     display: "grid",

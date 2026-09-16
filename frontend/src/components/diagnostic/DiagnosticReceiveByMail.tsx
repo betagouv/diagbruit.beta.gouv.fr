@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { tss } from "tss-react/dsfr";
 import { trackMatomoEvent } from "../../utils/matomo";
 import { CheckTexts } from "../utils/CheckTexts";
-import DiagnosticEmailForm, { modal } from "./DiagnosticEmailForm";
+import DiagnosticEmailForm, { modal, type DiagnosticEmailSummary } from "./DiagnosticEmailForm";
 
 const MODAL_DISMISSED_COOKIE = "diagbruit_modal_dismissed";
 
@@ -22,8 +22,10 @@ function isModalDismissed(): boolean {
 
 export default function DiagnosticReceiveByMail({
   parcelNumber,
+  summary,
 }: {
   parcelNumber?: string;
+  summary?: DiagnosticEmailSummary;
 }) {
   const { cx, classes } = useStyles();
   const [successEmail, setSuccessEmail] = useState<string | null>(null);
@@ -70,7 +72,8 @@ export default function DiagnosticReceiveByMail({
             trackMatomoEvent("Action", "Open Email Modal", "Manual");
             modal.open();
           }}
-          className={fr.cx("fr-mt-4v")}
+          className={cx(classes.button)}
+          size="large"
         >
           Recevoir le diagnostic
         </Button>
@@ -85,6 +88,7 @@ export default function DiagnosticReceiveByMail({
           setModalDismissedCookie();
         }}
         parcelNumber={parcelNumber}
+        summary={summary}
       />
       {successEmail && (
         <Alert
@@ -119,6 +123,12 @@ const useStyles = tss.create(() => ({
       margin: `0 0 0 ${fr.spacing("1v")} `,
     },
   },
+  button: {
+    borderColor: fr.colors.decisions.border.default.blueFrance.default,
+    borderWidth: "1px",
+    marginTop: fr.spacing("4v"),
+    borderStyle: "solid"
+  },
   buttonContainer: {
     display: "flex",
     alignItems: "center",
@@ -126,7 +136,8 @@ const useStyles = tss.create(() => ({
     [fr.breakpoints.down('md')]: {
       justifyContent: "center",
       marginBottom: fr.spacing('4v')
-    }
+    },
+
   },
   checkIcon: {
     color: fr.colors.decisions.background.flat.blueFrance.default,

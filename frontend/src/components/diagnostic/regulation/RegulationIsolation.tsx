@@ -28,8 +28,9 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
       {hasIsolation ? (
         diagnostic.isolation_min !== diagnostic.isolation_max ? (
           <p className={fr.cx("fr-text--lg", "fr-mb-2v")}>
-            {exposureText}, vous avez une obligation d'isolation réglementaire
-            entre{" "}
+            {exposureText}, vous avez une obligation d'isolation réglementaire.
+            <br/>
+            L’outil diagBruit estime que cette isolation se situe dans une fourchette entre {" "}
             <strong>
               {diagnostic.isolation_min} et {diagnostic.isolation_max} dB
             </strong>{" "}

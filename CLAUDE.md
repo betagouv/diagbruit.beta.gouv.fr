@@ -44,6 +44,8 @@ Default DB credentials: `user` / `password` / `diagbruit`.
    (landing-only Dagster job: reads S3 `_source/` data + committed reference
    fixtures into `public_workspace.raw_*` / `geo_departements`). Needs the
    `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` repository secrets; no Box.
+   Cadastre is the exception: too heavy to land per run, so CI seeds it from the
+   committed 500-parcel fixture (`cadastre_parcelles_fixture`).
 2. dbt: installs deps → `dbt run`
 3. FastAPI: installs deps → `pytest --cov=app tests/`
 

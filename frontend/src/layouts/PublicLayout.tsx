@@ -174,7 +174,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             text: "Documentation",
             linkProps: {
               target: "_blank",
-              href: "https://docs.numerique.gouv.fr/docs/da3f8dd6-f9f2-4a4c-9548-952e076f699d/",
+              href: "https://docs.numerique.gouv.fr/docs/374c8d67-2e91-4e38-9bd7-cabf39036e4b/",
             },
           },
         ]}

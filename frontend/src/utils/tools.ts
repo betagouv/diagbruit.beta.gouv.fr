@@ -8,6 +8,7 @@ import {
   DiagnosticItem,
   Geometry,
   IntRange,
+  LandIntersection,
   SoundClassificationIntersectionAffectedHelper,
 } from "./types";
 import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
@@ -98,6 +99,57 @@ export const getReadableSource = (
     default:
       return source;
   }
+};
+
+export type NoiseMapRow = {
+  type: string;
+  producer: string;
+  name: string;
+  dayLevel: string;
+  nightLevel: string;
+};
+
+export const getNoiseMapRows = (diagnostic: Diagnostic): NoiseMapRow[] => {
+  const { land_intersections_ld, land_intersections_ln, air_intersections } =
+    diagnostic;
+
+  const getNightLevel = (codeinfra: string | null): string => {
+    if (!codeinfra) return "-";
+    const ln = land_intersections_ln.find((i) => i.codeinfra === codeinfra);
+    return ln ? `${ln.acoustic_db_value} dB` : "-";
+  };
+
+  const maxByInfra: Record<string, LandIntersection> = {};
+  land_intersections_ld.forEach((entry) => {
+    if (entry.acoustic_noisemap_kind !== "A") return;
+    const key = entry.codeinfra || `null_${entry.kind}`;
+    if (
+      !maxByInfra[key] ||
+      entry.acoustic_db_value > maxByInfra[key].acoustic_db_value
+    ) {
+      maxByInfra[key] = entry;
+    }
+  });
+
+  const landRows: NoiseMapRow[] = Object.values(maxByInfra)
+    .sort((a, b) => b.acoustic_db_value - a.acoustic_db_value)
+    .map((i) => ({
+      type: getReadableSource(i.kind, true),
+      producer: i.acoustic_producer_kind === "INFRA" ? "État" : "Agglomération",
+      name: i.codeinfra || "Non connu",
+      dayLevel: `${i.acoustic_db_value} dB`,
+      nightLevel: getNightLevel(i.codeinfra),
+    }));
+
+  const airRows: NoiseMapRow[] = air_intersections.map((i) => ({
+    type: "Aérien",
+    producer: "État",
+    name: i.label || "Non connu",
+    dayLevel: `${i.acoustic_db_value} dB`,
+    nightLevel: "-",
+  }));
+
+  return [...landRows, ...airRows];
 };
 
 export const getSummaryTextFromDiagnostic = (

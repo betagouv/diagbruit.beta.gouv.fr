@@ -1,6 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { DiagnosticItem } from "../../../utils/types";
 import DiagnosticRegulationBox from "../DiagnosticRegulationBox";
+import DiagnosticSoundClassificationTable from "../DiagnosticSoundClassificationTable";
+import { LEGAL_TEXTS } from "../../../utils/texts/legal";
 
 type RegulationClsProps = {
   diagnosticItem: DiagnosticItem;
@@ -27,25 +29,36 @@ const RegulationCls = ({ diagnosticItem }: RegulationClsProps) => {
   );
 
   return (
-    <div className={fr.cx("fr-mb-4v")}>
-      <DiagnosticRegulationBox
-        label="Parcelle soumise au classement sonore"
-        content={
-          <>
-            <p className={fr.cx("fr-mb-0")}>
-              La parcelle est exposée à {intersections.length} sources de bruit
-              de{" "}
-              {allSameSoundCategory
-                ? `catégorie ${firstSoundCategory}`
-                : "différentes catégories."}
-            </p>
-            <p className={fr.cx("fr-mb-4v")}>
-              Vous avez une obligation réglementaire d'isoler votre bâtiment.
-            </p>
-          </>
-        }
-      />
-    </div>
+    <>
+      <div className={fr.cx("fr-mb-4v")}>
+        <DiagnosticRegulationBox
+          label="Parcelle soumise au classement sonore"
+          content={
+            <>
+              <p className={fr.cx("fr-mb-0")}>
+                La parcelle est exposée à {intersections.length} sources de bruit
+                de{" "}
+                {allSameSoundCategory
+                  ? `catégorie ${firstSoundCategory}`
+                  : "différentes catégories."}
+              </p>
+              <p className={fr.cx("fr-mb-4v")}>
+                Vous avez une obligation réglementaire d'isoler votre bâtiment.
+              </p>
+            </>
+          }
+        />
+      </div>
+      <div className={fr.cx("fr-mb-6v")}>
+        <DiagnosticSoundClassificationTable
+          intersections={intersections}
+          caption={LEGAL_TEXTS.SOUNDCLASSIFICATION.INTRODUCTION}
+        />
+      </div>
+      <p className={fr.cx("fr-text--sm")}>
+        <i>{LEGAL_TEXTS.SOUNDCLASSIFICATION.DETAILS.NOTICE}</i>
+      </p>
+    </>
   );
 };
 
