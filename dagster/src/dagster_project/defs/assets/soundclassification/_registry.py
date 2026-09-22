@@ -193,4 +193,19 @@ SOUNDCLASSIFICATION_TERRITORIES: list[SoundclassificationTerritory] = [
                                       acoustic_category_from="categorie"),
         ),
     ),
+    SoundclassificationTerritory(
+        dept="090",
+        campaign="2026",
+        box_id="418317952446",
+        sources=(
+            SoundclassificationSource("Classement_sonore_fer_interne_diagBruit_v3.shp", mode="fer",
+                                      label_from="identifian",
+                                      acoustic_category_from="categorie",
+                                      acoustic_buffer_from="larg_sec"),
+            SoundclassificationSource("n_classement_sonore_route_l_r27.shp", mode="routier",
+                                      numero_from="nomtroncon",
+                                      acoustic_category_from="categorie",
+                                      acoustic_buffer_from="largeur"),
+        ),
+    ),
 ]
