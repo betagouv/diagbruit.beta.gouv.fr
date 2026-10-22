@@ -52,7 +52,8 @@
     "nodemailer": "^10.2.0",
     "postcss": "^8.5.23",
     "sanitize-html": "^2.18.0",
-    "webpack-dev-middleware": "^7.4.6"
+    "webpack-dev-middleware": "^7.4.6",
+    "@swc/core": "1.16.2"
   },
   "packageManager": "yarn@4.12.0"
 }
