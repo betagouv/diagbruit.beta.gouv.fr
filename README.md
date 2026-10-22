@@ -212,6 +212,8 @@ The badge at the top of the README reflects the status of this CI.
 
 Deployments are fully automated via GitHub Actions. Each component (FastAPI, Frontend, CMS, Metabase) has its own workflow that triggers automatically on push when files in its directory change.
 
+Metabase and Strapi sit behind a ProConnect authentication proxy — see [docs/auth-proconnect.md](docs/auth-proconnect.md).
+
 ### Production
 
 Push to the `main` branch automatically deploys changed components to production:
