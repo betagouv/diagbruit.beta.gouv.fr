@@ -27,6 +27,7 @@ oauth2-proxy \
   --authenticated-emails-file=/tmp/allowed_emails.txt \
   --skip-auth-regex='^/api/' \
   --skip-auth-regex='^/uploads/' \
+  --skip-auth-regex='^/images/' \
   --reverse-proxy=true \
   --cookie-secure=true \
   --cookie-expire=8h \

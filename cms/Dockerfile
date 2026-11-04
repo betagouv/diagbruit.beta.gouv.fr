@@ -1,6 +1,7 @@
 # Plancher de sécurité : v7.15.2 corrige quatre contournements d'authentification,
 # dont un via skip_auth_regex (CVE-2026-41059) dont dépend l'ouverture de /api.
-ARG OAUTH2_PROXY_VERSION=v7.15.4
+# v7.15.5 en corrige quatre de plus (CVE-2026-56855, -78662, -84304, -84445).
+ARG OAUTH2_PROXY_VERSION=v7.15.5
 
 FROM quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_VERSION} AS proxy
 

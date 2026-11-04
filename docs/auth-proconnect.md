@@ -26,7 +26,7 @@ Deux mécaniques, parce que les deux apps ne se construisent pas pareil :
 | Metabase | buildpack | [`betagouv/oauth2-proxy-buildpack`](https://github.com/betagouv/oauth2-proxy-buildpack), voir `metabase/Procfile` |
 | Strapi | Docker | binaire copié dans l'image, voir `cms/entrypoint.sh` |
 
-## Version minimale : v7.15.4
+## Version minimale : v7.15.5
 
 `oauth2-proxy` < 7.15.2 cumule quatre contournements d'authentification :
 
@@ -38,14 +38,14 @@ Deux mécaniques, parce que les deux apps ne se construisent pas pareil :
 | CVE-2026-34457 | bypass via *User-Agent* de health check | < 7.15.2 |
 
 La première touche le mécanisme même sur lequel repose l'ouverture des chemins
-publics ci-dessous.
+publics ci-dessous. `v7.15.5` en corrige quatre de plus : `CVE-2026-56855`,
+`CVE-2026-78662`, `CVE-2026-84304`, `CVE-2026-84445`.
 
-Le buildpack betagouv épingle **v7.15.0**, vulnérable. Il faut donc forcer la
-version sur l'app Metabase :
-
-```
-OAUTH2_PROXY_VERSION=v7.15.4
-```
+> ⚠️ **Ne pas définir `OAUTH2_PROXY_VERSION` sur l'app Metabase.** Le buildpack
+> betagouv épingle désormais `v7.15.5` par défaut (il était en `v7.15.0` jusqu'au
+> 29/09/2026), et apparie la version à un `OAUTH2_PROXY_CHECKSUM` vérifié au
+> build. Poser la version sans le checksum correspondant fait échouer le
+> `sha256sum -c` du buildpack, donc le déploiement. Laisser les deux par défaut.
 
 Côté Strapi, la version est épinglée dans `cms/Dockerfile`.
 
@@ -58,6 +58,7 @@ Sans ces exceptions, le site public tombe.
 | Metabase | `^/embed/`, `^/api/embed/`, `^/app/` | iframe signée de la page `/stats` |
 | Metabase | `^/api/session/properties$` | amorçage du bundle front |
 | Strapi | `^/api/`, `^/uploads/` | contenu et médias du site public |
+| Strapi | `^/images/` | images des e-mails sortants, servies depuis `cms/public/images/` |
 
 Deux points à ne pas relâcher :
 
@@ -79,7 +80,6 @@ Toute modification doit être reportée ici.
 ### Metabase (`diag-bruit-metabase`)
 
 ```sh
-OAUTH2_PROXY_VERSION=v7.15.4
 OAUTH2_PROXY_PROVIDER=oidc
 OAUTH2_PROXY_OIDC_ISSUER_URL=https://fca.integ01.dev-agentconnect.fr/api/v2
 OAUTH2_PROXY_CLIENT_ID=...
@@ -148,11 +148,13 @@ vers `session/end` dans `OAUTH2_PROXY_FOOTER` — voir
 
 1. `/stats` du frontend s'affiche en navigation privée, sans authentification.
 2. Une page de contenu Strapi s'affiche, images comprises.
-3. `https://<domaine>/` redirige vers ProConnect.
-4. `https://<app>.osc-fr1.scalingo.io/` redirige aussi vers ProConnect.
-5. Une adresse absente d'`OAUTH2_ALLOWED_EMAILS` obtient un 403 après
+3. Un e-mail de diagnostic est reçu **avec ses images** (elles viennent de
+   `/images/`, hors du proxy — voir le tableau des chemins ouverts).
+4. `https://<domaine>/` redirige vers ProConnect.
+5. `https://<app>.osc-fr1.scalingo.io/` redirige aussi vers ProConnect.
+6. Une adresse absente d'`OAUTH2_ALLOWED_EMAILS` obtient un 403 après
    authentification.
-6. `https://metabase.diagbruit.beta.gouv.fr/public/` n'est pas accessible
+7. `https://metabase.diagbruit.beta.gouv.fr/public/` n'est pas accessible
    anonymement.
 
 ## Procédure de secours
@@ -174,5 +176,7 @@ seul login applicatif. À retirer dès la configuration réparée.
 
 ## À remonter en amont
 
-Le buildpack `betagouv/oauth2-proxy-buildpack` épingle `v7.15.0`, vulnérable aux
-quatre CVE ci-dessus. Signaler pour que la valeur par défaut soit relevée.
+*Réglé.* Le buildpack `betagouv/oauth2-proxy-buildpack` épinglait `v7.15.0`,
+vulnérable aux quatre CVE ci-dessus. Il est passé en `v7.15.4` le 29/09/2026,
+puis en `v7.15.5` le 12/10/2026. Plus rien à signaler ; il suffit de ne pas
+surcharger `OAUTH2_PROXY_VERSION`.
