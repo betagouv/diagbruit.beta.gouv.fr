@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Sur Scalingo, le buildpack betagouv/oauth2-proxy-buildpack (cms/.buildpacks)
+# installe le binaire dans bin/ ; en Docker, il est dans /usr/local/bin.
+export PATH="$PWD/bin:$PATH"
+
 PUBLIC_PORT="${PORT:?PORT non défini}"
 
 if [ "${DANGER_DISABLE_AUTH_PROXY:-false}" = "true" ]; then

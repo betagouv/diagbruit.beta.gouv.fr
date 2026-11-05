@@ -19,12 +19,19 @@ public et qui contournerait un filtrage posé sur le seul domaine.
 Les deux écrans de connexion se cumulent : ProConnect, puis le login applicatif.
 Les rôles internes de Metabase et Strapi restent inchangés.
 
-Deux mécaniques, parce que les deux apps ne se construisent pas pareil :
+Les deux apps récupèrent le binaire par le même buildpack,
+[`betagouv/oauth2-proxy-buildpack`](https://github.com/betagouv/oauth2-proxy-buildpack),
+déclaré dans leur `.buildpacks`. Seul le lancement diffère :
 
-| App | Build | Montage |
-|---|---|---|
-| Metabase | buildpack | [`betagouv/oauth2-proxy-buildpack`](https://github.com/betagouv/oauth2-proxy-buildpack), voir `metabase/Procfile` |
-| Strapi | Docker | binaire copié dans l'image, voir `cms/entrypoint.sh` |
+| App | Lancement |
+|---|---|
+| Metabase | `metabase/Procfile` → script générique du buildpack, configuré par variables |
+| Strapi | `cms/Procfile` → `cms/entrypoint.sh`, qui fixe les chemins publics dans le code |
+
+> ⚠️ **Scalingo ignore `cms/Dockerfile`.** L'app est construite par les
+> buildpacks ; le `Dockerfile` ne sert qu'en local. Sans `cms/Procfile`,
+> Scalingo lance `yarn start` directement sur `$PORT` et le proxy n'existe pas —
+> c'était le cas au premier déploiement de cette mise en place.
 
 ## Version minimale : v7.15.5
 
@@ -41,13 +48,14 @@ La première touche le mécanisme même sur lequel repose l'ouverture des chemin
 publics ci-dessous. `v7.15.5` en corrige quatre de plus : `CVE-2026-56855`,
 `CVE-2026-78662`, `CVE-2026-84304`, `CVE-2026-84445`.
 
-> ⚠️ **Ne pas définir `OAUTH2_PROXY_VERSION` sur l'app Metabase.** Le buildpack
+> ⚠️ **Ne pas définir `OAUTH2_PROXY_VERSION` sur les apps Metabase et CMS.** Le buildpack
 > betagouv épingle désormais `v7.15.5` par défaut (il était en `v7.15.0` jusqu'au
 > 29/09/2026), et apparie la version à un `OAUTH2_PROXY_CHECKSUM` vérifié au
 > build. Poser la version sans le checksum correspondant fait échouer le
 > `sha256sum -c` du buildpack, donc le déploiement. Laisser les deux par défaut.
 
-Côté Strapi, la version est épinglée dans `cms/Dockerfile`.
+Sur Scalingo, la version vient donc du buildpack pour les deux apps. L'`ARG`
+de `cms/Dockerfile` ne vaut que pour une image construite en local.
 
 ## Chemins laissés ouverts
 
@@ -146,6 +154,9 @@ vers `session/end` dans `OAUTH2_PROXY_FOOTER` — voir
 
 ## Recette avant bascule en production
 
+0. Le proxy tourne bien : le log de build mentionne le buildpack
+   `oauth2-proxy`, et `https://<domaine>/oauth2/sign_in` répond (un 404 signifie
+   que l'application est exposée directement, sans proxy).
 1. `/stats` du frontend s'affiche en navigation privée, sans authentification.
 2. Une page de contenu Strapi s'affiche, images comprises.
 3. Un e-mail de diagnostic est reçu **avec ses images** (elles viennent de
