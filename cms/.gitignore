@@ -129,3 +129,8 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+############################
+# oauth2-proxy (installé par le buildpack, ou à la main pour un test local)
+############################
+
+bin/
