@@ -24,7 +24,7 @@
     "axios": "^1.20.0",
     "d3-path": "^3.1.0",
     "d3-shape": "^3.2.0",
-    "maplibre-gl": "^5.3.0",
+    "maplibre-gl": "^6.4.1",
     "pako": "^2.1.0",
     "point-in-polygon": "^1.1.0",
     "polygon-clipping": "^0.15.7",
@@ -41,8 +41,8 @@
     "zod": "^3.24.3"
   },
   "scripts": {
-    "start": "react-dsfr update-icons && react-scripts start",
-    "build": "react-dsfr copy-static-assets && react-dsfr update-icons && node scripts/generate-sitemap.js && react-scripts build",
+    "start": "node scripts/copy-maplibre-worker.js && react-dsfr update-icons && react-scripts start",
+    "build": "node scripts/copy-maplibre-worker.js && react-dsfr copy-static-assets && react-dsfr update-icons && node scripts/generate-sitemap.js && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
