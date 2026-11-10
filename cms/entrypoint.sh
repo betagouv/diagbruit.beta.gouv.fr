@@ -9,7 +9,7 @@ PUBLIC_PORT="${PORT:?PORT non défini}"
 
 if [ "${DANGER_DISABLE_AUTH_PROXY:-false}" = "true" ]; then
   echo "WARNING: proxy d'authentification désactivé — Strapi est exposé publiquement" >&2
-  exec yarn start
+  exec npm start
 fi
 
 : "${OAUTH2_PROXY_CLIENT_ID:?OAUTH2_PROXY_CLIENT_ID non défini}"
@@ -19,7 +19,7 @@ fi
 echo "${OAUTH2_ALLOWED_EMAILS:?OAUTH2_ALLOWED_EMAILS non défini}" \
   | tr ',' '\n' | tr -d ' ' | grep . >/tmp/allowed_emails.txt
 
-HOST=127.0.0.1 PORT=8080 yarn start &
+HOST=127.0.0.1 PORT=8080 npm start &
 strapi_pid=$!
 
 # Les exceptions d'authentification restent ici plutôt qu'en variable
