@@ -9,6 +9,13 @@ import {
 import { MultiPolygon } from "geojson";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 
+const removeConsecutiveDuplicates = (
+  ring: GeoJSON.Position[]
+): GeoJSON.Position[] =>
+  ring.filter(
+    (p, i) => i === 0 || p[0] !== ring[i - 1][0] || p[1] !== ring[i - 1][1]
+  );
+
 const turfDistanceToBorder = (
   centerPoint: GeoJSON.Feature<GeoJSON.Point>,
   polygonFeature: GeoJSON.Feature
@@ -20,14 +27,17 @@ const turfDistanceToBorder = (
       ? polygonFeature.geometry.coordinates.flat()
       : [];
 
-  const allLineStrings = coords.map((ring) => ({
-    type: "Feature" as const,
-    geometry: {
-      type: "LineString" as const,
-      coordinates: ring,
-    },
-    properties: {},
-  }));
+  const allLineStrings = coords
+    .map(removeConsecutiveDuplicates)
+    .filter((ring) => ring.length >= 2)
+    .map((ring) => ({
+      type: "Feature" as const,
+      geometry: {
+        type: "LineString" as const,
+        coordinates: ring,
+      },
+      properties: {},
+    }));
 
   const distances = allLineStrings.map((line) => {
     const nearest = nearestPointOnLine(line, centerPoint);
