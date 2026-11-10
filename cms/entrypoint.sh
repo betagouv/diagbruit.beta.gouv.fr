@@ -19,8 +19,6 @@ fi
 echo "${OAUTH2_ALLOWED_EMAILS:?OAUTH2_ALLOWED_EMAILS non défini}" \
   | tr ',' '\n' | tr -d ' ' | grep . >/tmp/allowed_emails.txt
 
-# npm et non yarn : .slugignore retire .yarn/ (yarnPath de .yarnrc.yml) de
-# l'image Scalingo, donc `yarn start` plante au runtime.
 HOST=127.0.0.1 PORT=8080 npm start &
 strapi_pid=$!
 
