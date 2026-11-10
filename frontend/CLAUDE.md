@@ -42,5 +42,14 @@ Copy `.env.example` to `.env`. Key variables:
 
 ## Docker
 
-Multi-stage Dockerfile: Node 18 build → nginx:stable-alpine serve.
+Multi-stage Dockerfile: Node 22 build → nginx:stable-alpine serve.
 The `REACT_APP_API_URL` build-arg must be passed at build time (baked into the static bundle).
+
+## MapLibre worker
+
+maplibre-gl ≥ 6 is ESM-only and locates its web worker via `import.meta.url`,
+which CRA's webpack rewrites to a `file://` path — the map then fails with
+"Worker failed to load". `scripts/copy-maplibre-worker.js` (run by `yarn start`
+and `yarn build`) copies the worker to `public/maplibre-gl-worker.js`
+(gitignored), and `src/config/maplibreWorker.ts` registers it with
+`setWorkerUrl()`. Any new map entry point must import that module first.

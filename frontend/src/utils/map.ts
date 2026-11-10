@@ -159,7 +159,7 @@ export function mergeCoordinatesByParcelle(
       coordinates: allCoords,
     };
 
-    const mergedFeature: MapGeoJSONFeature = {
+    const mergedFeature: unknown = {
       ...base,
       geometry: mergedGeometry,
       id: `${base.id}`,
@@ -170,16 +170,16 @@ export function mergeCoordinatesByParcelle(
       toJSON: base.toJSON,
     };
 
-    result.push(mergedFeature);
+    result.push(mergedFeature as MapGeoJSONFeature); 
   }
 
   return result;
 }
 
 export const findFeatureAsync = (
-  map: maplibregl.Map,
+  map: MapInstance,
   idu: string
-): Promise<maplibregl.MapGeoJSONFeature | null> => {
+): Promise<MapGeoJSONFeature | null> => {
   const maxAttempts = 1500;
   let attempts = 0;
 

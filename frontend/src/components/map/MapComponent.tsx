@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "../../config/maplibreWorker";
 import {
   type Dispatch,
   forwardRef,
@@ -357,7 +358,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           onMouseMove={onHover}
           onMove={onZoomChange}
           style={{ width: "100%", height: "550px" }}
-          mapStyle={orthoStyle as StyleSpecification}
+          mapStyle={orthoStyle as unknown as StyleSpecification}
           onSourceData={onMapSourceData}
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
