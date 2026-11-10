@@ -69,11 +69,19 @@ export const getNearbySiblings = (
       if (!sibling) return false;
       return booleanIntersects(buffered, sibling);
     })
+    .map((feature) => ({
+      feature,
+      distance: turfDistanceToBorder(centerPoint, feature),
+    }))
     .sort((a, b) => {
-      const da = turfDistanceToBorder(centerPoint, a);
-      const db = turfDistanceToBorder(centerPoint, b);
-      return da - db;
-    });
+      const aFinite = Number.isFinite(a.distance);
+      const bFinite = Number.isFinite(b.distance);
+      if (aFinite && bFinite) return a.distance - b.distance;
+      if (aFinite) return -1;
+      if (bFinite) return 1;
+      return 0;
+    })
+    .map(({ feature }) => feature);
 
   return nearby;
 };
