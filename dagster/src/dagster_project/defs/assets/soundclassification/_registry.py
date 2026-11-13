@@ -76,7 +76,7 @@ SOUNDCLASSIFICATION_TERRITORIES: list[SoundclassificationTerritory] = [
     SoundclassificationTerritory(
         dept="059",
         campaign="2022",
-        box_id="384762438911",
+        box_id="384762436511",
         sources=(
             SoundclassificationSource("troncon_fer_valide_59.shp", mode="fer", 
                                       label_from="nomroute", acoustic_category_from="categorie", 
