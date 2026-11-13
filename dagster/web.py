@@ -71,7 +71,7 @@ def _run_with_auth(app, **kwargs):
     _original_uvicorn_run(BasicAuthMiddleware(app), **kwargs)
 
 
-# Relies on dagster-webserver (dagster==1.13.0) starting via uvicorn.run(); if a
+# Relies on dagster-webserver (verified on dagster==1.13.26) starting via uvicorn.run(); if a
 # future version bypasses it, auth silently no-ops — re-verify on any upgrade.
 uvicorn.run = _run_with_auth
 

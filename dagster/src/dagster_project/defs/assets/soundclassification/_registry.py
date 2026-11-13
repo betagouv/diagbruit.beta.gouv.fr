@@ -76,15 +76,15 @@ SOUNDCLASSIFICATION_TERRITORIES: list[SoundclassificationTerritory] = [
     SoundclassificationTerritory(
         dept="059",
         campaign="2022",
-        box_id="384762438911",
+        box_id="384762436511",
         sources=(
-            SoundclassificationSource("troncon_fer_valide_59.shp", mode="fer", 
-                                      label_from="nomroute", acoustic_category_from="categorie", 
+            SoundclassificationSource("troncon_fer_valide_59_repri_2022_avec_MEL25_SIVOUM25.shp", mode="fer", 
+                                      label_from="idtroncon", acoustic_category_from="codbruit", 
                                       acoustic_buffer_from="largeur"),
-            SoundclassificationSource("troncons59.shp", mode="routier",
+            SoundclassificationSource("troncon_route_valide_59.shp", mode="routier",
                                       numero_from="nomtroncon",
-                                      acoustic_category_from="cat_bruit",
-                                      acoustic_buffer_from="larg_sect"),
+                                      acoustic_category_from="categorie",
+                                      acoustic_buffer_from="largeur"),
         ),
     ),
     SoundclassificationTerritory(
