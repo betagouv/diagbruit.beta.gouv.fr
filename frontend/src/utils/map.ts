@@ -9,6 +9,13 @@ import {
 import { MultiPolygon } from "geojson";
 import { MapGeoJSONFeature, MapInstance } from "react-map-gl/maplibre";
 
+const removeConsecutiveDuplicates = (
+  ring: GeoJSON.Position[]
+): GeoJSON.Position[] =>
+  ring.filter(
+    (p, i) => i === 0 || p[0] !== ring[i - 1][0] || p[1] !== ring[i - 1][1]
+  );
+
 const turfDistanceToBorder = (
   centerPoint: GeoJSON.Feature<GeoJSON.Point>,
   polygonFeature: GeoJSON.Feature
@@ -20,14 +27,17 @@ const turfDistanceToBorder = (
       ? polygonFeature.geometry.coordinates.flat()
       : [];
 
-  const allLineStrings = coords.map((ring) => ({
-    type: "Feature" as const,
-    geometry: {
-      type: "LineString" as const,
-      coordinates: ring,
-    },
-    properties: {},
-  }));
+  const allLineStrings = coords
+    .map(removeConsecutiveDuplicates)
+    .filter((ring) => ring.length >= 2)
+    .map((ring) => ({
+      type: "Feature" as const,
+      geometry: {
+        type: "LineString" as const,
+        coordinates: ring,
+      },
+      properties: {},
+    }));
 
   const distances = allLineStrings.map((line) => {
     const nearest = nearestPointOnLine(line, centerPoint);
@@ -59,11 +69,19 @@ export const getNearbySiblings = (
       if (!sibling) return false;
       return booleanIntersects(buffered, sibling);
     })
+    .map((feature) => ({
+      feature,
+      distance: turfDistanceToBorder(centerPoint, feature),
+    }))
     .sort((a, b) => {
-      const da = turfDistanceToBorder(centerPoint, a);
-      const db = turfDistanceToBorder(centerPoint, b);
-      return da - db;
-    });
+      const aFinite = Number.isFinite(a.distance);
+      const bFinite = Number.isFinite(b.distance);
+      if (aFinite && bFinite) return a.distance - b.distance;
+      if (aFinite) return -1;
+      if (bFinite) return 1;
+      return 0;
+    })
+    .map(({ feature }) => feature);
 
   return nearby;
 };
@@ -159,7 +177,7 @@ export function mergeCoordinatesByParcelle(
       coordinates: allCoords,
     };
 
-    const mergedFeature: MapGeoJSONFeature = {
+    const mergedFeature: unknown = {
       ...base,
       geometry: mergedGeometry,
       id: `${base.id}`,
@@ -170,16 +188,16 @@ export function mergeCoordinatesByParcelle(
       toJSON: base.toJSON,
     };
 
-    result.push(mergedFeature);
+    result.push(mergedFeature as MapGeoJSONFeature); 
   }
 
   return result;
 }
 
 export const findFeatureAsync = (
-  map: maplibregl.Map,
+  map: MapInstance,
   idu: string
-): Promise<maplibregl.MapGeoJSONFeature | null> => {
+): Promise<MapGeoJSONFeature | null> => {
   const maxAttempts = 1500;
   let attempts = 0;
 
