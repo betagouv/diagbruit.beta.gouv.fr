@@ -78,6 +78,18 @@ export interface GlobalDiagPreview extends Struct.ComponentSchema {
   };
 }
 
+export interface GlobalEmailProfiles extends Struct.ComponentSchema {
+  collectionName: 'components_global_email_profiles';
+  info: {
+    description: '';
+    displayName: 'email-profiles';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    value: Schema.Attribute.String;
+  };
+}
+
 export interface GlobalHomeSearch extends Struct.ComponentSchema {
   collectionName: 'components_global_home_searches';
   info: {
@@ -199,6 +211,7 @@ declare module '@strapi/strapi' {
       'global.array': GlobalArray;
       'global.availability-map': GlobalAvailabilityMap;
       'global.diag-preview': GlobalDiagPreview;
+      'global.email-profiles': GlobalEmailProfiles;
       'global.home-search': GlobalHomeSearch;
       'global.link': GlobalLink;
       'global.local-documentation-code-insee': GlobalLocalDocumentationCodeInsee;
