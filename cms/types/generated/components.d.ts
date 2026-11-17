@@ -192,7 +192,7 @@ export interface GlobalTitleTextArray extends Struct.ComponentSchema {
 }
 
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ComponentSchemas {
       'global.about': GlobalAbout;
       'global.accordion': GlobalAccordion;

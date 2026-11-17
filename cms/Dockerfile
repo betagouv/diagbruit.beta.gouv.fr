@@ -1,3 +1,10 @@
+# Plancher de sécurité : v7.15.2 corrige quatre contournements d'authentification,
+# dont un via skip_auth_regex (CVE-2026-41059) dont dépend l'ouverture de /api.
+# v7.15.5 en corrige quatre de plus (CVE-2026-56855, -78662, -84304, -84445).
+ARG OAUTH2_PROXY_VERSION=v7.15.5
+
+FROM quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_VERSION} AS proxy
+
 # Creating multi-stage build for production
 FROM node:22.9.0-alpine AS build
 RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev git > /dev/null 2>&1
@@ -15,7 +22,8 @@ RUN yarn build
 
 # Creating final production image
 FROM node:22.9.0-alpine
-RUN apk add --no-cache vips-dev
+RUN apk add --no-cache vips-dev bash
+COPY --from=proxy /bin/oauth2-proxy /usr/local/bin/oauth2-proxy
 ENV NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 WORKDIR /opt/
@@ -24,7 +32,7 @@ WORKDIR /opt/app
 COPY --from=build /opt/app ./
 ENV PATH=/opt/node_modules/.bin:$PATH
 
-RUN chown -R node:node /opt/app
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chown -R node:node /opt/app
 USER node
-EXPOSE 1337
-CMD ["yarn", "start"]
+CMD ["/entrypoint.sh"]

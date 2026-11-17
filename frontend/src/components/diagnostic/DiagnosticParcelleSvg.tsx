@@ -24,17 +24,9 @@ type DiagnosticParcelleSvgProps = {
 
 const BOX_SIZE = 400;
 
-const DiagnosticParcelleSvg = ({
-  geometry,
-  zones,
-  width = BOX_SIZE,
-  padding = 10,
-  onOptimalUtilsLoaded,
-}: DiagnosticParcelleSvgProps) => {
-  const rawRings = normalizeToRings(geometry);
-  const rings = mergeRings(rawRings);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [lastOZPSent, setLastOZPSent] = useState<{ x: number; y: number }[]>();
+
+const DiagnosticParcelleSvg = (props: DiagnosticParcelleSvgProps) => {
+  const rings = mergeRings(normalizeToRings(props.geometry));
 
   if (
     !Array.isArray(rings) ||
@@ -43,6 +35,19 @@ const DiagnosticParcelleSvg = ({
   ) {
     return <div>Invalid geometry</div>;
   }
+
+  return <DiagnosticParcelleSvgContent {...props} rings={rings} />;
+};
+
+const DiagnosticParcelleSvgContent = ({
+  rings,
+  zones,
+  width = BOX_SIZE,
+  padding = 10,
+  onOptimalUtilsLoaded,
+}: DiagnosticParcelleSvgProps & { rings: [number, number][][] }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [lastOZPSent, setLastOZPSent] = useState<{ x: number; y: number }[]>();
 
   const computedHeight = BOX_SIZE;
 
