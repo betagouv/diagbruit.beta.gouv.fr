@@ -92,3 +92,43 @@ export const FollowUpEmailPlus7 = () => {
     </Html>
   )
 }
+
+export const FollowUpEmailPlus15 = ()=> {
+  return (
+    <Html>
+      <Head />
+      <Body style={main}>
+        <Container style={container}>
+          <Section>
+            <Text style={paragraph}>Bonjour,</Text>
+            <Text style={paragraph}>
+             Je me permets un dernier message concernant le diagnostic diagBruit que vous avez consulté il y a quelques semaines.
+            </Text>
+            <Text style={paragraph}>
+             <strong>Vos retours sont vraiment importants pour notre équipe. </strong> Ils nous permettent de comprendre comment diagBruit est utilisé sur le terrain, de démontrer son utilité et de continuer à faire évoluer ce service public.
+            </Text>
+            <Text style={paragraph}>
+             Si ce diagnostic vous a aidé à prendre une décision, à approfondir le sujet du bruit ou simplement à vérifier une information, <strong>je serais très intéressé de connaître votre expérience.</strong>
+            </Text>
+            <Text style={paragraph}>
+             Même quelques lignes me seraient très utiles !
+            </Text>
+            <Text style={paragraph}>
+             Merci beaucoup pour votre aide et le temps que vous pourrez m'accorder.
+            </Text>
+            <Text style={paragraph}>
+              Très cordialement,
+            </Text>
+            <Text style={paragraph}>
+              Baudoin Cardon
+            </Text>
+            <Text style={paragraph}>
+              <strong>Équipe diagBruit</strong>
+            </Text>
+          </Section>
+          <Footer />
+        </Container>
+      </Body>
+    </Html>
+  )
+}
