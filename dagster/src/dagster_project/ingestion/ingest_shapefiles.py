@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import geopandas as gpd
 import pandas as pd
+import pyogrio
 from sqlalchemy import create_engine, text, inspect
 import argparse
 import io
@@ -41,6 +42,34 @@ def _sanitize_geojson_geometry(geom):
         polys = [p for p in (_clean_polygon_rings(r) for r in geom["coordinates"]) if p]
         return None if not polys else {"type": "MultiPolygon", "coordinates": polys}
     return geom
+
+
+def _noop_log(_message):
+    pass
+
+
+def _iter_geo_frames(file_path, chunk_features, log):
+    """Yield the file as one frame, or as successive slices of `chunk_features` rows.
+
+    Reading a whole department cadastre (~2M polygons) builds a multi-GB GeoDataFrame
+    and OOMs the container, so large sources are streamed slice by slice. GeoJSON is
+    never sliced: the degenerate-ring fallback in `_read_geo_file` needs the whole
+    document.
+    """
+    if not chunk_features or file_path.lower().endswith((".geojson", ".json")):
+        yield _read_geo_file(file_path, log)
+        return
+
+    offset = 0
+    while True:
+        gdf = pyogrio.read_dataframe(file_path, skip_features=offset, max_features=chunk_features)
+        if len(gdf) == 0:
+            return
+        log(f"Read features {offset}–{offset + len(gdf)}")
+        yield gdf
+        if len(gdf) < chunk_features:
+            return
+        offset += len(gdf)
 
 
 def _read_geo_file(file_path, log):
@@ -157,56 +186,101 @@ def _widen_columns(engine, schema, table_name, gdf, log):
                     f'USING acoustic_db_value::text'
                 ))
                 log(f"Converted column acoustic_db_value from {existing_db_type} to TEXT")
-        conn.execute(text(
-            f"ALTER TABLE {schema}.{table_name} "
-            f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
-            f"USING geometry::geometry(Geometry,2154)"
-        ))
+        # Only widen the geometry column when it is not already typed. Postgres
+        # refuses to alter a column a view depends on, and `to_postgis` already
+        # creates it as geometry(Geometry,2154) — so running this unconditionally
+        # broke every append into a table carrying a dbt view (raw_cadastre_parcelles
+        # and stg_parcelle) for no gain.
+        current = conn.execute(text(
+            "SELECT type, srid FROM geometry_columns "
+            "WHERE f_table_schema = :schema AND f_table_name = :table "
+            "AND f_geometry_column = 'geometry'"
+        ), {"schema": schema, "table": table_name}).first()
+        if not current or current.srid != 2154 or current.type.upper() != "GEOMETRY":
+            log(f"Typing geometry column of {schema}.{table_name} as geometry(Geometry,2154)")
+            conn.execute(text(
+                f"ALTER TABLE {schema}.{table_name} "
+                f"ALTER COLUMN geometry TYPE geometry(Geometry,2154) "
+                f"USING geometry::geometry(Geometry,2154)"
+            ))
         conn.commit()
 
 
-def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, context=None):
+def _prepare_frame(gdf, file_path, mapping, ignore_columns, fixed_columns, column_renames, log):
+    gdf.columns = [col.lower() for col in gdf.columns]
+
+    if gdf.crs is None:
+        log(f"No CRS found in {file_path}, defaulting to EPSG:2154")
+        gdf = gdf.set_crs(epsg=2154)
+    else:
+        gdf = gdf.to_crs(epsg=2154)
+
+    if mapping is not None:
+        gdf = _apply_mapping(gdf, mapping)
+    else:
+        if ignore_columns:
+            log(f"Ignoring columns: {ignore_columns}")
+            gdf.drop(columns=[col for col in ignore_columns if col in gdf.columns], inplace=True)
+
+        if fixed_columns:
+            log(f"Adding fixed columns: {fixed_columns}")
+            for key, value in fixed_columns.items():
+                gdf[key] = value
+
+        if column_renames:
+            log(f"Renaming columns: {column_renames}")
+            gdf.rename(columns=column_renames, inplace=True)
+
+    for col in ("acoustic_category", "acoustic_buffer"):
+        if col in gdf.columns:
+            gdf[col] = pd.to_numeric(gdf[col], errors="coerce")
+
+    # acoustic_db_value is free-text (ranges, suffixes, labels) parsed downstream
+    # in dbt, so force it to TEXT here while keeping NaN/None as SQL NULL.
+    if "acoustic_db_value" in gdf.columns:
+        gdf["acoustic_db_value"] = [
+            None if pd.isna(v) else str(v) for v in gdf["acoustic_db_value"]
+        ]
+
+    gdf["geometry"] = gdf["geometry"].apply(drop_z)
+    return gdf
+
+
+def _write_frame(engine, schema, table_name, gdf, if_exists, log):
+    if if_exists == "append":
+        inspector = inspect(engine)
+        if table_name in inspector.get_table_names(schema=schema):
+            _widen_columns(engine, schema, table_name, gdf, log)
+
+    log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
+    try:
+        gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+    except Exception as create_err:
+        # Race condition: another concurrent partition created the table between our
+        # existence check and the CREATE TABLE. Retry as a plain append.
+        if if_exists == "append" and "already exists" in str(create_err).lower():
+            log("Concurrent table creation detected, retrying as append")
+            _widen_columns(engine, schema, table_name, gdf, log)
+            gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
+        else:
+            raise
+
+
+def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="replace", fixed_columns=None, column_renames=None, ignore_columns=None, mapping=None, chunk_features=None, raise_on_error=False, context=None):
+    """Ingest a vector file into PostGIS.
+
+    `chunk_features` streams the source in slices of that many rows instead of
+    building one GeoDataFrame; the first slice honours `if_exists`, the rest append.
+    Leave it None (the default) to keep the single-frame behaviour.
+
+    `raise_on_error` re-raises instead of returning False. Under Dagster's
+    `execute_in_process` the error log goes to the captured-log manager rather than
+    stdout, so a caller that only sees the False has no way to learn what failed.
+    """
     log = context.log.info if context else print
     log_err = context.log.error if context else lambda msg: print(msg, file=sys.stderr)
     try:
         log(f"Reading shapefile: {file_path}")
-        gdf = _read_geo_file(file_path, log)
-        gdf.columns = [col.lower() for col in gdf.columns]
-
-        if gdf.crs is None:
-            log(f"No CRS found in {file_path}, defaulting to EPSG:2154")
-            gdf = gdf.set_crs(epsg=2154)
-        else:
-            gdf = gdf.to_crs(epsg=2154)
-
-        if mapping is not None:
-            gdf = _apply_mapping(gdf, mapping)
-        else:
-            if ignore_columns:
-                log(f"Ignoring columns: {ignore_columns}")
-                gdf.drop(columns=[col for col in ignore_columns if col in gdf.columns], inplace=True)
-
-            if fixed_columns:
-                log(f"Adding fixed columns: {fixed_columns}")
-                for key, value in fixed_columns.items():
-                    gdf[key] = value
-
-            if column_renames:
-                log(f"Renaming columns: {column_renames}")
-                gdf.rename(columns=column_renames, inplace=True)
-
-        for col in ("acoustic_category", "acoustic_buffer"):
-            if col in gdf.columns:
-                gdf[col] = pd.to_numeric(gdf[col], errors="coerce")
-
-        # acoustic_db_value is free-text (ranges, suffixes, labels) parsed downstream
-        # in dbt, so force it to TEXT here while keeping NaN/None as SQL NULL.
-        if "acoustic_db_value" in gdf.columns:
-            gdf["acoustic_db_value"] = [
-                None if pd.isna(v) else str(v) for v in gdf["acoustic_db_value"]
-            ]
-
-        gdf["geometry"] = gdf["geometry"].apply(drop_z)
 
         engine = create_engine(db_url)
         create_schema_if_not_exists(engine, schema)
@@ -220,28 +294,25 @@ def ingest_shapefile(file_path, table_name, db_url, schema="raw", if_exists="rep
                 return True
             if_exists = 'replace'
 
-        if if_exists == "append":
-            inspector = inspect(engine)
-            if table_name in inspector.get_table_names(schema=schema):
-                _widen_columns(engine, schema, table_name, gdf, log)
+        total = 0
+        mode = if_exists
+        for index, frame in enumerate(_iter_geo_frames(file_path, chunk_features, log)):
+            # Only the first slice logs the column transforms; they are identical
+            # for every slice and would otherwise repeat once per chunk.
+            gdf = _prepare_frame(
+                frame, file_path, mapping, ignore_columns, fixed_columns, column_renames,
+                log if index == 0 else _noop_log,
+            )
+            _write_frame(engine, schema, table_name, gdf, mode, log)
+            total += len(gdf)
+            mode = "append"
 
-        log(f"Ingesting to {schema}.{table_name} with if_exists={if_exists}")
-        try:
-            gdf.to_postgis(table_name, engine, schema=schema, if_exists=if_exists, chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
-        except Exception as create_err:
-            # Race condition: another concurrent partition created the table between our
-            # existence check and the CREATE TABLE. Retry as a plain append.
-            if if_exists == "append" and "already exists" in str(create_err).lower():
-                log("Concurrent table creation detected, retrying as append")
-                _widen_columns(engine, schema, table_name, gdf, log)
-                gdf.to_postgis(table_name, engine, schema=schema, if_exists="append", chunksize=INGEST_CHUNKSIZE, dtype={"geometry": Geometry(geometry_type="GEOMETRY", srid=2154)})
-            else:
-                raise
-
-        log(f"Successfully ingested {len(gdf)} records to {schema}.{table_name}")
+        log(f"Successfully ingested {total} records to {schema}.{table_name}")
         return True
     except Exception as e:
         log_err(f"Error ingesting shapefile: {e}, {sys.stderr}")
+        if raise_on_error:
+            raise
         return False
 
 

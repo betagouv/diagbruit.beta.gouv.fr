@@ -1,14 +1,156 @@
-import { Body, Button, Column, Container, Head, Html, Img, Link, Preview, Row, Section, Text } from '@react-email/components';
+import { Body, Button, Column, Container, Font, Head, Html, Img, Link, Preview, Row, Section, Text } from '@react-email/components';
 
+const FONTS_BASE_URL = `${process.env.STRAPI_URL || "http://localhost:1337"}/fonts`;
 
 interface EmailProps {
   diagLink?: string;
+  pdfUrl?: string;
+  parcelNumber?: string;
 }
+
+const Footer = () => (
+  <Section>
+    <Row>
+      <Column className="w-2/3">
+        <Img
+          src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/brandIconText.svg`}
+          alt="DiagBruit"
+          style={{ paddingRight: "8px" }}
+        />
+      </Column>
+      <Column align="right" style={footerTextColumn}>
+        <Text style={footerText}>
+          Cordialement,
+          <br />
+          L'équipe diagBruit
+          <br />
+          <Link style={linkStyle} href='mailto:contact@diagbruit.fr'>contact@diagbruit.fr</Link>
+        </Text>
+        <Text style={footerText}>
+          <em>
+            Service public proposé à titre de conseil pour alerter sur
+            l'exposition sonore des parcelles, réalisé avec l'appui du
+            Cerema et de l'ANCT.
+          </em>
+        </Text>
+      </Column>
+    </Row>
+  </Section>
+)
 
 export default function DiagnosticEmail({
   diagLink = "https://diagbruit.fr",
+  pdfUrl,
+  parcelNumber,
 }: EmailProps) {
   const previewText = `Vous avez demandé à recevoir le diagnostic acoustique de votre parcelle.`;
+
+  return (
+    <Html>
+      <Head>
+        <Font
+          fontFamily="Marianne"
+          fallbackFontFamily="Arial"
+          webFont={{
+            url: `${FONTS_BASE_URL}/Marianne-Regular.woff`,
+            format: "woff",
+          }}
+          fontWeight={400}
+          fontStyle="normal"
+        />
+        <Font
+          fontFamily="Marianne"
+          fallbackFontFamily="Arial"
+          webFont={{
+            url: `${FONTS_BASE_URL}/Marianne-Bold.woff`,
+            format: "woff",
+          }}
+          fontWeight={700}
+          fontStyle="normal"
+        />
+      </Head>
+      <Preview>{previewText}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Section>
+            <Text style={paragraph}>Bonjour,</Text>
+            <Text style={paragraph}>
+              Merci d'avoir utilisé diagBruit. Votre diagnostic pour la parcelle n°{parcelNumber} est désormais disponible au téléchargement :
+            </Text>
+          </Section>
+          <Section>
+            {pdfUrl && (
+              <Button href={pdfUrl} target="_blank" style={primaryButton}>
+                Télécharger mon diagnostic (PDF)
+              </Button>
+            )}
+            <Button
+              href={`${diagLink}&mtm_campaign=recevoirmondiag`}
+              target="_blank"
+              style={secondaryButton}
+            >
+              Consulter mon diagnostic en ligne
+            </Button>
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              Ce document vous informe de l’environnement sonore de votre parcelle en s’appuyant sur des données officielles. Nous vous recommandons d’affiner cette étude en réalisant une étude acoustique par un spécialiste.
+            </Text>
+            <Text style={paragraph}>
+              <strong> Une question sur les résultats obtenus ?</strong>
+            </Text>
+            <Text style={paragraph}>
+              Nos équipes peuvent vous accompagner dans leur compréhension. Répondez simplement à cet email et nous reviendrons vers vous dans les meilleurs délais.
+            </Text>
+            <Text style={paragraph}>
+              Vous pouvez également consulter notre bibliothèque de préconisations pour découvrir des conseils d'implantation, d'aménagement et de conception :{" "}
+              <Link
+                href={"https://diagbruit.fr/preco"}
+                target="_blank"
+                style={linkStyle}
+              >
+                Consulter la médiathèque de préconisations
+              </Link>
+            </Text>
+
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              Merci pour votre confiance,
+              <br />
+              L'équipe diagBruit
+            </Text>
+          </Section>
+          <Section>
+            <Text style={paragraph}>
+              <strong>Avez-vous trouvé nos informations utiles ?</strong>
+            </Text>
+          </Section>
+          <Section style={{ marginBottom: "16px" }}>
+            <Row>
+              <Column style={{ width: "1px", whiteSpace: "nowrap", verticalAlign: "middle" }}>
+                <Button
+                  href={"https://tally.so/popup/1A4kZL"}
+                  target="_blank"
+                  style={secondaryButton}
+                >
+                  Je partage mon avis
+                </Button>
+              </Column>
+              <Column style={{ verticalAlign: "middle", paddingLeft: "8px" }}>
+                <Text style={hintText}>(temps de réponse : 1 min)</Text>
+              </Column>
+            </Row>
+          </Section>
+          <Footer />
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+export const FollowUpEmail = () => {
+  const previewText = `Vous avez récemment consulté un diagnostic sur diagBruit.`;
 
   return (
     <Html>
@@ -16,102 +158,40 @@ export default function DiagnosticEmail({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Main Content */}
           <Section>
             <Text style={paragraph}>Bonjour,</Text>
             <Text style={paragraph}>
-              Vous avez demandé à recevoir le diagnostic acoustique de votre
-              parcelle.
+              Vous avez récemment téléchargé un diagnostic sur <strong>diagBruit</strong> et une chose nous intéresse particulièrement : <strong>à quoi vous a-t-il servi ?</strong>
             </Text>
-          </Section>
-          <Button
-            href={`${diagLink}&mtm_campaign=recevoirmondiag`}
-            target="_blank"
-            style={button}
-          >
-            <Row>
-              <Column style={{ width: "20px", verticalAlign: "middle" }}>
-                <Img
-                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/btnIcon.svg`}
-                  alt="button Icon"
-                  width="16"
-                  height="16"
-                />
-              </Column>
-              <Column style={{ paddingLeft: "8px", verticalAlign: "middle" }}>
-                <Text style={buttonText}>Accéder à mon diagnostic</Text>
-              </Column>
-            </Row>
-          </Button>
-          <Section>
             <Text style={paragraph}>
-              Ce diagnostic vous permet de consulter les réglementations en
-              vigueur ainsi que nos préconisations et conseils techniques
-              adaptés au niveau d'exposition au bruit de votre parcelle.
+              Préparer un projet, vérifier une réglementation, informer un client, mieux comprendre l’exposition au bruit d’une parcelle…
+              <strong>votre retour nous aide à comprendre l’impact réel de diagBruit et à améliorer le service.</strong> 
             </Text>
-          </Section>
-          <Section>
             <Text style={paragraph}>
-              <strong>Besoin d'accompagnement ? </strong>
-              Si vous avez des questions complémentaires sur les nuisances
-              sonores ou si vous souhaitez être mis en contact avec un bureau
-              d'études pour une analyse acoustique plus approfondie, notre
-              équipe est là pour vous accompagner. Vous pouvez nous contacter en
-              répondant à cet email.
+              👉 <strong>3 questions, 2 minutes : </strong><Link style={linkStyle} href="https://tally.so/popup/1A4kZL">Partager mon retour</Link> 
             </Text>
-          </Section>
-          <Section>
             <Text style={paragraph}>
-              <strong>Votre avis nous intéresse ! </strong>
-              Aidez-nous à améliorer diagBruit en partageant votre retour
-              d'expérience.
-              <Link
-                href={"https://tally.so/popup/1A4kZL"}
-                target="_blank"
-                style={linkStyle}
-              >
-                Donner mon avis (1 min)
-              </Link>
+              Vous pouvez aussi simplement répondre à ce mail en quelques mots : <strong>on lit chaque retour.  </strong>
+            </Text>
+            <Text style={paragraph}>
+              Merci pour votre aide !
+            </Text>
+            <Text style={paragraph}>
+              <strong>L'équipe diagBruit</strong>
             </Text>
           </Section>
-          {/* Footer */}
-          <Section>
-            <Row>
-              <Column className="w-2/3">
-                <Img
-                  src={`${process.env.STRAPI_URL || "http://localhost:1337"}/images/footerImage.svg`}
-                  alt="DiagBruit"
-                  style={{ paddingRight: "8px" }}
-                />
-              </Column>
-              <Column align="right" style={footerTextColumn}>
-                <Text style={footerText}>
-                  Cordialement,
-                  <br />
-                  L'équipe diagBruit
-                  <br />
-                  <Link style={{ color: "#000091" }}>contact@diagbruit.fr</Link>
-                </Text>
-                <Text style={footerText}>
-                  <em>
-                    Service public proposé à titre de conseil pour alerter sur
-                    l'exposition sonore des parcelles, réalisé avec l'appui du
-                    Cerema et de l'ANCT.
-                  </em>
-                </Text>
-              </Column>
-            </Row>
-          </Section>
+          <Footer />
         </Container>
       </Body>
     </Html>
-  );
+  )
 }
+
 
 const main: React.CSSProperties = {
   fontFamily:
     '"Marianne", -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
-  fontSize: "14px",
+  fontSize: "16px",
   backgroundColor: "#ffffff",
 };
 
@@ -126,6 +206,7 @@ const footerText: React.CSSProperties = {
   lineHeight: "1.5",
   color: "#333333",
   textAlign: "justify",
+  fontSize: "16px",
 };
 
 const footerTextColumn: React.CSSProperties = {
@@ -134,32 +215,44 @@ const footerTextColumn: React.CSSProperties = {
 };
 
 const paragraph: React.CSSProperties = {
-  fontSize: "14px",
+  fontSize: "16px",
   lineHeight: "1.5",
   color: "#333333",
   marginBottom: "16px",
 };
 
-const button: React.CSSProperties = {
-  color: "#F5F5FE",
-  display: "inline-block",
-  width: "fit-content",
+const primaryButton: React.CSSProperties = {
+  color: "#ffffff",
   backgroundColor: "#000091",
+  border: "1px solid #000091",
+  fontSize: "16px",
+  fontWeight: 500,
   textDecoration: "none",
-  paddingLeft: "16px",
-  paddingRight: "16px",
+  display: "inline-block",
+  padding: "8px 12px",
+  marginRight: "8px",
 };
 
-const buttonText: React.CSSProperties = {
-  color: "#F5F5FE",
-  fontSize: "14px",
-  lineHeight: "1.5",
-  marginTop: "8px",
-  marginBottom: "8px",
+const secondaryButton: React.CSSProperties = {
+  color: "#000091",
+  backgroundColor: "#ffffff",
+  border: "1px solid #000091",
+  fontSize: "16px",
+  fontWeight: 500,
+  textDecoration: "none",
+  display: "inline-block",
+  padding: "8px 12px",
 };
 
 const linkStyle: React.CSSProperties = {
   color: "#000091",
   textDecoration: "underline",
   marginLeft: "1px",
+};
+
+const hintText: React.CSSProperties = {
+  color: "#929292",
+  fontSize: "16px",
+  fontWeight: 400,
+  margin: 0,
 };

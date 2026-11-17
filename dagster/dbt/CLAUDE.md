@@ -27,7 +27,10 @@ Models follow the standard dbt layered architecture under `models/<domain>/`:
 | `intermediate/` | view (schema: `workspace`) | Business logic, joins, filtering, deduplication |
 | `marts/` | table | Final output tables consumed by FastAPI |
 
-**Domains:** `noisemap`, `soundclassification`, `peb`, `bdnb`, `osm` (foods, schools, terrasses)
+**Domains:** `noisemap`, `soundclassification`, `peb`, `bdnb`, `osm` (foods, schools, terrasses), `cadastre`
+
+`cadastre` keeps its staging layer as a **view** rather than a table: the national
+parcel set is ~100M rows, so only the `parcelle` mart is materialised.
 
 ## Key Pipeline: OSM → noisesource
 

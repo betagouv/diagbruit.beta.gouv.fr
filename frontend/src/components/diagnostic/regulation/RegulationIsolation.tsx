@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
-import { useSearchParams } from "react-router-dom";
 import type { DiagnosticItem } from "../../../utils/types";
 import FakeLinkComponent from "../../ui/FakeLinkComponent";
+import { useGoToTab } from "../../../hooks/useGoToTab";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -9,10 +9,7 @@ type RegulationIsolationProps = {
 
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const { diagnostic } = diagnosticItem;
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const goToTab = (str: string) =>
-    setSearchParams(new URLSearchParams({ ...Object.fromEntries(searchParams), tab: str }));
+  const goToTab = useGoToTab();
 
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
@@ -31,8 +28,9 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
       {hasIsolation ? (
         diagnostic.isolation_min !== diagnostic.isolation_max ? (
           <p className={fr.cx("fr-text--lg", "fr-mb-2v")}>
-            {exposureText}, vous avez une obligation d'isolation réglementaire
-            entre{" "}
+            {exposureText}, vous avez une obligation d'isolation réglementaire.
+            <br/>
+            L’outil diagBruit estime que cette isolation se situe dans une fourchette entre {" "}
             <strong>
               {diagnostic.isolation_min} et {diagnostic.isolation_max} dB
             </strong>{" "}

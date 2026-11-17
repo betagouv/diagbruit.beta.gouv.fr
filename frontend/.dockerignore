@@ -1,0 +1,9 @@
+node_modules
+build
+.yarn/*
+!.yarn/releases
+.env
+.env.*
+!.env.example
+.DS_Store
+public/maplibre-gl-worker.js

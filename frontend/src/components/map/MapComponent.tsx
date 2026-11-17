@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { bbox, centroid } from "@turf/turf";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "../../config/maplibreWorker";
 import {
   type Dispatch,
   forwardRef,
@@ -14,6 +15,7 @@ import {
 import type { MapGeoJSONFeature, MapInstance, MapLayerMouseEvent, MapRef, MapSourceDataEvent } from "react-map-gl/maplibre";
 import Map, {
   Marker,
+  NavigationControl,
   type StyleSpecification,
 } from "react-map-gl/maplibre";
 import { tss } from "tss-react/dsfr";
@@ -347,6 +349,7 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
         <Map
           id="map"
           ref={mapRef}
+          canvasContextAttributes={{ preserveDrawingBuffer: true }}
           initialViewState={defaultViewState}
           onLoad={onMapLoad}
           onClick={onClick}
@@ -355,11 +358,13 @@ const MapComponent = forwardRef<ExposedMapMethods, MapComponentProps>(
           onMouseMove={onHover}
           onMove={onZoomChange}
           style={{ width: "100%", height: "550px" }}
-          mapStyle={orthoStyle as StyleSpecification}
+          mapStyle={orthoStyle as unknown as StyleSpecification}
           onSourceData={onMapSourceData}
           interactiveLayerIds={interactiveLayerIds}
           cursor={cursor}
         >
+          <NavigationControl position="bottom-right" showCompass={false} />
+
           {zoom >= 16 &&
             noisePins.map((pin, index) => {
               const iconClass = getIconFromNoiseCategorySlug(pin.category_slug);

@@ -8,6 +8,7 @@ import {
   DiagnosticItem,
   Geometry,
   IntRange,
+  LandIntersection,
   SoundClassificationIntersectionAffectedHelper,
 } from "./types";
 import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
@@ -100,6 +101,57 @@ export const getReadableSource = (
   }
 };
 
+export type NoiseMapRow = {
+  type: string;
+  producer: string;
+  name: string;
+  dayLevel: string;
+  nightLevel: string;
+};
+
+export const getNoiseMapRows = (diagnostic: Diagnostic): NoiseMapRow[] => {
+  const { land_intersections_ld, land_intersections_ln, air_intersections } =
+    diagnostic;
+
+  const getNightLevel = (codeinfra: string | null): string => {
+    if (!codeinfra) return "-";
+    const ln = land_intersections_ln.find((i) => i.codeinfra === codeinfra);
+    return ln ? `${ln.acoustic_db_value} dB` : "-";
+  };
+
+  const maxByInfra: Record<string, LandIntersection> = {};
+  land_intersections_ld.forEach((entry) => {
+    if (entry.acoustic_noisemap_kind !== "A") return;
+    const key = entry.codeinfra || `null_${entry.kind}`;
+    if (
+      !maxByInfra[key] ||
+      entry.acoustic_db_value > maxByInfra[key].acoustic_db_value
+    ) {
+      maxByInfra[key] = entry;
+    }
+  });
+
+  const landRows: NoiseMapRow[] = Object.values(maxByInfra)
+    .sort((a, b) => b.acoustic_db_value - a.acoustic_db_value)
+    .map((i) => ({
+      type: getReadableSource(i.kind, true),
+      producer: i.acoustic_producer_kind === "INFRA" ? "État" : "Agglomération",
+      name: i.codeinfra || "Non connu",
+      dayLevel: `${i.acoustic_db_value} dB`,
+      nightLevel: getNightLevel(i.codeinfra),
+    }));
+
+  const airRows: NoiseMapRow[] = air_intersections.map((i) => ({
+    type: "Aérien",
+    producer: "État",
+    name: i.label || "Non connu",
+    dayLevel: `${i.acoustic_db_value} dB`,
+    nightLevel: "-",
+  }));
+
+  return [...landRows, ...airRows];
+};
+
 export const getSummaryTextFromDiagnostic = (
   diagnostic: Diagnostic,
 ): string => {
@@ -165,6 +217,38 @@ export const getZoomFromGeometry = (geometry: GeoJSON.Geometry): number => {
   if (surface < 5000) return 17;
   if (surface < 20000) return 16;
   return 16;
+};
+
+export type CommuneLocation = {
+  bbox: [number, number, number, number] | null; // [minLng, minLat, maxLng, maxLat]
+  center: [number, number] | null; // [lng, lat]
+};
+
+export const fetchCommuneLocation = async (
+  codeInsee: string,
+): Promise<CommuneLocation | null> => {
+  try {
+    const res = await fetch(
+      `https://geo.api.gouv.fr/communes/${encodeURIComponent(
+        codeInsee,
+      )}?fields=centre,bbox&format=json`,
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const bbox =
+      Array.isArray(data?.bbox) && data.bbox.length === 4
+        ? (data.bbox as [number, number, number, number])
+        : null;
+    const center =
+      Array.isArray(data?.centre?.coordinates) &&
+        data.centre.coordinates.length === 2
+        ? (data.centre.coordinates as [number, number])
+        : null;
+    if (!bbox && !center) return null;
+    return { bbox, center };
+  } catch {
+    return null;
+  }
 };
 
 export const getReadableCardinality = (direction: Cardinality) => {

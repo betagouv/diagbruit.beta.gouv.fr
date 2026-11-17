@@ -31,3 +31,6 @@ yarn-error.log*
 # Generated at build time by scripts/generate-sitemap.js
 /public/sitemap.xml
 /public/robots.txt
+
+# Copied from node_modules by scripts/copy-maplibre-worker.js
+/public/maplibre-gl-worker.js

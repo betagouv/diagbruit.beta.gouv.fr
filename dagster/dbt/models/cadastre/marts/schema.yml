@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: parcelle
+    description: "Cadastral parcels (Etalab PCI Express), the iteration axis of the sonoscore batch"
+    columns:
+      - name: idu
+        description: "Cadastral IDU (commune + prefixe + section + numero), the delivery key"
+        tests:
+          - not_null
+          - unique
+      - name: code_insee
+        description: "INSEE commune code — the batch unit of work"
+        tests:
+          - not_null
+      - name: prefixe
+        description: "Absorbed-commune prefix ('000' when none)"
+      - name: section
+        description: "Cadastral section, zero-padded to 2 chars"
+      - name: numero
+        description: "Parcel number, zero-padded to 4 chars to match the API and the result table"
+      - name: codedept
+        description: "Department code, 3 chars (e.g. '033')"
+      - name: release
+        description: "Etalab snapshot the row comes from — recorded alongside each sonoscore run"
+      - name: contenance
+        description: "Cadastral area in m² as declared by the DGFiP (differs from area_m2)"
+      - name: created
+        description: "Parcel creation date"
+      - name: updated
+        description: "Parcel last-update date"
+      - name: geometry
+        description: "Geometry in EPSG:4326"
+      - name: area_m2
+        description: "Geometric area in m², computed in EPSG:2154 before reprojection"
+      - name: srid
+        description: "Spatial reference identifier (4326)"
+      - name: original_is_valid
+        description: "Original geometry validity status"
+      - name: original_validity_reason
+        description: "Original geometry validation reason"
+      - name: is_valid_now
+        description: "Geometry validity after repair"
+      - name: geometry_type
+        description: "PostGIS geometry type"
