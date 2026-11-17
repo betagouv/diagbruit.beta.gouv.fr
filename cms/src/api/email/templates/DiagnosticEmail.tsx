@@ -8,7 +8,7 @@ interface EmailProps {
   parcelNumber?: string;
 }
 
-const Footer = () => (
+export const Footer = () => (
   <Section>
     <Row>
       <Column className="w-2/3">
@@ -149,105 +149,15 @@ export default function DiagnosticEmail({
   );
 }
 
-export const FollowUpEmail = () => {
-  const previewText = `Vous avez récemment consulté un diagnostic sur diagBruit.`;
 
-  return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section>
-            <Text style={paragraph}>Bonjour,</Text>
-            <Text style={paragraph}>
-              Vous avez récemment téléchargé un diagnostic sur <strong>diagBruit</strong> et une chose nous intéresse particulièrement : <strong>à quoi vous a-t-il servi ?</strong>
-            </Text>
-            <Text style={paragraph}>
-              Préparer un projet, vérifier une réglementation, informer un client, mieux comprendre l’exposition au bruit d’une parcelle…
-              <strong>votre retour nous aide à comprendre l’impact réel de diagBruit et à améliorer le service.</strong> 
-            </Text>
-            <Text style={paragraph}>
-              👉 <strong>3 questions, 2 minutes : </strong><Link style={linkStyle} href="https://tally.so/popup/1A4kZL">Partager mon retour</Link> 
-            </Text>
-            <Text style={paragraph}>
-              Vous pouvez aussi simplement répondre à ce mail en quelques mots : <strong>on lit chaque retour.  </strong>
-            </Text>
-            <Text style={paragraph}>
-              Merci pour votre aide !
-            </Text>
-            <Text style={paragraph}>
-              <strong>L'équipe diagBruit</strong>
-            </Text>
-          </Section>
-          <Footer />
-        </Container>
-      </Body>
-    </Html>
-  )
-}
-
-export const FollowUpEmailPlus7 = () => {
-  const previewText = `diagBruit – À propos de votre diagnostic`;
-
-  return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section>
-            <Text style={paragraph}>Bonjour,</Text>
-            <Text style={paragraph}>
-             Je vous recontacte au sujet du diagnostic diagBruit que vous avez récemment téléchargé. 
-            </Text>
-            <Text style={paragraph}>
-              A-t-il eu un <strong>impact concret</strong> sur votre projet ou votre réflexion ?
-            </Text>
-            <Text style={paragraph}>
-              Par exemple :
-            </Text>
-            <ul style={paragraph}>
-              <li>Une adaptation de votre projet</li>
-              <li>Une prise de contact avec un spécialiste</li>
-              <li>Un approfondissement des enjeux liés au bruit</li>
-              <li>Ou simplement la confirmation que le bruit ne nécessitait pas de démarche particulière.</li>
-            </ul>
-            <Text style={paragraph}>
-              Quelques mots en réponse à ce mail suffisent, même si le diagnostic n'a finalement pas eu d'impact sur votre projet.
-            </Text>
-            <Text style={paragraph}>
-              Je serais également ravi d'en discuter avec vous par téléphone si vous préférez.
-            </Text>
-            <Text style={paragraph}>
-              Merci d'avance pour votre retour !
-            </Text>
-            <Text style={paragraph}>
-              Très cordialement,
-            </Text>
-            <Text style={paragraph}>
-              Baudoin Cardon
-            </Text>
-            <Text style={paragraph}>
-              <strong>Équipe diagBruit</strong>
-            </Text>
-          </Section>
-          <Footer />
-        </Container>
-      </Body>
-    </Html>
-  )
-}
-
-
-const main: React.CSSProperties = {
+export const main: React.CSSProperties = {
   fontFamily:
     '"Marianne", -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
   fontSize: "16px",
   backgroundColor: "#ffffff",
 };
 
-const container: React.CSSProperties = {
+export const container: React.CSSProperties = {
   maxWidth: "920px",
   margin: "0 auto",
   padding: "20px",
@@ -266,14 +176,14 @@ const footerTextColumn: React.CSSProperties = {
   paddingLeft: "16px",
 };
 
-const paragraph: React.CSSProperties = {
+export const paragraph: React.CSSProperties = {
   fontSize: "16px",
   lineHeight: "1.5",
   color: "#333333",
   marginBottom: "16px",
 };
 
-const primaryButton: React.CSSProperties = {
+export const primaryButton: React.CSSProperties = {
   color: "#ffffff",
   backgroundColor: "#000091",
   border: "1px solid #000091",
@@ -285,7 +195,7 @@ const primaryButton: React.CSSProperties = {
   marginRight: "8px",
 };
 
-const secondaryButton: React.CSSProperties = {
+export const secondaryButton: React.CSSProperties = {
   color: "#000091",
   backgroundColor: "#ffffff",
   border: "1px solid #000091",
@@ -296,13 +206,13 @@ const secondaryButton: React.CSSProperties = {
   padding: "8px 12px",
 };
 
-const linkStyle: React.CSSProperties = {
+export const linkStyle: React.CSSProperties = {
   color: "#000091",
   textDecoration: "underline",
   marginLeft: "1px",
 };
 
-const hintText: React.CSSProperties = {
+export const hintText: React.CSSProperties = {
   color: "#929292",
   fontSize: "16px",
   fontWeight: 400,
