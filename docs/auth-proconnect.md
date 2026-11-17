@@ -89,7 +89,7 @@ Toute modification doit être reportée ici.
 
 ```sh
 OAUTH2_PROXY_PROVIDER=oidc
-OAUTH2_PROXY_OIDC_ISSUER_URL=https://fca.integ01.dev-agentconnect.fr/api/v2
+OAUTH2_PROXY_OIDC_ISSUER_URL=<cf. « Issuer par environnement »>
 OAUTH2_PROXY_CLIENT_ID=...
 OAUTH2_PROXY_CLIENT_SECRET=...
 OAUTH2_PROXY_COOKIE_SECRET=...
@@ -124,6 +124,25 @@ trentaine de secondes. Aucune adresse n'est versionnée.
 2. Déclarer quatre `redirect_uris` — Metabase et Strapi × prod et preprod.
 3. Récupérer `issuer`, `client_id`, `client_secret`.
 
+### Issuer par environnement
+
+| Environnement | `OAUTH2_PROXY_OIDC_ISSUER_URL` |
+|---|---|
+| Intégration | `https://fca.integ01.dev-agentconnect.fr/api/v2` |
+| Production | `https://auth.agentconnect.gouv.fr/api/v2` |
+
+Sans slash final : `oauth2-proxy` compare la chaîne littéralement au claim
+`issuer` renvoyé par le document de découverte.
+
+Les deux environnements exposent la même liste de scopes, les mêmes méthodes
+d'authentification client et les mêmes algorithmes de signature. Le passage en
+production ne change donc que l'issuer, le `client_id` et le `client_secret`.
+
+Ne pas confondre avec `https://identite.proconnect.gouv.fr` : c'est ProConnect
+Identité, le fournisseur d'identité derrière le hub, pas le hub auquel se
+raccorde un fournisseur de services. Chemins, scopes et endpoints y sont
+différents.
+
 ### Scopes
 
 Valeurs vérifiées sur le document de découverte d'intégration.
@@ -142,9 +161,8 @@ comparer à l'allowlist. D'où `openid email`, et rien de plus.
 - `token_endpoint_auth_methods_supported` : `client_secret_post` et
   `private_key_jwt` uniquement, pas de `client_secret_basic`. Si l'échange de
   jeton échoue, chercher là.
-- `end_session_endpoint` :
-  `https://fca.integ01.dev-agentconnect.fr/api/v2/session/end`, à utiliser pour
-  câbler la déconnexion IdP le moment venu.
+- `end_session_endpoint` : `<issuer>/session/end`, à utiliser pour câbler la
+  déconnexion IdP le moment venu.
 - `response_types_supported` : `code` seulement.
 
 **Pas de déconnexion IdP native.** Se déconnecter du proxy ne déconnecte pas de
