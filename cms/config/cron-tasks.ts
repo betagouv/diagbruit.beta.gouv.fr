@@ -14,7 +14,9 @@ const FOLLOW_UP_PLUS15_SUBJECT = "diagBruit – Des retours suite à votre diagn
 const FOLLOW_UP_PLUS7_DELAY_DAYS = 7;
 const FOLLOW_UP_PLUS15_DELAY_DAYS = 15;
 
-const FOLLOW_UP_TEST_MODE = process.env.FOLLOW_UP_TEST_MODE === "true";
+const FOLLOW_UP_TEST_MODE =
+    process.env.FOLLOW_UP_TEST_MODE === "true" &&
+    process.env.NODE_ENV === "development";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -69,12 +71,13 @@ async function sendFollowUps(
 ) {
     let sent = 0;
     let deleted = 0;
+    let sendFailed = 0;
 
-    const failed = new Set<string>();
+    const skipped = new Set<string>();
 
     while (true) {
-        const pageFilters = failed.size
-            ? { $and: [filters, { documentId: { $notIn: [...failed] } }] }
+        const pageFilters = skipped.size
+            ? { $and: [filters, { documentId: { $notIn: [...skipped] } }] }
             : filters;
         const users = await strapi
             .documents(uid)
@@ -91,16 +94,20 @@ async function sendFollowUps(
                 });
                 sent++;
             } catch (err) {
+
+                sendFailed++;
+                skipped.add(user.documentId);
                 strapi.log.error(
-                    `[cron] ${label}: failed to send to ${user.email}: ${err}`
+                    `[cron] ${label}: failed to send to ${user.email}, will retry next run: ${err}`
                 );
+                continue;
             }
 
             try {
                 await strapi.documents(uid).delete({ documentId: user.documentId });
                 deleted++;
             } catch (err) {
-                failed.add(user.documentId);
+                skipped.add(user.documentId);
                 strapi.log.error(
                     `[cron] ${label}: failed to delete ${user.documentId}: ${err}`
                 );
@@ -108,9 +115,9 @@ async function sendFollowUps(
         }
     }
 
-    if (sent || deleted || !FOLLOW_UP_TEST_MODE) {
+    if (sent || deleted || sendFailed || !FOLLOW_UP_TEST_MODE) {
         strapi.log.info(
-            `[cron] ${label}: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s).`
+            `[cron] ${label}: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s), ${sendFailed} send failure(s) kept for retry.`
         );
     }
 }
