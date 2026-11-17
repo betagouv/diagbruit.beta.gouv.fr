@@ -625,6 +625,64 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFollowUpEmailPlus15UserFollowUpEmailPlus15User
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'follow_up_email_plus15_users';
+  info: {
+    displayName: 'FollowUpEmailPlus15User';
+    pluralName: 'follow-up-email-plus15-users';
+    singularName: 'follow-up-email-plus15-user';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::follow-up-email-plus15-user.follow-up-email-plus15-user'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFollowUpEmailPlus7UserFollowUpEmailPlus7User
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'follow_up_email_plus7_users';
+  info: {
+    displayName: 'FollowUpEmailPlus7User';
+    pluralName: 'follow-up-email-plus7-users';
+    singularName: 'follow-up-email-plus7-user';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::follow-up-email-plus7-user.follow-up-email-plus7-user'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFollowUpEmailUserFollowUpEmailUser
   extends Struct.CollectionTypeSchema {
   collectionName: 'follow_up_email_users';
@@ -1484,6 +1542,8 @@ declare module '@strapi/strapi' {
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
       'api::email.email': ApiEmailEmail;
+      'api::follow-up-email-plus15-user.follow-up-email-plus15-user': ApiFollowUpEmailPlus15UserFollowUpEmailPlus15User;
+      'api::follow-up-email-plus7-user.follow-up-email-plus7-user': ApiFollowUpEmailPlus7UserFollowUpEmailPlus7User;
       'api::follow-up-email-user.follow-up-email-user': ApiFollowUpEmailUserFollowUpEmailUser;
       'api::home-page-content.home-page-content': ApiHomePageContentHomePageContent;
       'api::legal-mention.legal-mention': ApiLegalMentionLegalMention;
