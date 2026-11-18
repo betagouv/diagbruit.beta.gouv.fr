@@ -4,6 +4,7 @@ import { useGoToTab } from "../../../hooks/useGoToTab";
 import { tss } from "tss-react/dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import RegulationIsolationRange from "./RegulationIsolationRange";
+import RegulationIsolationResources from "./RegulationIsolationResources";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -20,9 +21,6 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const hasPeb = diagnostic.air_intersections.length > 0;
   const hasCls = diagnostic.soundclassification_intersections.length > 0;
 
-  // Simple calculation = at most one source: a single sound-classification sector
-  // (already deduplicated by label in the API) or a single PEB zone.
-  // Several PEB zones count as several sources, so they make it complex.
   const isolationSourcesCount =
     diagnostic.soundclassification_intersections.length +
     diagnostic.air_intersections.length;
@@ -118,18 +116,10 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
           </li>
           <li>
             <strong>Consultez les ressources diagBruit</strong> spécifiques à la thématique isolation :
+            <RegulationIsolationResources />
           </li>
         </ul>
       </div>
-      {/* <FakeLinkComponent onClick={() => goToTab("legal")}>
-        Voir le détail du classement sonore{" "}
-        <i className={fr.cx("ri-arrow-right-line")} />
-      </FakeLinkComponent>
-      <FakeLinkComponent onClick={() => goToTab("position")}>
-        Voir la répartition sonore sur la parcelle{" "}
-        <i className={fr.cx("ri-arrow-right-line")} />
-      </FakeLinkComponent> */}
-
     </div>
   );
 };
