@@ -1,17 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { tss } from "tss-react/dsfr";
+import IsolationRegulationPicto from "./IsolationRegulationPicto";
 
 type RegulationIsolationRangeProps = {
   isolationMin: number | null;
   isolationMax: number | null;
 };
-
-// Horizontal centre of the houses in IsolationRegulationPicto.svg (viewBox 303 × 107),
-// in % of its width, so the dB labels stay under the right house at any size.
-const PICTO_NEAR_HOUSE_X = "44.6%";
-const PICTO_FAR_HOUSE_X = "91.1%";
-// Just below the ground line of the picto.
-const PICTO_LABELS_Y = "71%";
 
 const RegulationIsolationRange = ({
   isolationMin,
@@ -43,23 +37,10 @@ const RegulationIsolationRange = ({
 
       <figure className={classes.illustration}>
         <div className={classes.picto}>
-          <img
-            src="/images/IsolationRegulationPicto.svg"
-            alt="Schéma : plus le bâtiment est proche de la source de bruit, plus l’isolation requise est élevée."
-            className={classes.pictoImage}
+          <IsolationRegulationPicto
+            nearLabel={`${isolationMax} dB`}
+            farLabel={`${isolationMin} dB`}
           />
-          <span
-            className={classes.pictoLabel}
-            style={{ left: PICTO_NEAR_HOUSE_X }}
-          >
-            {isolationMax} dB
-          </span>
-          <span
-            className={classes.pictoLabel}
-            style={{ left: PICTO_FAR_HOUSE_X }}
-          >
-            {isolationMin} dB
-          </span>
         </div>
         <figcaption className={fr.cx("fr-text--sm", "fr-mb-0", "fr-mt-4v")}>
           Seuil le plus haut recommandé{" "}
@@ -114,22 +95,7 @@ const useStyles = tss.create(() => ({
     textAlign: "center",
   },
   picto: {
-    position: "relative",
     width: "100%",
     maxWidth: "303px",
-  },
-  pictoImage: {
-    display: "block",
-    width: "100%",
-    height: "auto",
-  },
-  pictoLabel: {
-    position: "absolute",
-    top: PICTO_LABELS_Y,
-    transform: "translateX(-50%)",
-    whiteSpace: "nowrap",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
-    color: fr.colors.decisions.text.default.grey.default,
   },
 }));
