@@ -56,6 +56,7 @@ const useStyles = tss.create(() => ({
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: fr.spacing("6v"),
     marginTop: fr.spacing("4v"),
+    marginBottom: fr.spacing("4v"),
     [fr.breakpoints.down("md")]: {
       gridTemplateColumns: "1fr",
     },

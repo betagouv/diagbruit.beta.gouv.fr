@@ -201,7 +201,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-          <DiagnosticDesignOffice />
           <DiagnosticReceiveByMail
             parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
             summary={{

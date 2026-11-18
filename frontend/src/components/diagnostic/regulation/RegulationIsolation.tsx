@@ -5,6 +5,9 @@ import { tss } from "tss-react/dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import RegulationIsolationRange from "./RegulationIsolationRange";
 import RegulationIsolationResources from "./RegulationIsolationResources";
+import Button from "@codegouvfr/react-dsfr/Button";
+
+const CONTACT_EMAIL = "contact@diagbruit.fr";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -118,6 +121,22 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
             <strong>Consultez les ressources diagBruit</strong> spécifiques à la thématique isolation :
             <RegulationIsolationResources />
           </li>
+          <li>
+            <div className={classes.contactRow}>
+              <span>
+                <strong>Contactez l'équipe diagBruit</strong> pour être accompagné sur cette thématique.
+              </span>
+              <Button
+                priority="primary"
+                iconId="ri-mail-line"
+                linkProps={{ href: `mailto:${CONTACT_EMAIL}` }}
+                className={cx(classes.button)}
+                size="large"
+              >
+                Nous contacter
+              </Button>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
@@ -150,9 +169,6 @@ const useStyles = tss.create(() => ({
     fontSize: "1.125rem",
     lineHeight: "1.75rem",
     margin: 0,
-    "& > li": {
-      paddingBottom: 0,
-    },
     "& > li + li": {
       marginTop: fr.spacing("4v"),
     },
@@ -162,5 +178,21 @@ const useStyles = tss.create(() => ({
     "i::before": {
       "--icon-size": fr.typography[19].style.fontSize,
     },
-  }
+  },
+  contactRow: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "nowrap",
+    gap: fr.spacing("8v"),
+    [fr.breakpoints.down("md")]: {
+      flexWrap: "wrap",
+      gap: fr.spacing("4v"),
+    },
+  },
+  button: {
+    borderColor: fr.colors.decisions.border.default.blueFrance.default,
+    borderWidth: "1px",
+    borderStyle: "solid",
+    flexShrink: 0,
+  },
 }));
