@@ -3,6 +3,7 @@ import type { DiagnosticItem } from "../../../utils/types";
 import { useGoToTab } from "../../../hooks/useGoToTab";
 import { tss } from "tss-react/dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import RegulationIsolationRange from "./RegulationIsolationRange";
 
 type RegulationIsolationProps = {
   diagnosticItem: DiagnosticItem;
@@ -48,11 +49,11 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
       {hasIsolation ? (
         diagnostic.isolation_min !== diagnostic.isolation_max ? (
           <>
-            <Badge severity="info" className={fr.cx("fr-my-2v")}>Préconisations diagBruit</Badge>
-            <p className={classes.isolationText}>
-              L’outil diagBruit propose, <strong>à titre indicatif,</strong> une fourchette d’isolation minimale située entre <strong>{diagnostic.isolation_min} dB et {diagnostic.isolation_max} dB. </strong>
-              Cette préconisation <strong>ne se substitue, en aucun cas, à une étude acoustique.</strong>
-            </p>
+            <Badge severity="info" className={fr.cx("fr-mt-2v", "fr-mb-4v")}>Préconisations diagBruit</Badge>
+            <RegulationIsolationRange
+              isolationMin={diagnostic.isolation_min}
+              isolationMax={diagnostic.isolation_max}
+            />
           </>
         ) : (
           <p className={fr.cx("fr-text--lg", "fr-mb-2v")}>
@@ -75,7 +76,7 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         </h4>
         <Badge severity="error">Calcul</Badge>
         <p className={classes.isolationText}>
-          Le <strong>calcul d'isolation</strong>sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phonique existantes, multi exposition.
+          Le <strong>calcul d'isolation</strong> sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phonique existantes, multi exposition.
         </p>
 
         <h4 className={classes.isolationTitle}>
