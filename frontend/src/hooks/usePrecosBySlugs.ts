@@ -58,7 +58,6 @@ const usePrecosBySlugs = (slugs: string[]) => {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slugsKey]);
 
   return { precosBySlug, isLoading };

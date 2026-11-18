@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { DiagnosticItem } from "../../../utils/types";
-import { useGoToTab } from "../../../hooks/useGoToTab";
 import { tss } from "tss-react/dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import RegulationIsolationRange from "./RegulationIsolationRange";
@@ -16,7 +15,6 @@ type RegulationIsolationProps = {
 const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
   const { diagnostic } = diagnosticItem;
   const { cx, classes } = useStyles();
-  const goToTab = useGoToTab();
 
   const hasIsolation =
     diagnostic.isolation_max && diagnostic.isolation_max > 30;
@@ -89,7 +87,10 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
             Calcul d’isolation simple
           </Badge>
         ) : (
-          <Badge severity="warning">Calcul d’isolation complexe</Badge>
+          <Badge severity="warning" noIcon>
+            <span className={fr.cx("fr-icon-error-warning-fill", "fr-icon--sm", "fr-mr-1v")} aria-hidden="true" />
+            Calcul d’isolation complexe
+          </Badge>
         )}
         <p className={classes.isolationText}>
           Le <strong>calcul d'isolation</strong> sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phonique existantes, multi exposition.

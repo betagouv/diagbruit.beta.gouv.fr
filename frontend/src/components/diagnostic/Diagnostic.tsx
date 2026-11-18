@@ -10,15 +10,12 @@ import { getNoiseMapRows, getReadableSource } from "../../utils/tools";
 import { buildPositionData } from "../../utils/buildPositionData";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
-import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticAcousticCertificate from "./DiagnosticAcousticCertificate";
-import DiagnosticDesignOffice from "./DiagnosticDesignOffice";
 
 
 type DiagnosticProps = {
