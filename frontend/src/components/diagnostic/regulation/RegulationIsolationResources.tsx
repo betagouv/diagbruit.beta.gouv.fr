@@ -5,8 +5,8 @@ import usePrecosBySlugs from "../../../hooks/usePrecosBySlugs";
 import CardPreco from "../../ui/CardPreco";
 
 const ISOLATION_RESOURCES = [
-  { slug: "test2", badge: "Article" },
-  { slug: "preconisations-pour-l-installation-des-pompes-a-chaleur", badge: "Doc technique" },
+  { slug: "realiser-une-etude-acoustique", badge: "Article" },
+  { slug: "isolement-acoustique-des-facades-adapter-les-solutions-aux-objectifs-de-performance", badge: "Doc technique" },
 ];
 
 const RegulationIsolationResources = () => {
