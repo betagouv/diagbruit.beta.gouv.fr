@@ -79,21 +79,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           />
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticAcousticCertificate />
-          <h4>Autres sources de bruit à proximité</h4>
-          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-        </>
-      ),
-    },
-    {
-      tabId: "legal",
-      label: "Isolation réglementaire",
-      isDefault: activeTabId === "legal",
-      content: (
-        <>
-          <DiagnosticSectionTitle
-            title="Isolation réglementaire"
-          />
-          <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         </>
       ),
     },
