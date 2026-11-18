@@ -19,6 +19,14 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
 
   const hasPeb = diagnostic.air_intersections.length > 0;
   const hasCls = diagnostic.soundclassification_intersections.length > 0;
+
+  // Simple calculation = at most one source: a single sound-classification sector
+  // (already deduplicated by label in the API) or a single PEB zone.
+  // Several PEB zones count as several sources, so they make it complex.
+  const isolationSourcesCount =
+    diagnostic.soundclassification_intersections.length +
+    diagnostic.air_intersections.length;
+  const isSimpleIsolationCalcul = isolationSourcesCount <= 1;
   const exposureText =
     hasPeb && hasCls
       ? "Vous êtes soumis au bruit aérien et au classement sonore"
@@ -74,7 +82,14 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         <h4 className={classes.isolationTitle}>
           4. Comment la fourchette d’isolation diagBruit est-elle calculée ?
         </h4>
-        <Badge severity="error">Calcul</Badge>
+        {isSimpleIsolationCalcul ? (
+          <Badge severity="success" noIcon>
+            <span className={fr.cx("fr-icon-error-fill", "fr-icon--sm", "fr-mr-1v")} aria-hidden="true" />
+            Calcul d’isolation simple
+          </Badge>
+        ) : (
+          <Badge severity="warning">Calcul d’isolation complexe</Badge>
+        )}
         <p className={classes.isolationText}>
           Le <strong>calcul d'isolation</strong> sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phonique existantes, multi exposition.
         </p>
