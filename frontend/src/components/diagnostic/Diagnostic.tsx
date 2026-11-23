@@ -166,11 +166,22 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   return (
     <div id="diagnostic-section">
+      {/*
+        Score 0 = la parcelle ne croise aucun objet des cartes de bruit, du PEB
+        ni du classement sonore (retour anticipé de get_parcelle_diagnostic côté
+        API). Les niveaux sous 55 dB Lden / 50 dB Ln sont écartés à l'ingestion
+        (stg_noisemap.sql) : ce sont les seuils de représentation européens,
+        d'où le message « zone de moindre bruit ».
+        Les territoires non couverts par diagBruit n'arrivent jamais ici : l'API
+        répond 404 et la page affiche un autre message.
+      */}
       {diagnosticItem.diagnostic.score === 0 ? (
         <div className={cx(classes.container)}>
           <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>
-            Cette parcelle n’est impactée ni par les cartes de bruit
-            stratégique, ni par le plan d’exposition au bruit.{" "}
+            Cette parcelle se situe en zone de moindre bruit : selon les
+            territoires, elle a pu faire l’objet d’une cartographie, mais le
+            niveau sonore y est inférieur aux seuils de représentation imposés
+            par la réglementation européenne.{" "}
           </h3>
           <Alert
             description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
