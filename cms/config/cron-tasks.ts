@@ -1,15 +1,15 @@
 import { createElement } from "react";
 import { render } from "@react-email/render";
 import { FollowUpEmailPlus1, FollowUpEmailPlus15, FollowUpEmailPlus7 } from "../src/api/email/templates/FollowUpEmails";
+import {
+    FOLLOW_UP_PLUS15_UID,
+    FOLLOW_UP_PLUS7_UID,
+    FOLLOW_UP_UID,
+} from "../src/api/email/followUps";
 
-const FOLLOW_UP_UID = "api::follow-up-email-user.follow-up-email-user";
 const FOLLOW_UP_SUBJECT = "diagBruit – Des questions sur votre diagnostic ? ";
 
-const FOLLOW_UP_PLUS7_UID =
-    "api::follow-up-email-plus7-user.follow-up-email-plus7-user";
 const FOLLOW_UP_PLUS7_SUBJECT = "diagBruit – À propos de votre diagnostic";
-const FOLLOW_UP_PLUS15_UID =
-    "api::follow-up-email-plus15-user.follow-up-email-plus15-user";
 const FOLLOW_UP_PLUS15_SUBJECT = "diagBruit – Des retours suite à votre diagnostic ?";
 const FOLLOW_UP_DELAY_DAYS = 1;
 const FOLLOW_UP_PLUS7_DELAY_DAYS = 7;

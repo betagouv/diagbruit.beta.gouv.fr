@@ -9,6 +9,7 @@ import { randomUUID } from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { FOLLOW_UP_UIDS } from "../followUps";
 import DiagnosticEmail from "../templates/DiagnosticEmail";
 import DiagnosticPdf, {
   type DiagnosticPdfData,
@@ -335,19 +336,14 @@ export default factories.createCoreController("api::email.email", () => ({
     });
 
 
-    const followUpUids = [
-      "api::follow-up-email-user.follow-up-email-user",
-      "api::follow-up-email-plus7-user.follow-up-email-plus7-user",
-      "api::follow-up-email-plus15-user.follow-up-email-plus15-user",
-    ] as const;
     try {
       const pendingCounts = await Promise.all(
-        followUpUids.map((followUpUid) =>
+        FOLLOW_UP_UIDS.map((followUpUid) =>
           strapi.documents(followUpUid).count({ filters: { email: to } }),
         ),
       );
       if (pendingCounts.every((count) => count === 0)) {
-        for (const followUpUid of followUpUids) {
+        for (const followUpUid of FOLLOW_UP_UIDS) {
           try {
             await strapi.documents(followUpUid).create({
               data: { email: to },
