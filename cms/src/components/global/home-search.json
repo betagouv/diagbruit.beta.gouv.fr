@@ -9,6 +9,9 @@
     "title": {
       "type": "string"
     },
+    "topTitle": {
+      "type": "string"
+    },
     "banner": {
       "type": "media",
       "multiple": false,
@@ -22,10 +25,10 @@
     },
     "description": {
       "type": "customField",
+      "customField": "plugin::ckeditor5.CKEditor",
       "options": {
         "preset": "defaultHtml"
-      },
-      "customField": "plugin::ckeditor5.CKEditor"
+      }
     }
   }
 }

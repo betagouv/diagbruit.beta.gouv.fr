@@ -18,8 +18,9 @@
     "description": "Conseils, informations techniques et bonnes pratiques vulgarisées : notre médiathèque de préconisations vous aide à anticiper les risques sonores et à protéger la santé des futurs résidents dès la phase de conception."
   },
   "homeSearch": {
-    "title": "Intégrez les risques sonores dès la conception d'un projet immobilier",
-    "description": "<p>Gagnez du temps sur la conception de votre projet immobilier. Identifiez rapidement les parcelles exposées à des risques acoustiques et les réglementations à respecter.</p>"
+    "topTitle": "Collectivités, professionnels de l’immobilier ou de la construction :",
+    "title": "Anticipez le bruit dès la conception de votre projet",
+    "description": "<p>Gagnez du temps grâce à un résumé simple de la situation sonore, un accès centralisé aux réglementations et des conseils compréhensibles.</p>"
   },
   "diagPreview": [
     {
