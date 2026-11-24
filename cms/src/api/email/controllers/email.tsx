@@ -340,19 +340,25 @@ export default factories.createCoreController("api::email.email", () => ({
       "api::follow-up-email-plus7-user.follow-up-email-plus7-user",
       "api::follow-up-email-plus15-user.follow-up-email-plus15-user",
     ] as const;
-    for (const followUpUid of followUpUids) {
-      try {
-        const existingFollowUp = await strapi.documents(followUpUid).findMany({
-          filters: { email: to },
-        });
-        if (existingFollowUp.length === 0) {
-          await strapi.documents(followUpUid).create({
-            data: { email: to },
-          });
+    try {
+      const pendingCounts = await Promise.all(
+        followUpUids.map((followUpUid) =>
+          strapi.documents(followUpUid).count({ filters: { email: to } }),
+        ),
+      );
+      if (pendingCounts.every((count) => count === 0)) {
+        for (const followUpUid of followUpUids) {
+          try {
+            await strapi.documents(followUpUid).create({
+              data: { email: to },
+            });
+          } catch (err) {
+            strapi.log.error(`[email] failed to add ${to} to ${followUpUid}: ${err}`);
+          }
         }
-      } catch (err) {
-        strapi.log.error(`[email] failed to add ${to} to ${followUpUid}: ${err}`);
       }
+    } catch (err) {
+      strapi.log.error(`[email] failed to check follow-up lists for ${to}: ${err}`);
     }
 
     return ctx.send({ message: "Email envoyé avec succès" });
