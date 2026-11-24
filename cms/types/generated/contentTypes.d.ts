@@ -637,17 +637,10 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::email.email'> &
       Schema.Attribute.Private;
-    profile: Schema.Attribute.Enumeration<
-      [
-        'architecte',
-        'charge-de-mission-bruit',
-        'instructeur',
-        'autre',
-        'service-amenagement',
-        'promoteur',
-        'particulier',
-      ]
-    >;
+    profile: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

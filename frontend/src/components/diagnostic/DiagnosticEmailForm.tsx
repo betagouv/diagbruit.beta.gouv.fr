@@ -46,6 +46,7 @@ const selectOptions: ProfileOption[] = [
 	{ value: "charge-de-mission-bruit", label: "Chargé de mission bruit" },
 	{ value: "instructeur", label: "Instructeur ADS" },
 	{ value: "notaire", label: "Notaire" },
+	{ value: "gestionnaire-immobilier", label: "Gestionnaire immobilier" },
 	{ value: "agent-immobilier", label: "Agent immobilier" },
 	{ value: "particulier", label: "Particulier" },
 	{ value: "promoteur", label: "Promoteur" },
