@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, type ComponentType } from "react";
 import { render } from "@react-email/render";
 import { FollowUpEmailPlus1, FollowUpEmailPlus15, FollowUpEmailPlus7 } from "../src/api/email/templates/FollowUpEmails";
 import {
@@ -6,14 +6,6 @@ import {
     FOLLOW_UP_PLUS7_UID,
     FOLLOW_UP_UID,
 } from "../src/api/email/followUps";
-
-const FOLLOW_UP_SUBJECT = "diagBruit – Des questions sur votre diagnostic ? ";
-
-const FOLLOW_UP_PLUS7_SUBJECT = "diagBruit – À propos de votre diagnostic";
-const FOLLOW_UP_PLUS15_SUBJECT = "diagBruit – Des retours suite à votre diagnostic ?";
-const FOLLOW_UP_DELAY_DAYS = 1;
-const FOLLOW_UP_PLUS7_DELAY_DAYS = 7;
-const FOLLOW_UP_PLUS15_DELAY_DAYS = 15;
 
 const FOLLOW_UP_TEST_MODE =
     process.env.FOLLOW_UP_TEST_MODE === "true" &&
@@ -182,87 +174,67 @@ async function sendFollowUps(
     }
 }
 
+function followUpTask({
+    label,
+    uid,
+    subject,
+    Template,
+    delayDays,
+}: {
+    label: string;
+    uid: string;
+    subject: string;
+    Template: ComponentType;
+    delayDays: number;
+}) {
+    return {
+        task: async ({ strapi }) => {
+            if (isCronDisabled()) {
+                strapi.log.info(
+                    `[cron] ${label} is disabled in development environment.`
+                );
+                return;
+            }
+
+            await runExclusive(label, async () => {
+                try {
+                    const html = await render(createElement(Template));
+                    await sendFollowUps(strapi, {
+                        label,
+                        uid,
+                        subject,
+                        html,
+                        filters: createdAtLeastDaysAgo(delayDays),
+                    });
+                } catch (err) {
+                    strapi.log.error(`[cron] ${label} failed: ${err}`);
+                }
+            });
+        },
+        options: CRON_OPTIONS,
+    };
+}
+
 export default {
-    // J+1
-    followUpMail: {
-        task: async ({ strapi }) => {
-            if (isCronDisabled()) {
-                strapi.log.info(
-                    "Follow up mail cron is disabled in development environment."
-                );
-                return;
-            }
-
-            await runExclusive("followUpMail", async () => {
-                try {
-                    const html = await render(createElement(FollowUpEmailPlus1));
-                    await sendFollowUps(strapi, {
-                        label: "followUpMail",
-                        uid: FOLLOW_UP_UID,
-                        subject: FOLLOW_UP_SUBJECT,
-                        html,
-                        filters: createdAtLeastDaysAgo(FOLLOW_UP_DELAY_DAYS),
-                    });
-                } catch (err) {
-                    strapi.log.error(`[cron] followUpMail failed: ${err}`);
-                }
-            });
-        },
-        options: CRON_OPTIONS,
-    },
-
-    // J+7 
-    followUpMailPlus7: {
-        task: async ({ strapi }) => {
-            if (isCronDisabled()) {
-                strapi.log.info(
-                    "Follow up mail J+7 cron is disabled in development environment."
-                );
-                return;
-            }
-
-            await runExclusive("followUpMailPlus7", async () => {
-                try {
-                    const html = await render(createElement(FollowUpEmailPlus7));
-                    await sendFollowUps(strapi, {
-                        label: "followUpMailPlus7",
-                        uid: FOLLOW_UP_PLUS7_UID,
-                        subject: FOLLOW_UP_PLUS7_SUBJECT,
-                        html,
-                        filters: createdAtLeastDaysAgo(FOLLOW_UP_PLUS7_DELAY_DAYS),
-                    });
-                } catch (err) {
-                    strapi.log.error(`[cron] followUpMailPlus7 failed: ${err}`);
-                }
-            });
-        },
-        options: CRON_OPTIONS,
-    },
-    //J+15
-    followUpMailPlus15: {
-        task: async ({ strapi }) => {
-            if (isCronDisabled()) {
-                strapi.log.info(
-                    "Follow up mail J+15 cron is disabled in development environment."
-                );
-                return;
-            }
-
-            await runExclusive("followUpMailPlus15", async () => {
-                try {
-                    const html = await render(createElement(FollowUpEmailPlus15));
-                    await sendFollowUps(strapi, {
-                        label: "followUpMailPlus15",
-                        uid: FOLLOW_UP_PLUS15_UID,
-                        subject: FOLLOW_UP_PLUS15_SUBJECT,
-                        html,
-                        filters: createdAtLeastDaysAgo(FOLLOW_UP_PLUS15_DELAY_DAYS),
-                    });
-                } catch (err) {
-                    strapi.log.error(`[cron] followUpMailPlus15 failed: ${err}`);
-                }
-            });
-        },
-        options: CRON_OPTIONS,
-    },
+    followUpMail: followUpTask({
+        label: "followUpMail",
+        uid: FOLLOW_UP_UID,
+        subject: "diagBruit – Des questions sur votre diagnostic ? ",
+        Template: FollowUpEmailPlus1,
+        delayDays: 1,
+    }),
+    followUpMailPlus7: followUpTask({
+        label: "followUpMailPlus7",
+        uid: FOLLOW_UP_PLUS7_UID,
+        subject: "diagBruit – À propos de votre diagnostic",
+        Template: FollowUpEmailPlus7,
+        delayDays: 7,
+    }),
+    followUpMailPlus15: followUpTask({
+        label: "followUpMailPlus15",
+        uid: FOLLOW_UP_PLUS15_UID,
+        subject: "diagBruit – Des retours suite à votre diagnostic ?",
+        Template: FollowUpEmailPlus15,
+        delayDays: 15,
+    }),
 };
