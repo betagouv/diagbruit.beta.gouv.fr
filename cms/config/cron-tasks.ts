@@ -11,6 +11,7 @@ const FOLLOW_UP_PLUS7_SUBJECT = "diagBruit – À propos de votre diagnostic";
 const FOLLOW_UP_PLUS15_UID =
     "api::follow-up-email-plus15-user.follow-up-email-plus15-user";
 const FOLLOW_UP_PLUS15_SUBJECT = "diagBruit – Des retours suite à votre diagnostic ?";
+const FOLLOW_UP_DELAY_DAYS = 1;
 const FOLLOW_UP_PLUS7_DELAY_DAYS = 7;
 const FOLLOW_UP_PLUS15_DELAY_DAYS = 15;
 
@@ -21,13 +22,6 @@ const FOLLOW_UP_TEST_MODE =
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_SEND_ATTEMPTS = 3;
 
-const FOLLOW_UP_PLUS7_DELAY_MS = FOLLOW_UP_TEST_MODE
-    ? 7000
-    : FOLLOW_UP_PLUS7_DELAY_DAYS * DAY_MS;
-const FOLLOW_UP_PLUS15_DELAY_MS = FOLLOW_UP_TEST_MODE
-    ? 15000
-    : FOLLOW_UP_PLUS15_DELAY_DAYS * DAY_MS;
-
 const CRON_OPTIONS = {
     rule: FOLLOW_UP_TEST_MODE ? "* * * * * *" : "0 9 * * *",
     tz: "Europe/Paris",
@@ -35,11 +29,6 @@ const CRON_OPTIONS = {
 
 const isCronDisabled = () =>
     process.env.NODE_ENV === "development" && !FOLLOW_UP_TEST_MODE;
-
-const createdBefore = (delayMs: number) =>
-    delayMs > 0
-        ? { createdAt: { $lte: new Date(Date.now() - delayMs).toISOString() } }
-        : {};
 
 const startOfParisDay = (date: Date) => {
     const { hour, minute, second } = Object.fromEntries(
@@ -60,10 +49,15 @@ const startOfParisDay = (date: Date) => {
     );
 };
 
-const createdBeforeToday = () =>
-    FOLLOW_UP_TEST_MODE
-        ? createdBefore(1000)
-        : { createdAt: { $lt: startOfParisDay(new Date()).toISOString() } };
+const createdAtLeastDaysAgo = (days: number) => ({
+    createdAt: FOLLOW_UP_TEST_MODE
+        ? { $lte: new Date(Date.now() - days * 1000).toISOString() }
+        : {
+              $lt: startOfParisDay(
+                  new Date(Date.now() - (days - 1) * DAY_MS)
+              ).toISOString(),
+          },
+});
 
 const running = new Set<string>();
 async function runExclusive(label: string, fn: () => Promise<void>) {
@@ -207,7 +201,7 @@ export default {
                         uid: FOLLOW_UP_UID,
                         subject: FOLLOW_UP_SUBJECT,
                         html,
-                        filters: createdBeforeToday(),
+                        filters: createdAtLeastDaysAgo(FOLLOW_UP_DELAY_DAYS),
                     });
                 } catch (err) {
                     strapi.log.error(`[cron] followUpMail failed: ${err}`);
@@ -235,7 +229,7 @@ export default {
                         uid: FOLLOW_UP_PLUS7_UID,
                         subject: FOLLOW_UP_PLUS7_SUBJECT,
                         html,
-                        filters: createdBefore(FOLLOW_UP_PLUS7_DELAY_MS),
+                        filters: createdAtLeastDaysAgo(FOLLOW_UP_PLUS7_DELAY_DAYS),
                     });
                 } catch (err) {
                     strapi.log.error(`[cron] followUpMailPlus7 failed: ${err}`);
@@ -262,7 +256,7 @@ export default {
                         uid: FOLLOW_UP_PLUS15_UID,
                         subject: FOLLOW_UP_PLUS15_SUBJECT,
                         html,
-                        filters: createdBefore(FOLLOW_UP_PLUS15_DELAY_MS),
+                        filters: createdAtLeastDaysAgo(FOLLOW_UP_PLUS15_DELAY_DAYS),
                     });
                 } catch (err) {
                     strapi.log.error(`[cron] followUpMailPlus15 failed: ${err}`);
