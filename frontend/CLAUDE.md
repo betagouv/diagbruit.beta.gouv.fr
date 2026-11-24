@@ -53,3 +53,15 @@ which CRA's webpack rewrites to a `file://` path — the map then fails with
 and `yarn build`) copies the worker to `public/maplibre-gl-worker.js`
 (gitignored), and `src/config/maplibreWorker.ts` registers it with
 `setWorkerUrl()`. Any new map entry point must import that module first.
+
+## SEO: per-page HTML
+
+The app is a client-side SPA, so `yarn build` also runs
+`scripts/generate-sitemap.js --html` after `react-scripts build`: it writes
+`build/<route>.html` (and `build/preco/<slug>.html`, `build/home.html` for `/`)
+with each page's `<title>`, description, Open Graph/Twitter tags, canonical and
+JSON-LD, plus `build/serve.json` routing each URL to its file. `build/index.html`
+stays generic: it is the SPA fallback. Titles/descriptions live in `PAGE_META`
+(`src/config/seo.js`), shared with `usePageMeta`. Serving relies on this:
+`serve build` (Procfile, **not** `serve -s`, whose catch-all rewrite comes first)
+and nginx `try_files $uri $uri.html /index.html`.

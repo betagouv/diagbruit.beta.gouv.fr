@@ -100,9 +100,9 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
         ]}
         serviceTitle="diagBruit"
         serviceTagline={
-          <>
+          <span data-nosnippet>
             Intégrez les risques sonores dès la conception d'un projet immobilier
-          </>
+          </span>
         }
         operatorLogo={{
           alt: "Cerema, climat et territoires de demain",
@@ -178,7 +178,13 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             },
           },
         ]}
-        contentDescription="diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers."
+        // data-nosnippet: this text is on every page; without it Google uses it as the
+        // search snippet of every sub-page instead of the page's own description.
+        contentDescription={
+          <span data-nosnippet>
+            diagBruit est un outil d’aide à la décision simple et rapide qui permet aux instructeurs ADS d’évaluer l’exposition sonore d’une parcelle et de mieux intégrer les enjeux acoustiques dans leurs préconisations auprès des porteurs de projets immobiliers.
+          </span>
+        }
       />
     </main>
   );

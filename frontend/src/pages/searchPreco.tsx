@@ -7,11 +7,12 @@ import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import { useState } from "react";
 import { normalize } from "../utils/tools";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../config/seo";
 
 
 export const SearchPrecoPage = () => {
     const { cx, classes } = useStyles();
-    usePageMeta("Médiathèque", "Consultez nos préconisations pour se protéger du bruit.");
+    usePageMeta(PAGE_META.searchPreco.title, PAGE_META.searchPreco.description);
     const [search, setSearch] = useState("");
     const [query, setQuery] = useState("");
 
