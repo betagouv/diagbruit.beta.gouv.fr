@@ -126,7 +126,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
             linkProps: {
               href: '/diagnostic',
             },
-            text: 'Diagnostiquer une parcelle'
+            text: 'Analyser une parcelle'
           },
           {
             isActive: pathname.startsWith("/preco"),

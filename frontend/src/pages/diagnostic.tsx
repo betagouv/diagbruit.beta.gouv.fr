@@ -34,7 +34,7 @@ const defaultSearchValues = process.env.NODE_ENV === "development" ? {
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
-  usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
+  usePageMeta("Analyser une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -341,7 +341,7 @@ function DiagnosticPage() {
         </div>
       )}
       <div className={cx(classes.container)}>
-        <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
+        <h1 className={fr.cx("fr-mb-6v")}>Analyse une parcelle</h1>
 
         <div className={fr.cx("fr-mb-6v", "fr-col-12", "fr-col-md-6")}>
           <AddressSearch
@@ -399,7 +399,7 @@ function DiagnosticPage() {
               }
             }}
           />)}
-          
+
         {!diagnosticsResponses.length &&
           !notIntegrated &&
           (parcelleError || addressDefaultValue || communeCodeInsee) && (
@@ -439,7 +439,7 @@ function DiagnosticPage() {
             title="Parcelle non référencée dans diagBruit"
           />
         )}
-        
+
         <MapComponent
           ref={mapMethodsRef}
           noisePins={

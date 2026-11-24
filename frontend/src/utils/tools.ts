@@ -46,17 +46,17 @@ export const getTextFromScore = (
   score: number,
   lowercase?: boolean,
 ): string => {
-  if (score > 8) return lowercase ? "extrême" : "EXTRÊME";
-  if (score > 6) return lowercase ? "fort" : "FORT";
-  if (score > 3) return lowercase ? "moyen" : "MOYEN";
-  return lowercase ? "faible" : "FAIBLE";
+  if (score > 8) return lowercase ? "concrète" : "CONCRÈTE";
+  if (score > 6) return lowercase ? "déconseillée" : "DÉCONSEILLÉE";
+  if (score > 3) return lowercase ? "altérée" : "ALTÉRÉE";
+  return lowercase ? "saine" : "SAINE";
 };
 
 export const getTextFromRisk = (risk: number, lowercase?: boolean): string => {
-  if (risk > 2) return lowercase ? "extrême" : "EXTRÊME";
-  if (risk > 1) return lowercase ? "fort" : "FORT";
-  if (risk > 0) return lowercase ? "moyen" : "MOYEN";
-  return lowercase ? "faible" : "FAIBLE";
+  if (risk > 2) return lowercase ? "concrète" : "CONCRÈTE";
+  if (risk > 1) return lowercase ? "déconseillée" : "DÉCONSEILLÉE";
+  if (risk > 0) return lowercase ? "altérée" : "ALTÉRÉE";
+  return lowercase ? "saine" : "SAINE";
 };
 
 export const getIconFromScore = (
@@ -163,13 +163,13 @@ export const getSummaryTextFromDiagnostic = (
 
   switch (risk) {
     case 3:
-      return "Votre parcelle est exposée à un <strong>risque extrême de nuisance sonore</strong>. Les projets de construction ou de rénovation sont soumis à des <strong>obligations réglementaires</strong>";
+      return "Votre parcelle est exposée à une <strong>situation à risque concret de nuisance sonore</strong>. Les projets de construction ou de rénovation sont soumis à des <strong>obligations réglementaires</strong>";
     case 2:
-      return "Votre parcelle est exposée à un <strong>risque fort de nuisance sonore</strong>.";
+      return "Votre parcelle est exposée à une <strong>situation déconseillée de nuisance sonore</strong>.";
     case 1:
-      return "Votre parcelle est exposée à un <strong>risque moyen de nuisance sonore</strong>.";
+      return "Votre parcelle est exposée à une <strong>situation altérée de nuisance sonore</strong>.";
     default:
-      return "Votre parcelle est exposée à un <strong>risque faible de nuisance sonore</strong>.";
+      return "Votre parcelle est exposée à une <strong>situation saine de nuisance sonore</strong>.";
   }
 };
 
