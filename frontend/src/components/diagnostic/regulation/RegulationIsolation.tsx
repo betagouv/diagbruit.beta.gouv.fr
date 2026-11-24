@@ -83,7 +83,7 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         </h4>
         {isSimpleIsolationCalcul ? (
           <Badge severity="success" noIcon>
-            <span className={fr.cx("fr-icon-error-fill", "fr-icon--sm", "fr-mr-1v")} aria-hidden="true" />
+            <span className={fr.cx("fr-badge--success", "fr-icon--sm", "fr-mr-1v")} aria-hidden="true" />
             Calcul d’isolation simple
           </Badge>
         ) : (

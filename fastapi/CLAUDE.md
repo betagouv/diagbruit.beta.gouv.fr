@@ -34,6 +34,7 @@ Copy `.env.example` to `.env`:
 **Routers:**
 - `app/routes/diag.py` — `POST /diag/generate`: core diagnostic endpoint. Takes a GeoJSON geometry, intersects it against PostGIS tables (noisemap, soundclassification, peb, bdnb, noisesource), computes noise scores, fetches recommendations from Strapi.
 - `app/routes/metabase.py` — generates signed Metabase iframe URLs.
+- `app/routes/recommendations.py` — `GET /recommendations/cards?slugs=…`: card data (title, slug, thumbnail) of recommendations by slug, read from Strapi through the cached helper `app/utils/strapi.py`, so the front doesn't call the CMS directly.
 
 **Database layer:** SQLAlchemy models in `app/models/`. Geometry columns use GeoAlchemy2. Raw spatial queries are in `app/utils/` — prefer Shapely/GeoAlchemy2 over raw ST_* SQL where possible.
 

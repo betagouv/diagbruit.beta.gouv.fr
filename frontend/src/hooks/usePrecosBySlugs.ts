@@ -2,6 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { imgUrl } from "../utils/tools";
 
+type RecommendationCard = {
+  title: string;
+  slug: string;
+  imageUrl: string;
+  imageAlt: string;
+};
+
 export type PrecoCardData = {
   title: string;
   slug: string;
@@ -25,23 +32,22 @@ const usePrecosBySlugs = (slugs: string[]) => {
 
     let cancelled = false;
     setIsLoading(true);
+    const params = new URLSearchParams();
+    validSlugs.forEach((slug) => params.append("slugs", slug));
     axios
-      .get(`${process.env.REACT_APP_CMS_URL}/api/recommendations`, {
-        params: {
-          fields: ["title", "slug"],
-          populate: ["imageThumbnail"],
-          filters: { slug: { $in: validSlugs } },
-        },
-      })
+      .get<RecommendationCard[]>(
+        `${process.env.REACT_APP_API_URL}/recommendations/cards`,
+        { params },
+      )
       .then((res) => {
         if (cancelled) return;
         const bySlug: Record<string, PrecoCardData> = {};
-        for (const item of res.data.data ?? []) {
-          bySlug[item.slug] = {
-            title: item.title,
-            slug: item.slug,
-            imageUrl: item.imageThumbnail?.url ? imgUrl(item.imageThumbnail.url) : "",
-            imageAlt: item.imageThumbnail?.alternativeText ?? "",
+        for (const card of res.data ?? []) {
+          bySlug[card.slug] = {
+            title: card.title,
+            slug: card.slug,
+            imageUrl: card.imageUrl ? imgUrl(card.imageUrl) : "",
+            imageAlt: card.imageAlt,
           };
         }
         setPrecosBySlug(bySlug);
