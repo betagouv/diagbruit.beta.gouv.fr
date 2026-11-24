@@ -98,6 +98,7 @@ async function sendFollowUps(
     let abandoned = 0;
 
     const skipped = new Set<string>();
+    const sentTo = new Set<string>();
 
     while (true) {
         const pageFilters = skipped.size
@@ -110,6 +111,20 @@ async function sendFollowUps(
         if (!users.length) break;
 
         for (const user of users) {
+            const email = user.email.toLowerCase();
+            if (sentTo.has(email)) {
+                try {
+                    await strapi.documents(uid).delete({ documentId: user.documentId });
+                    deleted++;
+                } catch (err) {
+                    skipped.add(user.documentId);
+                    strapi.log.error(
+                        `[cron] ${label}: failed to delete duplicate ${user.documentId}: ${err}`
+                    );
+                }
+                continue;
+            }
+
             try {
                 await strapi.plugins.email.services.email.send({
                     to: user.email,
@@ -117,6 +132,7 @@ async function sendFollowUps(
                     html,
                 });
                 sent++;
+                sentTo.add(email);
             } catch (err) {
                 skipped.add(user.documentId);
                 const attempts = (user.attempts ?? 0) + 1;
