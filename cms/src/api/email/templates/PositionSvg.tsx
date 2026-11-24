@@ -150,7 +150,7 @@ export default function PositionSvg({
             <View key={lvl.label} style={s.legendRow}>
               <View style={[s.swatch, { backgroundColor: lvl.color }]} />
               <Text style={s.legendLabel}>
-                Risque de niveau sonore {lvl.label}
+                Situation {lvl.label}
               </Text>
             </View>
           ))}
