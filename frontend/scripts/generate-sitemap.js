@@ -137,7 +137,7 @@ async function fetchAllRecos() {
     const url =
       `${CMS_URL}/api/recommendations` +
       `?fields[0]=slug&fields[1]=title&fields[2]=content&fields[3]=aRetenir` +
-      `&fields[4]=updatedAt&populate[0]=imageBanner` +
+      `&fields[4]=updatedAt&fields[5]=seoDescription&populate[0]=imageBanner` +
       `&pagination[page]=${page}&pagination[pageSize]=${pageSize}`;
     const res = await fetch(url, {
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
@@ -286,7 +286,7 @@ async function generatePageHtml() {
     count++;
   }
 
-  // One page per préconisation (CMS errors are soft, like the sitemap).
+
   let recos = [];
   try {
     recos = await fetchAllRecos();
@@ -298,8 +298,11 @@ async function generatePageHtml() {
       console.warn(`[html] skipping préconisation with unsafe slug: ${reco.slug}`);
       continue;
     }
+
     const description =
-      htmlToText(reco.aRetenir || reco.content).slice(0, PRECO_DESCRIPTION_LENGTH) || undefined;
+      (reco.seoDescription || "").replace(/\s+/g, " ").trim() ||
+      htmlToText(reco.aRetenir || reco.content).slice(0, PRECO_DESCRIPTION_LENGTH) ||
+      undefined;
     const image = cmsAssetUrl(reco.imageBanner?.url);
     routes.push(writePage(
       `/preco/${reco.slug}`,

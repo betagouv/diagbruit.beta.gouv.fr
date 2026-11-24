@@ -10,23 +10,28 @@
   "options": {
     "draftAndPublish": true
   },
+  "pluginOptions": {},
   "attributes": {
     "title": {
       "type": "string",
       "required": true
     },
+    "seoDescription": {
+      "type": "text",
+      "maxLength": 300
+    },
     "content": {
       "type": "customField",
+      "customField": "plugin::ckeditor5.CKEditor",
       "options": {
         "preset": "defaultHtml"
       },
-      "customField": "plugin::ckeditor5.CKEditor",
       "required": true
     },
     "keyPoints": {
       "type": "component",
-      "repeatable": true,
-      "component": "global.title-text-array"
+      "component": "global.title-text-array",
+      "repeatable": true
     },
     "slug": {
       "type": "uid",
@@ -56,11 +61,11 @@
     },
     "aRetenir": {
       "type": "customField",
+      "customField": "plugin::ckeditor5.CKEditor",
       "default": "<p>✓ Lorem Ipsum</p>",
       "options": {
         "preset": "defaultHtml"
-      },
-      "customField": "plugin::ckeditor5.CKEditor"
+      }
     }
   }
 }
