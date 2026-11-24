@@ -43,7 +43,7 @@ const getSourceIconUrl = (slug: string): string =>
 const scoreColor = (s: number): string =>
   s > 8 ? "#F95A5C" : s > 6 ? "#FA7659" : s > 3 ? "#CB9F2D" : "#4B9F6C";
 const scoreText = (s: number): string =>
-  s > 8 ? "CONCRET" : s > 6 ? "DÉCONSEILLÉE" : s > 3 ? "ALTÉRÉE" : "SAINE";
+  s > 8 ? "CONCRÈTE" : s > 6 ? "DÉCONSEILLÉE" : s > 3 ? "ALTÉRÉE" : "SAINE";
 const scoreIcon = (s: number): string =>
   s > 8
     ? ICON_CLOSE_CIRCLE

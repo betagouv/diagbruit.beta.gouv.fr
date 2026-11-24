@@ -166,11 +166,12 @@ const htmlToText = (html) =>
   String(html || "")
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&rsquo;/g, "’")
+    // Last, so "&amp;lt;" gives "&lt;" (the text) and not "<".
+    .replace(/&amp;/g, "&")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -208,12 +209,6 @@ function buildHeadTags({ title, description, canonical, type = "website", image,
   };
 }
 
-// Wraps the added tags so a second --html run replaces them instead of
-// appending duplicates to build/index.html.
-const EXTRA_START = "<!--page-meta-->";
-const EXTRA_END = "<!--/page-meta-->";
-const EXTRA_RE = new RegExp(`${EXTRA_START}[\\s\\S]*?${EXTRA_END}`);
-
 function renderPage(template, page) {
   const tags = buildHeadTags(page);
   const titleRe = /<title>[\s\S]*?<\/title>/;
@@ -221,11 +216,12 @@ function renderPage(template, page) {
   if (!titleRe.test(template) || !descriptionRe.test(template)) {
     throw new Error("build/index.html has no <title> or description meta to replace");
   }
+  // Replacement functions: a CMS title containing "$&", "$1"… must be inserted
+  // as is, not read as a replacement pattern.
   return template
-    .replace(EXTRA_RE, "")
-    .replace(titleRe, tags.title)
-    .replace(descriptionRe, tags.description)
-    .replace("</head>", `${EXTRA_START}${tags.extra}${EXTRA_END}</head>`);
+    .replace(titleRe, () => tags.title)
+    .replace(descriptionRe, () => tags.description)
+    .replace("</head>", () => `${tags.extra}</head>`);
 }
 
 // File of the home page "/" (build/home.html); build/index.html is the fallback.

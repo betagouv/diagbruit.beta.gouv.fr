@@ -68,9 +68,10 @@ const upsertPageRobots = (noindex: boolean) => {
 
 /**
  * Sets the document title plus SEO/social metadata for the current page.
- * Note: this runs client-side, so it benefits JS-rendering crawlers (Google)
- * and is paired with the build-time sitemap for discovery. Non-JS crawlers /
- * social scrapers need server-side rendering to actually see these tags.
+ * Note: this runs client-side. Crawlers and social scrapers that don't run JS
+ * get the same tags from the per-page HTML generated at build time by
+ * `scripts/generate-sitemap.js --html` (titles/descriptions from PAGE_META in
+ * src/config/seo.js); this hook then updates those tags in place.
  */
 export const usePageMeta = (
   title: string,

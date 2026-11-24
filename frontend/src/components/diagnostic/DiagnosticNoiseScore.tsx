@@ -21,7 +21,7 @@ const DiagnosticNoiseScore = ({
   if (disabled) {
     return (
       <div className={cx(classes.container)}>
-        <i className={fr.cx("ri-forbid-fill")} /> SITUATION INDÉFINI
+        <i className={fr.cx("ri-forbid-fill")} /> SITUATION INDÉFINIE
       </div>
     );
   }
