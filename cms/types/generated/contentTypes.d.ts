@@ -934,7 +934,7 @@ export interface ApiRecommendationRecommendation
     publishedAt: Schema.Attribute.DateTime;
     seoDescription: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
-        maxLength: 300;
+        maxLength: 200;
       }>;
     slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;

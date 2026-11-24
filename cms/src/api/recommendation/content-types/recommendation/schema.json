@@ -18,7 +18,7 @@
     },
     "seoDescription": {
       "type": "text",
-      "maxLength": 300
+      "maxLength": 200
     },
     "content": {
       "type": "customField",
