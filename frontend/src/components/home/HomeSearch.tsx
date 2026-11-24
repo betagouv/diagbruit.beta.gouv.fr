@@ -29,7 +29,7 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
 
     return (<div className={cx(classes.bgContainer)}>
         <div className={cx(classes.contentContainer, "fr-col-12", "fr-col-md-11")}>
-            {content.topTitle && <h1 className={fr.cx("fr-h3", "fr-col-md-10")}>{content.topTitle}</h1>}
+            {content.topTitle && <p className={fr.cx("fr-h3", "fr-col-md-10")}>{content.topTitle}</p>}
             <h1 className={fr.cx("fr-col-md-8")}>
                 {content.title}
             </h1>
@@ -168,7 +168,7 @@ const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().c
             backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${url})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            h1: {
+            "h1, .fr-h3": {
                 color: `${fr.colors.decisions.background.default.grey.default} !important`,
             },
             color: fr.colors.decisions.background.default.grey.default,
