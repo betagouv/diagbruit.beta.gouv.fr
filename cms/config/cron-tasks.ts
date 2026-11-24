@@ -19,6 +19,7 @@ const FOLLOW_UP_TEST_MODE =
     process.env.NODE_ENV === "development";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MAX_SEND_ATTEMPTS = 3;
 
 const FOLLOW_UP_PLUS7_DELAY_MS = FOLLOW_UP_TEST_MODE
     ? 7000
@@ -94,6 +95,7 @@ async function sendFollowUps(
     let sent = 0;
     let deleted = 0;
     let sendFailed = 0;
+    let abandoned = 0;
 
     const skipped = new Set<string>();
 
@@ -116,12 +118,38 @@ async function sendFollowUps(
                 });
                 sent++;
             } catch (err) {
+                skipped.add(user.documentId);
+                const attempts = (user.attempts ?? 0) + 1;
+
+                if (attempts >= MAX_SEND_ATTEMPTS) {
+                    abandoned++;
+                    strapi.log.error(
+                        `[cron] ${label}: failed to send to ${user.email} after ${attempts} attempts, giving up: ${err}`
+                    );
+                    try {
+                        await strapi.documents(uid).delete({ documentId: user.documentId });
+                    } catch (deleteErr) {
+                        strapi.log.error(
+                            `[cron] ${label}: failed to delete ${user.documentId}: ${deleteErr}`
+                        );
+                    }
+                    continue;
+                }
 
                 sendFailed++;
-                skipped.add(user.documentId);
                 strapi.log.error(
-                    `[cron] ${label}: failed to send to ${user.email}, will retry next run: ${err}`
+                    `[cron] ${label}: failed to send to ${user.email} (attempt ${attempts}/${MAX_SEND_ATTEMPTS}), will retry next run: ${err}`
                 );
+                try {
+                    await strapi.documents(uid).update({
+                        documentId: user.documentId,
+                        data: { attempts },
+                    });
+                } catch (updateErr) {
+                    strapi.log.error(
+                        `[cron] ${label}: failed to record attempt for ${user.documentId}: ${updateErr}`
+                    );
+                }
                 continue;
             }
 
@@ -137,9 +165,9 @@ async function sendFollowUps(
         }
     }
 
-    if (sent || deleted || sendFailed || !FOLLOW_UP_TEST_MODE) {
+    if (sent || deleted || sendFailed || abandoned || !FOLLOW_UP_TEST_MODE) {
         strapi.log.info(
-            `[cron] ${label}: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s), ${sendFailed} send failure(s) kept for retry.`
+            `[cron] ${label}: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s), ${sendFailed} send failure(s) kept for retry, ${abandoned} abandoned.`
         );
     }
 }

@@ -637,6 +637,7 @@ export interface ApiFollowUpEmailPlus15UserFollowUpEmailPlus15User
     draftAndPublish: false;
   };
   attributes: {
+    attempts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -666,6 +667,7 @@ export interface ApiFollowUpEmailPlus7UserFollowUpEmailPlus7User
     draftAndPublish: false;
   };
   attributes: {
+    attempts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -695,6 +697,7 @@ export interface ApiFollowUpEmailUserFollowUpEmailUser
     draftAndPublish: false;
   };
   attributes: {
+    attempts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
