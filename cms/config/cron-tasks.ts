@@ -20,7 +20,6 @@ const FOLLOW_UP_TEST_MODE =
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const FOLLOW_UP_DELAY_MS = FOLLOW_UP_TEST_MODE ? 1000 : 0;
 const FOLLOW_UP_PLUS7_DELAY_MS = FOLLOW_UP_TEST_MODE
     ? 7000
     : FOLLOW_UP_PLUS7_DELAY_DAYS * DAY_MS;
@@ -41,6 +40,29 @@ const createdBefore = (delayMs: number) =>
         ? { createdAt: { $lte: new Date(Date.now() - delayMs).toISOString() } }
         : {};
 
+const startOfParisDay = (date: Date) => {
+    const { hour, minute, second } = Object.fromEntries(
+        new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Europe/Paris",
+            hourCycle: "h23",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        })
+            .formatToParts(date)
+            .map(({ type, value }) => [type, Number(value)])
+    );
+    return new Date(
+        date.getTime() -
+            date.getMilliseconds() -
+            ((hour * 60 + minute) * 60 + second) * 1000
+    );
+};
+
+const createdBeforeToday = () =>
+    FOLLOW_UP_TEST_MODE
+        ? createdBefore(1000)
+        : { createdAt: { $lt: startOfParisDay(new Date()).toISOString() } };
 
 const running = new Set<string>();
 async function runExclusive(label: string, fn: () => Promise<void>) {
@@ -141,7 +163,7 @@ export default {
                         uid: FOLLOW_UP_UID,
                         subject: FOLLOW_UP_SUBJECT,
                         html,
-                        filters: createdBefore(FOLLOW_UP_DELAY_MS),
+                        filters: createdBeforeToday(),
                     });
                 } catch (err) {
                     strapi.log.error(`[cron] followUpMail failed: ${err}`);
