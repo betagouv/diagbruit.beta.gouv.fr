@@ -125,9 +125,7 @@ export default function DiagnosticLocalNoiseSources({
 
 const useStyles = tss.withName(DiagnosticLocalNoiseSources.name).create({
   container: {
-    marginTop: fr.spacing("4v"),
-    background: fr.colors.decisions.background.default.grey.active,
-    padding: fr.spacing("4v"),
+    padding: fr.spacing("2v"),
     ul: {
       marginLeft: fr.spacing("4v"),
     },

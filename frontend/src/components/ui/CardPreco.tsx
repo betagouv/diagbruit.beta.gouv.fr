@@ -1,4 +1,5 @@
 import { Card } from "@codegouvfr/react-dsfr/Card";
+import type { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
 
 export interface CardPrecoProps {
@@ -6,6 +7,10 @@ export interface CardPrecoProps {
   imageUrl: string;
   slug: string;
   target?: boolean;
+  horizontal?: boolean;
+  start?: ReactNode;
+  imageAlt?: string;
+  titleAs?: "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
 const useStyles = tss.withName("CardPreco").create(() => ({
@@ -24,31 +29,49 @@ const useStyles = tss.withName("CardPreco").create(() => ({
       height: "100%",
       objectFit: "cover",
     },
-  }
+  },
+  horizontalCard: {
+    "& .fr-card__img": {
+      aspectRatio: "auto",
+    },
+  },
 }));
 
-export const CardPreco = ({ title, imageUrl, slug, target = false }: CardPrecoProps) => {
+export const CardPreco = ({
+  title,
+  imageUrl,
+  slug,
+  target = false,
+  horizontal = false,
+  start,
+  imageAlt = "texte alternatif de l’image",
+  titleAs = "h3",
+}: CardPrecoProps) => {
   const { cx, classes } = useStyles();
 
+  const cardProps = {
+    className: cx(classes.card, horizontal && classes.horizontalCard),
+    start,
+    enlargeLink: true as const,
+    imageAlt,
+    imageUrl: !!imageUrl ? imageUrl : "/images/imgPlaceholder.png",
+    linkProps: {
+      href: `/preco/${slug}`,
+      target: target ? "_blank" : undefined,
+    },
+    size: horizontal ? ("small" as const) : ("medium" as const),
+    title,
+    titleAs,
+  };
+
+  // Card's types only accept `ratio` with `horizontal: true`, hence two branches.
   return (
     <div className={cx(classes.cardContainer)}>
-      <Card
-        className={cx(classes.card)}
-        enlargeLink
-        imageAlt="texte alternatif de l’image"
-        imageUrl={
-          !!imageUrl
-            ? imageUrl
-            : "/images/imgPlaceholder.png"
-        }
-        linkProps={{
-          href: `/preco/${slug}`,
-          target: target ? "_blank" : undefined,
-        }}
-        size="medium"
-        title={title}
-        titleAs="h3"
-      />
+      {horizontal ? (
+        <Card {...cardProps} horizontal ratio="33/66" />
+      ) : (
+        <Card {...cardProps} />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { fr, FrIconClassName } from "@codegouvfr/react-dsfr";
+import { fr, type FrIconClassName, type RiIconClassName } from "@codegouvfr/react-dsfr";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import type { ReactNode } from "react";
 import { tss } from "tss-react/dsfr";
@@ -12,13 +12,16 @@ import RegulationPeb from "./regulation/RegulationPeb";
 import RegulationPlu from "./regulation/RegulationPlu";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { getIsMobile } from "../../utils/tools";
+import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 
 type DiagnosticRegulationProps = {
   diagnosticItem: DiagnosticItem;
 };
 
+type AccordionIcon = FrIconClassName | RiIconClassName | { src: string };
+
 type AccordionConfig = {
-  icon: string;
+  icon: AccordionIcon;
   label: string;
   isAffected: boolean;
   content: ReactNode;
@@ -81,6 +84,13 @@ const DiagnosticRegulation = ({
       links: terrestreLinks,
     },
     {
+      icon: "ri-voiceprint-line",
+      label: "Isolation réglementaire",
+      isAffected: !!(diagnostic.isolation_max && diagnostic.isolation_max > 30),
+      content: <RegulationIsolation diagnosticItem={diagnosticItem} />,
+      links: [],
+    },
+    {
       icon: "ri-building-line",
       label: "Locales (PLU)",
       isAffected: diagnostic.noisezone_intersections.length > 0,
@@ -92,10 +102,10 @@ const DiagnosticRegulation = ({
       ],
     },
     {
-      icon: "ri-voiceprint-line",
-      label: "Isolation réglementaire",
-      isAffected: !!(diagnostic.isolation_max && diagnostic.isolation_max > 30),
-      content: <RegulationIsolation diagnosticItem={diagnosticItem} />,
+      icon: { src: "/images/connect_without_contact.svg" },
+      label: "Autre sources de bruit à proximité",
+      isAffected: diagnostic.noisesource_intersections && diagnostic.noisesource_intersections.length > 0,
+      content: <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />,
       links: [],
     },
   ];
@@ -109,7 +119,16 @@ const DiagnosticRegulation = ({
           titleAs="h3"
           label={
             <>
-              <i className={fr.cx(accordion.icon as FrIconClassName, "fr-mr-1v")} />{" "}
+              {typeof accordion.icon === "string" ? (
+                <i className={fr.cx(accordion.icon, "fr-mr-2v")} />
+              ) : (
+                <img
+                  src={accordion.icon.src}
+                  alt=""
+                  aria-hidden="true"
+                  className={cx(classes.accordionImageIcon, fr.cx("fr-mr-2v"))}
+                />
+              )}{" "}
               {accordion.label}
 
               <div className={cx(classes.badgesContainer)}>
@@ -158,6 +177,11 @@ const useStyles = tss.create(() => ({
     ".fr-accordion__btn::after": {
       marginLeft: fr.spacing("2v"),
     },
+  },
+  accordionImageIcon: {
+    width: "1em",
+    height: "1em",
+    flexShrink: 0,
   },
   badgesContainer: {
     marginLeft: "auto",

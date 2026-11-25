@@ -10,15 +10,12 @@ import { getNoiseMapRows, getReadableSource } from "../../utils/tools";
 import { buildPositionData } from "../../utils/buildPositionData";
 import type { DiagnosticItem } from "../../utils/types";
 import DiagnosticEvaluation from "./DiagnosticEvaluation";
-import DiagnosticLegalInfos from "./DiagnosticLegalInfos";
 import DiagnosticReceiveByMail from "./DiagnosticReceiveByMail";
 import DiagnosticRecommendations from "./DiagnosticRecommendations";
 import DiagnosticRegulation from "./DiagnosticRegulation";
 import DiagnosticSectionTitle from "./DiagnosticSectionTitle";
 import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
-import DiagnosticLocalNoiseSources from "./DiagnosticLocalNoiseSources";
 import DiagnosticAcousticCertificate from "./DiagnosticAcousticCertificate";
-import DiagnosticDesignOffice from "./DiagnosticDesignOffice";
 
 
 type DiagnosticProps = {
@@ -79,21 +76,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
           />
           <DiagnosticRegulation diagnosticItem={diagnosticItem} />
           <DiagnosticAcousticCertificate />
-          <h4>Autres sources de bruit à proximité</h4>
-          <DiagnosticLocalNoiseSources diagnosticItem={diagnosticItem} />
-        </>
-      ),
-    },
-    {
-      tabId: "legal",
-      label: "Isolation réglementaire",
-      isDefault: activeTabId === "legal",
-      content: (
-        <>
-          <DiagnosticSectionTitle
-            title="Isolation réglementaire"
-          />
-          <DiagnosticLegalInfos diagnosticItem={diagnosticItem} />
         </>
       ),
     },
@@ -218,7 +200,6 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
               </pre>
             </Accordion>
           )}
-          <DiagnosticDesignOffice />
           <DiagnosticReceiveByMail
             parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
             summary={{
