@@ -319,9 +319,6 @@ const useStyles = tss.create(() => ({
     gap: fr.spacing("6v"),
     marginTop: fr.spacing("2v"),
   },
-  subtitle: {
-    ...fr.typography[1].style,
-  },
   alertCopied: {
     position: "fixed",
     bottom: fr.spacing("4v"),
