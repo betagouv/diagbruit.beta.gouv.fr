@@ -151,15 +151,22 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
       {diagnosticItem.diagnostic.score === 0 &&
         !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
           <div className={cx(classes.container)}>
-            <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>
-              Cette parcelle se situe en zone de moindre bruit : selon les
-              territoires, elle a pu faire l’objet d’une cartographie, mais le
-              niveau sonore y est inférieur aux seuils de représentation imposés
-              par la réglementation européenne.{" "}
-            </h3>
             <Alert
               className={cx(fr.cx("fr-mb-4v"))}
-              description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
+              description={
+                <>
+                  <p className={fr.cx("fr-mb-2v")}>
+                    Cette parcelle se situe en zone de moindre bruit : selon les
+                    territoires, elle a pu faire l’objet d’une cartographie, mais le
+                    niveau sonore y est inférieur aux seuils de représentation
+                    imposés par la réglementation européenne.
+                  </p>
+                  <p className={fr.cx("fr-mb-0")}>
+                    Cette parcelle peut tout de même être impactée par des bruit
+                    d’activité, d’éolienne, d’écoles, etc.
+                  </p>
+                </>
+              }
               onClose={function noRefCheck() { }}
               severity="info"
               title=""
