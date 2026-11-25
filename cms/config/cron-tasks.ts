@@ -1,79 +1,240 @@
-import { createElement } from "react";
+import { createElement, type ComponentType } from "react";
 import { render } from "@react-email/render";
-import { FollowUpEmail } from "../src/api/email/templates/DiagnosticEmail";
+import { FollowUpEmailPlus1, FollowUpEmailPlus15, FollowUpEmailPlus7 } from "../src/api/email/templates/FollowUpEmails";
+import {
+    FOLLOW_UP_PLUS15_UID,
+    FOLLOW_UP_PLUS7_UID,
+    FOLLOW_UP_UID,
+} from "../src/api/email/followUps";
 
-const FOLLOW_UP_UID = "api::follow-up-email-user.follow-up-email-user";
-const FOLLOW_UP_SUBJECT = "Votre diagnostic diagBruit vous a-t-il été utile ?";
+const FOLLOW_UP_TEST_MODE =
+    process.env.FOLLOW_UP_TEST_MODE === "true" &&
+    process.env.NODE_ENV === "development";
 
-export default {
-    followUpMail: {
+const DAY_MS = 24 * 60 * 60 * 1000;
+const MAX_SEND_ATTEMPTS = 3;
+
+const CRON_OPTIONS = {
+    rule: FOLLOW_UP_TEST_MODE ? "* * * * * *" : "0 9 * * *",
+    tz: "Europe/Paris",
+};
+
+const isCronDisabled = () =>
+    process.env.NODE_ENV === "development" && !FOLLOW_UP_TEST_MODE;
+
+const startOfParisDay = (date: Date) => {
+    const { hour, minute, second } = Object.fromEntries(
+        new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Europe/Paris",
+            hourCycle: "h23",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        })
+            .formatToParts(date)
+            .map(({ type, value }) => [type, Number(value)])
+    );
+    return new Date(
+        date.getTime() -
+            date.getMilliseconds() -
+            ((hour * 60 + minute) * 60 + second) * 1000
+    );
+};
+
+const createdAtLeastDaysAgo = (days: number) => ({
+    createdAt: FOLLOW_UP_TEST_MODE
+        ? { $lte: new Date(Date.now() - days * 1000).toISOString() }
+        : {
+              $lt: startOfParisDay(
+                  new Date(Date.now() - (days - 1) * DAY_MS)
+              ).toISOString(),
+          },
+});
+
+const running = new Set<string>();
+async function runExclusive(label: string, fn: () => Promise<void>) {
+    if (running.has(label)) return;
+    running.add(label);
+    try {
+        await fn();
+    } finally {
+        running.delete(label);
+    }
+}
+
+async function sendFollowUps(
+    strapi,
+    {
+        label,
+        uid,
+        subject,
+        html,
+        filters = {},
+    }: {
+        label: string;
+        uid: string;
+        subject: string;
+        html: string;
+        filters?: Record<string, unknown>;
+    }
+) {
+    let sent = 0;
+    let deleted = 0;
+    let sendFailed = 0;
+    let abandoned = 0;
+
+    const skipped = new Set<string>();
+    const sentTo = new Set<string>();
+
+    while (true) {
+        const pageFilters = skipped.size
+            ? { $and: [filters, { documentId: { $notIn: [...skipped] } }] }
+            : filters;
+        const users = await strapi
+            .documents(uid)
+            .findMany({ limit: 100, filters: pageFilters });
+
+        if (!users.length) break;
+
+        for (const user of users) {
+            const email = user.email.toLowerCase();
+            if (sentTo.has(email)) {
+                try {
+                    await strapi.documents(uid).delete({ documentId: user.documentId });
+                    deleted++;
+                } catch (err) {
+                    skipped.add(user.documentId);
+                    strapi.log.error(
+                        `[cron] ${label}: failed to delete duplicate ${user.documentId}: ${err}`
+                    );
+                }
+                continue;
+            }
+
+            try {
+                await strapi.plugins.email.services.email.send({
+                    to: user.email,
+                    subject,
+                    html,
+                });
+                sent++;
+                sentTo.add(email);
+            } catch (err) {
+                skipped.add(user.documentId);
+                const attempts = (user.attempts ?? 0) + 1;
+
+                if (attempts >= MAX_SEND_ATTEMPTS) {
+                    abandoned++;
+                    strapi.log.error(
+                        `[cron] ${label}: failed to send to ${user.email} after ${attempts} attempts, giving up: ${err}`
+                    );
+                    try {
+                        await strapi.documents(uid).delete({ documentId: user.documentId });
+                    } catch (deleteErr) {
+                        strapi.log.error(
+                            `[cron] ${label}: failed to delete ${user.documentId}: ${deleteErr}`
+                        );
+                    }
+                    continue;
+                }
+
+                sendFailed++;
+                strapi.log.error(
+                    `[cron] ${label}: failed to send to ${user.email} (attempt ${attempts}/${MAX_SEND_ATTEMPTS}), will retry next run: ${err}`
+                );
+                try {
+                    await strapi.documents(uid).update({
+                        documentId: user.documentId,
+                        data: { attempts },
+                    });
+                } catch (updateErr) {
+                    strapi.log.error(
+                        `[cron] ${label}: failed to record attempt for ${user.documentId}: ${updateErr}`
+                    );
+                }
+                continue;
+            }
+
+            try {
+                await strapi.documents(uid).delete({ documentId: user.documentId });
+                deleted++;
+            } catch (err) {
+                skipped.add(user.documentId);
+                strapi.log.error(
+                    `[cron] ${label}: failed to delete ${user.documentId}: ${err}`
+                );
+            }
+        }
+    }
+
+    if (sent || deleted || sendFailed || abandoned || !FOLLOW_UP_TEST_MODE) {
+        strapi.log.info(
+            `[cron] ${label}: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s), ${sendFailed} send failure(s) kept for retry, ${abandoned} abandoned.`
+        );
+    }
+}
+
+function followUpTask({
+    label,
+    uid,
+    subject,
+    Template,
+    delayDays,
+}: {
+    label: string;
+    uid: string;
+    subject: string;
+    Template: ComponentType;
+    delayDays: number;
+}) {
+    return {
         task: async ({ strapi }) => {
-            if (process.env.NODE_ENV === "development") {
+            if (isCronDisabled()) {
                 strapi.log.info(
-                    "Follow up mail cron is disabled in development environment."
+                    `[cron] ${label} is disabled in development environment.`
                 );
                 return;
             }
 
-            try {
-                const html = await render(createElement(FollowUpEmail));
-
-                let sent = 0;
-                let deleted = 0;
-
-                // Track entries whose deletion failed so we never re-fetch and
-                // re-email the same recipient. Deletes normally succeed, so this
-                // set stays empty and $notIn is omitted in the common case.
-                const failed = new Set<string>();
-
-                while (true) {
-                    const filters = failed.size
-                        ? { documentId: { $notIn: [...failed] } }
-                        : {};
-                    const users = await strapi
-                        .documents(FOLLOW_UP_UID)
-                        .findMany({ limit: 100, filters });
-
-                    if (!users.length) break;
-
-                    for (const user of users) {
-                        try {
-                            await strapi.plugins.email.services.email.send({
-                                to: user.email,
-                                subject: FOLLOW_UP_SUBJECT,
-                                html,
-                            });
-                            sent++;
-                        } catch (err) {
-                            strapi.log.error(
-                                `[cron] followUpMail: failed to send to ${user.email}: ${err}`
-                            );
-                        }
-
-                        try {
-                            await strapi
-                                .documents(FOLLOW_UP_UID)
-                                .delete({ documentId: user.documentId });
-                            deleted++;
-                        } catch (err) {
-                            failed.add(user.documentId);
-                            strapi.log.error(
-                                `[cron] followUpMail: failed to delete ${user.documentId}: ${err}`
-                            );
-                        }
-                    }
+            await runExclusive(label, async () => {
+                try {
+                    const html = await render(createElement(Template));
+                    await sendFollowUps(strapi, {
+                        label,
+                        uid,
+                        subject,
+                        html,
+                        filters: createdAtLeastDaysAgo(delayDays),
+                    });
+                } catch (err) {
+                    strapi.log.error(`[cron] ${label} failed: ${err}`);
                 }
-
-                strapi.log.info(
-                    `[cron] followUpMail: sent ${sent} follow-up email(s), deleted ${deleted} entrie(s).`
-                );
-            } catch (err) {
-                strapi.log.error(`[cron] followUpMail failed: ${err}`);
-            }
+            });
         },
-        options: {
-            rule: "0 9 * * *",
-            tz: 'Europe/Paris',
-        }
-    }
+        options: CRON_OPTIONS,
+    };
 }
+
+export default {
+    followUpMail: followUpTask({
+        label: "followUpMail",
+        uid: FOLLOW_UP_UID,
+        subject: "diagBruit – Des questions sur votre diagnostic ? ",
+        Template: FollowUpEmailPlus1,
+        delayDays: 1,
+    }),
+    followUpMailPlus7: followUpTask({
+        label: "followUpMailPlus7",
+        uid: FOLLOW_UP_PLUS7_UID,
+        subject: "diagBruit – À propos de votre diagnostic",
+        Template: FollowUpEmailPlus7,
+        delayDays: 7,
+    }),
+    followUpMailPlus15: followUpTask({
+        label: "followUpMailPlus15",
+        uid: FOLLOW_UP_PLUS15_UID,
+        subject: "diagBruit – Des retours suite à votre diagnostic ?",
+        Template: FollowUpEmailPlus15,
+        delayDays: 15,
+    }),
+};

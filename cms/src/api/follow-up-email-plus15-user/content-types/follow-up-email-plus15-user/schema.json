@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "follow_up_email_plus15_users",
+  "info": {
+    "singularName": "follow-up-email-plus15-user",
+    "pluralName": "follow-up-email-plus15-users",
+    "displayName": "FollowUpEmailPlus15User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "attempts": {
+      "type": "integer",
+      "default": 0
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    }
+  }
+}

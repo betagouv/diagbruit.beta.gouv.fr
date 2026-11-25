@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_global_email_profiles",
+  "info": {
+    "displayName": "email-profiles",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string"
+    }
+  }
+}

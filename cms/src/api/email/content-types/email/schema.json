@@ -15,16 +15,8 @@
       "type": "string"
     },
     "profile": {
-      "type": "enumeration",
-      "enum": [
-        "architecte",
-        "charge-de-mission-bruit",
-        "instructeur",
-        "autre",
-        "service-amenagement",
-        "promoteur",
-        "particulier"
-      ]
+      "type": "string",
+      "maxLength": 100
     },
     "count": {
       "type": "integer"
