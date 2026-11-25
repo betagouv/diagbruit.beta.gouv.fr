@@ -30,8 +30,17 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     diagnostic: {
       flags: { isMultiExposedSources },
       score,
+      land_intersections_ld,
+      land_intersections_ln,
+      air_intersections,
     },
   } = diagnosticItem;
+
+
+  const hasNoiseMapData =
+    land_intersections_ld.length > 0 ||
+    land_intersections_ln.length > 0 ||
+    air_intersections.length > 0;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -89,7 +98,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="Position du bâti"
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
-          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+          {hasNoiseMapData && (
             <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
           )}
         </>
