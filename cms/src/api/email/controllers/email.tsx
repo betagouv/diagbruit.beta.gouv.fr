@@ -22,6 +22,9 @@ import DiagnosticPdf, {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PARCEL_NUMBER_REGEX = /^\d{5}-[0-9A-Z]{1,3}-\d{4}$/;
+
+const PROFILE_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const PROFILE_MAX_LENGTH = 100;
 const ALLOWED_LINK_ORIGINS = [
   "https://diagbruit.beta.gouv.fr",
   "https://diagbruit.fr",
@@ -33,6 +36,14 @@ const ALLOWED_LINK_ORIGINS = [
 function isValidEmail(email: string): boolean {
   return (
     typeof email === "string" && EMAIL_REGEX.test(email) && email.length <= 254
+  );
+}
+
+function isValidProfile(profile: string): boolean {
+  return (
+    typeof profile === "string" &&
+    profile.length <= PROFILE_MAX_LENGTH &&
+    PROFILE_REGEX.test(profile)
   );
 }
 
@@ -145,15 +156,15 @@ function coercePosition(raw: any): PositionData | undefined {
   if (parcellePoints.length === 0) return undefined;
   const zones = Array.isArray(raw.zones)
     ? raw.zones.slice(0, 100).map((z: any) => ({
-        d: String(z?.d ?? ""),
-        fill: String(z?.fill ?? "#000000"),
-      }))
+      d: String(z?.d ?? ""),
+      fill: String(z?.fill ?? "#000000"),
+    }))
     : [];
   const optimalPoints = Array.isArray(raw.optimalPoints)
     ? raw.optimalPoints.slice(0, 2000).map((pt: any) => ({
-        x: Number(pt?.x) || 0,
-        y: Number(pt?.y) || 0,
-      }))
+      x: Number(pt?.x) || 0,
+      y: Number(pt?.y) || 0,
+    }))
     : [];
   return { size, parcellePoints, zones, optimalPoints };
 }
@@ -246,18 +257,23 @@ export default factories.createCoreController("api::email.email", () => ({
       return ctx.badRequest("Invalid email address");
     }
 
+    if (!isValidProfile(profile)) {
+      return ctx.badRequest("Invalid profile");
+    }
+
     const existing = await strapi.documents("api::email.email").findMany({
       filters: { email },
     });
 
     if (existing.length > 0) {
       const doc = existing[0];
+
       await strapi.documents("api::email.email").update({
         documentId: doc.documentId,
-        data: { count: (doc.count || 0) + 1 },
+        data: { count: (doc.count || 0) + 1, profile },
       });
       return ctx.send({
-        message: "Email already registered, count incremented",
+        message: "Email already registered, count incremented and profile updated",
       });
     }
 

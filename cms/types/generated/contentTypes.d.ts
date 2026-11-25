@@ -587,6 +587,36 @@ export interface ApiDecreeDecree extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEmailFormProfileEmailFormProfile
+  extends Struct.SingleTypeSchema {
+  collectionName: 'email_form_profiles';
+  info: {
+    description: '';
+    displayName: 'EmailFormProfile';
+    pluralName: 'email-form-profiles';
+    singularName: 'email-form-profile';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    EmailProfiles: Schema.Attribute.Component<'global.email-profiles', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::email-form-profile.email-form-profile'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
   collectionName: 'emails';
   info: {
@@ -607,17 +637,10 @@ export interface ApiEmailEmail extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::email.email'> &
       Schema.Attribute.Private;
-    profile: Schema.Attribute.Enumeration<
-      [
-        'architecte',
-        'charge-de-mission-bruit',
-        'instructeur',
-        'autre',
-        'service-amenagement',
-        'promoteur',
-        'particulier',
-      ]
-    >;
+    profile: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1483,6 +1506,7 @@ declare module '@strapi/strapi' {
       'api::acoustic-certificate.acoustic-certificate': ApiAcousticCertificateAcousticCertificate;
       'api::changelog.changelog': ApiChangelogChangelog;
       'api::decree.decree': ApiDecreeDecree;
+      'api::email-form-profile.email-form-profile': ApiEmailFormProfileEmailFormProfile;
       'api::email.email': ApiEmailEmail;
       'api::follow-up-email-user.follow-up-email-user': ApiFollowUpEmailUserFollowUpEmailUser;
       'api::home-page-content.home-page-content': ApiHomePageContentHomePageContent;

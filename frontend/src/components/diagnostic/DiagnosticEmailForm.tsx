@@ -39,10 +39,15 @@ const submitAlertMessages: Record<
 	},
 };
 
-const selectOptions = [
+type ProfileOption = { value: string; label: string };
+
+const selectOptions: ProfileOption[] = [
 	{ value: "architecte", label: "Architecte" },
 	{ value: "charge-de-mission-bruit", label: "Chargé de mission bruit" },
 	{ value: "instructeur", label: "Instructeur ADS" },
+	{ value: "notaire", label: "Notaire" },
+	{ value: "gestionnaire-immobilier", label: "Gestionnaire immobilier" },
+	{ value: "agent-immobilier", label: "Agent immobilier" },
 	{ value: "particulier", label: "Particulier" },
 	{ value: "promoteur", label: "Promoteur" },
 	{ value: "service-amenagement", label: "Service aménagement" },
@@ -116,6 +121,8 @@ export default function DiagnosticEmailForm({
 }) {
 	const { cx, classes } = useStyles();
 
+	const [options, setOptions] = useState<ProfileOption[]>(selectOptions);
+
 	useEffect(() => {
 		const modalElement = document.getElementById(modal.id);
 		if (!modalElement) return;
@@ -124,6 +131,29 @@ export default function DiagnosticEmailForm({
 		return () =>
 			modalElement.removeEventListener("dsfr.conceal", handleConceal);
 	}, [onClose]);
+
+	useEffect(() => {
+		let cancelled = false;
+		(async () => {
+			try {
+				const res = await fetch(
+					`${process.env.REACT_APP_CMS_URL}/api/email-form-profile?populate=*`,
+				);
+				if (!res.ok) return;
+				const json = await res.json();
+				const profiles: ProfileOption[] = (json?.data?.EmailProfiles ?? [])
+					.filter((p: any) => p?.value && p?.label)
+					.map((p: any) => ({ value: p.value, label: p.label }));
+				if (!cancelled && profiles.length > 0) {
+					setOptions(profiles);
+				}
+			} catch {
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	const formRef = useRef<HTMLFormElement>(null);
 	const [value, setValue] = useState("");
@@ -252,7 +282,7 @@ export default function DiagnosticEmailForm({
 						<option value="" disabled hidden>
 							Selectionnez un profil
 						</option>
-						{selectOptions.map((option) => (
+						{options.map((option) => (
 							<option key={option.value} value={option.value}>
 								{option.label}
 							</option>
