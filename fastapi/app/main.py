@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import diag, metabase
+from .routes import diag, metabase, recommendations
 from .database import engine
 from . import models
 from .version import get_api_version
@@ -24,6 +24,7 @@ app.add_middleware(
 
 app.include_router(diag.router)
 app.include_router(metabase.router)
+app.include_router(recommendations.router)
 
 @app.get("/")
 def read_root():

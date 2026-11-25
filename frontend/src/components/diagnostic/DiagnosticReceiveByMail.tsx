@@ -75,7 +75,7 @@ export default function DiagnosticReceiveByMail({
           className={cx(classes.button)}
           size="large"
         >
-          Recevoir le diagnostic
+          Recevoir mon diagnostic (PDF)
         </Button>
       </div>
       <DiagnosticEmailForm
