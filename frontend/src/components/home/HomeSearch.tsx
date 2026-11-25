@@ -11,6 +11,7 @@ import { trackMatomoEvent } from "../../utils/matomo";
 
 export interface HomeSearchProps {
     title: string;
+    topTitle?: string;
     description: string;
     banner: ImageProps;
     isMobile?: boolean;
@@ -27,13 +28,16 @@ export const HomeSearch = ({ content }: { content: HomeSearchProps }) => {
 
 
     return (<div className={cx(classes.bgContainer)}>
-        <div className={cx(classes.contentContainer, "fr-col-12", "fr-col-md-9")}>
-            <h1>
+        <div className={cx(classes.contentContainer, "fr-col-12", "fr-col-md-11")}>
+            {content.topTitle && <p className={fr.cx("fr-h3", "fr-col-md-10")}>{content.topTitle}</p>}
+            <h1 className={fr.cx("fr-col-md-8")}>
                 {content.title}
             </h1>
-            <div className={cx("fr-px-4v")}
+            <div className={cx("fr-px-4v", "fr-col-md-9")}
                 dangerouslySetInnerHTML={{ __html: text }}
             />
+        </div>
+        <div className={cx(classes.contentContainer, "fr-col-12", "fr-col-md-9")}>
             <div className={cx(classes.searchAddressContainer)}>
                 <AddressSearch
                     className={classes.searchAddress}
@@ -164,7 +168,7 @@ const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().c
             backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${url})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            h1: {
+            "h1, .fr-h3": {
                 color: `${fr.colors.decisions.background.default.grey.default} !important`,
             },
             color: fr.colors.decisions.background.default.grey.default,
@@ -174,13 +178,18 @@ const useStyles = tss.withName(HomeSearch.name).withParams<{ url?: string }>().c
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
+        alignItems: "center",
         margin: "0 auto",
         textAlign: "center",
+        "& > [class*='fr-col']": {
+            flexBasis: "auto",
+        },
     },
     searchAddress: {
         width: "100%",
     },
     searchAddressContainer: {
+        alignSelf: "stretch",
         padding: fr.spacing("5w"),
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         borderRadius: fr.spacing("2v"),

@@ -52,7 +52,7 @@ const DiagnosticParcelleSvgNotice = ({
                 }}
               />
               <div className={fr.cx("fr-text--md")}>
-                Risque de niveau {getTextFromRisk(zone.risk, true)}
+                Situation {getTextFromRisk(zone.risk, true)}
               </div>
             </div>
           ))}

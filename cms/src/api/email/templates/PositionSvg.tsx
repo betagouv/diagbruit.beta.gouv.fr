@@ -26,10 +26,10 @@ const lighten = (hex: string): string => {
 };
 
 const RISK_LEVELS = [
-  { label: "faible", color: lighten("#4B9F6C") },
-  { label: "moyen", color: lighten("#CB9F2D") },
-  { label: "fort", color: lighten("#FA7659") },
-  { label: "extrême", color: lighten("#F95A5C") },
+  { label: "saine", color: lighten("#4B9F6C") },
+  { label: "altérée", color: lighten("#CB9F2D") },
+  { label: "déconseillée", color: lighten("#FA7659") },
+  { label: "concrète", color: lighten("#F95A5C") },
 ];
 
 const col = {
@@ -150,7 +150,7 @@ export default function PositionSvg({
             <View key={lvl.label} style={s.legendRow}>
               <View style={[s.swatch, { backgroundColor: lvl.color }]} />
               <Text style={s.legendLabel}>
-                Risque de niveau sonore {lvl.label}
+                Situation {lvl.label}
               </Text>
             </View>
           ))}

@@ -106,6 +106,7 @@ export interface GlobalHomeSearch extends Struct.ComponentSchema {
         }
       >;
     title: Schema.Attribute.String;
+    topTitle: Schema.Attribute.String;
   };
 }
 

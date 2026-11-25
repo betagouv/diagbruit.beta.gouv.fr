@@ -43,7 +43,7 @@ const getSourceIconUrl = (slug: string): string =>
 const scoreColor = (s: number): string =>
   s > 8 ? "#F95A5C" : s > 6 ? "#FA7659" : s > 3 ? "#CB9F2D" : "#4B9F6C";
 const scoreText = (s: number): string =>
-  s > 8 ? "EXTRÊME" : s > 6 ? "FORT" : s > 3 ? "MOYEN" : "FAIBLE";
+  s > 8 ? "CONCRÈTE" : s > 6 ? "DÉCONSEILLÉE" : s > 3 ? "ALTÉRÉE" : "SAINE";
 const scoreIcon = (s: number): string =>
   s > 8
     ? ICON_CLOSE_CIRCLE
@@ -56,8 +56,8 @@ const scoreIcon = (s: number): string =>
 const getRiskSummaryRuns = (score: number, undefinedRisk: boolean): Run[] => {
   if (undefinedRisk) {
     return [
-      { text: "Le " },
-      { text: "risque de nuisance sonore", bold: true },
+      { text: "La " },
+      { text: "situation de nuisance sonore", bold: true },
       { text: " ne peut pas être déterminé par diagBruit pour votre parcelle.\n" },
       { text: "Une " },
       { text: "visite des lieux", bold: true },
@@ -66,8 +66,8 @@ const getRiskSummaryRuns = (score: number, undefinedRisk: boolean): Run[] => {
   }
   if (score > 8) {
     return [
-      { text: "Votre parcelle est exposée à un " },
-      { text: "risque extrême de nuisance sonore.", bold: true },
+      { text: "Votre parcelle est exposée à une " },
+      { text: "situation à risque concret de nuisance sonore.", bold: true },
       {
         text: " Les projets de construction ou de rénovation sont soumis à des ",
       },
@@ -75,10 +75,10 @@ const getRiskSummaryRuns = (score: number, undefinedRisk: boolean): Run[] => {
       { text: "." },
     ];
   }
-  const level = score > 6 ? "fort" : score > 3 ? "moyen" : "faible";
+  const level = score > 6 ? "déconseillée" : score > 3 ? "altérée" : "saine";
   return [
-    { text: "Votre parcelle est exposée à un " },
-    { text: `risque ${level} de nuisance sonore.`, bold: true },
+    { text: "Votre parcelle est exposée à une " },
+    { text: `situation ${level} de nuisance sonore.`, bold: true },
   ];
 };
 
@@ -117,7 +117,7 @@ const RiskBadge = ({
       />
     </Svg>
     <Text style={s.badgeText}>
-      RISQUE {undefinedRisk ? "INDÉFINI" : scoreText(score)}
+      SITUATION {undefinedRisk ? "INDÉFINIE" : scoreText(score)}
     </Text>
   </View>
 );
