@@ -161,7 +161,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                     niveau sonore y est inférieur aux seuils de représentation
                     imposés par la réglementation européenne.
                   </p>
-                  <p className={fr.cx("fr-mb-0")}>
+                  <p >
                     Cette parcelle peut tout de même être impactée par des bruit
                     d’activité, d’éolienne, d’écoles, etc.
                   </p>
