@@ -162,8 +162,8 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
                     imposés par la réglementation européenne.
                   </p>
                   <p >
-                    Cette parcelle peut tout de même être impactée par des bruit
-                    d’activité, d’éolienne, d’écoles, etc.
+                    Cette parcelle peut tout de même être impactée par des bruits
+                    d’activités, d’éoliennes, d’écoles, etc.
                   </p>
                 </>
               }
