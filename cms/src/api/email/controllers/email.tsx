@@ -9,6 +9,7 @@ import { randomUUID } from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { FOLLOW_UP_UIDS } from "../followUps";
 import DiagnosticEmail from "../templates/DiagnosticEmail";
 import DiagnosticPdf, {
   type DiagnosticPdfData,
@@ -350,18 +351,26 @@ export default factories.createCoreController("api::email.email", () => ({
       html,
     });
 
+
     try {
-      const followUpUid = "api::follow-up-email-user.follow-up-email-user";
-      const existingFollowUp = await strapi.documents(followUpUid).findMany({
-        filters: { email: to },
-      });
-      if (existingFollowUp.length === 0) {
-        await strapi.documents(followUpUid).create({
-          data: { email: to },
-        });
+      const pendingCounts = await Promise.all(
+        FOLLOW_UP_UIDS.map((followUpUid) =>
+          strapi.documents(followUpUid).count({ filters: { email: to } }),
+        ),
+      );
+      if (pendingCounts.every((count) => count === 0)) {
+        for (const followUpUid of FOLLOW_UP_UIDS) {
+          try {
+            await strapi.documents(followUpUid).create({
+              data: { email: to },
+            });
+          } catch (err) {
+            strapi.log.error(`[email] failed to add ${to} to ${followUpUid}: ${err}`);
+          }
+        }
       }
     } catch (err) {
-      strapi.log.error(`[email] failed to add ${to} to follow-up list: ${err}`);
+      strapi.log.error(`[email] failed to check follow-up lists for ${to}: ${err}`);
     }
 
     return ctx.send({ message: "Email envoyé avec succès" });
