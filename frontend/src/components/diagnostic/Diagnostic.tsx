@@ -30,8 +30,17 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
     diagnostic: {
       flags: { isMultiExposedSources },
       score,
+      land_intersections_ld,
+      land_intersections_ln,
+      air_intersections,
     },
   } = diagnosticItem;
+
+
+  const hasNoiseMapData =
+    land_intersections_ld.length > 0 ||
+    land_intersections_ln.length > 0 ||
+    air_intersections.length > 0;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -89,7 +98,7 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
             title="Position du bâti"
           />
           <DiagnosticRecommendations diagnosticItem={diagnosticItem} />
-          {!diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+          {hasNoiseMapData && (
             <DiagnosticEvaluation diagnosticItem={diagnosticItem} />
           )}
         </>
@@ -148,148 +157,156 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
 
   return (
     <div id="diagnostic-section">
-      {diagnosticItem.diagnostic.score === 0 ? (
-        <div className={cx(classes.container)}>
-          <h3 className={cx(fr.cx("fr-mb-0", "fr-mt-4v"), classes.subtitle)}>
-            Cette parcelle se situe en zone de moindre bruit : selon les
-            territoires, elle a pu faire l’objet d’une cartographie, mais le
-            niveau sonore y est inférieur aux seuils de représentation imposés
-            par la réglementation européenne.{" "}
-          </h3>
-          <Alert
-            description="Attention, cela ne signifie pas que le risque sonore est inexistant car cette parcelle peut être impactée par des bruit d’activité, d’éolienne, d’écoles, etc."
-            onClose={function noRefCheck() { }}
-            severity="info"
-            title=""
-          />
-        </div>
-      ) : (
-        <div className={cx(classes.container)}>
-          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-            <div className={fr.cx("fr-col-12", "fr-col-md-3")}>
-              <SideMenu
-                burgerMenuButtonText="Navigation"
-                items={diagnosticTabs.map((tab) => ({
-                  text: tab.label,
-                  isActive: tab.tabId === activeTabId,
-                  linkProps: {
-                    href: "#",
-                    onClick: (e: React.MouseEvent) => {
-                      e.preventDefault();
-                      const next = new URLSearchParams(window.location.search);
-                      next.set("tab", tab.tabId);
-                      setSearchParams(next);
-                      trackMatomoEvent("Action", "Diagnostic Tab Change", `diagnostic-tab-${tab.tabId}`);
-                    },
-                  },
-                }))}
-              />
-            </div>
-            <div className={fr.cx("fr-col-12", "fr-col-md-9")}>
-              {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
-            </div>
+      {diagnosticItem.diagnostic.score === 0 &&
+        !diagnosticItem.diagnostic.flags.hasNoisemapWarning && (
+          <div className={cx(classes.container)}>
+            <Alert
+              className={cx(fr.cx("fr-mb-4v"))}
+              description={
+                <>
+                  <p className={fr.cx("fr-mb-2v")}>
+                    Cette parcelle se situe en zone de moindre bruit : selon les
+                    territoires, elle a pu faire l’objet d’une cartographie, mais le
+                    niveau sonore y est inférieur aux seuils de représentation
+                    imposés par la réglementation européenne.
+                  </p>
+                  <p >
+                    Cette parcelle peut tout de même être impactée par des bruits
+                    d’activités, d’éoliennes, d’écoles, etc.
+                  </p>
+                </>
+              }
+              onClose={function noRefCheck() { }}
+              severity="info"
+              title=""
+            />
           </div>
-          {devMode && (
-            <Accordion label="Voir le retour de l'API" titleAs="h2">
-              <pre>
-                {JSON.stringify(
-                  diagnosticItem,
-                  (k, v) => (k.startsWith("geometry") ? undefined : v),
-                  2,
-                )}
-              </pre>
-            </Accordion>
-          )}
-          <DiagnosticReceiveByMail
-            parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
-            summary={{
-              score: diagnosticItem.diagnostic.score,
-              maxDbLden: diagnosticItem.diagnostic.max_db_lden,
-              flags: {
-                isMultiExposedSources:
-                  diagnosticItem.diagnostic.flags.isMultiExposedSources,
-                isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
-                hasClassificationWarning:
-                  diagnosticItem.diagnostic.flags.hasClassificationWarning,
-                hasNoisemapWarning:
-                  diagnosticItem.diagnostic.flags.hasNoisemapWarning,
-              },
-              regulation: {
-                peb: {
-                  exposed: diagnosticItem.diagnostic.air_intersections.length > 0,
-                  zone:
-                    diagnosticItem.diagnostic.air_intersections[0]?.acoustic_zone ??
-                    null,
+        )}
+      <div className={cx(classes.container)}>
+        <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+          <div className={fr.cx("fr-col-12", "fr-col-md-3")}>
+            <SideMenu
+              burgerMenuButtonText="Navigation"
+              items={diagnosticTabs.map((tab) => ({
+                text: tab.label,
+                isActive: tab.tabId === activeTabId,
+                linkProps: {
+                  href: "#",
+                  onClick: (e: React.MouseEvent) => {
+                    e.preventDefault();
+                    const next = new URLSearchParams(window.location.search);
+                    next.set("tab", tab.tabId);
+                    setSearchParams(next);
+                    trackMatomoEvent("Action", "Diagnostic Tab Change", `diagnostic-tab-${tab.tabId}`);
+                  },
                 },
-                soundClassification: {
-                  exposed:
-                    diagnosticItem.diagnostic.soundclassification_intersections
-                      .length > 0,
-                  rows: [...diagnosticItem.diagnostic.soundclassification_intersections]
-                    .sort((a, b) => b.acoustic_category - a.acoustic_category)
-                    .map((s) => ({
-                      type: getReadableSource(s.kind, true),
-                      name: s.label || "-",
-                      category: s.acoustic_category,
-                      minDistance: s.min_distance,
-                      maxDistance: s.max_distance,
-                    })),
-                },
+              }))}
+            />
+          </div>
+          <div className={fr.cx("fr-col-12", "fr-col-md-9")}>
+            {diagnosticTabs.find((tab) => tab.tabId === activeTabId)?.content}
+          </div>
+        </div>
+        {devMode && (
+          <Accordion label="Voir le retour de l'API" titleAs="h2">
+            <pre>
+              {JSON.stringify(
+                diagnosticItem,
+                (k, v) => (k.startsWith("geometry") ? undefined : v),
+                2,
+              )}
+            </pre>
+          </Accordion>
+        )}
+        <DiagnosticReceiveByMail
+          parcelNumber={`${diagnosticItem.parcelle.code_insee}-${diagnosticItem.parcelle.section}-${diagnosticItem.parcelle.numero}`}
+          summary={{
+            score: diagnosticItem.diagnostic.score,
+            maxDbLden: diagnosticItem.diagnostic.max_db_lden,
+            flags: {
+              isMultiExposedSources:
+                diagnosticItem.diagnostic.flags.isMultiExposedSources,
+              isPriorityZone: diagnosticItem.diagnostic.flags.isPriorityZone,
+              hasClassificationWarning:
+                diagnosticItem.diagnostic.flags.hasClassificationWarning,
+              hasNoisemapWarning:
+                diagnosticItem.diagnostic.flags.hasNoisemapWarning,
+            },
+            regulation: {
+              peb: {
+                exposed: diagnosticItem.diagnostic.air_intersections.length > 0,
+                zone:
+                  diagnosticItem.diagnostic.air_intersections[0]?.acoustic_zone ??
+                  null,
               },
-              isolation: {
-                min: diagnosticItem.diagnostic.isolation_min,
-                max: diagnosticItem.diagnostic.isolation_max,
-                hasPeb: diagnosticItem.diagnostic.air_intersections.length > 0,
-                hasCls:
+              soundClassification: {
+                exposed:
                   diagnosticItem.diagnostic.soundclassification_intersections
                     .length > 0,
+                rows: [...diagnosticItem.diagnostic.soundclassification_intersections]
+                  .sort((a, b) => b.acoustic_category - a.acoustic_category)
+                  .map((s) => ({
+                    type: getReadableSource(s.kind, true),
+                    name: s.label || "-",
+                    category: s.acoustic_category,
+                    minDistance: s.min_distance,
+                    maxDistance: s.max_distance,
+                  })),
               },
-              plu: {
-                zones: Array.from(
-                  new Map(
-                    diagnosticItem.diagnostic.noisezone_intersections.map(
-                      (nz) => [nz.alert_slug, nz],
-                    ),
-                  ).values(),
-                ).map((nz) => ({
-                  label: nz.label ?? "",
-                  content: nz.content ?? "",
-                  source: nz.source ?? "",
-                  reference: nz.reference ?? "",
-                })),
-              },
-              noiseMap: {
-                rows: getNoiseMapRows(diagnosticItem.diagnostic),
-              },
-              noiseSources: Object.values(
-                (
-                  diagnosticItem.diagnostic.noisesource_intersections ?? []
-                ).reduce(
-                  (acc, src) => {
-                    if (!acc[src.category_slug]) {
-                      acc[src.category_slug] = {
-                        name: src.category_name,
-                        slug: src.category_slug,
-                        count: 0,
-                      };
-                    }
-                    acc[src.category_slug].count += 1;
-                    return acc;
-                  },
-                  {} as Record<
-                    string,
-                    { name: string; slug: string; count: number }
-                  >,
-                ),
+            },
+            isolation: {
+              min: diagnosticItem.diagnostic.isolation_min,
+              max: diagnosticItem.diagnostic.isolation_max,
+              hasPeb: diagnosticItem.diagnostic.air_intersections.length > 0,
+              hasCls:
+                diagnosticItem.diagnostic.soundclassification_intersections
+                  .length > 0,
+            },
+            plu: {
+              zones: Array.from(
+                new Map(
+                  diagnosticItem.diagnostic.noisezone_intersections.map(
+                    (nz) => [nz.alert_slug, nz],
+                  ),
+                ).values(),
+              ).map((nz) => ({
+                label: nz.label ?? "",
+                content: nz.content ?? "",
+                source: nz.source ?? "",
+                reference: nz.reference ?? "",
+              })),
+            },
+            noiseMap: {
+              rows: getNoiseMapRows(diagnosticItem.diagnostic),
+            },
+            noiseSources: Object.values(
+              (
+                diagnosticItem.diagnostic.noisesource_intersections ?? []
+              ).reduce(
+                (acc, src) => {
+                  if (!acc[src.category_slug]) {
+                    acc[src.category_slug] = {
+                      name: src.category_name,
+                      slug: src.category_slug,
+                      count: 0,
+                    };
+                  }
+                  acc[src.category_slug].count += 1;
+                  return acc;
+                },
+                {} as Record<
+                  string,
+                  { name: string; slug: string; count: number }
+                >,
               ),
-              position: buildPositionData(
-                diagnosticItem.parcelle.geometry,
-                diagnosticItem.diagnostic.zones,
-              ),
-            }}
-          />
-        </div>
-      )}
+            ),
+            position: buildPositionData(
+              diagnosticItem.parcelle.geometry,
+              diagnosticItem.diagnostic.zones,
+            ),
+          }}
+        />
+      </div>
       {copied && (
         <Alert
           severity="success"
@@ -310,9 +327,6 @@ const useStyles = tss.create(() => ({
     flexDirection: "column",
     gap: fr.spacing("6v"),
     marginTop: fr.spacing("2v"),
-  },
-  subtitle: {
-    ...fr.typography[1].style,
   },
   alertCopied: {
     position: "fixed",

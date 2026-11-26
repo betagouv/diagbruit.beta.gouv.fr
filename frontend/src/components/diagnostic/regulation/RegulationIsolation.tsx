@@ -93,7 +93,7 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
           </Badge>
         )}
         <p className={classes.isolationText}>
-          Le <strong>calcul d'isolation</strong> sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phonique existantes, multi exposition.
+          Le <strong>calcul d'isolation</strong> sur la parcelle sélectionnée <strong>dépend de plusieurs facteurs</strong> : distance, masquage par des bâtiments existants, protections phoniques existantes, multi exposition.
         </p>
 
         <h4 className={classes.isolationTitle}>

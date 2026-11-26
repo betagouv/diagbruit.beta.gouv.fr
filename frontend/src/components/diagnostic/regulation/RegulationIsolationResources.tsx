@@ -6,42 +6,54 @@ import CardPreco from "../../ui/CardPreco";
 
 const ISOLATION_RESOURCES = [
   { slug: "realiser-une-etude-acoustique", badge: "Article" },
-  { slug: "isolement-acoustique-des-facades-adapter-les-solutions-aux-objectifs-de-performance", badge: "Doc technique" },
+  {
+    slug: "isolement-acoustique-des-facades-adapter-les-solutions-aux-objectifs-de-performance",
+    badge: "Doc technique",
+  },
 ];
 
 const RegulationIsolationResources = () => {
-  const { classes } = useStyles();
+  const { cx, classes } = useStyles();
   const { precosBySlug, isLoading } = usePrecosBySlugs(
     ISOLATION_RESOURCES.map((resource) => resource.slug),
   );
 
-  if (isLoading) return null;
-
   return (
-    <div className={classes.grid}>
+    <div className={classes.grid} aria-busy={isLoading}>
       {ISOLATION_RESOURCES.map((resource, index) => {
         const preco = precosBySlug[resource.slug];
 
         if (!preco) {
-          return <div key={index} className={classes.emptyCard} aria-hidden="true" />;
+          return (
+            <div
+              key={index}
+              className={cx(classes.slot, classes.emptyCard)}
+              aria-hidden="true"
+            />
+          );
         }
 
         return (
-          <CardPreco
-            key={preco.slug}
-            horizontal
-            title={preco.title}
-            titleAs="h5"
-            slug={preco.slug}
-            imageUrl={preco.imageUrl}
-            imageAlt={preco.imageAlt}
-            start={
-              <Badge small noIcon className={fr.cx("fr-badge--purple-glycine")}>
-                {resource.badge}
-              </Badge>
-            }
-            target
-          />
+          <div key={preco.slug} className={classes.slot}>
+            <CardPreco
+              horizontal
+              title={preco.title}
+              titleAs="h5"
+              slug={preco.slug}
+              imageUrl={preco.imageUrl}
+              imageAlt={preco.imageAlt}
+              start={
+                <Badge
+                  small
+                  noIcon
+                  className={fr.cx("fr-badge--purple-glycine")}
+                >
+                  {resource.badge}
+                </Badge>
+              }
+              target
+            />
+          </div>
         );
       })}
     </div>
@@ -61,8 +73,10 @@ const useStyles = tss.create(() => ({
       gridTemplateColumns: "1fr",
     },
   },
-  emptyCard: {
+  slot: {
     minHeight: "11rem",
+  },
+  emptyCard: {
     border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
     backgroundColor: fr.colors.decisions.background.default.grey.default,
   },
