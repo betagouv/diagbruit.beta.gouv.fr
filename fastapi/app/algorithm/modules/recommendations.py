@@ -49,3 +49,37 @@ def get_recommendations_by_score(score: float) -> List[dict]:
         }
         for r in recommendations if is_valid(r)
     ]
+
+
+def get_recommendation_cards(slugs: List[str]) -> List[dict]:
+    """
+    Return the card data (title, slug, thumbnail) of the published recommendations
+    matching ``slugs``. Unknown slugs are simply absent from the result.
+    Returns an empty list if Strapi is unreachable.
+    """
+    if not slugs:
+        return []
+
+    params = {
+        "fields[0]": "title",
+        "fields[1]": "slug",
+        "populate[0]": "imageThumbnail",
+        "pagination[pageSize]": str(len(slugs)),
+    }
+    for index, slug in enumerate(slugs):
+        params[f"filters[slug][$in][{index}]"] = slug
+
+    data = cached_strapi_get("/api/recommendations", params=params)
+    items = data.get("data", []) if data else []
+
+    cards = []
+    for item in items:
+        thumbnail = item.get("imageThumbnail") or {}
+        cards.append({
+            "title": item.get("title", ""),
+            "slug": item.get("slug", ""),
+            # Relative to the CMS when Strapi stores files locally; the front resolves it.
+            "imageUrl": thumbnail.get("url") or "",
+            "imageAlt": thumbnail.get("alternativeText") or "",
+        })
+    return cards

@@ -12,10 +12,9 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     """
     diagnostic = copy.deepcopy(default_diagnostic)
 
-    if len(noisemap_intersections) == 0 and len(peb_intersections) == 0 and len(soundclassification_intersections) == 0:
-        return diagnostic
-
-    diagnostic["score"] = get_global_score_from_sources(noisemap_intersections, peb_intersections, percent_unimpacted)
+    has_scored_sources = len(noisemap_intersections) > 0 or len(peb_intersections) > 0
+    if has_scored_sources:
+        diagnostic["score"] = get_global_score_from_sources(noisemap_intersections, peb_intersections, percent_unimpacted)
 
     (
         intersections_AGGLO_ld,
@@ -68,7 +67,7 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     high_risk_sum = sum(z.get("percentage_impacted", 0) for z in diagnostic["zones"] if z.get("risk") in [2, 3])
     noise_is_stopped = low_risk_sum < high_risk_sum
 
-    if noise_is_stopped:
+    if noise_is_stopped and has_scored_sources:
         diagnostic["score"] = get_global_score_from_sources(noisemap_intersections, peb_intersections, percent_unimpacted, noise_is_stopped)
 
     diagnostic["isolation_min"] = None
@@ -85,6 +84,6 @@ def get_parcelle_diagnostic(noisemap_intersections, soundclassification_intersec
     diagnostic['flags']['isMultiExposedLdenLn'] = (1 if len(grouped_ld) > 0 else 0) + (1 if len(grouped_ln) > 0 else 0) > 1
     diagnostic['flags']['isPriorityZone'] = any(item.get('acoustic_noisemap_kind') == "C" for item in noisemap_intersections)
     diagnostic['flags']['hasClassificationWarning'] = get_classification_warning(noisemap_intersections, soundclassification_intersections)
-    diagnostic['flags']['hasNoisemapWarning'] = len(noisemap_intersections) == 0 and len(soundclassification_intersections) > 0 and len(peb_intersections) == 0
+    diagnostic['flags']['hasNoisemapWarning'] = not has_scored_sources and len(soundclassification_intersections) > 0
 
     return diagnostic

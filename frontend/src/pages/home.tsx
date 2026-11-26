@@ -4,6 +4,7 @@ import { AvailabilityMapProps, AvailabilityMap } from "../components/home/Availa
 import About, { AboutHomePageProps, PartnersProps } from "../components/home/About";
 import { useEffect, useState } from "react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../config/seo";
 import axios from "axios";
 import { Loader } from "../components/ui/Loader";
 import DiagPreview, { DiagPreviewProps } from "../components/home/DiagPreview";
@@ -46,7 +47,7 @@ const params = {
 
 function HomePage() {
   const { cx, classes } = useStyles();
-  usePageMeta("Accueil", "Intégrez le bruit dans les risques impactant les projets d'aménagement avec diagBruit.");
+  usePageMeta(PAGE_META.home.title, PAGE_META.home.description);
   const [homeContent, setHomeContent] = useState<HomePageContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);

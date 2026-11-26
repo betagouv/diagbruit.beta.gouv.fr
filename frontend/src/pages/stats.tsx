@@ -1,13 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { useEffect, useState } from "react";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../config/seo";
 import { tss } from "tss-react/dsfr";
 
 function StatsPage() {
   const [IFrameUrl, setIFrameUrl] = useState<string>();
 
   const { cx, classes } = useStyles();
-  usePageMeta("Statistiques", "Consultez les statistiques d'usage de diagBruit.");
+  usePageMeta(PAGE_META.stats.title, PAGE_META.stats.description);
 
   useEffect(() => {
     const fetchIframeUrl = async () => {

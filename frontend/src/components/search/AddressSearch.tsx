@@ -101,7 +101,7 @@ const AddressSearch = forwardRef(
       onValueSelected,
       limit = 5,
       defaultValue,
-      label = "Lancer le diagnostic sonore",
+      label = "Localiser mon adresse",
       light = false,
       isMobile = false
     }: AddressSearchProps,

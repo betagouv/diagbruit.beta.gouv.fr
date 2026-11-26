@@ -25,7 +25,8 @@ export const PrecoPage = () => {
   const { preco, isLoading, notFound } = usePreco(slug ?? "");
 
   const plainText = preco
-    ? new DOMParser()
+    ? (preco.seoDescription || "").replace(/\s+/g, " ").trim() ||
+    new DOMParser()
       .parseFromString(preco.aRetenir || preco.content, "text/html")
       .body.textContent?.trim()
       .slice(0, 160)
@@ -40,13 +41,13 @@ export const PrecoPage = () => {
     noindex: notFound || !preco,
     jsonLd: preco
       ? {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: preco.title,
-          description: plainText,
-          ...(precoImage ? { image: precoImage } : {}),
-          dateModified: preco.updatedAt,
-        }
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: preco.title,
+        description: plainText,
+        ...(precoImage ? { image: precoImage } : {}),
+        dateModified: preco.updatedAt,
+      }
       : undefined,
   });
 

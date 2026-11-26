@@ -21,14 +21,14 @@ const DiagnosticNoiseScore = ({
   if (disabled) {
     return (
       <div className={cx(classes.container)}>
-        <i className={fr.cx("ri-forbid-fill")} /> RISQUE INDÉFINI
+        <i className={fr.cx("ri-forbid-fill")} /> SITUATION INDÉFINIE
       </div>
     );
   }
 
   return (
     <div className={cx(classes.container)}>
-      <i className={fr.cx(getIconFromScore(score))} /> RISQUE{" "}
+      <i className={fr.cx(getIconFromScore(score))} /> SITUATION{" "}
       {getTextFromScore(score)}
     </div>
   );

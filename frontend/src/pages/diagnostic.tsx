@@ -17,6 +17,7 @@ import { fetchCommuneLocation, getZoomFromGouvType } from "../utils/tools";
 import type { DiagnosticItem } from "../utils/types";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { PAGE_META } from "../config/seo";
 import DiagnosticHero from "../components/diagnostic/DiagnosticHero";
 import { trackMatomoEvent } from "../utils/matomo";
 
@@ -34,7 +35,7 @@ const defaultSearchValues = process.env.NODE_ENV === "development" ? {
 
 function DiagnosticPage() {
   const { cx, classes } = useStyles();
-  usePageMeta("Diagnostiquer une parcelle", "Évaluez l'exposition sonore d'une parcelle et intégrez les enjeux acoustiques dans vos projets d'aménagement.");
+  usePageMeta(PAGE_META.diagnostic.title, PAGE_META.diagnostic.description);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -341,7 +342,7 @@ function DiagnosticPage() {
         </div>
       )}
       <div className={cx(classes.container)}>
-        <h1 className={fr.cx("fr-mb-6v")}>Diagnostiquer une parcelle</h1>
+        <h1 className={fr.cx("fr-mb-6v")}>Analyser une parcelle</h1>
 
         <div className={fr.cx("fr-mb-6v", "fr-col-12", "fr-col-md-6")}>
           <AddressSearch
@@ -399,7 +400,7 @@ function DiagnosticPage() {
               }
             }}
           />)}
-          
+
         {!diagnosticsResponses.length &&
           !notIntegrated &&
           (parcelleError || addressDefaultValue || communeCodeInsee) && (
@@ -439,7 +440,7 @@ function DiagnosticPage() {
             title="Parcelle non référencée dans diagBruit"
           />
         )}
-        
+
         <MapComponent
           ref={mapMethodsRef}
           noisePins={

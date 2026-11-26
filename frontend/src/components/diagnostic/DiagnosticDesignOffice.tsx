@@ -22,9 +22,8 @@ export default function DiagnosticDesignOffice() {
                         <strong>Faites appel à un acousticien certifié ou à un bureau d'études spécialisé</strong> avant le dépôt du permis de construire pour garantir la conformité réglementaire de votre projet et protéger la santé et le confort de vos futurs résidents.
                     </li>
                     <li className={cx(classes.linkItem)}>
-                        <a href="/preco/bureau-etudes-acoustiques" className={cx(classes.link)}>
+                        <a href="/preco/bureau-etudes-acoustiques" target="_blank" rel="noopener noreferrer" className={cx(classes.link)}>
                             Consultez les annuaires de bureaux d'études acoustiques
-                            <i className={fr.cx("ri-arrow-right-line", "fr-pl-1v")} />
                         </a>
                     </li>
                 </ul>
