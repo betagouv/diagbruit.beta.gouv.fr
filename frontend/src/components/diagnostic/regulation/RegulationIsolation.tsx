@@ -45,10 +45,12 @@ const RegulationIsolation = ({ diagnosticItem }: RegulationIsolationProps) => {
         <h4 className={classes.isolationTitle}>
           2. Quelles sont les particularités de la parcelle sélectionnée ?
         </h4>
-        <p className={classes.isolationText}>
-          La parcelle sélectionnée est située dans une zone <strong>soumise au classement sonore ou au Plan d’Exposition au Bruit. </strong>
-          L’isolation préconisée sera potentiellement supérieure au seuil d'isolation minimale réglementaire de 30 dB.
-        </p>
+        {hasPeb || hasCls ? (
+          <p className={classes.isolationText}>
+            La parcelle sélectionnée est située dans une zone <strong>soumise au classement sonore ou au Plan d’Exposition au Bruit. </strong>
+            L’isolation préconisée sera potentiellement supérieure au seuil d'isolation minimale réglementaire de 30 dB.
+          </p>
+        ) : null}
         <h4 className={classes.isolationTitle}>
           3. Quel est le niveau d’isolation requis pour la parcelle sélectionnée ?
         </h4>
