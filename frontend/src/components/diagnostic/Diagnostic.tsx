@@ -18,6 +18,13 @@ import DiagnosticCardsDisplay from "./DiagnosticDocumentation";
 import DiagnosticAcousticCertificate from "./DiagnosticAcousticCertificate";
 
 
+const DIAGNOSTIC_TAB_IDS = ["reglementations", "position", "recommendations"] as const;
+type DiagnosticTabId = (typeof DIAGNOSTIC_TAB_IDS)[number];
+const DEFAULT_TAB_ID: DiagnosticTabId = "reglementations";
+
+const isDiagnosticTabId = (value: string | null): value is DiagnosticTabId =>
+  DIAGNOSTIC_TAB_IDS.some((id) => id === value);
+
 type DiagnosticProps = {
   diagnosticItem: DiagnosticItem;
   isLoading: boolean;
@@ -45,7 +52,10 @@ const Diagnostic = ({ diagnosticItem }: DiagnosticProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [copied, setCopied] = useState(false);
-  const activeTabId = searchParams.get("tab") || "reglementations";
+  const requestedTabId = searchParams.get("tab");
+  const activeTabId: DiagnosticTabId = isDiagnosticTabId(requestedTabId)
+    ? requestedTabId
+    : DEFAULT_TAB_ID;
 
   const devMode = searchParams.get("dev") === "true";
 
